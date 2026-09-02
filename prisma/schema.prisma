@@ -1,0 +1,125 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  user
+  admin
+}
+
+model User {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  email            String    @unique
+  password         String
+  role             Role      @default(user)
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  cvs              CV[]
+}
+
+model CV {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String          @db.ObjectId
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String          @default("Untitled CV")
+  
+  // Personal Info
+  fullName       String          @default("")
+  jobTitle       String          @default("")
+  email          String          @default("")
+  phone          String          @default("")
+  address        String          @default("")
+  website        String?         @default("")
+  linkedin       String?         @default("")
+  github         String?         @default("")
+  photoUrl       String?         @default("")
+  summary        String?         @default("")
+  
+  // Customization & Style Settings
+  templateId     String          @default("modern") // modern | classic | creative | tech
+  bgColor        String          @default("#ffffff")
+  textColor      String          @default("#1e293b")
+  accentColor    String          @default("#2563eb")
+  font           String          @default("Inter")
+  fontSize       String          @default("medium") // compact | medium | relaxed
+  spacing        String          @default("normal")
+  
+  // Relations to repeatable sections
+  experiences    Experience[]
+  educations     Education[]
+  skills         Skill[]
+  projects       Project[]
+  customSections CustomSection[]
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  cvId        String   @db.ObjectId
+  cv          CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  company     String
+  position    String
+  location    String?  @default("")
+  startDate   String
+  endDate     String?  @default("")
+  current     Boolean  @default(false)
+  description String   @default("")
+  order       Int      @default(0)
+}
+
+model Education {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  cvId         String   @db.ObjectId
+  cv           CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  institution  String
+  degree       String
+  fieldOfStudy String?  @default("")
+  location     String?  @default("")
+  startDate    String
+  endDate      String?  @default("")
+  current      Boolean  @default(false)
+  grade        String?  @default("")
+  description  String?  @default("")
+  order        Int      @default(0)
+}
+
+model Skill {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  cvId     String  @db.ObjectId
+  cv       CV      @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  name     String
+  category String? @default("Technical") // Technical, Soft Skills, Tools, Languages
+  level    Int?    @default(4)
+  order    Int     @default(0)
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  cvId        String   @db.ObjectId
+  cv          CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  title       String
+  link        String?  @default("")
+  github      String?  @default("")
+  techStack   String?  @default("")
+  description String   @default("")
+  order       Int      @default(0)
+}
+
+model CustomSection {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  cvId   String @db.ObjectId
+  cv     CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  title  String // e.g. "Certifications", "Languages", "Awards"
+  items  String @default("") // multiline or JSON string
+  order  Int    @default(0)
+}
