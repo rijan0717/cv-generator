@@ -63,7 +63,7 @@ export default function AdminActivityPage() {
             setAction(e.target.value);
             setPage(1);
           }}
-          className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+          className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
         >
           <option value="">All actions</option>
           {ACTIONS.map((value) => (

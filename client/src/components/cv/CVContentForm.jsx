@@ -109,7 +109,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
           value={cv.summary}
           onChange={(e) => onChange({ summary: e.target.value })}
           rows={4}
-          className="mt-3 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+          className="mt-3 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
           placeholder="Two or three sentences describing who you are and what you are looking for."
         />
       </section>
@@ -185,7 +185,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
                 value={entry.description}
                 onChange={(e) => update({ description: e.target.value })}
                 rows={3}
-                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
               />
             </div>
 
@@ -199,7 +199,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
                   update({ achievements: e.target.value.split('\n').filter((l) => l !== '') })
                 }
                 rows={3}
-                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
                 placeholder="One per line. Numbers and percentages score well."
               />
             </div>
@@ -288,7 +288,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               <select
                 value={entry.level}
                 onChange={(e) => update({ level: e.target.value })}
-                className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+                className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
               >
                 {['Beginner', 'Intermediate', 'Advanced', 'Expert'].map((level) => (
                   <option key={level} value={level}>
@@ -347,7 +347,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
                 value={entry.description}
                 onChange={(e) => update({ description: e.target.value })}
                 rows={3}
-                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
               />
             </div>
           </div>

@@ -217,7 +217,7 @@ export default function CustomisePanel({ cv, onChange }) {
           id="fontFamily"
           value={settings.fontFamily ?? 'Inter'}
           onChange={(event) => updateSettings({ fontFamily: event.target.value })}
-          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
+          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
         >
           {Object.keys(FONT_STACKS).map((font) => (
             <option key={font} value={font}>
