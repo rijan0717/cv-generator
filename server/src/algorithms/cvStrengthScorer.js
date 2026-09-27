@@ -74,7 +74,10 @@ export function hasQuantifiedResult(text) {
  * @returns {boolean} True when it starts with an action verb.
  */
 export function startsWithActionVerb(text) {
-  const firstLine = String(text ?? '').trim().split('\n')[0] ?? '';
+  const firstLine =
+    String(text ?? '')
+      .trim()
+      .split('\n')[0] ?? '';
   const firstWord = firstLine.trim().split(/\s+/)[0] ?? '';
   return isActionVerb(firstWord);
 }
@@ -265,7 +268,12 @@ function scoreQuality(cv) {
 
   // --- Action verbs ---
   if (writtenEntries.length === 0) {
-    criteria.push({ criterion: 'Action verbs', maxPoints: Q.actionVerbs, earned: 0, passed: false });
+    criteria.push({
+      criterion: 'Action verbs',
+      maxPoints: Q.actionVerbs,
+      earned: 0,
+      passed: false,
+    });
     suggestions.push('Describe what you did in each role, starting with an action verb.');
   } else {
     const allLines = writtenEntries.flatMap((entry) =>

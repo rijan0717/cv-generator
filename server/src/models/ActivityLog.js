@@ -20,6 +20,10 @@ export const ACTIVITY_ACTIONS = [
   'DOWNLOAD_EXCEL',
   'CV_IMPORT',
   'JOB_MATCH',
+  'COMPANY_CREATE',
+  'JOB_CREATE',
+  'JOB_DELETE',
+  'JOB_APPLY',
   'ADMIN_ACTION',
 ];
 

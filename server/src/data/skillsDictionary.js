@@ -94,7 +94,11 @@ export const SKILLS = [
 
   // --- Testing and QA ---
   { name: 'Manual Testing', aliases: ['manual testing'], category: 'QA' },
-  { name: 'Automation Testing', aliases: ['automation testing', 'test automation'], category: 'QA' },
+  {
+    name: 'Automation Testing',
+    aliases: ['automation testing', 'test automation'],
+    category: 'QA',
+  },
   { name: 'Selenium', aliases: ['selenium'], category: 'QA' },
   { name: 'Playwright', aliases: ['playwright'], category: 'QA' },
   { name: 'Cypress', aliases: ['cypress'], category: 'QA' },
@@ -142,7 +146,11 @@ export const SKILLS = [
   { name: 'Accounting', aliases: ['accounting', 'accountancy'], category: 'Business' },
   { name: 'Bookkeeping', aliases: ['bookkeeping'], category: 'Business' },
   { name: 'Payroll', aliases: ['payroll'], category: 'Business' },
-  { name: 'Customer Service', aliases: ['customer service', 'customer support'], category: 'Business' },
+  {
+    name: 'Customer Service',
+    aliases: ['customer service', 'customer support'],
+    category: 'Business',
+  },
   { name: 'Project Management', aliases: ['project management'], category: 'Business' },
   { name: 'Sales', aliases: ['sales'], category: 'Business' },
   { name: 'Marketing', aliases: ['marketing'], category: 'Business' },
