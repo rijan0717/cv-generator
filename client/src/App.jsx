@@ -10,6 +10,7 @@ import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
 import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
+import CVEditorPage from './pages/user/CVEditorPage.jsx';
 
 /**
  * The application's route tree.
@@ -31,6 +32,7 @@ export default function App() {
         {/* Requires a logged-in user */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/cvs/:id" element={<CVEditorPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 

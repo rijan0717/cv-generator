@@ -1,0 +1,350 @@
+/*
+ * Styles for the CV templates.
+ *
+ * These deliberately sit outside Tailwind. The same markup is rendered both
+ * in the on-screen preview and in the Puppeteer print page, so the rules must
+ * be plain CSS that does not depend on the app's utility classes.
+ *
+ * Everything variable is read from the CSS custom properties produced by
+ * buildTemplateVariables(), so changing a setting restyles all five templates
+ * without any template knowing about the setting.
+ */
+
+.cv-page {
+  /* A4 at 96dpi. The preview scales this down; print uses it at full size. */
+  width: 210mm;
+  min-height: 297mm;
+  background: var(--cv-background);
+  color: var(--cv-text);
+  font-family: var(--cv-font);
+  font-size: var(--cv-font-size);
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.cv-page * {
+  box-sizing: border-box;
+}
+
+/* --- Typography ---------------------------------------------------------- */
+
+.cv-name {
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--cv-primary);
+}
+
+.cv-headline {
+  font-size: 1.05em;
+  margin: 2px 0 0;
+  color: var(--cv-muted);
+}
+
+.cv-section {
+  margin-bottom: var(--cv-section-gap);
+  /* Keep a heading with at least some of its content when a page breaks. */
+  break-inside: avoid-page;
+}
+
+.cv-section-title {
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  color: var(--cv-primary);
+}
+
+.cv-text {
+  margin: 3px 0 0;
+  white-space: pre-line; /* keeps the line breaks the user typed */
+}
+
+.cv-list {
+  margin: 4px 0 0;
+  padding-left: 1.1em;
+}
+
+.cv-list li {
+  margin-bottom: 2px;
+}
+
+.cv-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- Entries ------------------------------------------------------------- */
+
+.cv-entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.cv-entry-title {
+  font-weight: 600;
+}
+
+.cv-entry-date {
+  color: var(--cv-muted);
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.cv-entry-sub {
+  color: var(--cv-muted);
+  font-size: 0.93em;
+}
+
+/* --- Skills and languages ------------------------------------------------ */
+
+.cv-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.cv-pill {
+  background: var(--cv-tint);
+  color: var(--cv-primary);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.9em;
+}
+
+.cv-skill-rows {
+  display: grid;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.cv-skill-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cv-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 8px;
+  color: var(--cv-muted);
+  font-size: 0.93em;
+}
+
+.cv-photo {
+  object-fit: cover;
+  display: block;
+}
+
+/* --- 1. Classic: single column, traditional serif feel ------------------- */
+
+.cv-classic {
+  padding: 18mm 16mm;
+}
+
+.cv-classic .cv-header {
+  text-align: center;
+  border-bottom: 2px solid var(--cv-primary);
+  padding-bottom: 10px;
+  margin-bottom: var(--cv-section-gap);
+}
+
+.cv-classic .cv-contact {
+  justify-content: center;
+}
+
+.cv-classic .cv-section-title {
+  border-bottom: 1px solid var(--cv-rule);
+  padding-bottom: 3px;
+}
+
+/* --- 2. Modern: two columns with a coloured sidebar ---------------------- */
+
+.cv-modern {
+  display: flex;
+  min-height: 297mm;
+}
+
+.cv-modern .cv-sidebar {
+  width: 68mm;
+  flex-shrink: 0;
+  background: var(--cv-primary);
+  color: #fff;
+  padding: 14mm 10mm;
+}
+
+.cv-modern .cv-sidebar .cv-section-title,
+.cv-modern .cv-sidebar .cv-name {
+  color: #fff;
+}
+
+.cv-modern .cv-sidebar .cv-entry-date,
+.cv-modern .cv-sidebar .cv-entry-sub,
+.cv-modern .cv-sidebar .cv-contact {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.cv-modern .cv-sidebar .cv-pill {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.cv-modern .cv-sidebar .cv-contact {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cv-modern .cv-main {
+  flex: 1;
+  padding: 14mm 12mm;
+}
+
+.cv-modern .cv-photo {
+  width: 34mm;
+  height: 34mm;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+/* --- 3. Minimal: generous whitespace, very light rules ------------------- */
+
+.cv-minimal {
+  padding: 24mm 20mm;
+}
+
+.cv-minimal .cv-name {
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.cv-minimal .cv-header {
+  margin-bottom: calc(var(--cv-section-gap) * 1.6);
+}
+
+.cv-minimal .cv-section-title {
+  font-size: 0.78em;
+  letter-spacing: 0.16em;
+  color: var(--cv-muted);
+  margin-bottom: 8px;
+}
+
+.cv-minimal .cv-section {
+  margin-bottom: calc(var(--cv-section-gap) * 1.4);
+}
+
+.cv-minimal .cv-photo {
+  width: 26mm;
+  height: 26mm;
+  border-radius: 50%;
+}
+
+/* --- 4. Creative: bold header band, icon contact row --------------------- */
+
+.cv-creative {
+  padding: 0 0 16mm;
+}
+
+.cv-creative .cv-band {
+  background: var(--cv-primary);
+  color: #fff;
+  padding: 14mm 14mm 12mm;
+  display: flex;
+  align-items: center;
+  gap: 12mm;
+}
+
+.cv-creative .cv-band .cv-name,
+.cv-creative .cv-band .cv-headline,
+.cv-creative .cv-band .cv-contact {
+  color: #fff;
+}
+
+.cv-creative .cv-band .cv-headline,
+.cv-creative .cv-band .cv-contact {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cv-creative .cv-photo {
+  width: 30mm;
+  height: 30mm;
+  border-radius: 8px;
+  flex-shrink: 0;
+  border: 3px solid rgba(255, 255, 255, 0.45);
+}
+
+.cv-creative .cv-body {
+  padding: 12mm 14mm 0;
+}
+
+.cv-creative .cv-section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cv-creative .cv-section-title::before {
+  content: '';
+  width: 14px;
+  height: 3px;
+  background: var(--cv-primary);
+  border-radius: 2px;
+}
+
+.cv-creative .cv-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  margin-right: 4px;
+}
+
+/* --- 5. ATS-friendly: no graphics, no columns, plain headings ------------ */
+
+.cv-ats {
+  padding: 16mm 16mm;
+  /* Forced to a neutral, widely available font and colour. A screening
+     system reads the text layer, so decoration only gets in the way. */
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+  background: #fff;
+}
+
+.cv-ats .cv-name,
+.cv-ats .cv-section-title {
+  color: #000;
+}
+
+.cv-ats .cv-name {
+  font-size: 1.6em;
+  font-weight: 700;
+}
+
+.cv-ats .cv-section-title {
+  font-size: 1em;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #000;
+  padding-bottom: 2px;
+}
+
+.cv-ats .cv-contact,
+.cv-ats .cv-entry-date,
+.cv-ats .cv-entry-sub {
+  color: #000;
+}
+
+/* --- Print --------------------------------------------------------------- */
+
+@media print {
+  .cv-page {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+  }
+}

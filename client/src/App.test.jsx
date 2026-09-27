@@ -4,10 +4,13 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import * as authApi from './api/auth.js';
+import * as cvApi from './api/cvs.js';
 
-// The auth context calls the API on mount to find out who is logged in.
-// Stubbing the module keeps these tests independent of a running server.
+// The auth context calls the API on mount to find out who is logged in, and
+// the dashboard lists CVs. Stubbing both modules keeps these tests
+// independent of a running server.
 vi.mock('./api/auth.js');
+vi.mock('./api/cvs.js');
 
 /**
  * Renders the app at a given route inside the auth provider.
@@ -77,6 +80,7 @@ describe('App routing', () => {
         avatarUrl: '',
         status: 'active',
       });
+      cvApi.listCVs.mockResolvedValue([]);
     });
 
     it('shows the dashboard on a guarded route', async () => {
