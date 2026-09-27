@@ -11,6 +11,7 @@ import RegisterPage from './pages/auth/RegisterPage.jsx';
 import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
 import CVEditorPage from './pages/user/CVEditorPage.jsx';
+import PrintPage from './pages/print/PrintPage.jsx';
 
 /**
  * The application's route tree.
@@ -22,6 +23,12 @@ import CVEditorPage from './pages/user/CVEditorPage.jsx';
 export default function App() {
   return (
     <Routes>
+      {/*
+        The print route sits outside the layout on purpose: Puppeteer must see
+        the CV alone, with no navigation bar or footer around it.
+      */}
+      <Route path="/print/:id" element={<PrintPage />} />
+
       <Route element={<Layout />}>
         {/* Public */}
         <Route path="/" element={<HomePage />} />

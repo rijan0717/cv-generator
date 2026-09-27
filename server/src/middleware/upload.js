@@ -58,6 +58,37 @@ export const uploadImage = multer({
   },
 });
 
+/** Document types the CV importer accepts. */
+const ALLOWED_DOCUMENT_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain',
+];
+
+/**
+ * Multer instance for CV imports.
+ *
+ * Unlike photos, an imported document is held in memory and never written to
+ * disk: its text is extracted, parsed and discarded within the request. There
+ * is no reason to keep someone's old CV on the server, and not storing it
+ * means there is nothing to leak or clean up.
+ */
+export const uploadDocument = multer({
+  storage: multer.memoryStorage(),
+  fileFilter(_req, file, cb) {
+    if (!ALLOWED_DOCUMENT_TYPES.includes(file.mimetype)) {
+      return cb(ApiError.badRequest('Please upload a PDF, a Word (.docx) file or a text file'));
+    }
+    cb(null, true);
+  },
+  limits: {
+    // Larger than a photo, because a CV with images can legitimately be a
+    // few megabytes.
+    fileSize: 10 * 1024 * 1024,
+    files: 1,
+  },
+});
+
 /**
  * Translates multer's own errors into the project's ApiError, so an oversized
  * file produces a clear message instead of a generic 500.

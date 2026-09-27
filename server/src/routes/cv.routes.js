@@ -13,17 +13,33 @@ import {
   duplicateCV,
   uploadPhoto,
 } from '../controllers/cv.controller.js';
+import {
+  exportPdf,
+  exportDocx,
+  exportExcel,
+  getPrintData,
+  importCV,
+} from '../controllers/cvExport.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
-import { uploadImage, handleUploadErrors } from '../middleware/upload.js';
+import { uploadImage, uploadDocument, handleUploadErrors } from '../middleware/upload.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
 
-router.use(requireAuth);
-
 /** Rejects a malformed id before it reaches the database. */
 const validId = param('id').isMongoId().withMessage('That CV id is not valid');
+
+/**
+ * The print page is opened by headless Chromium, which has no session
+ * cookie, so this route is authorised by a short-lived print token instead.
+ * It must be registered before `requireAuth` below, or the browser would be
+ * rejected before the token is ever examined.
+ */
+router.get('/:id/print-data', [validId], validate, asyncHandler(getPrintData));
+
+// Everything below this line requires a logged-in user.
+router.use(requireAuth);
 
 router.get('/', asyncHandler(listCVs));
 
@@ -69,5 +85,22 @@ router.post(
   handleUploadErrors,
   asyncHandler(uploadPhoto),
 );
+
+// --- Import ----------------------------------------------------------------
+
+router.post(
+  '/:id/import',
+  [validId],
+  validate,
+  uploadDocument.single('document'),
+  handleUploadErrors,
+  asyncHandler(importCV),
+);
+
+// --- Exports ---------------------------------------------------------------
+
+router.get('/:id/export/pdf', [validId], validate, asyncHandler(exportPdf));
+router.get('/:id/export/docx', [validId], validate, asyncHandler(exportDocx));
+router.get('/:id/export/excel', [validId], validate, asyncHandler(exportExcel));
 
 export default router;

@@ -5,6 +5,8 @@ import { useAutosave } from '../../utils/useAutosave.js';
 import CVContentForm from '../../components/cv/CVContentForm.jsx';
 import CustomisePanel from '../../components/cv/CustomisePanel.jsx';
 import CVPreview from '../../components/cv/CVPreview.jsx';
+import ExportMenu from '../../components/cv/ExportMenu.jsx';
+import ImportDialog from '../../components/cv/ImportDialog.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -41,6 +43,7 @@ export default function CVEditorPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [tab, setTab] = useState('content');
   const [photoError, setPhotoError] = useState('');
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -133,13 +136,34 @@ export default function CVEditorPage() {
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <SaveStatus status={status} />
           <Button variant="secondary" size="sm" onClick={saveNow}>
             Save now
           </Button>
+          <Button variant="secondary" size="sm" onClick={() => setIsImportOpen((open) => !open)}>
+            Import
+          </Button>
+
+          <span className="hidden h-5 w-px bg-slate-300 sm:block" />
+          <span className="text-sm text-slate-500">Download</span>
+          <ExportMenu cvId={id} />
         </div>
       </div>
+
+      {isImportOpen && (
+        <div className="mt-4">
+          <ImportDialog
+            cvId={id}
+            onClose={() => setIsImportOpen(false)}
+            onApply={(patch) => {
+              handleChange(patch);
+              setIsImportOpen(false);
+              setTab('content');
+            }}
+          />
+        </div>
+      )}
 
       {saveError && (
         <Alert variant="error" className="mt-3">
