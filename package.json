@@ -1,0 +1,45 @@
+{
+  "name": "cv-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart CV Generator with ATS-Based CV-Job Matching (TU BCA Project II)",
+  "homepage": "https://github.com/rijan0717/cv-generator-MERN#readme",
+  "bugs": {
+    "url": "https://github.com/rijan0717/cv-generator-MERN/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rijan0717/cv-generator-MERN.git"
+  },
+  "license": "ISC",
+  "author": "rijan & shishir",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -n server,client -c cyan,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client",
+    "test": "npm run test --prefix server && npm run test --prefix client",
+    "test:server": "npm run test --prefix server",
+    "test:client": "npm run test --prefix client",
+    "seed:admin": "npm run seed:admin --prefix server",
+    "seed:templates": "npm run seed:templates --prefix server",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2"
+  }
+}
