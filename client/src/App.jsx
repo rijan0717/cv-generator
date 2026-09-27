@@ -1,14 +1,41 @@
 import { Routes, Route } from 'react-router-dom';
+
+import Layout from './components/layout/Layout.jsx';
+import ProtectedRoute from './routes/ProtectedRoute.jsx';
+
+import HomePage from './pages/HomePage.jsx';
 import HealthPage from './pages/HealthPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
+import LoginPage from './pages/auth/LoginPage.jsx';
+import RegisterPage from './pages/auth/RegisterPage.jsx';
+import DashboardPage from './pages/user/DashboardPage.jsx';
+import ProfilePage from './pages/user/ProfilePage.jsx';
 
 /**
- * Root component. For Phase 0 it only renders the health-check page; the real
- * route tree (auth, user and admin areas) is added in later phases.
+ * The application's route tree.
+ *
+ * `Layout` is a layout route: everything nested inside it renders into its
+ * `<Outlet />`, so the navigation bar and footer are defined once. The admin
+ * area is added in Phase 6, behind `AdminRoute`.
  */
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<HealthPage />} />
+      <Route element={<Layout />}>
+        {/* Public */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/health" element={<HealthPage />} />
+
+        {/* Requires a logged-in user */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
     </Routes>
   );
 }
