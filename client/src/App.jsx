@@ -1,7 +1,16 @@
 import { Routes, Route } from 'react-router-dom';
 
 import Layout from './components/layout/Layout.jsx';
+import AdminLayout from './components/admin/AdminLayout.jsx';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
+import AdminRoute from './routes/AdminRoute.jsx';
+
+import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
+import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
+import AdminUserDetailPage from './pages/admin/AdminUserDetailPage.jsx';
+import AdminCVsPage from './pages/admin/AdminCVsPage.jsx';
+import AdminCVDetailPage from './pages/admin/AdminCVDetailPage.jsx';
+import AdminActivityPage from './pages/admin/AdminActivityPage.jsx';
 
 import HomePage from './pages/HomePage.jsx';
 import HealthPage from './pages/HealthPage.jsx';
@@ -41,6 +50,19 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/cvs/:id" element={<CVEditorPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+
+        {/* Admin area. AdminRoute sends a non-admin to their own dashboard;
+            the server enforces the same rule on every /api/admin route. */}
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverviewPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="users/:id" element={<AdminUserDetailPage />} />
+            <Route path="cvs" element={<AdminCVsPage />} />
+            <Route path="cvs/:id" element={<AdminCVDetailPage />} />
+            <Route path="activity" element={<AdminActivityPage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
