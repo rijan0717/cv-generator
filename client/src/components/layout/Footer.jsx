@@ -7,8 +7,8 @@ export default function Footer() {
     <footer className="border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
       <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-500 dark:text-slate-400">
         <p>
-          Smart CV Generator with ATS-Based CV&ndash;Job Matching &mdash; BCA Project II, Tribhuvan
-          University.
+          Smart CV Generator &ndash; AI Job suggestion &mdash; BCA Project II, Tribhuvan
+          University                                                     -Rijan Pariyar.
         </p>
       </div>
     </footer>

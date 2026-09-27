@@ -22,6 +22,12 @@ import ProfilePage from './pages/user/ProfilePage.jsx';
 import SettingsPage from './pages/user/SettingsPage.jsx';
 import CVEditorPage from './pages/user/CVEditorPage.jsx';
 import PrintPage from './pages/print/PrintPage.jsx';
+import JobsPage from './pages/jobs/JobsPage.jsx';
+import JobDetailPage from './pages/jobs/JobDetailPage.jsx';
+import SavedJobsPage from './pages/jobs/SavedJobsPage.jsx';
+import ApplicationsPage from './pages/jobs/ApplicationsPage.jsx';
+import CompanyPage from './pages/company/CompanyPage.jsx';
+import JobApplicantsPage from './pages/company/JobApplicantsPage.jsx';
 
 /**
  * The application's route tree.
@@ -46,12 +52,21 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/health" element={<HealthPage />} />
 
+        {/* The job board is public: someone should be able to see what is
+            on offer before deciding to create an account. */}
+        <Route path="/jobs" element={<JobsPage />} />
+        <Route path="/jobs/:id" element={<JobDetailPage />} />
+
         {/* Requires a logged-in user */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/cvs/:id" element={<CVEditorPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/saved-jobs" element={<SavedJobsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/company" element={<CompanyPage />} />
+          <Route path="/company/jobs/:id/applicants" element={<JobApplicantsPage />} />
         </Route>
 
         {/* Admin area. AdminRoute sends a non-admin to their own dashboard;

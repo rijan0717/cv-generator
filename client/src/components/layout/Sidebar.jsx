@@ -88,11 +88,20 @@ export default function Sidebar({ onNavigate }) {
     <nav aria-label="Sections" className="p-4">
       <Group title="My work">
         <Item to="/dashboard" icon="cvs" label="My CVs" onNavigate={onNavigate} />
+        <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
+        <Item to="/saved-jobs" icon="saved" label="Saved jobs" onNavigate={onNavigate} />
+        <Item
+          to="/applications"
+          icon="applications"
+          label="My applications"
+          onNavigate={onNavigate}
+        />
       </Group>
 
       <Group title="Account">
         <Item to="/profile" icon="profile" label="Profile" onNavigate={onNavigate} />
         <Item to="/settings" icon="settings" label="Settings" onNavigate={onNavigate} />
+        <Item to="/company" icon="companies" label="My company" onNavigate={onNavigate} />
       </Group>
 
       {isAdmin && (
