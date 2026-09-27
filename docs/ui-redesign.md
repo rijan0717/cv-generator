@@ -397,7 +397,98 @@ removing one would break stored CVs, so keys are only ever added.
 
 ---
 
-## 4. Open decisions
+## 4. Public template browsing and the sign-in gate
+
+A visitor can **browse and preview every template without an account**. The
+gate falls only when they try to _use_ one.
+
+### 4.1 What a visitor can do
+
+| Action                                     | Signed out     | Signed in      |
+| ------------------------------------------ | -------------- | -------------- |
+| See the template carousel on the home page | Yes            | Yes            |
+| **Preview Template** (full-size modal)     | Yes            | Yes            |
+| **Use this template**                      | Opens the gate | Creates the CV |
+
+Previewing must stay open. It is the only way someone can judge whether the
+application is worth signing up for, and hiding it behind registration is
+the fastest way to lose them.
+
+### 4.2 The gate modal
+
+A two-pane dialog: sign-in options on the left, the chosen template
+rendered on the right.
+
+```
+┌──────────────────────────────┬─────────────────────┐  X
+│  Log in or sign up to use    │                     │
+│  this template               │   ┌─────────────┐   │
+│                              │   │             │   │
+│  [ Continue with email     ] │   │  the chosen │   │
+│                              │   │   template  │   │
+│  Already have an account?    │   │             │   │
+│  Log in                      │   └─────────────┘   │
+└──────────────────────────────┴─────────────────────┘
+```
+
+Keeping the template visible beside the form is the point of the design: it
+reminds the user what they are signing up _for_, so the form reads as a step
+towards something rather than an obstacle.
+
+### 4.3 Social sign-in is not supported
+
+The reference offers Continue with Google and Continue with Facebook. **We
+have neither**, and adding one is a real piece of work rather than a button:
+an OAuth provider, a new dependency, redirect handling, and account linking
+for someone who already registered with that email by password.
+
+The project brief also rules out third-party integrations that have not been
+agreed. So unless you decide otherwise the modal offers:
+
+- **Continue with email** — the existing registration form
+- **Log in** — for an existing account
+
+If Google sign-in is wanted later it should be planned separately, with the
+account-linking question settled first.
+
+### 4.4 Preserving the intent through sign-up
+
+The detail that makes or breaks this flow: after registering, the user must
+land **in the editor with the template they chose**, not on an empty
+dashboard. Otherwise they have to find it again and the gate has cost them
+the very thing they were trying to do.
+
+1. **Use this template** stores the key, for example
+   `sessionStorage.setItem('cvg-pending-template', 'executive')`.
+2. The modal opens; registration or login proceeds as now.
+3. On success, read and clear the pending key, create a CV with that
+   `templateKey`, and navigate straight to `/cvs/:id`.
+4. With no pending key, behave as today and go to the dashboard.
+
+`sessionStorage` rather than `localStorage`, so an abandoned choice does not
+resurface days later. Every access wrapped in try/catch, as elsewhere,
+because storage throws in a private window.
+
+`ProtectedRoute` already preserves a destination through
+`location.state.from`; this is the same idea applied to an action rather
+than a URL.
+
+### 4.5 Accessibility
+
+A modal carries obligations that are easy to miss:
+
+- Focus moves into the dialog on open and returns to the triggering button
+  on close.
+- Focus is **trapped** inside while it is open.
+- `Escape` closes it.
+- `role="dialog"`, `aria-modal="true"`, labelled by the heading.
+- The page behind does not scroll.
+- The template preview is decorative here, so `aria-hidden`; the heading
+  already says which template it is.
+
+---
+
+## 5. Open decisions
 
 Each of these blocks part of the work:
 
@@ -411,7 +502,7 @@ Each of these blocks part of the work:
 
 ---
 
-## 5. Suggested order
+## 6. Suggested order
 
 The template rebuild is the highest value: it is what a viva examiner and a
 real user both look at first, and the editor redesign is mostly a rearrange
