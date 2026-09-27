@@ -4,11 +4,11 @@ Design work agreed but **not yet built**. Three separate pieces, each based
 on a reference the client supplied. This document is the brief; nothing here
 is implemented unless a section says otherwise.
 
-| Piece | Reference | Status |
-| --- | --- | --- |
-| 1. CV editor and customise page | Screenshot of a commercial resume builder | Not started |
-| 2. Home page | resume.io style landing page | Not started |
-| 3. CV templates | Two of the client's own CV PDFs | CSS drafted, components not written |
+| Piece                           | Reference                                 | Status                              |
+| ------------------------------- | ----------------------------------------- | ----------------------------------- |
+| 1. CV editor and customise page | Screenshot of a commercial resume builder | Not started                         |
+| 2. Home page                    | resume.io style landing page              | Not started                         |
+| 3. CV templates                 | Two of the client's own CV PDFs           | CSS drafted, components not written |
 
 > The references are commercial products. They are a guide to **layout and
 > information hierarchy**, not something to copy. No branding, wording,
@@ -55,11 +55,11 @@ whole workspace rather than a filter on one panel.
 
 Three underlined tabs across the top of the left pane:
 
-| Tab | Contains |
-| --- | --- |
-| **Template & Colors** | Main colour swatches, template filters, template gallery |
-| **Text** | Font family, size, line height, heading style |
-| **Layout** | Spacing, margins, section order and visibility, column split |
+| Tab                   | Contains                                                     |
+| --------------------- | ------------------------------------------------------------ |
+| **Template & Colors** | Main colour swatches, template filters, template gallery     |
+| **Text**              | Font family, size, line height, heading style                |
+| **Layout**            | Spacing, margins, section order and visibility, column split |
 
 Active tab: coloured text with a 2px underline in the accent colour.
 Inactive: grey, no underline.
@@ -91,13 +91,16 @@ border.
 
 Chips to support, given our data:
 
-| Chip | Filter |
-| --- | --- |
-| All | no filter (default) |
-| With photo | `usesPhoto === true` |
+A later reference shows the chip row as: All templates, ATS, Word, Simple,
+Professional, Two-column, Google Docs. Ours maps onto most of that.
+
+| Chip       | Filter                          |
+| ---------- | ------------------------------- |
+| All        | no filter (default)             |
+| With photo | `usesPhoto === true`            |
 | Two column | templates with a sidebar layout |
-| ATS | the ATS-friendly template |
-| Simple | single column, no colour blocks |
+| ATS        | the ATS-friendly template       |
+| Simple     | single column, no colour blocks |
 
 Dropped from the reference: **DOCX**, **Experts**, **Customizable** and
 **Free**. Every one of our templates exports to DOCX, every one is
@@ -132,6 +135,56 @@ nothing. Decide before building.
 Cards must be real `<button>`s or labelled radio inputs, not clickable
 `div`s, so the gallery is keyboard-navigable and announces the selected
 template.
+
+### 1.6b Template chooser as a carousel
+
+A second reference shows the chooser as a **horizontal carousel** rather
+than a static grid, with the actions revealed on hover. Use this for the
+full-width chooser (the gallery in 1.6 stays as the compact in-editor
+version).
+
+```
+   ┌────────┐   ┌────────┐   ┌────────┐
+   │        │   │        │   │▒▒▒▒▒▒▒▒│ ← hovered: dimmed
+   │ tmpl 1 │   │ tmpl 2 │   │ 🔍 Preview Template
+   │        │   │        │   │ ( Use this template )   ( → )
+   └────────┘   └────────┘   └────────┘
+              ● ○ ○ ○ ○ ○ ○ ○
+```
+
+**Hover / focus overlay**, over the thumbnail only:
+
+| Element               | Behaviour                                                                    |
+| --------------------- | ---------------------------------------------------------------------------- |
+| Dimming layer         | Semi-transparent dark wash over the preview                                  |
+| **Preview Template**  | Magnifier icon + label. Opens a large modal of the template at full size     |
+| **Use this template** | Large filled pill in the accent colour. Selects it and returns to the editor |
+
+Two distinct actions matter here: _look closely_ and _commit_. The current
+gallery only offers commit, so a user has to select a template to find out
+what it looks like at readable size.
+
+**Carousel mechanics**
+
+- Dot indicators below, one per template; the active dot is filled in the
+  accent colour, the rest muted.
+- A circular arrow button on the right edge advances; a matching one appears
+  on the left once scrolled.
+- Horizontal scroll with CSS scroll-snap, so it works by swipe on touch and
+  by scrollbar on desktop without JavaScript driving the position.
+
+**Accessibility, which a hover-only overlay gets wrong by default:**
+
+- The overlay must also appear on **keyboard focus**, not hover alone,
+  otherwise the actions are unreachable without a mouse.
+- Both actions are real buttons inside the card, so tabbing reaches them.
+- Arrows and dots need labels ("Next templates", "Go to template 3").
+- Do not trap scrolling: the carousel must not hijack vertical page scroll.
+
+On touch there is no hover, so the overlay should either be permanently
+visible below the thumbnail at small widths, or appear on first tap with a
+second tap confirming. Prefer the former — a two-tap pattern is easy to get
+wrong.
 
 ### 1.7 Preview pane
 
@@ -169,8 +222,8 @@ Reference: a resume.io style long-form landing page. Sections top to bottom:
 5. **Alternating feature rows** — image left / text right, then reversed,
    for: edit and customise online, pre-generated content, export to multiple
    formats, job tracking.
-6. **Testimonials** — rating summary and a row of review cards. *We already
-   have this*, fed by real reviews above three stars.
+6. **Testimonials** — rating summary and a row of review cards. _We already
+   have this_, fed by real reviews above three stars.
 7. **How to build a resume** — numbered steps with an illustration column.
 8. **Closing call to action** — coloured band with a large heading.
 9. **Pricing** — **skip entirely.** The application is free and has no tiers.
@@ -214,7 +267,85 @@ From the second reference PDF.
 - Summary justified.
 - Company bold left, dates bold right, role bold beneath, then bullets.
 
-### 3.3 The skills table problem
+### 3.3 Three further layouts
+
+A later reference showed three more designs worth building. Together with
+Executive and Accent they give five genuinely distinct layouts rather than
+five variations on one.
+
+**Teal sidebar** — a narrow full-height coloured rail on the left carrying
+the photo, with the content in the main column. The name is large and bold
+with a thick rule beneath it; section headings are bold with a thin rule.
+Closest to the current `creative`, but far more restrained.
+
+**Banner two-column** — a full-width coloured band across the top with the
+name centred in white, then two columns below: a narrow tinted sidebar for
+Contact, Languages and Skills, and a wide main column for Summary and Work
+History. Languages are shown as **proficiency bars** rather than words.
+
+**Compact two-column** — a header block with the photo top right, then two
+columns of roughly 60/40 for Work History against Education and Skills.
+Small square bullets, tight leading, quiet grey headings. The densest of the
+set, for someone with a lot to fit on one page.
+
+Two things these need that we do not currently have:
+
+- **Proficiency bars** for languages. The model stores `proficiency` as free
+  text, so a bar means mapping words to a percentage. Either constrain the
+  field to a fixed set (Native / Fluent / Advanced / Intermediate / Basic) or
+  render text when the value is unrecognised. Recommend the latter — it keeps
+  existing data valid.
+- **Balanced two-column content**, since a long Work History beside a short
+  Education column leaves a ragged gap. Assign sections to columns by type,
+  as `ModernTemplate` already does, rather than splitting by length.
+
+### 3.4 Three more layouts
+
+A third reference adds three designs that are stylistically different again.
+
+**Detailed two-column** — circular photo top left, a narrow left column for
+Details and Skills, a wide right column for Profile, Employment History and
+Education. Section headings in the accent colour. Skills shown as **dot
+ratings** (five dots, filled to the level). Small location pins beside each
+role.
+
+**Boxed** — photo top left with a very large bold name beside it. The Profile
+sits in a tinted box. Job titles are rendered as **inverted label chips**
+(dark fill, light text) rather than plain bold. A right sidebar carries Skills
+and References in their own boxed panels, with dotted leader lines and `4/5`
+style ratings.
+
+**Editorial monochrome** — no colour at all. Opens with a written statement
+instead of a name block: _"Hello! My name is …, I am a … and this is my
+resume."_ Sections are **numbered** (`01 PROFILE`, `02 EDUCATION`,
+`03 EXPERIENCE`). Dates run down a left gutter column, body copy is italic,
+and the location sits right-aligned on the same line as the role. The most
+distinctive of the whole set and the cheapest to build, since it needs no
+colour handling.
+
+What these need that we do not have:
+
+- **Dot / out-of-five skill ratings.** We store `level` as one of four words,
+  so map Beginner→2, Intermediate→3, Advanced→4, Expert→5 out of five. Keep
+  the words as the accessible label; the dots are decoration and must be
+  `aria-hidden`.
+- **A statement headline** for the editorial layout. It can be composed from
+  `fullName` and `headline` — "My name is {fullName}, I am a {headline}" —
+  with a plain name heading as the fallback when no headline is set.
+- **Location per role.** Already in the model as `experience[].location`.
+
+**Banded headings** — a further reference, and the most conventional of the
+set. Name centred in bold caps with the role beneath, a single contact line
+with `|` separators, then a rule. Every section heading sits inside a
+**full-width filled band** in a pale tint. Role bold left, dates bold right.
+The summary is justified, and Key Skills runs as **three columns of
+bullets** rather than one list.
+
+It needs one thing we do not have: a multi-column list. Skills are a single
+array, so the columns come from CSS `columns: 3`, which flows them
+automatically and collapses to one column on a narrow page. No data change.
+
+### 3.5 The skills table problem
 
 The Executive reference groups skills under custom category headings —
 "Automation", "API testing", "Test management". **Our CV model has no such
@@ -233,7 +364,7 @@ Three options:
 Recommend (1) for the first cut and (2) later if the grouping proves useful.
 **This needs a decision before the Executive template can be finished.**
 
-### 3.4 Current state — important
+### 3.6 Current state — important
 
 `client/src/templates/templates.css` **has already been rewritten** for these
 designs and is uncommitted. It defines `.cv-executive` and `.cv-accent`, and
@@ -252,13 +383,17 @@ Registry keys (`classic`, `modern`, `minimal`, `creative`, `ats`) are stored
 on every CV document, so they must not be removed. Keep the keys and change
 what they render and how they are described:
 
-| Key | Becomes |
-| --- | --- |
-| `classic` | Executive |
-| `modern` | Accent |
-| `minimal` | Minimal, refined |
-| `creative` | Sidebar with photo |
-| `ats` | ATS-friendly, unchanged |
+| Key        | Becomes                 |
+| ---------- | ----------------------- |
+| `classic`  | Executive               |
+| `modern`   | Accent                  |
+| `minimal`  | Minimal, refined        |
+| `creative` | Teal sidebar with photo |
+| `ats`      | ATS-friendly, unchanged |
+
+The Banner and Compact layouts from 3.3 are additions, so they need new
+keys. Adding a key means extending the TEMPLATE_KEYS enum in the CV model;
+removing one would break stored CVs, so keys are only ever added.
 
 ---
 
