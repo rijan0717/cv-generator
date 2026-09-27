@@ -169,7 +169,7 @@ export default function AdminCVsPage() {
                         </div>
                       </>
                     ) : (
-                      <span className="text-slate-400 dark:text-slate-500">Unknown</span>
+                      <span className="text-slate-500 dark:text-slate-400">Unknown</span>
                     )}
                   </td>
 

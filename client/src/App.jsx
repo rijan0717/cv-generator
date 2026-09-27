@@ -19,6 +19,7 @@ import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
 import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
+import SettingsPage from './pages/user/SettingsPage.jsx';
 import CVEditorPage from './pages/user/CVEditorPage.jsx';
 import PrintPage from './pages/print/PrintPage.jsx';
 
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/cvs/:id" element={<CVEditorPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
 
         {/* Admin area. AdminRoute sends a non-admin to their own dashboard;

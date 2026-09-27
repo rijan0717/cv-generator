@@ -118,7 +118,7 @@ export default function AdminActivityPage() {
                     {entry.user ? (
                       <span className="text-slate-700 dark:text-slate-300">{entry.user.email}</span>
                     ) : (
-                      <span className="text-slate-400 dark:text-slate-500">Deleted user</span>
+                      <span className="text-slate-500 dark:text-slate-400">Deleted user</span>
                     )}
                   </td>
                   <td className="px-4 py-2.5">

@@ -172,7 +172,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold tracking-tight text-white">
               Ready to build your CV?
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-slate-300 dark:text-slate-400">
+            <p className="mx-auto mt-3 max-w-xl text-slate-400 dark:text-slate-500">
               Create an account and start your first CV. You can keep several, one for each kind of
               role you apply for.
             </p>

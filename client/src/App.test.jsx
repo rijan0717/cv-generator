@@ -36,7 +36,10 @@ describe('App routing', () => {
     beforeEach(() => {
       // A 401 from /auth/me is the normal case for a visitor.
       authApi.getCurrentUser.mockRejectedValue(new Error('Authentication required'));
-      reviewApi.listPublicReviews.mockResolvedValue({ reviews: [], summary: { average: 0, count: 0 } });
+      reviewApi.listPublicReviews.mockResolvedValue({
+        reviews: [],
+        summary: { average: 0, count: 0 },
+      });
     });
 
     it('shows the landing page at the home route', async () => {
@@ -87,7 +90,10 @@ describe('App routing', () => {
         status: 'active',
       });
       cvApi.listCVs.mockResolvedValue([]);
-      reviewApi.listPublicReviews.mockResolvedValue({ reviews: [], summary: { average: 0, count: 0 } });
+      reviewApi.listPublicReviews.mockResolvedValue({
+        reviews: [],
+        summary: { average: 0, count: 0 },
+      });
     });
 
     it('shows the dashboard on a guarded route', async () => {

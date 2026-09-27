@@ -194,7 +194,7 @@ export default function DashboardPage() {
  */
 function ScorePill({ score }) {
   if (!score) {
-    return <span className="text-xs text-slate-400 dark:text-slate-500">Not scored yet</span>;
+    return <span className="text-xs text-slate-500 dark:text-slate-400">Not scored yet</span>;
   }
 
   const tone =
