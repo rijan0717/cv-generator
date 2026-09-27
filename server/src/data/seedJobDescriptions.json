@@ -1,0 +1,162 @@
+[
+  {
+    "title": "Junior Software Developer",
+    "field": "IT",
+    "text": "We are hiring a junior software developer to build and maintain web applications. You will write clean JavaScript and work with React on the frontend and Node.js with Express on the backend. Experience with MongoDB or MySQL is useful. You will use Git for version control, take part in code reviews, and work in an agile team with two week sprints. Good problem solving and a willingness to learn matter more than years of experience."
+  },
+  {
+    "title": "Frontend Developer",
+    "field": "IT",
+    "text": "Frontend developer needed to build responsive user interfaces with React and TypeScript. You will turn Figma designs into accessible components, manage state with Redux, style with Tailwind CSS, and ensure cross browser compatibility. Familiarity with Next.js, unit testing with Jest, and performance optimisation is expected. You will collaborate closely with designers and backend engineers."
+  },
+  {
+    "title": "Backend Developer",
+    "field": "IT",
+    "text": "Backend developer to design and build REST APIs using Node.js and Express. Responsibilities include database schema design in PostgreSQL and MongoDB, authentication and authorisation, caching with Redis, and writing integration tests. Experience with Docker, CI/CD pipelines and cloud deployment on AWS is strongly preferred. You will own services end to end."
+  },
+  {
+    "title": "Full Stack Developer",
+    "field": "IT",
+    "text": "Full stack developer comfortable across the whole stack. Frontend work in React or Vue.js, backend in Node.js or Python with Django. You will model data in SQL and NoSQL databases, build and consume REST and GraphQL APIs, and deploy with Docker. Strong Git workflow and experience of agile delivery required."
+  },
+  {
+    "title": "Quality Assurance Engineer",
+    "field": "IT",
+    "text": "QA engineer to own testing across our web platform. You will write and execute test cases, run functional, regression, smoke and UAT cycles, and log defects with clear reproduction steps. Automation experience with Selenium, Cypress or Playwright is essential. API testing with Postman, cross browser and cross device testing, and familiarity with Jira or Azure DevOps for bug tracking are expected."
+  },
+  {
+    "title": "Automation Test Engineer",
+    "field": "IT",
+    "text": "Automation test engineer to build and maintain end to end test suites. You will write automation in Playwright or Selenium using JavaScript, TypeScript or Python, apply the page object model, and integrate tests into CI/CD pipelines. Responsibilities include API testing, performance testing with JMeter, and reporting test coverage to the development team."
+  },
+  {
+    "title": "Mobile Application Developer",
+    "field": "IT",
+    "text": "Mobile developer to build cross platform applications with React Native or Flutter. You will integrate REST APIs, manage local storage, handle push notifications, and publish releases to the App Store and Google Play. Native Android or iOS experience is an advantage. Attention to performance and user experience on real devices is essential."
+  },
+  {
+    "title": "DevOps Engineer",
+    "field": "IT",
+    "text": "DevOps engineer to automate build, test and deployment pipelines. You will work with Docker, Kubernetes, Jenkins and Terraform across AWS and Azure. Responsibilities include infrastructure as code, monitoring and alerting, Linux server administration, Nginx configuration, and improving release reliability. Scripting in Python or Bash required."
+  },
+  {
+    "title": "Data Analyst",
+    "field": "Data",
+    "text": "Data analyst to turn raw data into decisions. You will write SQL queries, build dashboards in Power BI or Tableau, and produce regular reporting for business stakeholders. Strong Excel skills are required, and Python with Pandas is an advantage. You will identify trends, validate data quality, and present findings clearly to non technical audiences."
+  },
+  {
+    "title": "Machine Learning Engineer",
+    "field": "Data",
+    "text": "Machine learning engineer to design, train and deploy models in production. You will work in Python with NumPy, Pandas and scikit learn, build data pipelines, evaluate model performance, and deploy with Docker on cloud infrastructure. A solid grounding in statistics and experience with deep learning frameworks is expected."
+  },
+  {
+    "title": "Database Administrator",
+    "field": "IT",
+    "text": "Database administrator to maintain production databases. Responsibilities include performance tuning, indexing, backup and recovery, replication, and access control across MySQL, PostgreSQL and SQL Server. You will write complex SQL, monitor query performance, plan capacity, and support developers with schema design."
+  },
+  {
+    "title": "Cyber Security Analyst",
+    "field": "IT",
+    "text": "Security analyst to monitor and defend our systems. You will run vulnerability assessments, review firewall and access policies, investigate incidents, and support penetration testing. Knowledge of Linux, networking, and security frameworks is required. You will document findings and recommend remediation to engineering teams."
+  },
+  {
+    "title": "UI UX Designer",
+    "field": "Design",
+    "text": "Designer to own the user experience of our product. You will conduct user research, produce wireframes and prototypes in Figma or Adobe XD, run usability testing, and maintain a design system. You will work closely with developers to ensure designs are implemented accurately and accessibly. A strong portfolio is essential."
+  },
+  {
+    "title": "Graphic Designer",
+    "field": "Design",
+    "text": "Graphic designer to produce visual assets across print and digital. You will work in Photoshop, Illustrator and InDesign to create marketing material, social media graphics and brand collateral. Understanding of typography, colour and layout is essential. You will manage several projects at once and work to deadlines."
+  },
+  {
+    "title": "WordPress Developer",
+    "field": "IT",
+    "text": "WordPress developer to build and maintain client websites. You will develop custom themes and plugins in PHP, work with WooCommerce, optimise page speed, and handle SEO fundamentals. Familiarity with HTML, CSS, JavaScript and MySQL is required. You will manage hosting, backups and site migrations."
+  },
+  {
+    "title": "Digital Marketing Executive",
+    "field": "Marketing",
+    "text": "Marketing executive to plan and run digital campaigns. You will manage SEO and paid search, write content for social media and email, analyse performance in Google Analytics, and report on conversion. Experience with content marketing and marketing automation tools is an advantage. Strong written English is essential."
+  },
+  {
+    "title": "Content Writer",
+    "field": "Marketing",
+    "text": "Content writer to produce articles, landing pages and product copy. You will research topics, write in a consistent brand voice, apply SEO best practice, and edit work from other contributors. Attention to grammar and the ability to explain technical ideas simply are essential."
+  },
+  {
+    "title": "Business Analyst",
+    "field": "Business",
+    "text": "Business analyst to bridge business needs and technical delivery. You will gather and document requirements, map processes, write user stories and acceptance criteria, and support UAT. Strong stakeholder management and the ability to analyse data in SQL and Excel are required. Experience in an agile environment is expected."
+  },
+  {
+    "title": "Project Manager",
+    "field": "Business",
+    "text": "Project manager to deliver software projects on time and to budget. You will plan and track work, manage risks and dependencies, run agile ceremonies, and report progress to stakeholders. Experience with Jira or Azure DevOps and a recognised project management qualification are advantages. Excellent communication is essential."
+  },
+  {
+    "title": "Product Manager",
+    "field": "Business",
+    "text": "Product manager to own the roadmap for our platform. You will talk to customers, prioritise the backlog, define requirements, and work with engineering and design through delivery. You will measure success with product analytics and make evidence based decisions about what to build next."
+  },
+  {
+    "title": "Accountant",
+    "field": "Finance",
+    "text": "Accountant to manage day to day financial operations. Responsibilities include bookkeeping, bank reconciliation, preparing management accounts, VAT returns and year end support. Strong Excel skills and experience with accounting software are required. Attention to detail and knowledge of accounting standards are essential."
+  },
+  {
+    "title": "Financial Analyst",
+    "field": "Finance",
+    "text": "Financial analyst to support planning and decision making. You will build financial models, prepare budgets and forecasts, analyse variances, and produce reporting for senior management. Advanced Excel is essential and experience with Power BI or SQL is an advantage."
+  },
+  {
+    "title": "Payroll Administrator",
+    "field": "Finance",
+    "text": "Payroll administrator to run the monthly payroll. You will process starters and leavers, calculate statutory payments, handle pension contributions, and respond to employee queries. Accuracy, confidentiality and knowledge of payroll legislation are essential."
+  },
+  {
+    "title": "Human Resources Officer",
+    "field": "Business",
+    "text": "HR officer to support the employee lifecycle. You will manage recruitment and onboarding, maintain employee records, advise managers on policy, and support performance reviews. Strong interpersonal skills, discretion and knowledge of employment law are required."
+  },
+  {
+    "title": "Customer Support Representative",
+    "field": "Business",
+    "text": "Customer support representative to help users by email, chat and phone. You will troubleshoot problems, document issues for the engineering team, and maintain help centre articles. Patience, clear written communication and the ability to explain technical steps simply are essential. Experience with a ticketing system is an advantage."
+  },
+  {
+    "title": "Sales Executive",
+    "field": "Business",
+    "text": "Sales executive to grow new business. You will generate leads, run product demonstrations, negotiate contracts, and manage a pipeline in the CRM. Consistent achievement against targets, strong communication and resilience are essential. B2B software sales experience is preferred."
+  },
+  {
+    "title": "Technical Support Engineer",
+    "field": "IT",
+    "text": "Technical support engineer to resolve customer issues across our software. You will diagnose faults, reproduce bugs, escalate to engineering with clear detail, and maintain documentation. Knowledge of SQL, Linux, networking and REST APIs is required, along with excellent customer communication."
+  },
+  {
+    "title": "Systems Administrator",
+    "field": "IT",
+    "text": "Systems administrator to maintain servers, networks and user accounts. Responsibilities include Linux and Windows administration, backup and disaster recovery, patching, monitoring, and supporting staff with hardware and software. Scripting in Bash or PowerShell is expected."
+  },
+  {
+    "title": "Teacher",
+    "field": "Education",
+    "text": "Teacher to plan and deliver lessons, assess student progress, and create an inclusive classroom. You will prepare schemes of work, provide feedback, communicate with parents, and contribute to extracurricular activities. A relevant degree and teaching qualification are required."
+  },
+  {
+    "title": "Registered Nurse",
+    "field": "Healthcare",
+    "text": "Nurse to provide patient care on a busy ward. You will assess patients, administer medication, maintain accurate clinical records, and work with the wider multidisciplinary team. Registration with the professional body, clinical judgement and compassion are essential."
+  },
+  {
+    "title": "Civil Engineer",
+    "field": "Engineering",
+    "text": "Civil engineer to support infrastructure projects from design to completion. You will produce drawings in AutoCAD, carry out structural calculations, conduct site inspections, and liaise with contractors. Knowledge of building regulations and health and safety requirements is essential."
+  },
+  {
+    "title": "Administrative Assistant",
+    "field": "Business",
+    "text": "Administrative assistant to support the office and management team. You will manage calendars, arrange meetings and travel, maintain filing systems, handle correspondence, and order supplies. Strong organisation, Microsoft Office skills and discretion are essential."
+  }
+]
