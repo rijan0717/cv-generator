@@ -50,7 +50,7 @@ async function findOwnedCV(cvId, userId) {
  */
 export async function listCVs(req, res) {
   const cvs = await CV.find({ user: req.user._id, isDeleted: false })
-    .select('title templateKey strengthScore updatedAt createdAt')
+    .select('title templateKey strengthScore isPrimary updatedAt createdAt')
     .sort({ updatedAt: -1 });
 
   sendSuccess(res, { cvs }, 'Your CVs');
@@ -166,4 +166,39 @@ export async function uploadPhoto(req, res) {
   }
 
   sendSuccess(res, { cv }, 'Photo updated');
+}
+
+/**
+ * PATCH /api/cvs/:id/primary
+ *
+ * Marks one CV as the primary, which is the one offered by default when
+ * applying for a job.
+ *
+ * Only one CV can hold the flag, so every other one belonging to this
+ * user is cleared first. The clear runs before the set on purpose: a
+ * failure between the two then leaves the user with no primary rather
+ * than two, and "apply with my primary CV" stays unambiguous.
+ */
+export async function setPrimaryCV(req, res) {
+  const cv = await findOwnedCV(req.params.id, req.user._id);
+
+  await CV.updateMany({ user: req.user._id, _id: { $ne: cv._id } }, { $set: { isPrimary: false } });
+
+  cv.isPrimary = true;
+  await cv.save();
+
+  sendSuccess(res, { cv }, 'Primary CV updated');
+}
+
+/**
+ * DELETE /api/cvs/:id/primary
+ * Clears the flag, leaving the user with no primary CV.
+ */
+export async function clearPrimaryCV(req, res) {
+  const cv = await findOwnedCV(req.params.id, req.user._id);
+
+  cv.isPrimary = false;
+  await cv.save();
+
+  sendSuccess(res, { cv }, 'No primary CV set');
 }

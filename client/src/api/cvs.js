@@ -75,3 +75,23 @@ export async function uploadCVPhoto(id, file) {
   });
   return data.data.cv;
 }
+
+/**
+ * Marks a CV as the primary one, used by default when applying for jobs.
+ * @param {string} id - The CV to make primary.
+ * @returns {Promise<object>} The updated CV.
+ */
+export async function setPrimaryCV(id) {
+  const { data } = await api.patch(`/api/cvs/${id}/primary`);
+  return data.data.cv;
+}
+
+/**
+ * Clears the primary flag, leaving no primary CV.
+ * @param {string} id - The CV to clear.
+ * @returns {Promise<object>} The updated CV.
+ */
+export async function clearPrimaryCV(id) {
+  const { data } = await api.delete(`/api/cvs/${id}/primary`);
+  return data.data.cv;
+}

@@ -12,6 +12,8 @@ import {
   deleteCV,
   duplicateCV,
   uploadPhoto,
+  setPrimaryCV,
+  clearPrimaryCV,
 } from '../controllers/cv.controller.js';
 import {
   exportPdf,
@@ -85,6 +87,11 @@ router.post(
   handleUploadErrors,
   asyncHandler(uploadPhoto),
 );
+
+// --- Primary CV ---
+
+router.patch('/:id/primary', [validId], validate, asyncHandler(setPrimaryCV));
+router.delete('/:id/primary', [validId], validate, asyncHandler(clearPrimaryCV));
 
 // --- Import ----------------------------------------------------------------
 

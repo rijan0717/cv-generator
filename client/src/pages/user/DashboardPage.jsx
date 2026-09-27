@@ -74,6 +74,35 @@ export default function DashboardPage() {
   }
 
   /**
+   * Makes a CV the primary one, or clears the flag if it already is.
+   *
+   * The list is updated optimistically and every other row is cleared at
+   * the same time, because only one CV can be primary and the user should
+   * see that immediately rather than after a round trip.
+   *
+   * @param {object} cv - The CV being toggled.
+   */
+  async function togglePrimary(cv) {
+    const makingPrimary = !cv.isPrimary;
+    const previous = cvs;
+
+    setCvs((current) =>
+      current.map((row) => ({
+        ...row,
+        isPrimary: makingPrimary && row._id === cv._id,
+      })),
+    );
+
+    try {
+      if (makingPrimary) await cvApi.setPrimaryCV(cv._id);
+      else await cvApi.clearPrimaryCV(cv._id);
+    } catch (err) {
+      setCvs(previous);
+      setError(err.message);
+    }
+  }
+
+  /**
    * Deletes a CV after confirming, because it disappears from the list.
    * @param {string} id - The CV to delete.
    * @param {string} title - Shown in the confirmation.
@@ -159,6 +188,8 @@ export default function DashboardPage() {
                 </p>
               </div>
 
+              <PrimaryToggle cv={cv} onToggle={() => togglePrimary(cv)} />
+
               <ScorePill score={cv.strengthScore} />
 
               <div className="flex items-center gap-2">
@@ -206,5 +237,53 @@ function ScorePill({ score }) {
 
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}>{score}/100</span>
+  );
+}
+
+/**
+ * The star that marks a CV as primary.
+ *
+ * A real button with `aria-pressed` rather than a clickable icon, so it
+ * is reachable by keyboard and announced as a toggle. The label says what
+ * pressing it will do, not what the current state is.
+ *
+ * @param {{cv: object, onToggle: () => void}} props
+ */
+function PrimaryToggle({ cv, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={Boolean(cv.isPrimary)}
+      title={
+        cv.isPrimary
+          ? 'This is your primary CV, offered first when you apply for a job'
+          : 'Make this your primary CV'
+      }
+      className={[
+        'flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium transition',
+        cv.isPrimary
+          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+          : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+      ].join(' ')}
+    >
+      <svg
+        className="h-4 w-4"
+        viewBox="0 0 24 24"
+        fill={cv.isPrimary ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.6"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinejoin="round"
+          d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"
+        />
+      </svg>
+      <span className="hidden sm:inline">{cv.isPrimary ? 'Primary' : 'Set primary'}</span>
+      <span className="sr-only">
+        {cv.isPrimary ? 'Remove primary status from this CV' : 'Make this CV primary'}
+      </span>
+    </button>
   );
 }

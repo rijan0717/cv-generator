@@ -156,6 +156,15 @@ const cvSchema = new mongoose.Schema(
     strengthScore: { type: Number, default: 0, min: 0, max: 100 },
     strengthBreakdown: { type: Array, default: [] },
 
+    /**
+     * The CV used by default when applying for a job.
+     *
+     * At most one per user. It is a flag on the CV rather than a
+     * reference on the user because that is where it is read: every
+     * query that lists CVs already has it, with no extra lookup.
+     */
+    isPrimary: { type: Boolean, default: false },
+
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },
@@ -163,6 +172,8 @@ const cvSchema = new mongoose.Schema(
 
 // The dashboard lists a user's CVs newest-first, excluding deleted ones.
 cvSchema.index({ user: 1, isDeleted: 1, updatedAt: -1 });
+// Finding a user primary CV, which the apply form does on every open.
+cvSchema.index({ user: 1, isPrimary: 1 });
 
 export const CV = mongoose.model('CV', cvSchema);
 export default CV;

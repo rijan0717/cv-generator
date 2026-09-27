@@ -251,7 +251,12 @@ function ApplyPanel({ jobId, onClose, onApplied }) {
       .then((list) => {
         if (cancelled) return;
         setCvs(list);
-        if (list.length > 0) setCvId(list[0]._id);
+
+        // Default to the primary CV when there is one; otherwise the
+        // most recently updated, which is what the list is sorted by.
+        const primary = list.find((cv) => cv.isPrimary);
+        if (primary) setCvId(primary._id);
+        else if (list.length > 0) setCvId(list[0]._id);
       })
       .catch((err) => {
         if (!cancelled) setError(err.message);
@@ -333,6 +338,7 @@ function ApplyPanel({ jobId, onClose, onApplied }) {
               {cvs.map((cv) => (
                 <option key={cv._id} value={cv._id}>
                   {cv.title}
+                  {cv.isPrimary ? ' (primary)' : ''}
                 </option>
               ))}
             </select>
