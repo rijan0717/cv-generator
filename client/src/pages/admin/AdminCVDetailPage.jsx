@@ -59,7 +59,7 @@ export default function AdminCVDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
         <Spinner label="Loading CV" />
       </div>
     );
@@ -78,15 +78,18 @@ export default function AdminCVDetailPage() {
 
   return (
     <div>
-      <Link to="/admin/cvs" className="text-sm text-slate-500 hover:text-slate-900">
+      <Link
+        to="/admin/cvs"
+        className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+      >
         &larr; All CVs
       </Link>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">{cv.title}</h2>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{cv.title}</h2>
           {cv.user && (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {cv.user.name} &middot; {cv.user.email}
             </p>
           )}
@@ -97,7 +100,7 @@ export default function AdminCVDetailPage() {
         </Button>
       </div>
 
-      <div className="mt-5 rounded-xl bg-slate-200/60 p-4">
+      <div className="mt-5 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 p-4">
         <CVPreview cv={cv} />
       </div>
     </div>

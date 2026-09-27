@@ -7,6 +7,9 @@ import CustomisePanel from '../../components/cv/CustomisePanel.jsx';
 import CVPreview from '../../components/cv/CVPreview.jsx';
 import ExportMenu from '../../components/cv/ExportMenu.jsx';
 import ImportDialog from '../../components/cv/ImportDialog.jsx';
+import ReviewPrompt from '../../components/cv/ReviewPrompt.jsx';
+import { hasSkippedReview } from '../../utils/reviewSkip.js';
+import * as reviewApi from '../../api/reviews.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -44,6 +47,7 @@ export default function CVEditorPage() {
   const [tab, setTab] = useState('content');
   const [photoError, setPhotoError] = useState('');
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +83,25 @@ export default function CVEditorPage() {
   const { status, error: saveError, saveNow } = useAutosave(cv, save);
 
   /**
+   * Decides whether to ask for a review after a download.
+   *
+   * Three things stop the prompt: the user skipped it before, they have
+   * already left a review, or the lookup fails. Being asked repeatedly is
+   * worse than never being asked, so anything uncertain means staying
+   * quiet.
+   */
+  async function maybeAskForReview() {
+    if (hasSkippedReview()) return;
+
+    try {
+      const existing = await reviewApi.getMyReview();
+      if (!existing) setIsReviewOpen(true);
+    } catch {
+      // Never let a review check interfere with a successful download.
+    }
+  }
+
+  /**
    * Merges a change from the form or the customisation panel.
    * @param {object} patch - The fields that changed.
    */
@@ -103,7 +126,7 @@ export default function CVEditorPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[60vh] place-items-center text-slate-500">
+      <div className="grid min-h-[60vh] place-items-center text-slate-500 dark:text-slate-400">
         <Spinner label="Loading your CV" />
       </div>
     );
@@ -125,14 +148,17 @@ export default function CVEditorPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <Link to="/dashboard" className="text-sm text-slate-500 hover:text-slate-900">
+          <Link
+            to="/dashboard"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+          >
             &larr; My CVs
           </Link>
           <input
             value={cv.title}
             onChange={(e) => handleChange({ title: e.target.value })}
             aria-label="CV title"
-            className="mt-1 block w-full truncate rounded-lg border-0 bg-transparent px-0 text-2xl font-bold tracking-tight text-slate-900 focus:outline-none focus:ring-0"
+            className="mt-1 block w-full truncate rounded-lg border-0 bg-transparent px-0 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-0"
           />
         </div>
 
@@ -146,10 +172,16 @@ export default function CVEditorPage() {
           </Button>
 
           <span className="hidden h-5 w-px bg-slate-300 sm:block" />
-          <span className="text-sm text-slate-500">Download</span>
-          <ExportMenu cvId={id} />
+          <span className="text-sm text-slate-500 dark:text-slate-400">Download</span>
+          <ExportMenu cvId={id} onDownloaded={maybeAskForReview} />
         </div>
       </div>
+
+      {isReviewOpen && (
+        <div className="mt-4">
+          <ReviewPrompt context={'Downloaded ' + cv.title} onClose={() => setIsReviewOpen(false)} />
+        </div>
+      )}
 
       {isImportOpen && (
         <div className="mt-4">
@@ -193,8 +225,8 @@ export default function CVEditorPage() {
                 className={[
                   'rounded-lg px-4 py-2 text-sm font-medium transition',
                   tab === item.key
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50',
+                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800',
                 ].join(' ')}
               >
                 {item.label}
@@ -205,7 +237,7 @@ export default function CVEditorPage() {
           {tab === 'content' ? (
             <CVContentForm cv={cv} onChange={handleChange} onPhotoChange={handlePhotoChange} />
           ) : (
-            <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
               <CustomisePanel cv={cv} onChange={handleChange} />
             </div>
           )}
@@ -214,11 +246,13 @@ export default function CVEditorPage() {
         {/* Right: live preview, kept in view while the form scrolls */}
         <div className="lg:sticky lg:top-20 lg:self-start">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Preview</h2>
-            <span className="text-xs text-slate-500">A4 &middot; 210 &times; 297 mm</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              A4 &middot; 210 &times; 297 mm
+            </span>
           </div>
 
-          <div className="max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl bg-slate-200/60 p-4">
+          <div className="max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl bg-slate-200/60 dark:bg-slate-800/60 p-4">
             <CVPreview cv={cv} />
           </div>
         </div>
@@ -240,10 +274,10 @@ function SaveStatus({ status }) {
   };
 
   const colours = {
-    idle: 'text-slate-500',
-    saving: 'text-slate-500',
-    saved: 'text-emerald-600',
-    error: 'text-red-600',
+    idle: 'text-slate-500 dark:text-slate-400',
+    saving: 'text-slate-500 dark:text-slate-400',
+    saved: 'text-emerald-600 dark:text-emerald-400',
+    error: 'text-red-600 dark:text-red-400',
   };
 
   return (

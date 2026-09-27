@@ -65,22 +65,25 @@ export default function RepeatableSection({
   }
 
   return (
-    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+    <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-slate-900">{title}</h2>
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
         <Button variant="secondary" size="sm" onClick={addEntry} type="button">
           {addLabel}
         </Button>
       </div>
 
       {entries.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">Nothing added yet.</p>
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">Nothing added yet.</p>
       ) : (
         <ol className="mt-4 space-y-4">
           {entries.map((entry, index) => (
-            <li key={entry._id ?? entry._key ?? index} className="rounded-lg bg-slate-50 p-4">
+            <li
+              key={entry._id ?? entry._key ?? index}
+              className="rounded-lg bg-slate-50 dark:bg-slate-950 p-4"
+            >
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   {title} {index + 1}
                 </span>
 
@@ -89,7 +92,7 @@ export default function RepeatableSection({
                     type="button"
                     onClick={() => moveEntry(index, -1)}
                     disabled={index === 0}
-                    className="rounded p-1 text-slate-500 hover:bg-slate-200 disabled:opacity-30"
+                    className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30"
                   >
                     <span className="sr-only">Move up</span>
                     <span aria-hidden="true">&uarr;</span>
@@ -98,7 +101,7 @@ export default function RepeatableSection({
                     type="button"
                     onClick={() => moveEntry(index, 1)}
                     disabled={index === entries.length - 1}
-                    className="rounded p-1 text-slate-500 hover:bg-slate-200 disabled:opacity-30"
+                    className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30"
                   >
                     <span className="sr-only">Move down</span>
                     <span aria-hidden="true">&darr;</span>
@@ -106,7 +109,7 @@ export default function RepeatableSection({
                   <button
                     type="button"
                     onClick={() => removeEntry(index)}
-                    className="rounded p-1 text-red-600 hover:bg-red-50"
+                    className="rounded p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
                   >
                     <span className="sr-only">Remove</span>
                     <span aria-hidden="true">&times;</span>

@@ -52,9 +52,13 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
-      <div className="rounded-xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Log in</h1>
-        <p className="mt-1 text-sm text-slate-500">Welcome back. Enter your details to continue.</p>
+      <div className="rounded-xl bg-white dark:bg-slate-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          Log in
+        </h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Welcome back. Enter your details to continue.
+        </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
           <Alert variant="error">{error}</Alert>
@@ -84,9 +88,9 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           Do not have an account?{' '}
-          <Link to="/register" className="font-medium text-slate-900 underline">
+          <Link to="/register" className="font-medium text-slate-900 dark:text-slate-100 underline">
             Create one
           </Link>
         </p>

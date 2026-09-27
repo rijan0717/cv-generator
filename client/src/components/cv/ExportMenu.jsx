@@ -24,9 +24,12 @@ const FORMATS = [
  * with an attachment. Fetching it as a blob also means an error comes back as
  * a readable message instead of the browser downloading a JSON error file.
  *
- * @param {{cvId: string}} props
+ * `onDownloaded` fires only after a genuinely successful download, which is
+ * what the editor uses to decide whether to ask for a review.
+ *
+ * @param {{cvId: string, onDownloaded?: (format: string) => void}} props
  */
-export default function ExportMenu({ cvId }) {
+export default function ExportMenu({ cvId, onDownloaded }) {
   const [busyFormat, setBusyFormat] = useState(null);
   const [error, setError] = useState('');
 
@@ -59,6 +62,9 @@ export default function ExportMenu({ cvId }) {
       // Release the object URL, or the blob stays in memory for the life of
       // the page.
       URL.revokeObjectURL(url);
+
+      // Only now, after the file has actually been handed to the browser.
+      onDownloaded?.(format);
     } catch (err) {
       // An error response arrives as a Blob because of responseType, so the
       // JSON message has to be read back out of it.
@@ -95,7 +101,7 @@ export default function ExportMenu({ cvId }) {
       </div>
 
       {error && (
-        <p className="mt-2 text-xs text-red-600" role="alert">
+        <p className="mt-2 text-xs text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       )}

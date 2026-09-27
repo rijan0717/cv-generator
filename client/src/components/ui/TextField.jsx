@@ -19,7 +19,10 @@ export default function TextField({ label, error, hint, className = '', id, ...r
 
   return (
     <div className={className}>
-      <label htmlFor={fieldId} className="block text-sm font-medium text-slate-700">
+      <label
+        htmlFor={fieldId}
+        className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+      >
         {label}
       </label>
 
@@ -28,21 +31,23 @@ export default function TextField({ label, error, hint, className = '', id, ...r
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={describedBy || undefined}
         className={[
-          'mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 shadow-sm ring-1',
+          'mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 shadow-sm ring-1',
           'placeholder:text-slate-400 focus:outline-none focus:ring-2',
-          error ? 'ring-red-400 focus:ring-red-500' : 'ring-slate-300 focus:ring-slate-900',
+          error
+            ? 'ring-red-400 focus:ring-red-500'
+            : 'ring-slate-300 dark:ring-slate-600 focus:ring-slate-900 dark:focus:ring-slate-100',
         ].join(' ')}
         {...rest}
       />
 
       {hint && !error && (
-        <p id={hintId} className="mt-1 text-xs text-slate-500">
+        <p id={hintId} className="mt-1 text-xs text-slate-500 dark:text-slate-400">
           {hint}
         </p>
       )}
 
       {error && (
-        <p id={errorId} className="mt-1 text-xs text-red-600">
+        <p id={errorId} className="mt-1 text-xs text-red-600 dark:text-red-400">
           {error}
         </p>
       )}

@@ -25,8 +25,8 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
   return (
     <div className="space-y-5">
       {/* Personal details */}
-      <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-semibold text-slate-900">Personal details</h2>
+      <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Personal details</h2>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <TextField
@@ -74,7 +74,10 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
         </div>
 
         <div className="mt-4">
-          <label htmlFor="cv-photo" className="block text-sm font-medium text-slate-700">
+          <label
+            htmlFor="cv-photo"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          >
             Photo
           </label>
           <div className="mt-2 flex items-center gap-4">
@@ -82,7 +85,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               <img
                 src={cv.personal.photoUrl}
                 alt=""
-                className="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200"
+                className="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700"
               />
             )}
             <input
@@ -90,23 +93,23 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => e.target.files?.[0] && onPhotoChange(e.target.files[0])}
-              className="text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200"
+              className="text-sm text-slate-600 dark:text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200"
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             JPG, PNG or WEBP, up to 2 MB. Only some templates show a photo.
           </p>
         </div>
       </section>
 
       {/* Summary */}
-      <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-semibold text-slate-900">Professional summary</h2>
+      <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Professional summary</h2>
         <textarea
           value={cv.summary}
           onChange={(e) => onChange({ summary: e.target.value })}
           rows={4}
-          className="mt-3 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="mt-3 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
           placeholder="Two or three sentences describing who you are and what you are looking for."
         />
       </section>
@@ -165,7 +168,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               }
             />
 
-            <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">
+            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 sm:col-span-2">
               <input
                 type="checkbox"
                 checked={entry.isCurrent}
@@ -175,24 +178,28 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
             </label>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700">Description</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Description
+              </label>
               <textarea
                 value={entry.description}
                 onChange={(e) => update({ description: e.target.value })}
                 rows={3}
-                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700">Achievements</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Achievements
+              </label>
               <textarea
                 value={entry.achievements.join('\n')}
                 onChange={(e) =>
                   update({ achievements: e.target.value.split('\n').filter((l) => l !== '') })
                 }
                 rows={3}
-                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
                 placeholder="One per line. Numbers and percentages score well."
               />
             </div>
@@ -275,11 +282,13 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               onChange={(e) => update({ name: e.target.value })}
             />
             <div>
-              <label className="block text-sm font-medium text-slate-700">Level</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Level
+              </label>
               <select
                 value={entry.level}
                 onChange={(e) => update({ level: e.target.value })}
-                className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900"
+                className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
               >
                 {['Beginner', 'Intermediate', 'Advanced', 'Expert'].map((level) => (
                   <option key={level} value={level}>
@@ -331,12 +340,14 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               onChange={(e) => update({ link: e.target.value })}
             />
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700">Description</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Description
+              </label>
               <textarea
                 value={entry.description}
                 onChange={(e) => update({ description: e.target.value })}
                 rows={3}
-                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="mt-1 block w-full rounded-lg px-3 py-2 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
               />
             </div>
           </div>
@@ -404,10 +415,10 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
       </RepeatableSection>
 
       {/* References */}
-      <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <h2 className="font-semibold text-slate-900">References</h2>
+      <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-100">References</h2>
 
-        <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+        <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
           <input
             type="checkbox"
             checked={cv.referencesOnRequest}

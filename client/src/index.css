@@ -2,11 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/*
+ * Base colours for the application shell.
+ *
+ * The CV templates deliberately do not participate in this: a CV is a
+ * printed document and stays white paper whatever the interface theme is.
+ * Their styling lives in `templates/templates.css` and is driven by the
+ * per-CV settings instead.
+ */
+
+html {
+  /* Matches the theme immediately on load, before React has mounted, so
+     there is no flash of the wrong scheme. */
   color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+html.dark body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+/* Smooth the theme change, but never animate the CV itself, and respect a
+   reduced-motion preference. */
+@media (prefers-reduced-motion: no-preference) {
+  body,
+  header,
+  section:not(.cv-section),
+  aside:not(.cv-sidebar) {
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+}
+
+/* A visible focus ring for keyboard users in both themes. */
+:focus-visible {
+  outline-offset: 2px;
+}
+
+/*
+ * The gentle drift used by the home page testimonials and the template
+ * showcase. The movement is small on purpose: enough to feel alive, not
+ * enough to make text hard to read while it moves.
+ */
+@keyframes cvg-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.cvg-float {
+  animation: cvg-float 6s ease-in-out infinite;
+}
+
+/* Motion is decoration here, so it is dropped entirely for anyone who has
+   asked their system for less of it. */
+@media (prefers-reduced-motion: reduce) {
+  .cvg-float {
+    animation: none;
+  }
+}
+
+/* Firefox renders a dark scrollbar only when told. */
+html.dark {
+  scrollbar-color: theme('colors.slate.600') theme('colors.slate.900');
 }

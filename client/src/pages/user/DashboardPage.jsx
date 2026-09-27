@@ -97,8 +97,10 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">My CVs</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            My CVs
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Keep one CV per kind of role, and tailor each to the job.
           </p>
         </div>
@@ -106,7 +108,7 @@ export default function DashboardPage() {
 
       <form
         onSubmit={handleCreate}
-        className="mt-6 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200"
+        className="mt-6 flex flex-wrap items-end gap-3 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
       >
         <TextField
           label="New CV title"
@@ -127,13 +129,13 @@ export default function DashboardPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
           <Spinner label="Loading your CVs" />
         </div>
       ) : cvs.length === 0 ? (
-        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center">
-          <h2 className="font-semibold text-slate-900">No CVs yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
+        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-12 text-center">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100">No CVs yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
             Create your first CV above. You can change the template and styling at any time.
           </p>
         </div>
@@ -142,13 +144,16 @@ export default function DashboardPage() {
           {cvs.map((cv) => (
             <li
               key={cv._id}
-              className="flex flex-wrap items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200"
+              className="flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
             >
               <div className="min-w-0 flex-1">
-                <Link to={`/cvs/${cv._id}`} className="font-medium text-slate-900 hover:underline">
+                <Link
+                  to={`/cvs/${cv._id}`}
+                  className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
+                >
                   {cv.title}
                 </Link>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                   {getTemplate(cv.templateKey).name} &middot; updated{' '}
                   {new Date(cv.updatedAt).toLocaleDateString('en-GB')}
                 </p>
@@ -189,15 +194,15 @@ export default function DashboardPage() {
  */
 function ScorePill({ score }) {
   if (!score) {
-    return <span className="text-xs text-slate-400">Not scored yet</span>;
+    return <span className="text-xs text-slate-400 dark:text-slate-500">Not scored yet</span>;
   }
 
   const tone =
     score >= 75
-      ? 'bg-emerald-50 text-emerald-700'
+      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
       : score >= 50
-        ? 'bg-amber-50 text-amber-700'
-        : 'bg-red-50 text-red-700';
+        ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+        : 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300';
 
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}>{score}/100</span>

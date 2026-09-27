@@ -3,14 +3,17 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import * as authApi from './api/auth.js';
 import * as cvApi from './api/cvs.js';
+import * as reviewApi from './api/reviews.js';
 
 // The auth context calls the API on mount to find out who is logged in, and
 // the dashboard lists CVs. Stubbing both modules keeps these tests
 // independent of a running server.
 vi.mock('./api/auth.js');
 vi.mock('./api/cvs.js');
+vi.mock('./api/reviews.js');
 
 /**
  * Renders the app at a given route inside the auth provider.
@@ -18,11 +21,13 @@ vi.mock('./api/cvs.js');
  */
 function renderAt(route) {
   return render(
-    <MemoryRouter initialEntries={[route]}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </MemoryRouter>,
+    <ThemeProvider>
+      <MemoryRouter initialEntries={[route]}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </MemoryRouter>
+    </ThemeProvider>,
   );
 }
 
@@ -31,6 +36,7 @@ describe('App routing', () => {
     beforeEach(() => {
       // A 401 from /auth/me is the normal case for a visitor.
       authApi.getCurrentUser.mockRejectedValue(new Error('Authentication required'));
+      reviewApi.listPublicReviews.mockResolvedValue({ reviews: [], summary: { average: 0, count: 0 } });
     });
 
     it('shows the landing page at the home route', async () => {
@@ -81,6 +87,7 @@ describe('App routing', () => {
         status: 'active',
       });
       cvApi.listCVs.mockResolvedValue([]);
+      reviewApi.listPublicReviews.mockResolvedValue({ reviews: [], summary: { average: 0, count: 0 } });
     });
 
     it('shows the dashboard on a guarded route', async () => {

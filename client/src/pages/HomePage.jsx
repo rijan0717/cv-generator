@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth.js';
 import Button from '../components/ui/Button.jsx';
+import FloatingTemplates from '../components/home/FloatingTemplates.jsx';
+import FloatingReviews from '../components/home/FloatingReviews.jsx';
 
 /**
  * Public landing page.
@@ -54,18 +56,18 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+      <section className="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               CV builder with ATS matching
             </p>
 
-            <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
               Write a CV that gets past the filter
             </h1>
 
-            <p className="mt-5 text-lg leading-relaxed text-slate-600">
+            <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-400">
               Build a professional CV, score how strong it is, and measure how well it matches the
               job you are actually applying for &mdash; before you send it.
             </p>
@@ -92,39 +94,51 @@ export default function HomePage() {
                 ))}
             </div>
           </div>
+
+          {/* The rotating template showcase. Hidden below large screens:
+              on a phone it would push the call to action off the fold. */}
+          <div className="hidden lg:block">
+            <FloatingTemplates />
+          </div>
         </div>
       </section>
 
       {/* How it works */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">How it works</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          How it works
+        </h2>
 
         <ol className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {STEPS.map((step) => (
             <li
               key={step.number}
-              className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200"
+              className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
             >
               <span
                 aria-hidden="true"
-                className="grid h-9 w-9 place-items-center rounded-lg bg-slate-900 font-semibold text-white"
+                className="grid h-9 w-9 place-items-center rounded-lg bg-slate-900 font-semibold text-white dark:bg-slate-100 dark:text-slate-900"
               >
                 {step.number}
               </span>
-              <h3 className="mt-4 font-semibold text-slate-900">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
+              <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-100">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                {step.description}
+              </p>
             </li>
           ))}
         </ol>
       </section>
 
       {/* The two algorithms */}
-      <section className="border-y border-slate-200 bg-white">
+      <section className="border-y border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             More than a CV template
           </h2>
-          <p className="mt-2 max-w-2xl text-slate-600">
+          <p className="mt-2 max-w-2xl text-slate-600 dark:text-slate-400">
             Two analysis tools do the work that usually takes a human reviewer.
           </p>
 
@@ -132,25 +146,33 @@ export default function HomePage() {
             {FEATURES.map((feature) => (
               <article
                 key={feature.title}
-                className="rounded-xl bg-slate-50 p-6 ring-1 ring-slate-200"
+                className="rounded-xl bg-slate-50 dark:bg-slate-950 p-6 ring-1 ring-slate-200 dark:ring-slate-700"
               >
-                <h3 className="text-lg font-semibold text-slate-900">{feature.title}</h3>
-                <p className="mt-1 text-sm font-medium text-slate-500">{feature.summary}</p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600">{feature.detail}</p>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  {feature.title}
+                </h3>
+                <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {feature.summary}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {feature.detail}
+                </p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
+      <FloatingReviews />
+
       {/* Closing call to action */}
       {!isLoading && !isAuthenticated && (
         <section className="mx-auto max-w-6xl px-4 py-16">
-          <div className="rounded-2xl bg-slate-900 px-6 py-12 text-center sm:px-12">
+          <div className="rounded-2xl bg-slate-900 px-6 py-12 text-center sm:px-12 dark:bg-slate-800 dark:ring-1 dark:ring-slate-700">
             <h2 className="text-2xl font-bold tracking-tight text-white">
               Ready to build your CV?
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-slate-300">
+            <p className="mx-auto mt-3 max-w-xl text-slate-300 dark:text-slate-400">
               Create an account and start your first CV. You can keep several, one for each kind of
               role you apply for.
             </p>

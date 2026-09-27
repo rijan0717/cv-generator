@@ -13,7 +13,7 @@ export default function Pagination({ pagination, onChange }) {
 
   return (
     <nav className="mt-4 flex items-center justify-between" aria-label="Pagination">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-slate-500 dark:text-slate-400">
         Page {page} of {pages} &middot; {total} in total
       </p>
 

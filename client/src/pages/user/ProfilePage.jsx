@@ -17,8 +17,12 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Profile</h1>
-        <p className="mt-1 text-sm text-slate-500">Manage your account details.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          Profile
+        </h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Manage your account details.
+        </p>
       </header>
 
       <div className="mt-8 space-y-6">
@@ -72,20 +76,20 @@ function AvatarSection({ user, setUser }) {
   }
 
   return (
-    <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <h2 className="font-semibold text-slate-900">Photo</h2>
+    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Photo</h2>
 
       <div className="mt-4 flex flex-wrap items-center gap-5">
         {user.avatarUrl ? (
           <img
             src={user.avatarUrl}
             alt=""
-            className="h-20 w-20 rounded-full object-cover ring-1 ring-slate-200"
+            className="h-20 w-20 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="grid h-20 w-20 place-items-center rounded-full bg-slate-100 text-2xl font-semibold text-slate-500"
+            className="grid h-20 w-20 place-items-center rounded-full bg-slate-100 dark:bg-slate-800 text-2xl font-semibold text-slate-500 dark:text-slate-400"
           >
             {user.name.charAt(0).toUpperCase()}
           </span>
@@ -108,7 +112,9 @@ function AvatarSection({ user, setUser }) {
           >
             {isUploading ? 'Uploading' : 'Change photo'}
           </Button>
-          <p className="mt-2 text-xs text-slate-500">JPG, PNG or WEBP. Maximum 2 MB.</p>
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            JPG, PNG or WEBP. Maximum 2 MB.
+          </p>
         </div>
       </div>
 
@@ -148,8 +154,8 @@ function DetailsSection({ user, setUser }) {
   }
 
   return (
-    <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <h2 className="font-semibold text-slate-900">Your details</h2>
+    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Your details</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
         <Alert variant="error">{status.error}</Alert>
@@ -229,8 +235,8 @@ function PasswordSection() {
   }
 
   return (
-    <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <h2 className="font-semibold text-slate-900">Change password</h2>
+    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Change password</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
         <Alert variant="error">{status.error}</Alert>

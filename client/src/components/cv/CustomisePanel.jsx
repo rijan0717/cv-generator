@@ -112,7 +112,7 @@ export default function CustomisePanel({ cv, onChange }) {
     <div className="space-y-6">
       {/* Template */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900">Template</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Template</h3>
         <div className="mt-3 space-y-2">
           {TEMPLATES.map((template) => (
             <label
@@ -120,8 +120,8 @@ export default function CustomisePanel({ cv, onChange }) {
               className={[
                 'flex cursor-pointer gap-3 rounded-lg border p-3 text-sm transition',
                 cv.templateKey === template.key
-                  ? 'border-slate-900 bg-slate-50'
-                  : 'border-slate-200 hover:border-slate-300',
+                  ? 'border-slate-900 bg-slate-50 dark:bg-slate-950'
+                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500',
               ].join(' ')}
             >
               <input
@@ -133,8 +133,12 @@ export default function CustomisePanel({ cv, onChange }) {
                 className="mt-1"
               />
               <span>
-                <span className="font-medium text-slate-900">{template.name}</span>
-                <span className="mt-0.5 block text-xs text-slate-500">{template.description}</span>
+                <span className="font-medium text-slate-900 dark:text-slate-100">
+                  {template.name}
+                </span>
+                <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+                  {template.description}
+                </span>
               </span>
             </label>
           ))}
@@ -143,7 +147,7 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Theme presets */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900">Theme</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Theme</h3>
         <div className="mt-3 grid grid-cols-3 gap-2">
           {THEME_PRESETS.map((preset) => (
             <button
@@ -161,7 +165,7 @@ export default function CustomisePanel({ cv, onChange }) {
                 'rounded-lg border p-2 text-xs transition',
                 settings.themePreset === preset.key
                   ? 'border-slate-900'
-                  : 'border-slate-200 hover:border-slate-300',
+                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500',
               ].join(' ')}
             >
               <span
@@ -177,7 +181,7 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Colours */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900">Colours</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Colours</h3>
         <div className="mt-3 space-y-2">
           <ColourInput
             label="Primary"
@@ -201,16 +205,19 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Typography */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900">Typography</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Typography</h3>
 
-        <label className="mt-3 block text-xs font-medium text-slate-600" htmlFor="fontFamily">
+        <label
+          className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+          htmlFor="fontFamily"
+        >
           Font
         </label>
         <select
           id="fontFamily"
           value={settings.fontFamily ?? 'Inter'}
           onChange={(event) => updateSettings({ fontFamily: event.target.value })}
-          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900"
+          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm ring-1 ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100"
         >
           {Object.keys(FONT_STACKS).map((font) => (
             <option key={font} value={font}>
@@ -220,7 +227,7 @@ export default function CustomisePanel({ cv, onChange }) {
         </select>
 
         <fieldset className="mt-3">
-          <legend className="text-xs font-medium text-slate-600">Size</legend>
+          <legend className="text-xs font-medium text-slate-600 dark:text-slate-400">Size</legend>
           <div className="mt-1 flex gap-2">
             {['small', 'medium', 'large'].map((size) => (
               <SegmentButton
@@ -235,7 +242,9 @@ export default function CustomisePanel({ cv, onChange }) {
         </fieldset>
 
         <fieldset className="mt-3">
-          <legend className="text-xs font-medium text-slate-600">Spacing</legend>
+          <legend className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            Spacing
+          </legend>
           <div className="mt-1 flex gap-2">
             {['compact', 'normal'].map((spacing) => (
               <SegmentButton
@@ -252,8 +261,8 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Sections */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900">Sections</h3>
-        <p className="mt-1 text-xs text-slate-500">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Sections</h3>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
           Reorder or hide sections. Empty sections are left out automatically.
         </p>
 
@@ -261,7 +270,7 @@ export default function CustomisePanel({ cv, onChange }) {
           {order.map((key, index) => (
             <li
               key={key}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-2 py-1.5"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5"
             >
               <input
                 type="checkbox"
@@ -269,7 +278,10 @@ export default function CustomisePanel({ cv, onChange }) {
                 checked={!hidden.has(key)}
                 onChange={() => toggleSection(key)}
               />
-              <label htmlFor={`section-${key}`} className="flex-1 text-sm text-slate-700">
+              <label
+                htmlFor={`section-${key}`}
+                className="flex-1 text-sm text-slate-700 dark:text-slate-300"
+              >
                 {SECTION_LABELS[key] ?? key}
               </label>
 
@@ -277,7 +289,7 @@ export default function CustomisePanel({ cv, onChange }) {
                 type="button"
                 onClick={() => moveSection(index, -1)}
                 disabled={index === 0}
-                className="rounded p-1 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+                className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
               >
                 <span className="sr-only">Move {SECTION_LABELS[key]} up</span>
                 <span aria-hidden="true">&uarr;</span>
@@ -286,7 +298,7 @@ export default function CustomisePanel({ cv, onChange }) {
                 type="button"
                 onClick={() => moveSection(index, 1)}
                 disabled={index === order.length - 1}
-                className="rounded p-1 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+                className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
               >
                 <span className="sr-only">Move {SECTION_LABELS[key]} down</span>
                 <span aria-hidden="true">&darr;</span>
@@ -313,12 +325,14 @@ function ColourInput({ label, value, onChange }) {
         type="color"
         value={value ?? '#000000'}
         onChange={(event) => onChange(event.target.value)}
-        className="h-8 w-10 cursor-pointer rounded border border-slate-300"
+        className="h-8 w-10 cursor-pointer rounded border border-slate-300 dark:border-slate-600"
       />
-      <label htmlFor={id} className="flex-1 text-sm text-slate-700">
+      <label htmlFor={id} className="flex-1 text-sm text-slate-700 dark:text-slate-300">
         {label}
       </label>
-      <span className="font-mono text-xs uppercase text-slate-500">{value}</span>
+      <span className="font-mono text-xs uppercase text-slate-500 dark:text-slate-400">
+        {value}
+      </span>
     </div>
   );
 }
@@ -335,8 +349,8 @@ function SegmentButton({ isActive, onClick, children }) {
       className={[
         'flex-1 rounded-lg border px-2 py-1.5 text-xs capitalize transition',
         isActive
-          ? 'border-slate-900 bg-slate-900 text-white'
-          : 'border-slate-200 text-slate-700 hover:border-slate-300',
+          ? 'border-slate-900 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+          : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500',
       ].join(' ')}
     >
       {children}
