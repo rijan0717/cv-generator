@@ -8,8 +8,6 @@ import CVPreview from '../../components/cv/CVPreview.jsx';
 import ExportMenu from '../../components/cv/ExportMenu.jsx';
 import ImportDialog from '../../components/cv/ImportDialog.jsx';
 import ReviewPrompt from '../../components/cv/ReviewPrompt.jsx';
-import { hasSkippedReview } from '../../utils/reviewSkip.js';
-import * as reviewApi from '../../api/reviews.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -83,22 +81,18 @@ export default function CVEditorPage() {
   const { status, error: saveError, saveNow } = useAutosave(cv, save);
 
   /**
-   * Decides whether to ask for a review after a download.
+   * Opens the review section after a download.
    *
-   * Three things stop the prompt: the user skipped it before, they have
-   * already left a review, or the lookup fails. Being asked repeatedly is
-   * worse than never being asked, so anything uncertain means staying
-   * quiet.
+   * It is shown every time, for every format and every template. There is
+   * deliberately no "ask once" rule: the prompt is part of the download
+   * flow rather than a one-off survey, and it can always be dismissed
+   * without answering.
+   *
+   * The prompt loads any review the user has already left, so rating again
+   * updates that one instead of being refused as a duplicate.
    */
-  async function maybeAskForReview() {
-    if (hasSkippedReview()) return;
-
-    try {
-      const existing = await reviewApi.getMyReview();
-      if (!existing) setIsReviewOpen(true);
-    } catch {
-      // Never let a review check interfere with a successful download.
-    }
+  function askForReview() {
+    setIsReviewOpen(true);
   }
 
   /**
@@ -173,7 +167,7 @@ export default function CVEditorPage() {
 
           <span className="hidden h-5 w-px bg-slate-300 sm:block" />
           <span className="text-sm text-slate-500 dark:text-slate-400">Download</span>
-          <ExportMenu cvId={id} onDownloaded={maybeAskForReview} />
+          <ExportMenu cvId={id} onDownloaded={askForReview} />
         </div>
       </div>
 
