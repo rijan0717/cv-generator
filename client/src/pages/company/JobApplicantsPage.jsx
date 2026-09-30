@@ -61,8 +61,8 @@ export default function JobApplicantsPage() {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <Alert variant="error">{error}</Alert>
-        <Link to="/company" className="mt-6 inline-block">
-          <Button variant="secondary">Back to your company</Button>
+        <Link to="/company/posts" className="mt-6 inline-block">
+          <Button variant="secondary">Back to your posts</Button>
         </Link>
       </div>
     );
@@ -71,10 +71,10 @@ export default function JobApplicantsPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <Link
-        to="/company"
+        to="/company/posts"
         className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
       >
-        &larr; Your company
+        &larr; My posts
       </Link>
 
       <header className="mt-3">

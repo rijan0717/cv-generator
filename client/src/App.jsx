@@ -26,7 +26,9 @@ import JobsPage from './pages/jobs/JobsPage.jsx';
 import JobDetailPage from './pages/jobs/JobDetailPage.jsx';
 import SavedJobsPage from './pages/jobs/SavedJobsPage.jsx';
 import ApplicationsPage from './pages/jobs/ApplicationsPage.jsx';
-import CompanyPage from './pages/company/CompanyPage.jsx';
+import CompanyLayout from './pages/company/CompanyLayout.jsx';
+import CompanyProfilePage from './pages/company/CompanyProfilePage.jsx';
+import CompanyPostsPage from './pages/company/CompanyPostsPage.jsx';
 import JobApplicantsPage from './pages/company/JobApplicantsPage.jsx';
 
 /**
@@ -65,8 +67,13 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/saved-jobs" element={<SavedJobsPage />} />
           <Route path="/applications" element={<ApplicationsPage />} />
-          <Route path="/company" element={<CompanyPage />} />
-          <Route path="/company/jobs/:id/applicants" element={<JobApplicantsPage />} />
+          {/* My company is the module; the profile and the job posts are
+              sections inside it, and a post's applicants hang off a post. */}
+          <Route path="/company" element={<CompanyLayout />}>
+            <Route index element={<CompanyProfilePage />} />
+            <Route path="posts" element={<CompanyPostsPage />} />
+          </Route>
+          <Route path="/company/posts/:id/applicants" element={<JobApplicantsPage />} />
         </Route>
 
         {/* Admin area. AdminRoute sends a non-admin to their own dashboard;

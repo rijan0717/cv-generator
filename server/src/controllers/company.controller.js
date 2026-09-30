@@ -5,12 +5,15 @@
  * into somebody who can post jobs, so there is no role change and no
  * approval step.
  */
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { Company } from '../models/Company.js';
 import { Job } from '../models/Job.js';
 import { Application } from '../models/Application.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
+import { UPLOAD_DIR } from '../middleware/upload.js';
 
 /** Fields a company owner may change. */
 const EDITABLE = ['name', 'description', 'website', 'location', 'industry'];
@@ -74,6 +77,53 @@ export async function updateMyCompany(req, res) {
   await company.save();
 
   sendSuccess(res, { company }, 'Company updated');
+}
+
+/**
+ * POST /api/companies/mine/logo
+ *
+ * Stores the company logo. Jobseekers see it on every job card and on the
+ * advert itself, so it is the one piece of the profile that reaches people
+ * who never open the company page.
+ *
+ * The previous file is removed after the new one is saved, so uploads do
+ * not accumulate on disk — the same rule the CV photo follows.
+ */
+export async function uploadLogo(req, res) {
+  if (!req.file) throw ApiError.badRequest('Please choose an image to upload');
+
+  const company = await Company.findOne({ owner: req.user._id, isDeleted: false });
+  if (!company) throw ApiError.notFound('You have not set up a company yet');
+
+  const previous = company.logoUrl;
+
+  company.logoUrl = `/uploads/${req.file.filename}`;
+  await company.save();
+
+  if (previous?.startsWith('/uploads/')) {
+    await fs.unlink(path.join(UPLOAD_DIR, path.basename(previous))).catch(() => {});
+  }
+
+  sendSuccess(res, { company }, 'Logo updated');
+}
+
+/**
+ * DELETE /api/companies/mine/logo
+ * Removes the logo and the file behind it.
+ */
+export async function removeLogo(req, res) {
+  const company = await Company.findOne({ owner: req.user._id, isDeleted: false });
+  if (!company) throw ApiError.notFound('You have not set up a company yet');
+
+  const previous = company.logoUrl;
+  company.logoUrl = '';
+  await company.save();
+
+  if (previous?.startsWith('/uploads/')) {
+    await fs.unlink(path.join(UPLOAD_DIR, path.basename(previous))).catch(() => {});
+  }
+
+  sendSuccess(res, { company }, 'Logo removed');
 }
 
 /**

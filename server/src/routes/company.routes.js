@@ -7,9 +7,12 @@ import {
   getMyCompany,
   createCompany,
   updateMyCompany,
+  uploadLogo,
+  removeLogo,
   getCompany,
 } from '../controllers/company.controller.js';
 import { requireAuth } from '../middleware/auth.js';
+import { uploadImage } from '../middleware/upload.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -33,6 +36,12 @@ const companyRules = (isCreate) => [
 router.get('/mine', requireAuth, asyncHandler(getMyCompany));
 router.post('/', requireAuth, companyRules(true), validate, asyncHandler(createCompany));
 router.put('/mine', requireAuth, companyRules(false), validate, asyncHandler(updateMyCompany));
+
+// The logo is the one part of a company profile jobseekers always see, so
+// it gets its own endpoint rather than riding along with the text fields:
+// a multipart upload and a JSON patch have nothing in common.
+router.post('/mine/logo', requireAuth, uploadImage.single('logo'), asyncHandler(uploadLogo));
+router.delete('/mine/logo', requireAuth, asyncHandler(removeLogo));
 
 router.get(
   '/:id',

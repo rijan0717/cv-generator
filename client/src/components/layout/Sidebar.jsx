@@ -98,10 +98,17 @@ export default function Sidebar({ onNavigate }) {
         />
       </Group>
 
+      {/* My company is a module of its own rather than an account
+          setting: it has sections beneath it, and a post belongs to the
+          company that made it. */}
+      <Group title="My company">
+        <Item to="/company" icon="companies" label="Company profile" end onNavigate={onNavigate} />
+        <Item to="/company/posts" icon="jobs" label="My posts" onNavigate={onNavigate} />
+      </Group>
+
       <Group title="Account">
         <Item to="/profile" icon="profile" label="Profile" onNavigate={onNavigate} />
         <Item to="/settings" icon="settings" label="Settings" onNavigate={onNavigate} />
-        <Item to="/company" icon="companies" label="My company" onNavigate={onNavigate} />
       </Group>
 
       {isAdmin && (
