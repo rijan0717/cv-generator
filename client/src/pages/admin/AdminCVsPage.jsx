@@ -137,7 +137,7 @@ export default function AdminCVsPage() {
                   Template
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Score
+                  AI score
                 </th>
                 <th scope="col" className="px-4 py-3">
                   Updated
@@ -178,7 +178,8 @@ export default function AdminCVsPage() {
                   </td>
 
                   <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
-                    {cv.strengthScore ? `${cv.strengthScore}/100` : '—'}
+                    {/* Every CV is scored, so an empty one shows 0 rather than a dash. */}(
+                    {Number.isFinite(cv.strengthScore) ? cv.strengthScore : 0})
                   </td>
 
                   <td className="px-4 py-3 text-slate-500 dark:text-slate-400">

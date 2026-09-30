@@ -17,10 +17,17 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  /** Logs out and returns to the home page. */
+  /**
+   * Logs out and returns to the home page.
+   *
+   * The move happens before the session is cleared: leaving a guarded page
+   * first means ProtectedRoute never sees a signed-out user on it, so the
+   * user lands on the home page rather than being bounced to /login on the
+   * way there.
+   */
   async function handleLogout() {
+    navigate('/', { replace: true });
     await logout();
-    navigate('/');
   }
 
   return (

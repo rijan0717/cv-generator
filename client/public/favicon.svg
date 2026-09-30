@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The tab icon: "AI" over "CV" on the indigo used as the brand accent
+  throughout the application.
+
+  Two stacked lines rather than one, because four letters across a 32px
+  favicon are unreadable. Indigo rather than the slate of the header badge so
+  the icon stays visible against both a light and a dark browser chrome.
+
+  Drawn as text rather than traced outlines so it stays a two-line file that
+  is obvious to read and edit.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AICV">
+  <rect width="64" height="64" rx="14" fill="#4f46e5" />
+  <g
+    fill="#ffffff"
+    font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif"
+    font-weight="700"
+    text-anchor="middle"
+  >
+    <text x="32" y="30" font-size="30" letter-spacing="-1.5">AI</text>
+    <text x="32" y="58" font-size="30" letter-spacing="-1.5">CV</text>
+  </g>
+</svg>
