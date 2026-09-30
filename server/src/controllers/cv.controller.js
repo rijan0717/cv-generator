@@ -9,6 +9,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { CV } from '../models/CV.js';
+import { scoreCV } from '../algorithms/cvStrengthScorer.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -201,4 +202,19 @@ export async function clearPrimaryCV(req, res) {
   await cv.save();
 
   sendSuccess(res, { cv }, 'No primary CV set');
+}
+
+/**
+ * GET /api/cvs/:id/score
+ * Returns the CV Strength Score with its full breakdown and suggestions.
+ *
+ * The score is recalculated here rather than read from the stored field.
+ * The stored value exists so the dashboard can list scores without
+ * scoring every CV; this endpoint is the detail view, and recalculating
+ * guarantees the breakdown matches the CV as it stands right now — even
+ * for a document saved before a weight in `scoringConfig.js` changed.
+ */
+export async function getScore(req, res) {
+  const cv = await findOwnedCV(req.params.id, req.user._id);
+  sendSuccess(res, { score: scoreCV(cv) }, 'CV strength');
 }

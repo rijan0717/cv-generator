@@ -12,6 +12,7 @@ import reviewRoutes from './review.routes.js';
 import companyRoutes from './company.routes.js';
 import jobRoutes from './job.routes.js';
 import applicationRoutes from './application.routes.js';
+import jobMatchRoutes from './jobMatch.routes.js';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.use('/reviews', reviewRoutes);
 router.use('/companies', companyRoutes);
 router.use('/jobs', jobRoutes);
 router.use('/applications', applicationRoutes);
+router.use('/job-match', jobMatchRoutes);
 router.use('/admin', adminRoutes);
 
 export default router;

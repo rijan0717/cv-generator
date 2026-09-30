@@ -14,6 +14,7 @@ import {
   uploadPhoto,
   setPrimaryCV,
   clearPrimaryCV,
+  getScore,
 } from '../controllers/cv.controller.js';
 import {
   exportPdf,
@@ -87,6 +88,10 @@ router.post(
   handleUploadErrors,
   asyncHandler(uploadPhoto),
 );
+
+// --- Strength score --------------------------------------------------------
+
+router.get('/:id/score', [validId], validate, asyncHandler(getScore));
 
 // --- Primary CV ---
 

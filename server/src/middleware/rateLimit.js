@@ -31,6 +31,27 @@ export const loginLimiter = isTest
       },
     });
 
+/**
+ * Limits job-match analyses to 20 per 15 minutes per IP address.
+ *
+ * Unlike the account limiters this is not about abuse but about cost: one
+ * analysis processes the whole seed corpus plus every advert analysed
+ * before it, which is the most CPU-intensive request the server serves.
+ */
+export const jobMatchLimiter = isTest
+  ? passThrough
+  : rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 20,
+      standardHeaders: 'draft-7',
+      legacyHeaders: false,
+      message: {
+        success: false,
+        data: null,
+        message: 'Too many analyses. Please try again in a few minutes',
+      },
+    });
+
 /** Limits new accounts to 5 per hour per IP address. */
 export const registerLimiter = isTest
   ? passThrough

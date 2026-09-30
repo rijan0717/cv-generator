@@ -157,14 +157,18 @@ describe('CV lifecycle', () => {
     expect(res.body.data.cv.summary).toBe('First summary');
   });
 
+  // The strength score is calculated by the server on every save. A client
+  // sending its own value must not be able to overwrite it.
   it('ignores fields the client is not allowed to set', async () => {
     const created = await agent.post('/api/cvs').send({ title: 'Guarded' });
     const id = created.body.data.cv._id;
+    const scoredOnCreation = created.body.data.cv.strengthScore;
 
     const res = await agent.put(`/api/cvs/${id}`).send({ strengthScore: 100 });
 
     expect(res.status).toBe(200);
-    expect(res.body.data.cv.strengthScore).toBe(0);
+    expect(res.body.data.cv.strengthScore).not.toBe(100);
+    expect(res.body.data.cv.strengthScore).toBe(scoredOnCreation);
   });
 
   it('duplicates a CV with a new id and a marked title', async () => {

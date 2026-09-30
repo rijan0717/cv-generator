@@ -10,9 +10,24 @@
  * are kept, because the builder uses them as React keys when reordering.
  */
 import mongoose from 'mongoose';
+import { scoreCV } from '../algorithms/cvStrengthScorer.js';
 
-/** The five templates. Kept here so the model can validate `templateKey`. */
-export const TEMPLATE_KEYS = ['classic', 'modern', 'minimal', 'creative', 'ats'];
+/** Every template the builder offers. Kept here so the model can validate `templateKey`. */
+export const TEMPLATE_KEYS = [
+  'classic',
+  'modern',
+  'minimal',
+  'creative',
+  'ats',
+  // Added later. Keys are only ever appended: an existing CV stores its key,
+  // so removing or renaming one would orphan every CV that uses it.
+  'executive',
+  'banner',
+  'monogram',
+  'formal',
+  'editorial',
+  'compact',
+];
 
 /** Sections that may be hidden or reordered, in their default order. */
 export const SECTION_KEYS = [
@@ -169,6 +184,44 @@ const cvSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+/**
+ * Sections whose contents affect the CV Strength Score.
+ *
+ * Presentation settings and the primary flag deliberately do not appear:
+ * changing a colour or making a CV primary cannot change how strong it is,
+ * and rescoring on those saves would be wasted work.
+ */
+const SCORED_PATHS = [
+  'personal',
+  'summary',
+  'education',
+  'experience',
+  'skills',
+  'projects',
+  'certifications',
+  'languages',
+];
+
+/**
+ * Recalculates the strength score before every save that changed content.
+ *
+ * Putting this on the model rather than in a controller means it cannot be
+ * forgotten: the builder's autosave, the import, the duplicate action and
+ * anything added later all go through `save()`, so all of them keep the
+ * score current without each one remembering to.
+ */
+cvSchema.pre('save', function recalculateStrength(next) {
+  const contentChanged = this.isNew || SCORED_PATHS.some((path) => this.isModified(path));
+
+  if (contentChanged) {
+    const result = scoreCV(this);
+    this.strengthScore = result.totalScore;
+    this.strengthBreakdown = result.breakdown;
+  }
+
+  next();
+});
 
 // The dashboard lists a user's CVs newest-first, excluding deleted ones.
 cvSchema.index({ user: 1, isDeleted: 1, updatedAt: -1 });

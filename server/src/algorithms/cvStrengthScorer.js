@@ -349,18 +349,27 @@ function scoreQuality(cv) {
   if (!phoneValid) suggestions.push('Check your phone number — it does not look valid.');
 
   // --- Date consistency ---
+  // Only awarded once there are dates to be consistent about. Giving the
+  // full six points to a CV with no entries at all rewarded an empty form
+  // for a problem it cannot yet have.
   const dated = [...(cv.experience ?? []), ...(cv.education ?? [])];
-  const inconsistent = dated.filter(
+  const datedEntries = dated.filter((entry) => entry.startDate || entry.endDate);
+  const inconsistent = datedEntries.filter(
     (entry) =>
       entry.startDate && entry.endDate && !entry.isCurrent && entry.endDate < entry.startDate,
   );
+  const datesConsistent = datedEntries.length > 0 && inconsistent.length === 0;
 
   criteria.push({
     criterion: 'Consistent dates',
     maxPoints: Q.dateConsistency,
-    earned: inconsistent.length === 0 ? Q.dateConsistency : 0,
-    passed: inconsistent.length === 0,
+    earned: datesConsistent ? Q.dateConsistency : 0,
+    passed: datesConsistent,
   });
+
+  if (datedEntries.length === 0) {
+    suggestions.push('Add start and end dates to your roles and education.');
+  }
 
   if (inconsistent.length > 0) {
     suggestions.push(
@@ -407,12 +416,59 @@ function scoreQuality(cv) {
 }
 
 /**
+ * Measures how much of a CV actually exists yet.
+ *
+ * The four components checked here are what makes the document a CV at
+ * all: something about you, somewhere you have worked or something you
+ * have built, where you studied, and what you can do. Contact details are
+ * deliberately not among them — an email address is how someone reaches
+ * you, not a reason to.
+ *
+ * @param {object} cv - The CV document.
+ * @returns {{present: number, total: number, factor: number, missing: string[]}}
+ */
+export function foundation(cv) {
+  const components = [
+    { label: 'a professional summary', has: Boolean(cv.summary?.trim()) },
+    {
+      label: 'experience or projects',
+      has: (cv.experience?.length ?? 0) + (cv.projects?.length ?? 0) > 0,
+    },
+    { label: 'education', has: (cv.education?.length ?? 0) > 0 },
+    {
+      label: 'skills',
+      has: (cv.skills ?? []).some((skill) => skill.name?.trim()),
+    },
+  ];
+
+  const present = components.filter((component) => component.has).length;
+  const { minFactor } = STRENGTH_CONFIG.foundation;
+
+  return {
+    present,
+    total: components.length,
+    // minFactor with nothing present, rising linearly to 1 with all four.
+    factor: minFactor + (1 - minFactor) * (present / components.length),
+    missing: components.filter((component) => !component.has).map((component) => component.label),
+  };
+}
+
+/**
  * Scores a CV out of 100.
  *
+ * The criteria are summed as earned, then scaled by the foundation factor
+ * above. That scaling is what stops a form with nothing but the name and
+ * email the builder copied in from reporting a double-figure score: those
+ * details earn about seven points between them, and a tenth of seven is
+ * one.
+ *
+ * `rawScore` is returned alongside the total so the scaling can be shown
+ * rather than silently applied.
+ *
  * @param {object} cv - A CV document, or a plain object of the same shape.
- * @returns {{totalScore: number, completenessScore: number,
- *            qualityScore: number, breakdown: Array<object>,
- *            suggestions: string[]}}
+ * @returns {{totalScore: number, rawScore: number, completenessScore: number,
+ *            qualityScore: number, foundation: object,
+ *            breakdown: Array<object>, suggestions: string[]}}
  */
 export function scoreCV(cv) {
   const safe = cv ?? {};
@@ -425,8 +481,23 @@ export function scoreCV(cv) {
   const completenessScore = Math.round(sum(completeness.criteria) * 10) / 10;
   const qualityScore = Math.round(sum(quality.criteria) * 10) / 10;
 
+  const base = foundation(safe);
+  const rawScore = Math.round((completenessScore + qualityScore) * 10) / 10;
+  const scaled = rawScore * base.factor;
+
+  // A CV that has earned anything at all should not round away to zero:
+  // the number is there to show movement while someone types.
+  const totalScore = scaled > 0 && scaled < 1 ? 1 : Math.round(scaled);
+
+  const foundationSuggestions =
+    base.missing.length > 0
+      ? [`Your score is held back until this is a CV: it still needs ${base.missing.join(', ')}.`]
+      : [];
+
   return {
-    totalScore: Math.round(completenessScore + qualityScore),
+    totalScore,
+    rawScore,
+    foundation: base,
     completenessScore,
     qualityScore,
     maxCompleteness: STRENGTH_TOTALS.completeness,
@@ -435,8 +506,9 @@ export function scoreCV(cv) {
       ...completeness.criteria.map((c) => ({ ...c, section: 'Completeness' })),
       ...quality.criteria.map((c) => ({ ...c, section: 'Content quality' })),
     ],
-    // Completeness suggestions come first: they are the cheapest to act on.
-    suggestions: [...completeness.suggestions, ...quality.suggestions],
+    // The foundation comes first when it is holding the score down, then
+    // completeness, which is the cheapest to act on, then quality.
+    suggestions: [...foundationSuggestions, ...completeness.suggestions, ...quality.suggestions],
   };
 }
 

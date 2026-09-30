@@ -45,6 +45,30 @@ export const STRENGTH_CONFIG = {
     descriptionDepth: 10,
   },
 
+  /**
+   * The foundation gate.
+   *
+   * Without this, a brand-new CV scores well into double figures before
+   * the user has typed anything: the builder copies the account name and
+   * email in, which earns part of the personal-details mark and the email
+   * half of the contact-format mark. Thirteen out of a hundred for an
+   * empty form is flattery, and it makes the number useless as a measure
+   * of progress.
+   *
+   * So the earned total is scaled by how much of a CV actually exists.
+   * The four components below are what makes a document a CV at all; with
+   * none of them present the score is scaled to a tenth, and it rises
+   * linearly to full weight once all four are there.
+   *
+   * It scales rather than zeroes so the score still moves as soon as the
+   * user does something, which is the point of showing it while they
+   * type.
+   */
+  foundation: {
+    /** Scale applied when none of the four components exist. */
+    minFactor: 0.1,
+  },
+
   thresholds: {
     /** Skills needed for full marks on the skills criterion. */
     minSkills: 5,
@@ -55,10 +79,19 @@ export const STRENGTH_CONFIG = {
     descriptionMinWords: 12,
     /** Words above which a description has become an essay. */
     descriptionMaxWords: 120,
-    /** Share of entries that must open with an action verb for full marks. */
-    actionVerbTargetRatio: 0.7,
-    /** Share of entries that must quantify something for full marks. */
-    quantifiedTargetRatio: 0.5,
+    /**
+     * Share of entries that must open with an action verb for full marks.
+     * Raised from 0.7: on a two-role CV, 0.7 meant one good line carried
+     * the criterion.
+     */
+    actionVerbTargetRatio: 0.8,
+    /**
+     * Share of entries that must quantify something for full marks.
+     * Raised from 0.5, which gave full marks for quantifying half of what
+     * you did — a low bar for the criterion that separates a strong CV
+     * from a list of duties.
+     */
+    quantifiedTargetRatio: 0.65,
   },
 };
 
@@ -102,18 +135,49 @@ export const MATCH_CONFIG = {
    * hidden.
    */
   similarityScaling: {
-    /** At or below this, the scaled score is 0. */
-    floor: 0.05,
-    /** At or above this, the scaled score is 1. */
-    ceiling: 0.55,
+    /**
+     * At or below this, the scaled score is 0. Raised from 0.05: two
+     * unrelated documents in the same language still share enough ordinary
+     * vocabulary to clear 0.05, so that floor handed out points for
+     * nothing.
+     */
+    floor: 0.08,
+    /**
+     * At or above this, the scaled score is 1. Raised from 0.55 so that
+     * full marks mean the CV really does read like the advert.
+     */
+    ceiling: 0.62,
   },
 
-  /** Bands used to describe a score in words. */
+  /**
+   * A ceiling tied to skill coverage.
+   *
+   * The weighted sum alone lets a CV that names none of the advert's
+   * tools still reach the mid-forties on similarity, because it talks
+   * about the same kind of work in the same kind of language. No
+   * screening system would agree: the named requirements are the part it
+   * checks hardest.
+   *
+   * So the score is capped at `base` when coverage is zero, rising to 100
+   * at full coverage. It only ever lowers a score — a CV that covers the
+   * skills is unaffected — and it applies solely when the advert names
+   * skills the dictionary recognises.
+   */
+  coverageCap: {
+    /** Highest score allowed when none of the named skills appear. */
+    base: 45,
+  },
+
+  /**
+   * Bands used to describe a score in words.
+   *
+   * Each raised by five points, so "Strong match" now means what it says.
+   */
   bands: [
-    { min: 80, label: 'Excellent match' },
-    { min: 65, label: 'Strong match' },
-    { min: 50, label: 'Moderate match' },
-    { min: 30, label: 'Weak match' },
+    { min: 85, label: 'Excellent match' },
+    { min: 70, label: 'Strong match' },
+    { min: 55, label: 'Moderate match' },
+    { min: 35, label: 'Weak match' },
     { min: 0, label: 'Poor match' },
   ],
 };
