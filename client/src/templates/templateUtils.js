@@ -1,9 +1,9 @@
 /**
- * Helpers shared by all five CV templates.
+ * Helpers shared by every CV template.
  *
  * The templates themselves only lay content out. Everything about *how* a CV
  * is styled — colour, font, size, spacing — is expressed here as CSS custom
- * properties, which is what lets one customisation panel drive all five
+ * properties, which is what lets one customisation panel drive all of them
  * templates identically.
  */
 
@@ -191,4 +191,38 @@ export function toHref(value) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Builds the initials shown in the Monogram template's badge.
+ *
+ * Takes the first letter of the first and last words, so "Patricia Roberts"
+ * gives "PR" and a single name gives one letter. Anything unusable falls
+ * back to an empty string, which the template treats as "draw no badge".
+ *
+ * @param {string} fullName - The name as the user typed it.
+ * @returns {string} One or two upper-case letters.
+ */
+export function initials(fullName = '') {
+  const words = fullName.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+  if (words.length === 1) return words[0][0].toUpperCase();
+
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Splits a name so a template can colour the surname differently from the
+ * forename, as the Banner layout does.
+ *
+ * @param {string} fullName - The name as the user typed it.
+ * @returns {{first: string, rest: string}} The first word and everything else.
+ */
+export function splitName(fullName = '') {
+  const trimmed = fullName.trim();
+  const gap = trimmed.indexOf(' ');
+
+  if (gap === -1) return { first: trimmed, rest: '' };
+
+  return { first: trimmed.slice(0, gap), rest: trimmed.slice(gap + 1) };
 }

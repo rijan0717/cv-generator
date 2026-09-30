@@ -6,7 +6,7 @@
  * be plain CSS that does not depend on the app's utility classes.
  *
  * Everything variable is read from the CSS custom properties produced by
- * buildTemplateVariables(), so changing a setting restyles all five templates
+ * buildTemplateVariables(), so changing a setting restyles every template
  * without any template knowing about the setting.
  */
 
@@ -337,6 +337,322 @@
 .cv-ats .cv-entry-date,
 .cv-ats .cv-entry-sub {
   color: #000;
+}
+
+/* --- Shared: a skill list flowed into columns ---------------------------- */
+
+.cv-skill-columns {
+  columns: 2;
+  column-gap: 10mm;
+  margin: 4px 0 0;
+  padding-left: 1.1em;
+}
+
+.cv-skill-columns li {
+  margin-bottom: 2px;
+  /* A bullet split across a column break looks like a typo. */
+  break-inside: avoid;
+}
+
+/* --- 6. Executive: wide-tracked name, rail beside the career history ----- */
+
+.cv-executive {
+  padding: 16mm 14mm;
+}
+
+.cv-executive .cv-name {
+  font-size: 1.85em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cv-executive .cv-headline {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+.cv-executive .cv-exec-head {
+  border-bottom: 3px solid var(--cv-primary);
+  padding-bottom: 8px;
+  margin-bottom: var(--cv-section-gap);
+}
+
+.cv-executive .cv-exec-cols {
+  display: flex;
+  gap: 10mm;
+  align-items: flex-start;
+}
+
+.cv-executive .cv-exec-rail {
+  width: 52mm;
+  flex-shrink: 0;
+}
+
+.cv-executive .cv-exec-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-executive .cv-section-title {
+  letter-spacing: 0.18em;
+  font-size: 0.85em;
+}
+
+.cv-executive .cv-exec-rail .cv-contact {
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* The rail is too narrow for a title and a date on one line, so entries
+   there stack instead of sitting either side of the row. */
+.cv-executive .cv-exec-rail .cv-entry-head {
+  display: block;
+}
+
+.cv-executive .cv-exec-rail .cv-entry-date {
+  display: block;
+  white-space: normal;
+}
+
+/* --- 7. Banner: centred two-tone name over a full-width contact band ----- */
+
+.cv-banner {
+  padding: 0 0 14mm;
+}
+
+.cv-banner .cv-banner-head {
+  text-align: center;
+  padding: 14mm 14mm 6px;
+}
+
+.cv-banner .cv-name {
+  font-size: 2.1em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cv-banner .cv-banner-first {
+  color: var(--cv-text);
+}
+
+.cv-banner .cv-banner-rest {
+  color: var(--cv-primary);
+}
+
+.cv-banner .cv-banner-strip {
+  background: var(--cv-primary);
+  color: #fff;
+  padding: 5px 14mm;
+  text-align: center;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.cv-banner .cv-banner-sep {
+  opacity: 0.55;
+  margin: 0 7px;
+}
+
+.cv-banner .cv-banner-body {
+  padding: 10mm 14mm 0;
+}
+
+.cv-banner .cv-section-title {
+  border-bottom: 1.5px solid var(--cv-primary);
+  padding-bottom: 3px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-size: 1.05em;
+}
+
+/* --- 8. Monogram: initials badge, contact stacked top right -------------- */
+
+.cv-monogram {
+  padding: 16mm 15mm;
+}
+
+.cv-monogram .cv-mono-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10mm;
+  margin-bottom: var(--cv-section-gap);
+}
+
+.cv-monogram .cv-mono-identity {
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+  min-width: 0;
+}
+
+.cv-monogram .cv-mono-badge {
+  background: var(--cv-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95em;
+  letter-spacing: 0.08em;
+  width: 16mm;
+  height: 16mm;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cv-monogram .cv-name {
+  font-size: 1.7em;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cv-text);
+}
+
+.cv-monogram .cv-mono-contact {
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.cv-monogram .cv-section-title {
+  border-bottom: 1.5px solid var(--cv-primary);
+  padding-bottom: 3px;
+  font-size: 0.82em;
+  letter-spacing: 0.12em;
+}
+
+/* --- 9. Formal: centred header, three-column key skills ------------------ */
+
+.cv-formal {
+  padding: 18mm 16mm;
+}
+
+.cv-formal .cv-formal-head {
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--cv-rule);
+  margin-bottom: var(--cv-section-gap);
+}
+
+.cv-formal .cv-name {
+  font-size: 1.75em;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.cv-formal .cv-headline {
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.cv-formal .cv-contact {
+  justify-content: center;
+  gap: 2px;
+}
+
+.cv-formal .cv-formal-sep {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+.cv-formal .cv-section-title {
+  border-bottom: 1px solid var(--cv-rule);
+  padding-bottom: 3px;
+  letter-spacing: 0.1em;
+}
+
+.cv-formal .cv-skill-columns {
+  columns: 3;
+  column-gap: 8mm;
+}
+
+/* --- 10. Editorial: large left name, generous spacing -------------------- */
+
+.cv-editorial {
+  padding: 20mm 18mm;
+}
+
+.cv-editorial .cv-name {
+  font-size: 2.15em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cv-editorial .cv-headline {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  margin-top: 4px;
+}
+
+.cv-editorial .cv-editorial-head {
+  border-bottom: 1px solid var(--cv-rule);
+  padding-bottom: 10px;
+  margin-bottom: calc(var(--cv-section-gap) * 1.3);
+}
+
+.cv-editorial .cv-editorial-sep {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+.cv-editorial .cv-section {
+  margin-bottom: calc(var(--cv-section-gap) * 1.25);
+}
+
+.cv-editorial .cv-section-title {
+  border-bottom: 1px solid var(--cv-rule);
+  padding-bottom: 3px;
+  letter-spacing: 0.12em;
+}
+
+/* --- 11. Compact: dense, for a long history ------------------------------ */
+
+.cv-compact {
+  padding: 13mm 13mm;
+  line-height: 1.35;
+}
+
+.cv-compact .cv-name {
+  font-size: 1.6em;
+}
+
+.cv-compact .cv-headline {
+  font-size: 0.9em;
+}
+
+.cv-compact .cv-compact-strip {
+  border-top: 1px solid var(--cv-rule);
+  border-bottom: 1px solid var(--cv-rule);
+  padding: 3px 0;
+  margin: 8px 0 var(--cv-section-gap);
+  font-size: 0.85em;
+  gap: 0;
+}
+
+.cv-compact .cv-compact-sep {
+  margin: 0 6px;
+  opacity: 0.45;
+}
+
+.cv-compact .cv-section-title {
+  font-size: 0.8em;
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+}
+
+.cv-compact .cv-skill-columns {
+  columns: 3;
+  column-gap: 7mm;
+}
+
+.cv-compact .cv-list {
+  margin-top: 2px;
 }
 
 /* --- Print --------------------------------------------------------------- */

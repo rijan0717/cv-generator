@@ -72,15 +72,30 @@ const sampleCV = {
 };
 
 describe('template registry', () => {
-  it('provides the five templates from the requirements', () => {
-    expect(TEMPLATES).toHaveLength(5);
-    expect(TEMPLATES.map((t) => t.key)).toEqual([
+  it('still provides the five templates the requirements name', () => {
+    // Later templates are appended, so this checks the required five are
+    // present and in order rather than that they are the only ones.
+    expect(TEMPLATES.map((t) => t.key).slice(0, 5)).toEqual([
       'classic',
       'modern',
       'minimal',
       'creative',
       'ats',
     ]);
+  });
+
+  it('gives every template a unique key', () => {
+    // A duplicate key would make getTemplate() silently return the wrong
+    // component for every CV that stored it.
+    const keys = TEMPLATES.map((t) => t.key);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('names and describes every template', () => {
+    for (const template of TEMPLATES) {
+      expect(template.name).toBeTruthy();
+      expect(template.description).toBeTruthy();
+    }
   });
 
   it('falls back to Classic for an unknown key', () => {

@@ -1,5 +1,5 @@
 /**
- * Small building blocks the five templates share.
+ * Small building blocks the templates share.
  *
  * Each template decides its own layout and heading style, but the content of
  * an experience entry or a skill list is the same everywhere, so it is
@@ -128,16 +128,29 @@ export function CertificationEntry({ entry }) {
 /**
  * Skills, rendered either as pills or as plain text.
  *
+ * The 'columns' variant is a bulleted list flowed into two CSS columns, the
+ * arrangement the Banner and Monogram layouts use for a long skill list.
+ *
  * The ATS template must use plain text: a screening system reads the text
  * layer of the PDF, and decorative pills add noise around each skill.
  *
- * @param {{skills: Array<object>, variant?: 'pills'|'plain'|'levelled'}} props
+ * @param {{skills: Array<object>, variant?: 'pills'|'plain'|'levelled'|'columns'}} props
  */
 export function SkillList({ skills, variant = 'pills' }) {
   const named = skills.filter((skill) => skill.name?.trim());
 
   if (variant === 'plain') {
     return <p className="cv-text">{named.map((skill) => skill.name).join(', ')}</p>;
+  }
+
+  if (variant === 'columns') {
+    return (
+      <ul className="cv-skill-columns">
+        {named.map((skill) => (
+          <li key={skill._id ?? skill.name}>{skill.name}</li>
+        ))}
+      </ul>
+    );
   }
 
   if (variant === 'levelled') {

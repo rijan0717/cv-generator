@@ -10,6 +10,12 @@ import ModernTemplate from './ModernTemplate.jsx';
 import MinimalTemplate from './MinimalTemplate.jsx';
 import CreativeTemplate from './CreativeTemplate.jsx';
 import AtsTemplate from './AtsTemplate.jsx';
+import ExecutiveTemplate from './ExecutiveTemplate.jsx';
+import BannerTemplate from './BannerTemplate.jsx';
+import MonogramTemplate from './MonogramTemplate.jsx';
+import FormalTemplate from './FormalTemplate.jsx';
+import EditorialTemplate from './EditorialTemplate.jsx';
+import CompactTemplate from './CompactTemplate.jsx';
 import './templates.css';
 
 /**
@@ -58,6 +64,53 @@ export const TEMPLATES = [
       'Plain single column, no graphics or colour. Built to be read correctly by screening software.',
     usesPhoto: false,
     Component: AtsTemplate,
+  },
+  {
+    key: 'executive',
+    name: 'Executive',
+    description:
+      'Wide-tracked name over a rule, with contact details, education and skills in a rail beside your career history.',
+    usesPhoto: false,
+    Component: ExecutiveTemplate,
+  },
+  {
+    key: 'banner',
+    name: 'Banner',
+    description:
+      'Centred two-tone name above a full-width contact band, then ruled sections and skills in two columns.',
+    usesPhoto: false,
+    Component: BannerTemplate,
+  },
+  {
+    key: 'monogram',
+    name: 'Monogram',
+    description:
+      'An initials badge beside a widely spaced name, with contact details stacked in the top right.',
+    usesPhoto: false,
+    Component: MonogramTemplate,
+  },
+  {
+    key: 'formal',
+    name: 'Formal',
+    description:
+      'Centred upper-case name and one contact line, with key skills running in three columns.',
+    usesPhoto: false,
+    Component: FormalTemplate,
+  },
+  {
+    key: 'editorial',
+    name: 'Editorial',
+    description:
+      'A large left-aligned name, spaced capitals for your role, and generous space between sections.',
+    usesPhoto: false,
+    Component: EditorialTemplate,
+  },
+  {
+    key: 'compact',
+    name: 'Compact',
+    description: 'Tight spacing and small headings, for a long history that still has to fit.',
+    usesPhoto: false,
+    Component: CompactTemplate,
   },
 ];
 
