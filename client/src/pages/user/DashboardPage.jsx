@@ -173,12 +173,18 @@ export default function DashboardPage() {
           {cvs.map((cv) => (
             <li
               key={cv._id}
-              className="flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
+              className="relative flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-300 dark:ring-slate-700 dark:hover:ring-slate-600"
             >
               <div className="min-w-0 flex-1">
+                {/*
+                  The `after:` layer stretches this link across the whole
+                  row, so clicking anywhere on it opens the editor rather
+                  than only the title. The buttons on the right sit above
+                  it (`relative z-10`) and keep working.
+                */}
                 <Link
                   to={`/cvs/${cv._id}`}
-                  className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
+                  className="font-medium text-slate-900 dark:text-slate-100 hover:underline after:absolute after:inset-0 after:rounded-xl"
                 >
                   {cv.title}
                 </Link>
@@ -188,11 +194,14 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <PrimaryToggle cv={cv} onToggle={() => togglePrimary(cv)} />
+              {/* Everything below is above the stretched link. */}
+              <div className="relative z-10">
+                <PrimaryToggle cv={cv} onToggle={() => togglePrimary(cv)} />
+              </div>
 
               <ScorePill score={cv.strengthScore} />
 
-              <div className="flex items-center gap-2">
+              <div className="relative z-10 flex items-center gap-2">
                 <Link to={`/cvs/${cv._id}`}>
                   <Button size="sm" variant="secondary">
                     Edit
@@ -219,24 +228,38 @@ export default function DashboardPage() {
 }
 
 /**
- * The CV strength score. It stays at zero until Phase 5 implements the
- * scorer, so it is shown as "not scored" rather than as a misleading 0.
+ * The CV strength score, recalculated by the server on every save.
+ *
+ * Every CV carries a score, including one that is completely empty. An
+ * empty CV genuinely scores 0, and showing that is more useful than
+ * hiding it behind "not scored yet": the number is exactly what tells
+ * the user there is work left to do, and a row with no number reads as
+ * if the feature had failed.
+ *
+ * The score always reflects the details actually in the CV, because the
+ * model recalculates it on every save that changed content.
+ *
  * @param {{score: number}} props
  */
 function ScorePill({ score }) {
-  if (!score) {
-    return <span className="text-xs text-slate-500 dark:text-slate-400">Not scored yet</span>;
-  }
+  // A CV saved before scoring existed has no stored score. It is a 0
+  // like any other empty CV rather than a blank.
+  const value = Number.isFinite(score) ? score : 0;
 
   const tone =
-    score >= 75
+    value >= 75
       ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-      : score >= 50
+      : value >= 50
         ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
         : 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300';
 
   return (
-    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}>{score}/100</span>
+    <span
+      className={`rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}
+      title={`AI score ${value} out of 100, from how complete this CV is and how well it is written`}
+    >
+      AI score ({value})
+    </span>
   );
 }
 

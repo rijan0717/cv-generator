@@ -204,7 +204,7 @@ export default function CVEditorPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         {/* Left: content or customisation */}
-        <div>
+        <div className="min-w-0">
           <div className="mb-4 flex gap-2" role="tablist">
             {[
               { key: 'content', label: 'Content' },
@@ -238,7 +238,7 @@ export default function CVEditorPage() {
         </div>
 
         {/* Right: live preview, kept in view while the form scrolls */}
-        <div className="lg:sticky lg:top-20 lg:self-start">
+        <div className="min-w-0 lg:sticky lg:top-20 lg:self-start">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
             <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -246,7 +246,7 @@ export default function CVEditorPage() {
             </span>
           </div>
 
-          <div className="max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl bg-slate-200/60 dark:bg-slate-800/60 p-4">
+          <div className="rounded-xl lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto bg-slate-200/60 dark:bg-slate-800/60 p-4">
             <CVPreview cv={cv} />
           </div>
         </div>
