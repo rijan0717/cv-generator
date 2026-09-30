@@ -6,6 +6,7 @@ import { useAuth } from '../../context/useAuth.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import CompanyLogo from '../../components/company/CompanyLogo.jsx';
 
 /**
  * One job in full, with the apply flow.
@@ -99,24 +100,28 @@ export default function JobDetailPage() {
 
       <header className="mt-3 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              {job.title}
-            </h1>
-            <p className="mt-1 text-slate-600 dark:text-slate-400">
-              {job.company?.name}
-              {job.location && <> &middot; {job.location}</>}
-            </p>
+          <div className="flex min-w-0 gap-4">
+            <CompanyLogo company={job.company} size="md" />
 
-            <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <Tag>{job.jobType}</Tag>
-              <Tag>{job.workMode}</Tag>
-              {job.salaryRange && <Tag>{job.salaryRange}</Tag>}
-              {isClosed && (
-                <span className="rounded-full bg-red-50 px-2.5 py-1 font-medium text-red-700 dark:bg-red-950 dark:text-red-300">
-                  Closed
-                </span>
-              )}
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                {job.title}
+              </h1>
+              <p className="mt-1 text-slate-600 dark:text-slate-400">
+                {job.company?.name}
+                {job.location && <> &middot; {job.location}</>}
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                <Tag>{job.jobType}</Tag>
+                <Tag>{job.workMode}</Tag>
+                {job.salaryRange && <Tag>{job.salaryRange}</Tag>}
+                {isClosed && (
+                  <span className="rounded-full bg-red-50 px-2.5 py-1 font-medium text-red-700 dark:bg-red-950 dark:text-red-300">
+                    Closed
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -126,7 +131,7 @@ export default function JobDetailPage() {
             </Button>
 
             {isOwnPosting ? (
-              <Link to="/company">
+              <Link to="/company/posts">
                 <Button size="sm" variant="secondary">
                   Manage this posting
                 </Button>

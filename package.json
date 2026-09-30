@@ -28,6 +28,7 @@
     "test:client": "npm run test --prefix client",
     "seed:admin": "npm run seed:admin --prefix server",
     "seed:templates": "npm run seed:templates --prefix server",
+    "seed:jobs": "npm run seed:jobs --prefix server",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

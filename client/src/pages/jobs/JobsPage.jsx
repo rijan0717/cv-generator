@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as jobApi from '../../api/jobs.js';
 import { useAuth } from '../../context/useAuth.js';
+import { useJobMatchScores } from '../../utils/useJobMatchScores.js';
 import JobCard from '../../components/jobs/JobCard.jsx';
 import Pagination from '../../components/admin/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -33,6 +34,9 @@ export default function JobsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState(null);
+
+  // Match badges, scored against the user's primary CV.
+  const { scores, primaryCv, isScoring } = useJobMatchScores(jobs, isAuthenticated);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -217,6 +221,34 @@ export default function JobsPage() {
         </div>
       ) : (
         <div className="mt-6 space-y-3">
+          {/*
+            Says what the percentages are measured against. Without this
+            line a number on a card is unexplained, and the first question
+            anyone asks is "matched against what?".
+          */}
+          {isAuthenticated && (
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {isScoring ? (
+                'Scoring these jobs against your primary CV…'
+              ) : primaryCv ? (
+                <>
+                  AI match scores are against your primary CV,{' '}
+                  <Link to={`/cvs/${primaryCv._id}`} className="font-medium hover:underline">
+                    {primaryCv.title}
+                  </Link>
+                  .
+                </>
+              ) : (
+                <>
+                  <Link to="/dashboard" className="font-medium hover:underline">
+                    Choose a primary CV
+                  </Link>{' '}
+                  to see how well you match each job.
+                </>
+              )}
+            </p>
+          )}
+
           {jobs.map((job) => (
             <JobCard
               key={job._id}
@@ -224,6 +256,7 @@ export default function JobsPage() {
               showSave={isAuthenticated}
               isSaving={savingId === job._id}
               onToggleSave={toggleSave}
+              match={scores[job._id] ?? null}
             />
           ))}
         </div>

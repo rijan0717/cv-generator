@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed:admin": "node scripts/seedAdmin.js",
-    "seed:templates": "node scripts/seedTemplates.js"
+    "seed:templates": "node scripts/seedTemplates.js",
+    "seed:jobs": "node scripts/seedJobs.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

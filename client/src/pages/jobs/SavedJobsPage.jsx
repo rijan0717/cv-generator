@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as jobApi from '../../api/jobs.js';
 import JobCard from '../../components/jobs/JobCard.jsx';
+import { useJobMatchScores } from '../../utils/useJobMatchScores.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -17,6 +18,9 @@ export default function SavedJobsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [removingId, setRemovingId] = useState(null);
+
+  // This page is behind a sign-in, so scoring is always enabled here.
+  const { scores } = useJobMatchScores(jobs, true);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,6 +99,7 @@ export default function SavedJobsPage() {
               job={job}
               isSaving={removingId === job._id}
               onToggleSave={remove}
+              match={scores[job._id] ?? null}
             />
           ))}
         </div>
