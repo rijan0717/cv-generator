@@ -16,9 +16,11 @@ import {
 } from '../../src/algorithms/cvImportParser.js';
 
 describe('normaliseLines', () => {
-  it('removes blank lines and collapses whitespace', () => {
+  // A gap of two or more spaces is kept, as exactly two, because it marks a
+  // column boundary that later rules split on.
+  it('removes blank lines, trims, and keeps column gaps as two spaces', () => {
     expect(normaliseLines('  Hello   world  \n\n\n  Second line \n')).toEqual([
-      'Hello world',
+      'Hello  world',
       'Second line',
     ]);
   });
@@ -387,5 +389,103 @@ describe('parseCVText end to end', () => {
   it('does not throw on unstructured input', () => {
     const messy = parseCVText('just some words with no structure at all');
     expect(messy.stats.sectionsFound).toEqual([]);
+  });
+});
+
+/**
+ * A designer-made PDF reads very differently from a plain one: headings are
+ * set in letter-spaced capitals that lose their word gaps, fields sit in
+ * columns rather than on separate lines, and long bullets are stored as
+ * several lines. These cover the rules that handle that.
+ */
+describe('CVs laid out as a designed PDF', () => {
+  it('recognises a heading whose spaces were lost', () => {
+    expect(detectHeading('PROFESSIONALSUMMARY')).toBe('summary');
+    expect(detectHeading('WORKEXPERIENCE')).toBe('experience');
+  });
+
+  it('recognises a combined heading', () => {
+    expect(detectHeading('Education and Languages')).toBe('education');
+    expect(detectHeading('Skills & Technologies')).toBe('skills');
+  });
+
+  it('does not treat an ordinary sentence containing "and" as a heading', () => {
+    expect(detectHeading('Education and a lot of patience')).toBeNull();
+  });
+
+  it('starts a section at a label in a left-hand column', () => {
+    const { sections } = splitIntoSections([
+      'EDUCATION AND LANGUAGES',
+      'Education  BCA — Tribhuvan University',
+      'Languages  English (fluent) · Nepali (native)',
+    ]);
+
+    expect(sections.education).toEqual(['BCA — Tribhuvan University']);
+    expect(sections.languages).toEqual(['English (fluent) · Nepali (native)']);
+  });
+
+  it('leaves category labels inside the skills section alone', () => {
+    const { sections } = splitIntoSections(['TECHNICAL SKILLS', 'Languages  JavaScript, Python']);
+
+    expect(sections.languages).toBeUndefined();
+    expect(sections.skills).toEqual(['Languages  JavaScript, Python']);
+  });
+
+  it('joins a bullet that wrapped onto the next line', () => {
+    const { bullets, prose } = extractBullets([
+      '• Built the regression suite in Playwright, reducing the manual',
+      'effort required on each pass.',
+      '• Owned the test plans.',
+    ]);
+
+    expect(bullets).toEqual([
+      'Built the regression suite in Playwright, reducing the manual effort required on each pass.',
+      'Owned the test plans.',
+    ]);
+    expect(prose).toEqual([]);
+  });
+
+  it('reads skills written as columns with bracketed lists', () => {
+    const names = parseSkills(['Automation  Playwright (TypeScript, Python), Cypress']).map(
+      (skill) => skill.name,
+    );
+
+    expect(names).toEqual(['Playwright', 'TypeScript', 'Python', 'Cypress']);
+  });
+
+  it('still reads a level written in brackets', () => {
+    expect(parseSkills(['JavaScript (Advanced)'])).toEqual([
+      { name: 'JavaScript', level: 'Advanced' },
+    ]);
+  });
+
+  it('takes the role from the line under the employer', () => {
+    const entry = parseExperienceEntry([
+      'Sterling Wells — Kathmandu, Nepal  November 2025 – Present',
+      'Quality Assurance Specialist',
+    ]);
+
+    expect(entry.company).toBe('Sterling Wells');
+    expect(entry.position).toBe('Quality Assurance Specialist');
+    expect(entry.location).toBe('Kathmandu, Nepal');
+    expect(entry.isCurrent).toBe(true);
+  });
+
+  it('puts the space back into a name using the profile link', () => {
+    const { fullName, headline } = parseNameAndHeadline(
+      ['RIJANPARIYAR', 'QUALITY ASSURANCE SPECIALIST'],
+      { linkedin: 'linkedin.com/in/rijan-pariyar' },
+    );
+
+    expect(fullName).toBe('RIJAN PARIYAR');
+    expect(headline).toBe('QUALITY ASSURANCE SPECIALIST');
+  });
+
+  it('leaves the name alone when no link matches it', () => {
+    const { fullName } = parseNameAndHeadline(['RIJANPARIYAR'], {
+      linkedin: 'linkedin.com/in/someone-else',
+    });
+
+    expect(fullName).toBe('RIJANPARIYAR');
   });
 });

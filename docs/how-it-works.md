@@ -205,15 +205,36 @@ ZIP of XML, and a PDF stores positioned glyphs rather than lines. Everything
 that understands the CV is our own code in
 `server/src/algorithms/cvImportParser.js`:
 
-1. **Normalise** — tidy whitespace, quotes, line endings.
+1. **Normalise** — tidy whitespace, quotes, line endings. A gap of two or
+   more spaces is kept, because in a CV it is a column boundary (an employer
+   beside its dates, a label beside its values) rather than noise.
 2. **Contacts** — email, phone and links found by pattern, anywhere in the
    document, because CVs put them in headers, sidebars and footers alike.
 3. **Headings** — each line matched against synonym lists, so "Work History",
    "Employment" and "Professional Experience" all mean `experience`. A length
    limit stops a sentence *containing* the word being treated as a heading.
+   Matching ignores spaces, and a section also starts at a label in a
+   left-hand column ("Languages    English, Nepali").
 4. **Entries** — a section is split at each line carrying a date range,
    because in practice every role and qualification is headed by its dates.
 5. **Fields** — dates, bullets, degree/field, grades, skill levels.
+
+### Reading a designed PDF
+
+A CV made in Word or Canva does not store neat lines of text, and three of
+its habits had to be handled explicitly, all of them in
+`documentTextService.js` and the rules above:
+
+- **Letter-spaced headings.** "PROFESSIONAL SUMMARY" set with wide tracking
+  is stored as separate glyphs, so it arrives as `P R O F E S S I O N A L`.
+  A run that is nearly all single characters is collapsed back into words.
+- **Split words.** A PDF starts a new text item wherever the font or spacing
+  changes, so "e-commerce" is three items and "requests" is two. Items are
+  joined by their positions — a gap becomes a space only when it is wide
+  enough to be one — instead of with a space each.
+- **Wrapped bullets.** A long bullet is stored as several lines and only the
+  first carries the bullet character, so a line following an unfinished
+  bullet is joined back onto it.
 
 The parser is deliberately conservative: when unsure it leaves a field empty,
 because a wrong value is more annoying to correct than a blank one.
@@ -313,7 +334,7 @@ content" link; and all decorative motion dropped under
 
 | Suite | Count | Covers |
 | --- | --- | --- |
-| Unit | 61 | The import parser, function by function |
+| Unit | 72 | The import parser, function by function |
 | Integration | 68 | Auth, CV ownership, admin access control, health |
 | Client | 42 | Routing, guards, all five templates |
 
