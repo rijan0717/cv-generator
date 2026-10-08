@@ -21,11 +21,18 @@ export async function listUsers(params = {}) {
 
 /**
  * Loads one user together with their CVs and recent activity.
+ *
+ * The two lists page independently, which is why the parameters are named
+ * rather than a single `page`: moving the CV table must not move the
+ * activity table underneath it.
+ *
  * @param {string} id - The user's id.
- * @returns {Promise<{user: object, cvs: Array<object>, recentActivity: Array<object>}>}
+ * @param {{cvPage?: number, activityPage?: number}} [params] - Page numbers.
+ * @returns {Promise<{user: object, cvs: Array<object>, cvPagination: object,
+ *                    recentActivity: Array<object>, activityPagination: object}>}
  */
-export async function getUser(id) {
-  const { data } = await api.get(`/api/admin/users/${id}`);
+export async function getUser(id, params = {}) {
+  const { data } = await api.get(`/api/admin/users/${id}`, { params });
   return data.data;
 }
 

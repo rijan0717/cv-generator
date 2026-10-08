@@ -162,6 +162,73 @@ npm run dev:client
 
 ---
 
+## 4a. Running over HTTPS (optional)
+
+The application runs over plain HTTP by default. A developer who wants to test
+it over TLS — secure cookies, mixed-content warnings, clipboard and other
+browser features that only work on a secure origin — can switch it on without
+changing any code.
+
+### Step 1 — create a development certificate
+
+```bash
+npm run certs:dev
+```
+
+This writes a self-signed certificate valid for `localhost` into `certs/`
+(git-ignored, so the private key is never committed). It needs OpenSSL, which
+is already installed on WSL, Linux and macOS. Re-run with
+`npm run certs:dev -- --force` to replace an expired one.
+
+### Step 2 — turn HTTPS on
+
+In `server/.env`:
+
+```ini
+HTTPS_ENABLED=true
+HTTPS_KEY_PATH=../certs/localhost-key.pem
+HTTPS_CERT_PATH=../certs/localhost-cert.pem
+HTTPS_ALLOW_SELF_SIGNED=true
+CLIENT_URL=https://localhost:5173
+```
+
+In `client/.env`:
+
+```ini
+VITE_HTTPS_ENABLED=true
+VITE_HTTPS_KEY_PATH=../certs/localhost-key.pem
+VITE_HTTPS_CERT_PATH=../certs/localhost-cert.pem
+VITE_API_PROXY_TARGET=https://localhost:5000
+VITE_API_PROXY_SECURE=false
+```
+
+### Step 3 — run as usual
+
+```bash
+npm run dev
+```
+
+The client is then at `https://localhost:5173` and the API at
+`https://localhost:5000`. The browser warns once that the certificate is not
+trusted; that is expected for a self-signed certificate, and you can accept it
+and continue.
+
+### What changes when it is on
+
+- The Express server listens with `https.createServer` instead of plain HTTP.
+- The Vite dev server serves the client over TLS and proxies `/api` and
+  `/uploads` to the HTTPS API, accepting the development certificate.
+- The authentication cookie is marked `secure`, so it is only ever sent over
+  TLS — the same behaviour as production, now testable locally.
+- Puppeteer is told to accept the development certificate, so PDF export keeps
+  working against the HTTPS print page.
+
+Set `HTTPS_ENABLED=false` and `VITE_HTTPS_ENABLED=false` (and put the two URLs
+back to `http://`) to return to plain HTTP. Both default to off, so leaving the
+settings out entirely also keeps the original behaviour.
+
+---
+
 ## 5. All commands
 
 |  | How the whole system works, end to end. Start here |

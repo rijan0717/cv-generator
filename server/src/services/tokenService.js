@@ -7,7 +7,7 @@
  * way a cross-site scripting bug turns into a stolen session.
  */
 import jwt from 'jsonwebtoken';
-import { env, isProduction } from '../config/env.js';
+import { env, isHttps, isProduction, isTest } from '../config/env.js';
 
 /**
  * Signs a login token for a user.
@@ -38,7 +38,15 @@ export function verifyAuthToken(token) {
 function cookieOptions() {
   return {
     httpOnly: true, // not readable by JavaScript
-    secure: isProduction, // only sent over HTTPS in production
+    // Only sent over HTTPS: always in production, and also in development as
+    // soon as the developer enables HTTPS, so the secure path is the one being
+    // exercised rather than an untested production-only setting.
+    //
+    // Never in the test suite, though. Supertest drives the app over plain
+    // HTTP, so a secure cookie would be dropped and every test that needs a
+    // logged-in user would fail for a reason that has nothing to do with what
+    // it is testing.
+    secure: !isTest && (isProduction || isHttps),
     sameSite: 'lax', // sent on normal navigation, not on cross-site posts
     path: '/',
   };

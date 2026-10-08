@@ -151,7 +151,7 @@ All routes are prefixed with `/api`. JSON responses use the shape `{ success, da
 - **Auth:** `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`
 - **Profile:** `PUT /users/me`, `PUT /users/me/password`, `POST /users/me/avatar`
 - **CVs (owner only):** `GET /cvs`, `POST /cvs`, `GET /cvs/:id`, `PUT /cvs/:id`, `DELETE /cvs/:id`, `POST /cvs/:id/duplicate`, `POST /cvs/:id/photo`, `GET /cvs/:id/score`, `GET /cvs/:id/export/pdf`, `GET /cvs/:id/export/excel`, `GET /cvs/:id/print-data` (print token only)
-- **Job match:** `POST /job-match` (body: cvId, jobDescription, jobTitle), `GET /job-match` (own history), `GET /job-match/:id`
+- **Job match:** `POST /job-match` (body: cvId, jobDescription, jobTitle), `GET /job-match` (own history, paginated), `GET /job-match/:id`, `POST /job-match/scores` (badges for a page of the board), `POST /job-match/from-upload` (multipart: a dropped CV file, ranked against every open job; nothing is stored)
 - **Templates:** `GET /templates` (active only)
 - **Admin (admin role only):** `GET /admin/stats`, `GET /admin/users`, `GET /admin/users/:id`, `PATCH /admin/users/:id/status`, `DELETE /admin/users/:id`, `GET /admin/cvs`, `GET /admin/cvs/:id`, `DELETE /admin/cvs/:id`, `GET /admin/templates`, `PATCH /admin/templates/:id`, `GET /admin/reports/:type?from=&to=&format=xlsx|pdf`, `GET /admin/activity`
 
@@ -230,3 +230,9 @@ The report follows the **Object-Oriented approach** from the TU guideline.
 - `npm run test` — run all tests
 - `npm run seed:admin` — create the admin account from `.env`
 - `npm run seed:templates` — insert the five templates
+- `npm run seed:jobs` — insert the ten sample job adverts
+- `npm run seed:loadtest` — bulk test data for load and performance testing: ~100 users with
+  CVs, 150 jobs across 8 companies, 24 reviews, job matches and activity
+  (`-- --clear` to replace the previous run, `-- --only-clear` to remove it; flags
+  `--users --max-cvs --jobs --reviews --matches --seed`; credentials written to
+  `server/scripts/output/loadtest-users.csv`)

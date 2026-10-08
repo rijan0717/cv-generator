@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as adminApi from '../../api/admin.js';
-import Pagination from '../../components/admin/Pagination.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 
@@ -15,6 +15,7 @@ const ACTIONS = [
   'DOWNLOAD_DOCX',
   'DOWNLOAD_EXCEL',
   'CV_IMPORT',
+  'CV_TAILOR',
   'JOB_MATCH',
   'ADMIN_ACTION',
 ];
@@ -138,7 +139,7 @@ export default function AdminActivityPage() {
         </div>
       )}
 
-      <Pagination pagination={pagination} onChange={setPage} />
+      <Pagination pagination={pagination} onChange={setPage} label="entries" />
     </div>
   );
 }

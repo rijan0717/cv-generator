@@ -24,11 +24,11 @@ Browser ──HTTP──> Express (Node, WSL) ──Mongoose──> MongoDB (WSL
 
 Three processes run during development:
 
-| Process     | Port | Started by      |
-| ----------- | ---- | --------------- |
-| MongoDB     | 27017| systemd (`mongod`) |
-| Express API | 5000 | `npm run dev`   |
-| React client| 5173 | `npm run dev`   |
+| Process      | Port  | Started by         |
+| ------------ | ----- | ------------------ |
+| MongoDB      | 27017 | systemd (`mongod`) |
+| Express API  | 5000  | `npm run dev`      |
+| React client | 5173  | `npm run dev`      |
 
 The Vite dev server proxies `/api` and `/uploads` to Express, so the browser
 sees one origin and the session cookie works without any CORS special-casing.
@@ -37,16 +37,16 @@ sees one origin and the session cookie works without any CORS special-casing.
 
 ## 2. What a user can do
 
-| Area | What happens |
-| --- | --- |
-| **Register / log in** | Creates a session held in an httpOnly cookie |
-| **My CVs** | Create, rename, duplicate and delete CVs |
-| **Editor** | Fill in every section, with a live A4 preview beside the form |
-| **Design** | Change template, colours, fonts, spacing, section order and visibility |
-| **Import** | Upload an existing PDF or Word CV and have it read into the form |
-| **Download** | PDF, Word or Excel |
-| **Review** | Rate the application after a download; can always be skipped |
-| **Profile / Settings** | Change name, photo, password and theme |
+| Area                   | What happens                                                           |
+| ---------------------- | ---------------------------------------------------------------------- |
+| **Register / log in**  | Creates a session held in an httpOnly cookie                           |
+| **My CVs**             | Create, rename, duplicate and delete CVs                               |
+| **Editor**             | Fill in every section, with a live A4 preview beside the form          |
+| **Design**             | Change template, colours, fonts, spacing, section order and visibility |
+| **Import**             | Upload an existing PDF or Word CV and have it read into the form       |
+| **Download**           | PDF, Word or Excel                                                     |
+| **Review**             | Rate the application after a download; can always be skipped           |
+| **Profile / Settings** | Change name, photo, password and theme                                 |
 
 An **admin** additionally sees every user, every CV, the activity log and the
 dashboard statistics.
@@ -164,7 +164,7 @@ The PDF then uses the **same components**: Puppeteer opens the real
 
 It ignores the chosen colours and fonts: single column, no photo, no icons,
 skills as a plain comma-separated line, fixed Arial, black on white. An
-applicant tracking system reads the *text layer* of a PDF, so multi-column
+applicant tracking system reads the _text layer_ of a PDF, so multi-column
 layouts are extracted in the wrong order and decoration is noise. Losing the
 styling is the point.
 
@@ -212,9 +212,9 @@ that understands the CV is our own code in
    document, because CVs put them in headers, sidebars and footers alike.
 3. **Headings** — each line matched against synonym lists, so "Work History",
    "Employment" and "Professional Experience" all mean `experience`. A length
-   limit stops a sentence *containing* the word being treated as a heading.
+   limit stops a sentence _containing_ the word being treated as a heading.
    Matching ignores spaces, and a section also starts at a label in a
-   left-hand column ("Languages    English, Nepali").
+   left-hand column ("Languages English, Nepali").
 4. **Entries** — a section is split at each line carrying a date range,
    because in practice every role and qualification is headed by its dates.
 5. **Fields** — dates, bullets, degree/field, grades, skill levels.
@@ -247,11 +247,11 @@ memory and never written to disk.
 
 ## 9. Export
 
-| Format | How | Why |
-| --- | --- | --- |
-| **PDF** | Puppeteer prints the real `/print/:id` page | Matches the preview exactly; text stays selectable |
-| **Word** | `docx` library, content re-expressed as a flowing document | Someone who wants `.docx` wants to keep editing it |
-| **Excel** | `exceljs`, one worksheet per section | For sorting, filtering and pasting into application forms |
+| Format    | How                                                        | Why                                                       |
+| --------- | ---------------------------------------------------------- | --------------------------------------------------------- |
+| **PDF**   | Puppeteer prints the real `/print/:id` page                | Matches the preview exactly; text stays selectable        |
+| **Word**  | `docx` library, content re-expressed as a flowing document | Someone who wants `.docx` wants to keep editing it        |
+| **Excel** | `exceljs`, one worksheet per section                       | For sorting, filtering and pasting into application forms |
 
 ### The print token
 
@@ -261,7 +261,7 @@ Headless Chromium has no session cookie, so the PDF route cannot rely on one:
    about two minutes, with `purpose: 'print'`.
 2. Puppeteer opens `/print/:cvId?token=…`.
 3. That page fetches `GET /api/cvs/:id/print-data`, which verifies the token
-   *and* that it was issued for this CV. A login token will not work here.
+   _and_ that it was issued for this CV. A login token will not work here.
 4. Once the data is in and `document.fonts.ready` has resolved, the page sets
    `window.__CV_READY__`.
 5. The server waits for that flag, then prints A4.
@@ -296,13 +296,13 @@ an email or user id, so testimonials cannot be used to enumerate users.
 router**, not per route. Forgetting to add a guard is a security hole;
 forgetting to remove one is merely inconvenient.
 
-| Section | Contents |
-| --- | --- |
-| Overview | Counts, downloads by format, template popularity (aggregation pipelines) |
-| Users | Search, status filter, pagination, CV counts, block/unblock/delete |
-| User detail | Their CVs and recent activity |
-| CVs | Every CV with its owner; read-only preview; delete |
-| Activity | Paginated audit trail |
+| Section     | Contents                                                                 |
+| ----------- | ------------------------------------------------------------------------ |
+| Overview    | Counts, downloads by format, template popularity (aggregation pipelines) |
+| Users       | Search, status filter, pagination, CV counts, block/unblock/delete       |
+| User detail | Their CVs and recent activity                                            |
+| CVs         | Every CV with its owner; read-only preview; delete                       |
+| Activity    | Paginated audit trail                                                    |
 
 Two safeguards worth noting: an admin **cannot block or delete their own
 account** (that could leave the system unmanageable), and search terms are
@@ -332,11 +332,11 @@ content" link; and all decorative motion dropped under
 
 ## 13. Testing
 
-| Suite | Count | Covers |
-| --- | --- | --- |
-| Unit | 72 | The import parser, function by function |
-| Integration | 68 | Auth, CV ownership, admin access control, health |
-| Client | 42 | Routing, guards, all five templates |
+| Suite       | Count | Covers                                           |
+| ----------- | ----- | ------------------------------------------------ |
+| Unit        | 72    | The import parser, function by function          |
+| Integration | 68    | Auth, CV ownership, admin access control, health |
+| Client      | 42    | Routing, guards, all five templates              |
 
 Server tests run against an **in-memory MongoDB**, so `npm test` can never
 touch development data.

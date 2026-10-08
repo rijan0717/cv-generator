@@ -252,8 +252,12 @@ function ApplyPanel({ jobId, onClose, onApplied }) {
     let cancelled = false;
 
     cvApi
-      .listCVs()
-      .then((list) => {
+      // This is the CV picker on the apply form, not a browsable list, so
+      // it asks for the largest page the server allows rather than paging.
+      // Anyone with more than a hundred CVs is far outside what the picker
+      // is for, and they can still apply with any of the first hundred.
+      .listCVs({ limit: 100 })
+      .then(({ cvs: list }) => {
         if (cancelled) return;
         setCvs(list);
 

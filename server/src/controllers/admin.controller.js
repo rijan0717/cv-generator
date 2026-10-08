@@ -16,21 +16,7 @@ import { ActivityLog } from '../models/ActivityLog.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
-
-/** Largest page a client may ask for, so one request cannot pull everything. */
-const MAX_PAGE_SIZE = 100;
-
-/**
- * Reads and clamps the pagination values from the query string.
- * @param {import('express').Request} req - The request.
- * @returns {{page: number, limit: number, skip: number}}
- */
-function readPagination(req) {
-  const page = Math.max(1, Number(req.query.page) || 1);
-  const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, Number(req.query.limit) || 20));
-
-  return { page, limit, skip: (page - 1) * limit };
-}
+import { readPagination, buildPagination } from '../utils/pagination.js';
 
 /**
  * Escapes a user-supplied search term before it is used in a regular
@@ -127,7 +113,7 @@ export async function listUsers(req, res) {
         createdAt: user.createdAt,
         cvCount: countByUser.get(user._id.toString()) ?? 0,
       })),
-      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+      pagination: buildPagination({ page, limit }, total),
     },
     'Users',
   );
@@ -135,21 +121,61 @@ export async function listUsers(req, res) {
 
 /**
  * GET /api/admin/users/:id
- * One user together with the CVs they have created.
+ *
+ * One user together with their CVs and their recent activity. Both lists
+ * are paginated, and because they are on the same page they need separate
+ * page numbers: `?cvPage=2` moves the CV table without disturbing the
+ * activity table, and `?activityPage=2` does the reverse. A single `page`
+ * parameter would move both at once, which is not what either control
+ * looks like it does.
+ *
+ * The two lists keep their own page sizes as well. A prolific user may
+ * have a handful of CVs and hundreds of log entries, so showing ten of
+ * each would page the CV table almost never and the activity table
+ * constantly.
  */
 export async function getUser(req, res) {
   const user = await User.findById(req.params.id);
   if (!user || user.isDeleted) throw ApiError.notFound('User not found');
 
-  const [cvs, recentActivity] = await Promise.all([
-    CV.find({ user: user._id, isDeleted: false })
+  // `readPagination` reads `page`, so each list is given a request-shaped
+  // object carrying its own parameter under that name.
+  const cvPaging = readPagination({ query: { page: req.query.cvPage, limit: req.query.cvLimit } }, 10);
+  const activityPaging = readPagination(
+    { query: { page: req.query.activityPage, limit: req.query.activityLimit } },
+    20,
+  );
+
+  const cvFilter = { user: user._id, isDeleted: false };
+  const activityFilter = { user: user._id };
+
+  const [cvs, cvTotal, recentActivity, activityTotal] = await Promise.all([
+    CV.find(cvFilter)
       .select('title templateKey strengthScore createdAt updatedAt')
       .sort({ updatedAt: -1 })
+      .skip(cvPaging.skip)
+      .limit(cvPaging.limit)
       .lean(),
-    ActivityLog.find({ user: user._id }).sort({ createdAt: -1 }).limit(20).lean(),
+    CV.countDocuments(cvFilter),
+    ActivityLog.find(activityFilter)
+      .sort({ createdAt: -1 })
+      .skip(activityPaging.skip)
+      .limit(activityPaging.limit)
+      .lean(),
+    ActivityLog.countDocuments(activityFilter),
   ]);
 
-  sendSuccess(res, { user: user.toPublicJSON(), cvs, recentActivity }, 'User detail');
+  sendSuccess(
+    res,
+    {
+      user: user.toPublicJSON(),
+      cvs,
+      cvPagination: buildPagination(cvPaging, cvTotal),
+      recentActivity,
+      activityPagination: buildPagination(activityPaging, activityTotal),
+    },
+    'User detail',
+  );
 }
 
 /**
@@ -239,7 +265,7 @@ export async function listAllCVs(req, res) {
 
   sendSuccess(
     res,
-    { cvs, pagination: { page, limit, total, pages: Math.ceil(total / limit) } },
+    { cvs, pagination: buildPagination({ page, limit }, total) },
     'All CVs',
   );
 }
@@ -302,7 +328,7 @@ export async function listActivity(req, res) {
 
   sendSuccess(
     res,
-    { entries, pagination: { page, limit, total, pages: Math.ceil(total / limit) } },
+    { entries, pagination: buildPagination({ page, limit }, total) },
     'Activity log',
   );
 }

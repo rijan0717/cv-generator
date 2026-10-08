@@ -101,9 +101,10 @@ export async function applyToJob(id, payload) {
 /**
  * Applications to one of the caller's own jobs.
  * @param {string} id - Job id.
- * @returns {Promise<{job: object, applications: Array<object>}>}
+ * @param {{page?: number, limit?: number}} [params] - Which page to load.
+ * @returns {Promise<{job: object, applications: Array<object>, pagination: object}>}
  */
-export async function listJobApplications(id) {
-  const { data } = await api.get(`/api/jobs/${id}/applications`);
+export async function listJobApplications(id, params = {}) {
+  const { data } = await api.get(`/api/jobs/${id}/applications`, { params });
   return data.data;
 }

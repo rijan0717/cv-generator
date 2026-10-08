@@ -23,6 +23,7 @@ import { generateDocx } from '../services/docxService.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
+import { readPagination, buildPagination } from '../utils/pagination.js';
 import { buildExportFilename } from '../utils/dateFormat.js';
 
 /**
@@ -113,20 +114,35 @@ export async function applyToJob(req, res) {
 
 /**
  * GET /api/applications/mine
- * The caller's own applications.
+ *
+ * The caller's own applications, paginated. Someone job hunting in earnest
+ * applies for a great many posts, and each row populates both the job and
+ * its company, so an unbounded list is two extra lookups per application.
  */
 export async function listMyApplications(req, res) {
-  const applications = await Application.find({ applicant: req.user._id })
-    .select('status coverLetter createdAt job')
-    .populate({
-      path: 'job',
-      select: 'title location jobType isDeleted',
-      populate: { path: 'company', select: 'name logoUrl' },
-    })
-    .sort({ createdAt: -1 })
-    .lean();
+  const { page, limit, skip } = readPagination(req, 10);
+  const filter = { applicant: req.user._id };
 
-  sendSuccess(res, { applications }, 'Your applications');
+  const [applications, total] = await Promise.all([
+    Application.find(filter)
+      .select('status coverLetter createdAt job')
+      .populate({
+        path: 'job',
+        select: 'title location jobType isDeleted',
+        populate: { path: 'company', select: 'name logoUrl' },
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Application.countDocuments(filter),
+  ]);
+
+  sendSuccess(
+    res,
+    { applications, pagination: buildPagination({ page, limit }, total) },
+    'Your applications',
+  );
 }
 
 /**
@@ -143,15 +159,23 @@ export async function listJobApplications(req, res) {
   const job = await Job.findOne(filter);
   if (!job) throw ApiError.notFound('Job not found');
 
-  const applications = await Application.find({ job: job._id })
-    .populate('applicant', 'name email avatarUrl')
-    .sort({ createdAt: -1 })
-    .lean();
+  const { page, limit, skip } = readPagination(req, 20);
+
+  const [applications, total] = await Promise.all([
+    Application.find({ job: job._id })
+      .populate('applicant', 'name email avatarUrl')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Application.countDocuments({ job: job._id }),
+  ]);
 
   sendSuccess(
     res,
     {
       job: { id: job._id, title: job.title },
+      pagination: buildPagination({ page, limit }, total),
       applications: applications.map((application) => ({
         id: application._id,
         status: application.status,

@@ -4,6 +4,7 @@ import * as applicationApi from '../../api/applications.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 import StatusBadge from '../../components/jobs/StatusBadge.jsx';
 
 /**
@@ -14,17 +15,22 @@ import StatusBadge from '../../components/jobs/StatusBadge.jsx';
  */
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
+    setIsLoading(true);
 
     applicationApi
-      .listMyApplications()
-      .then((list) => {
-        if (!cancelled) setApplications(list);
+      .listMyApplications({ page })
+      .then((data) => {
+        if (cancelled) return;
+        setApplications(data.applications);
+        setPagination(data.pagination);
       })
       .catch((err) => {
         if (!cancelled) setError(err.message);
@@ -36,7 +42,7 @@ export default function ApplicationsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [page]);
 
   /**
    * Withdraws an application after confirming, since it cannot be undone.
@@ -132,6 +138,10 @@ export default function ApplicationsPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {!isLoading && applications.length > 0 && (
+        <Pagination pagination={pagination} onChange={setPage} label="applications" />
       )}
     </div>
   );

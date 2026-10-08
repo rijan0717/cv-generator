@@ -10,9 +10,13 @@ import { CV } from '../models/CV.js';
 import { Job } from '../models/Job.js';
 import { JobMatch } from '../models/JobMatch.js';
 import { analyseMatch, scoreJobsAgainstCV } from '../algorithms/jobMatcher.js';
+import { parseCVText } from '../algorithms/cvImportParser.js';
+import { scoreCV } from '../algorithms/cvStrengthScorer.js';
+import { extractText } from '../services/documentTextService.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
+import { readPagination, buildPagination } from '../utils/pagination.js';
 
 /**
  * How many previously analysed adverts are added to the TF-IDF corpus.
@@ -23,6 +27,22 @@ import { ApiError } from '../utils/ApiError.js';
  * the work, not a statistical limit.
  */
 const MAX_CORPUS_HISTORY = 200;
+
+/**
+ * Below this many characters, a file has not been read properly — it is
+ * usually a scanned image with no text layer. Matches the CV import.
+ */
+const MIN_IMPORT_CHARACTERS = 40;
+
+/**
+ * How many open jobs one upload is ranked against.
+ *
+ * Every advert in the set is processed and weighted on each request, so
+ * this is a cap on the work rather than a page size. 200 covers the whole
+ * board comfortably at the size this project runs at, and keeps the
+ * response under a second.
+ */
+const MAX_JOBS_RANKED = 200;
 
 /**
  * Loads a CV that belongs to the given user, or throws 404.
@@ -181,17 +201,126 @@ export async function scoreJobsForBoard(req, res) {
 }
 
 /**
+ * POST /api/job-match/from-upload
+ *
+ * Takes a CV file the user has dropped on the job board, reads it, and
+ * ranks every open job against it.
+ *
+ * Nothing is saved. This is a "what would suit me?" question rather than
+ * an application, and someone trying the system out should not have a CV
+ * and a pile of analyses appear in their account because they dropped a
+ * file on a page. The parsed CV goes back to the client, which renders it
+ * as a live preview and can offer to save it as a real CV afterwards.
+ *
+ * The ranking is the project's own cosine similarity over TF-IDF vectors,
+ * combined with skill coverage — the same `scoreJobsAgainstCV` the match
+ * badges on the board use. Scoring every advert in one corpus (rather
+ * than calling `analyseMatch` once per job) is what makes the percentages
+ * comparable with each other: identical document frequencies for all of
+ * them, so the ordering means something.
+ */
+export async function matchUploadedCV(req, res) {
+  if (!req.file) throw ApiError.badRequest('Please choose a CV file');
+
+  const text = await extractText(req.file);
+
+  if (!text || text.trim().length < MIN_IMPORT_CHARACTERS) {
+    throw ApiError.badRequest(
+      'Almost no text could be read from that file. If it is a scanned image, the text cannot be extracted.',
+    );
+  }
+
+  const parsed = parseCVText(text);
+
+  // The parser returns CV-shaped data but not a CV document. The scorer
+  // and the strength scorer both read plain fields, so a plain object is
+  // all either of them needs — and keeping it unsaved is the point.
+  const cv = {
+    title: parsed.personal?.fullName ? `${parsed.personal.fullName}'s CV` : 'Uploaded CV',
+    templateKey: 'ats',
+    personal: parsed.personal,
+    summary: parsed.summary,
+    experience: parsed.experience,
+    education: parsed.education,
+    skills: parsed.skills,
+    projects: parsed.projects,
+    certifications: parsed.certifications,
+    languages: parsed.languages,
+    references: [],
+    settings: {},
+  };
+
+  const jobs = await Job.find({ isDeleted: false, status: 'open' })
+    .select('title description skills location jobType workMode salaryRange company createdAt')
+    .populate('company', 'name logoUrl location')
+    .sort({ createdAt: -1 })
+    .limit(MAX_JOBS_RANKED)
+    .lean();
+
+  const scores = scoreJobsAgainstCV(
+    cv,
+    jobs.map((job) => ({
+      id: job._id.toString(),
+      text: `${job.title}\n${job.description}\nSkills: ${(job.skills ?? []).join(', ')}`,
+    })),
+  );
+
+  const scoreById = new Map(scores.map((score) => [score.id, score]));
+
+  // Best match first. That is the whole point of the page, so the order is
+  // decided here rather than left to the client.
+  const results = jobs
+    .map((job) => ({ job, match: scoreById.get(job._id.toString()) ?? null }))
+    .sort((a, b) => (b.match?.matchScore ?? 0) - (a.match?.matchScore ?? 0));
+
+  await logActivity({
+    userId: req.user._id,
+    action: 'JOB_MATCH',
+    meta: { source: 'upload', jobsRanked: results.length, filename: req.file.originalname },
+    ip: req.ip,
+  });
+
+  sendSuccess(
+    res,
+    {
+      cv,
+      strength: scoreCV(cv),
+      results,
+      stats: { ...parsed.stats, jobsRanked: results.length },
+    },
+    `Read your CV and ranked ${results.length} open jobs`,
+  );
+}
+
+/**
  * GET /api/job-match
+ *
  * The caller's own analysis history, newest first.
+ *
+ * This used to return the most recent 50 with no way to reach the rest,
+ * which quietly hid a user's older analyses from them. Paginating it means
+ * the whole history is reachable and the response size stays fixed however
+ * many analyses someone has run.
  */
 export async function listJobMatches(req, res) {
-  const jobMatches = await JobMatch.find({ user: req.user._id })
-    .select('cv jobTitle matchScore skillCoverage missingSkills createdAt')
-    .populate('cv', 'title')
-    .sort({ createdAt: -1 })
-    .limit(50);
+  const { page, limit, skip } = readPagination(req, 10);
+  const filter = { user: req.user._id };
 
-  sendSuccess(res, { jobMatches }, 'Your match history');
+  const [jobMatches, total] = await Promise.all([
+    JobMatch.find(filter)
+      .select('cv jobTitle matchScore skillCoverage missingSkills createdAt')
+      .populate('cv', 'title')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    JobMatch.countDocuments(filter),
+  ]);
+
+  sendSuccess(
+    res,
+    { jobMatches, pagination: buildPagination({ page, limit }, total) },
+    'Your match history',
+  );
 }
 
 /**

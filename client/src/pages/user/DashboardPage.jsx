@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
 import { getTemplate } from '../../templates/index.js';
@@ -6,40 +6,62 @@ import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 
 /**
  * "My CVs": the list of the user's CVs, with the actions from the
  * requirements — create, edit, duplicate, rename and delete.
+ *
+ * The list is paginated. Because only one page is in memory at a time,
+ * adding or removing a CV can no longer be done by editing the array on
+ * screen: deleting the last row of page 2 has to pull a CV up from page
+ * 3, and the client does not have page 3. Every change therefore reloads
+ * the page it affects.
  */
 export default function DashboardPage() {
   const navigate = useNavigate();
 
   const [cvs, setCvs] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [busyId, setBusyId] = useState(null);
 
+  /**
+   * Loads one page of CVs.
+   *
+   * Returns the result as well as storing it, so a caller that has just
+   * deleted something can look at the new totals and decide whether the
+   * page it is on still exists.
+   *
+   * @param {number} targetPage - The page to load.
+   * @returns {Promise<object|null>} The response, or null if it failed.
+   */
+  const load = useCallback(
+    async (targetPage) => {
+      setIsLoading(true);
+      try {
+        const data = await cvApi.listCVs({ page: targetPage, limit });
+        setCvs(data.cvs);
+        setPagination(data.pagination);
+        return data;
+      } catch (err) {
+        setError(err.message);
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [limit],
+  );
+
   useEffect(() => {
-    let cancelled = false;
-
-    cvApi
-      .listCVs()
-      .then((list) => {
-        if (!cancelled) setCvs(list);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message);
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    load(page);
+  }, [load, page]);
 
   /** Creates a CV and goes straight into the editor. */
   async function handleCreate(event) {
@@ -64,8 +86,12 @@ export default function DashboardPage() {
     setBusyId(id);
     setError('');
     try {
-      const copy = await cvApi.duplicateCV(id);
-      setCvs((current) => [copy, ...current]);
+      await cvApi.duplicateCV(id);
+      // The copy is the most recently updated CV, so it belongs at the top
+      // of page 1. Going there is both correct and what the user expects:
+      // the copy they just made should be the one they can see.
+      if (page === 1) await load(1);
+      else setPage(1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -114,7 +140,12 @@ export default function DashboardPage() {
     setError('');
     try {
       await cvApi.deleteCV(id);
-      setCvs((current) => current.filter((cv) => cv._id !== id));
+
+      // Deleting the only row on the last page would leave the user
+      // looking at an empty page that no longer exists, so step back one.
+      const onlyRowOnPage = cvs.length === 1 && page > 1;
+      if (onlyRowOnPage) setPage(page - 1);
+      else await load(page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -191,6 +222,14 @@ export default function DashboardPage() {
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                   {getTemplate(cv.templateKey).name} &middot; updated{' '}
                   {new Date(cv.updatedAt).toLocaleDateString('en-GB')}
+                  {/*
+                    Only CVs produced by the rewrite carry this, and it is
+                    the one thing that distinguishes two otherwise similar
+                    rows in a list full of near-identical CVs.
+                  */}
+                  {cv.tailoredFor?.jobTitle && (
+                    <> &middot; tailored for {cv.tailoredFor.jobTitle}</>
+                  )}
                 </p>
               </div>
 
@@ -205,6 +244,16 @@ export default function DashboardPage() {
                 <Link to={`/cvs/${cv._id}`}>
                   <Button size="sm" variant="secondary">
                     Edit
+                  </Button>
+                </Link>
+                {/*
+                  Tailoring produces a new CV rather than changing this
+                  one, so it sits with the other actions that add a row
+                  to this list rather than with Edit.
+                */}
+                <Link to={`/cvs/${cv._id}/tailor`}>
+                  <Button size="sm" variant="ghost">
+                    Tailor for a job
                   </Button>
                 </Link>
                 <Button
@@ -222,6 +271,21 @@ export default function DashboardPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {!isLoading && cvs.length > 0 && (
+        <Pagination
+          pagination={pagination}
+          onChange={setPage}
+          onLimitChange={(next) => {
+            // The row that was at the top of the old page is not at the top
+            // of the new one, so there is no sensible page to stay on.
+            setLimit(next);
+            setPage(1);
+          }}
+          pageSizes={[12, 24, 48]}
+          label="CVs"
+        />
       )}
     </div>
   );

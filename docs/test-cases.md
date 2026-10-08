@@ -16,9 +16,38 @@ Unit tests live in `server/tests/unit/` and cover the algorithms in
 `server/src/algorithms/`. They are written in Phase 5, when those algorithms
 exist.
 
-| Test ID | Module | Description | Input / Steps | Expected Result | Actual Result | Status |
-| ------- | ------ | ----------- | ------------- | --------------- | ------------- | ------ |
-|         |        |             |               |                 |               |        |
+Rows for `cvStrengthScorer`, `jobMatcher` and `cvImportParser` are still to be
+written up from the suites that already exist in `server/tests/unit/`.
+
+### 1.1 Job-Tailored CV Rewrite
+
+`server/tests/unit/phraseRewriter.test.js` (20 cases) and
+`server/tests/unit/cvTailor.test.js` (25 cases). The table lists the ones that
+pin down a decision; the rest are ordinary coverage of the same functions.
+
+| Test ID | Module         | Description                               | Input / Steps                                                     | Expected Result                                          | Actual Result | Status |
+| ------- | -------------- | ----------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------- | ------------- | ------ |
+| U-TR-01 | phraseRewriter | Promotes the user's own verb              | `rewriteAsAction("Responsible for managing the release process")` | `"Managed the release process"`                          | As expected   | Pass   |
+| U-TR-02 | phraseRewriter | Present tense for a current role          | The same line with `{ present: true }`                            | `"Manage the release process"`                           | As expected   | Pass   |
+| U-TR-03 | phraseRewriter | Refuses to invent a verb                  | `rewriteAsAction("Responsible for the stock room")`               | Unchanged, `changed: false`, a reason for the user       | As expected   | Pass   |
+| U-TR-04 | phraseRewriter | Irregular gerund via the action-verb list | `gerundToBase("writing")`                                         | `"write"`                                                | As expected   | Pass   |
+| U-TR-05 | phraseRewriter | Does not over-apply the silent e          | `gerundToBase("editing")`, `gerundToBase("sitting")`              | `"edit"`, `"sit"` — never `"edite"` or `"site"`          | As expected   | Pass   |
+| U-TR-06 | phraseRewriter | Keeps a bullet character                  | `rewriteDescription("- Responsible for managing the rota")`       | `"- Managed the rota"`                                   | As expected   | Pass   |
+| U-TC-01 | cvTailor       | Relevance follows the advert              | On-topic vs off-topic text against a backend advert               | On-topic scores higher                                   | As expected   | Pass   |
+| U-TC-02 | cvTailor       | Keyword stuffing earns nothing            | `"Docker"` vs `"Docker"` eight times                              | Identical relevance                                      | As expected   | Pass   |
+| U-TC-03 | cvTailor       | Overlapping roles are not double-counted  | Two overlapping three-year roles                                  | 3 years, not 6                                           | As expected   | Pass   |
+| U-TC-04 | cvTailor       | Three-way skill split                     | Advert wants Node.js, Express, Docker, MongoDB, AWS               | Promoted / added / suggested as in algorithms.md 3.5     | As expected   | Pass   |
+| U-TC-05 | cvTailor       | Never adds an unevidenced skill           | The same inputs                                                   | MongoDB and AWS absent from the draft's skills           | As expected   | Pass   |
+| U-TC-06 | cvTailor       | Alias swap to the advert's spelling       | CV says "JS", advert says "JavaScript"                            | Draft says "JavaScript"                                  | As expected   | Pass   |
+| U-TC-07 | cvTailor       | No swap inside a dotted skill name        | `"Built REST APIs in Node.js and Vue.js"`                         | Unchanged — not `"Node.js.js"` or `"Vue.JavaScript"`     | As expected   | Pass   |
+| U-TC-08 | cvTailor       | No swap into a phrase                     | `"Cut API response time by 40%"`                                  | Unchanged — "api" is not expanded to "REST API"          | As expected   | Pass   |
+| U-TC-09 | cvTailor       | Roles keep their chronology               | A backend role and a shop role                                    | Order unchanged                                          | As expected   | Pass   |
+| U-TC-10 | cvTailor       | Projects are re-ordered by relevance      | A PHP blog and an Express/Docker gateway                          | The gateway comes first                                  | As expected   | Pass   |
+| U-TC-11 | cvTailor       | Quantified achievement wins a tie         | Two achievements the advert cannot separate                       | The one with "40%" first                                 | As expected   | Pass   |
+| U-TC-12 | cvTailor       | Advises rather than inventing a figure    | A role with nothing quantified                                    | A note saying "Add a number"; no digit added to the text | As expected   | Pass   |
+| U-TC-13 | cvTailor       | Every change carries a reason             | Any tailored CV                                                   | Each change has a section, a kind and a reason           | As expected   | Pass   |
+| U-TC-14 | cvTailor       | The source CV is not modified             | Tailor a CV, compare it before and after                          | Byte-identical                                           | As expected   | Pass   |
+| U-TC-15 | cvTailor       | Copes with an empty CV                    | `tailorCV({}, advert)`                                            | Empty sections, no exception                             | As expected   | Pass   |
 
 ---
 
@@ -80,6 +109,26 @@ exist.
 | ST-044  | Routing    | Unknown route shows a not-found page       | Render at `/no-such-page`                    | The "Page not found" heading is shown     | As expected   | Pass   |
 | ST-045  | Guard      | Guarded route renders for a logged-in user | Render at `/dashboard` with a mocked session | The "My CVs" heading is shown             | As expected   | Pass   |
 | ST-046  | Navigation | Navigation reflects the logged-in state    | Render at `/` with a mocked session          | A "Log out" button is present             | As expected   | Pass   |
+
+---
+
+### 2.6 Job-Tailored CV Rewrite
+
+`server/tests/integration/cvTailor.test.js` (11 cases).
+
+| Test ID | Module       | Description                            | Input / Steps                                        | Expected Result                                             | Actual Result | Status |
+| ------- | ------------ | -------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------- | ------------- | ------ |
+| S-TR-01 | Tailor API   | Rejects an anonymous caller            | `POST /api/cvs/:id/tailor` with no session           | 401                                                         | As expected   | Pass   |
+| S-TR-02 | Tailor API   | Another user's CV is not reachable     | Sign in as a second user, tailor the first user's CV | 404, not 403 — 403 would confirm the id is real             | As expected   | Pass   |
+| S-TR-03 | Tailor API   | Validates the advert                   | `jobDescription: "Dev wanted"`                       | 400                                                         | As expected   | Pass   |
+| S-TR-04 | Tailor API   | Returns draft, changes and comparison  | A filled CV and a pasted advert                      | 200 with `draft`, `changes`, `comparison`, `suggestedTitle` | As expected   | Pass   |
+| S-TR-05 | Tailor API   | The preview stores nothing             | Run a preview, then count CVs                        | Still one CV                                                | As expected   | Pass   |
+| S-TR-06 | Tailor API   | Accepts a job from the board           | `{ jobId }` for an open job                          | 200, headline set to that job's title                       | As expected   | Pass   |
+| S-TR-07 | Tailor save  | Creates a new CV, original untouched   | Preview, then `POST /api/cvs/:id/tailor/save`        | 201, two CVs, the original's headline and summary unchanged | As expected   | Pass   |
+| S-TR-08 | Tailor save  | Stores the user's edits, not the draft | Edit the summary before saving                       | The saved CV has the edited summary                         | As expected   | Pass   |
+| S-TR-09 | Tailor save  | The tailored CV is never primary       | Tailor from a primary CV                             | New CV `isPrimary: false`; the original keeps the flag      | As expected   | Pass   |
+| S-TR-10 | Tailor save  | Refuses a body with no draft           | `POST .../tailor/save` with only a title             | 400                                                         | As expected   | Pass   |
+| S-TR-11 | Activity log | The save is recorded                   | Save a tailored CV, read the log                     | A `CV_TAILOR` entry with the job title in `meta`            | As expected   | Pass   |
 
 ---
 

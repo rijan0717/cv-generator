@@ -7,6 +7,7 @@ import StatusBadge from '../../components/jobs/StatusBadge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 
 /** The statuses an employer may set. Withdrawal belongs to the applicant. */
 const EMPLOYER_STATUSES = ['submitted', 'reviewed', 'shortlisted', 'rejected'];
@@ -23,19 +24,26 @@ export default function JobApplicantsPage() {
 
   const [job, setJob] = useState(null);
   const [applications, setApplications] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
+    setIsLoading(true);
 
     jobApi
-      .listJobApplications(id)
+      .listJobApplications(id, { page })
       .then((data) => {
         if (cancelled) return;
         setJob(data.job);
         setApplications(data.applications);
+        setPagination(data.pagination);
+        // The open applicant is almost certainly not on the new page, and
+        // leaving the panel open would show a CV that is no longer listed.
+        setSelectedId(null);
       })
       .catch((err) => {
         if (!cancelled) setError(err.message);
@@ -47,7 +55,7 @@ export default function JobApplicantsPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, page]);
 
   if (isLoading) {
     return (
@@ -145,6 +153,10 @@ export default function JobApplicantsPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {applications.length > 0 && (
+        <Pagination pagination={pagination} onChange={setPage} label="applicants" />
       )}
     </div>
   );

@@ -26,26 +26,26 @@ defended line by line.
 
 **Completeness — 40 points.** Is anything missing?
 
-| Criterion                                | Points |
-| ---------------------------------------- | ------ |
-| Personal details (name, headline, email, phone) | 8 |
-| Photo uploaded                           | 3      |
-| Professional summary present             | 7      |
-| At least one education entry             | 6      |
-| At least one experience entry or project | 8      |
-| At least five skills                     | 5      |
-| An address, or a website/LinkedIn/GitHub link | 3 |
+| Criterion                                       | Points |
+| ----------------------------------------------- | ------ |
+| Personal details (name, headline, email, phone) | 8      |
+| Photo uploaded                                  | 3      |
+| Professional summary present                    | 7      |
+| At least one education entry                    | 6      |
+| At least one experience entry or project        | 8      |
+| At least five skills                            | 5      |
+| An address, or a website/LinkedIn/GitHub link   | 3      |
 
 **Content quality — 60 points.** Is what is there any good?
 
-| Criterion                                     | Points |
-| --------------------------------------------- | ------ |
-| Summary between 30 and 120 words              | 10     |
-| Descriptions open with an action verb         | 14     |
-| Achievements contain a figure                 | 14     |
-| Email and phone are plausibly formatted       | 6      |
-| No end date falls before its start date       | 6      |
-| Each entry is 12–120 words                    | 10     |
+| Criterion                               | Points |
+| --------------------------------------- | ------ |
+| Summary between 30 and 120 words        | 10     |
+| Descriptions open with an action verb   | 14     |
+| Achievements contain a figure           | 14     |
+| Email and phone are plausibly formatted | 6      |
+| No end date falls before its start date | 6      |
+| Each entry is 12–120 words              | 10     |
 
 The 40/60 split is deliberate: a CV with every section filled in but written as
 a list of duties is a weak CV, so most of the marks sit on how it is written.
@@ -59,7 +59,7 @@ marks; going beyond it earns no more.
 - Action verbs: full marks at a **0.7** ratio of lines, not 1.0.
 - Quantified achievements: full marks at a **0.5** ratio of entries.
 
-Both targets are below 1 on purpose. Demanding that *every* bullet carry a
+Both targets are below 1 on purpose. Demanding that _every_ bullet carry a
 number pushes people into inventing them.
 
 ### 1.3 When it runs
@@ -81,9 +81,9 @@ matchScore = round( (0.45 × scaledCosine + 0.55 × skillCoverage) × 100 )
 
 They answer different questions, which is why neither is used alone:
 
-- **Cosine similarity** — *does this CV read like this advert?* Language,
+- **Cosine similarity** — _does this CV read like this advert?_ Language,
   domain, seniority.
-- **Skill coverage** — *does it name the specific tools the advert asks for?*
+- **Skill coverage** — _does it name the specific tools the advert asks for?_
 
 A CV stuffed with the right keywords but describing unrelated work scores well
 on coverage and badly on similarity. A CV in the right field that never names a
@@ -120,7 +120,7 @@ Of the dictionary skills found in the advert, the fraction that appear in the
 CV's **skills section only** — not anywhere in the CV. Coverage is meant to
 answer "would a recruiter scanning your skills list see what the advert asked
 for?", and a tool mentioned once inside a paragraph three jobs ago does not pass
-that test. Where a skill *is* mentioned elsewhere, the analysis reports it
+that test. Where a skill _is_ mentioned elsewhere, the analysis reports it
 separately as a suggestion.
 
 ---

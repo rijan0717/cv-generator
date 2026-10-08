@@ -27,6 +27,23 @@ function required(key) {
 }
 
 /**
+ * Reads an optional boolean environment variable.
+ *
+ * Anything in the list below counts as true so the `.env` file can be written
+ * naturally (`HTTPS_ENABLED=true`, `=1` or `=yes` all work); everything else,
+ * including an unset variable, is false.
+ *
+ * @param {string} key - Name of the environment variable.
+ * @param {boolean} fallback - Value to use when the variable is not set.
+ * @returns {boolean} The parsed value.
+ */
+function optionalBool(key, fallback) {
+  const value = process.env[key];
+  if (value === undefined || value.trim() === '') return fallback;
+  return ['1', 'true', 'yes', 'on'].includes(value.trim().toLowerCase());
+}
+
+/**
  * Reads an optional environment variable, falling back to a default.
  * @param {string} key - Name of the environment variable.
  * @param {string} fallback - Value to use when the variable is not set.
@@ -58,7 +75,28 @@ export const env = {
   },
 
   maxUploadSizeMb: Number(optional('MAX_UPLOAD_SIZE_MB', '2')),
+
+  // --- Optional HTTPS ------------------------------------------------------
+  // The developer decides whether the Express server speaks HTTP or HTTPS.
+  // When HTTPS_ENABLED is off (the default) nothing changes, so a normal
+  // `npm run dev` keeps working exactly as before. When it is on, the key and
+  // certificate below are loaded and the server listens over TLS instead.
+  https: {
+    enabled: optionalBool('HTTPS_ENABLED', false),
+    keyPath: optional('HTTPS_KEY_PATH', '../certs/localhost-key.pem'),
+    certPath: optional('HTTPS_CERT_PATH', '../certs/localhost-cert.pem'),
+    // A locally generated certificate is self-signed, so Puppeteer would
+    // refuse to open the print page unless it is told to accept it. Set this
+    // to false only if you use a certificate a real authority signed.
+    allowSelfSigned: optionalBool('HTTPS_ALLOW_SELF_SIGNED', true),
+  },
 };
 
 export const isProduction = env.nodeEnv === 'production';
 export const isTest = env.nodeEnv === 'test';
+
+/**
+ * True when the server itself is serving HTTPS. Used to decide the protocol in
+ * start-up logs and whether the auth cookie may be marked `secure`.
+ */
+export const isHttps = env.https.enabled;

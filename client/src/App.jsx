@@ -21,9 +21,11 @@ import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
 import SettingsPage from './pages/user/SettingsPage.jsx';
 import CVEditorPage from './pages/user/CVEditorPage.jsx';
+import TailorCVPage from './pages/user/TailorCVPage.jsx';
 import PrintPage from './pages/print/PrintPage.jsx';
 import JobsPage from './pages/jobs/JobsPage.jsx';
 import JobDetailPage from './pages/jobs/JobDetailPage.jsx';
+import MatchMyCVPage from './pages/jobs/MatchMyCVPage.jsx';
 import SavedJobsPage from './pages/jobs/SavedJobsPage.jsx';
 import ApplicationsPage from './pages/jobs/ApplicationsPage.jsx';
 import CompanyLayout from './pages/company/CompanyLayout.jsx';
@@ -63,8 +65,15 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/cvs/:id" element={<CVEditorPage />} />
+          {/* Tailoring reads one CV and one advert and writes a new CV;
+              it never changes the CV it was started from. */}
+          <Route path="/cvs/:id/tailor" element={<TailorCVPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          {/* Dropping a CV reads a file and scores the whole board, so it
+              is behind the session and the job-match rate limit rather
+              than open to anyone passing. */}
+          <Route path="/jobs/match" element={<MatchMyCVPage />} />
           <Route path="/saved-jobs" element={<SavedJobsPage />} />
           <Route path="/applications" element={<ApplicationsPage />} />
           {/* My company is the module; the profile and the job posts are
