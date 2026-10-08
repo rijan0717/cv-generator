@@ -89,7 +89,10 @@ describe('App routing', () => {
         avatarUrl: '',
         status: 'active',
       });
-      cvApi.listCVs.mockResolvedValue([]);
+      cvApi.listCVs.mockResolvedValue({
+        cvs: [],
+        pagination: { page: 1, limit: 12, total: 0, pages: 1 },
+      });
       reviewApi.listPublicReviews.mockResolvedValue({
         reviews: [],
         summary: { average: 0, count: 0 },

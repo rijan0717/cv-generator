@@ -23,9 +23,11 @@ import {
   getPrintData,
   importCV,
 } from '../controllers/cvExport.controller.js';
+import { previewTailoredCV, saveTailoredCV } from '../controllers/cvTailor.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { uploadImage, uploadDocument, handleUploadErrors } from '../middleware/upload.js';
+import { jobMatchLimiter } from '../middleware/rateLimit.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
@@ -97,6 +99,69 @@ router.get('/:id/score', [validId], validate, asyncHandler(getScore));
 
 router.patch('/:id/primary', [validId], validate, asyncHandler(setPrimaryCV));
 router.delete('/:id/primary', [validId], validate, asyncHandler(clearPrimaryCV));
+
+// --- Job-Tailored CV Rewrite -----------------------------------------------
+
+/**
+ * The advert can be chosen from the board (`jobId`) or pasted in, so the
+ * description is only required when no job was chosen. 50 characters is
+ * the same floor the match analyser uses: below that there is not enough
+ * text to weight anything.
+ */
+const jobSourceChecks = [
+  body('jobId').optional().isMongoId().withMessage('That job id is not valid'),
+
+  body('jobDescription')
+    .if(body('jobId').not().exists({ values: 'falsy' }))
+    .trim()
+    .isLength({ min: 50, max: 8000 })
+    .withMessage('Paste a job description of between 50 and 8000 characters'),
+
+  body('jobTitle')
+    .optional()
+    .trim()
+    .isLength({ max: 140 })
+    .withMessage('Job title must be at most 140 characters'),
+];
+
+/**
+ * Rate limited with the analyses. Tailoring weights the advert against
+ * the whole corpus and then runs the match analyser twice, before and
+ * after, so it is the more expensive of the two requests.
+ */
+router.post(
+  '/:id/tailor',
+  jobMatchLimiter,
+  [validId, ...jobSourceChecks],
+  validate,
+  asyncHandler(previewTailoredCV),
+);
+
+/**
+ * Saving the reviewed draft. Not rate limited: it is an ordinary write,
+ * and a user who has sat and edited a draft should never be told to wait
+ * before keeping it.
+ */
+router.post(
+  '/:id/tailor/save',
+  [
+    validId,
+    body('draft').isObject().withMessage('There is no draft to save'),
+    body('title')
+      .optional()
+      .trim()
+      .isLength({ min: 1, max: 100 })
+      .withMessage('Title must be between 1 and 100 characters'),
+    body('jobId').optional().isMongoId().withMessage('That job id is not valid'),
+    body('jobTitle')
+      .optional()
+      .trim()
+      .isLength({ max: 140 })
+      .withMessage('Job title must be at most 140 characters'),
+  ],
+  validate,
+  asyncHandler(saveTailoredCV),
+);
 
 // --- Import ----------------------------------------------------------------
 

@@ -2,11 +2,12 @@ import api from './axios.js';
 
 /**
  * The caller's own applications.
- * @returns {Promise<Array<object>>}
+ * @param {{page?: number, limit?: number}} [params] - Which page to load.
+ * @returns {Promise<{applications: Array<object>, pagination: object}>}
  */
-export async function listMyApplications() {
-  const { data } = await api.get('/api/applications/mine');
-  return data.data.applications;
+export async function listMyApplications(params = {}) {
+  const { data } = await api.get('/api/applications/mine', { params });
+  return data.data;
 }
 
 /**

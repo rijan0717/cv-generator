@@ -285,3 +285,108 @@ _To be completed._
 ## Phase 7 — Testing and polish
 
 _To be completed._
+
+---
+
+## Feature 6 — Job-Tailored CV Rewrite
+
+The algorithm is written up in `docs/algorithms.md` section 3, and the
+decisions behind the feature — including where the build departed from its
+spec — in `docs/job-tailored-rewrite.md`. These are the module notes.
+
+### `server/src/algorithms/phraseRewriter.js`
+
+Sentence-level rewriting. Pure: a string in, a string out.
+
+| Function                | Does                                                                       |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `gerundToBase(word)`    | `"managing"` to `"manage"`, consulting `data/actionVerbs.js`               |
+| `toPastTense(base)`     | `"manage"` to `"managed"`, with a small table of irregulars                |
+| `tidy(text)`            | Collapses whitespace and capitalises                                       |
+| `rewriteAsAction(line)` | Promotes the user's own verb out of a weak opener, or refuses and says why |
+| `rewriteDescription()`  | The same over a multi-line field, preserving line breaks and bullets       |
+
+The refusal is the important behaviour. `rewriteAsAction` returns the line
+unchanged with a `reason` whenever the verb would have to come from anywhere
+other than the user's own sentence, and the caller shows that reason as
+advice. A rewriter that always produces something is easy to write and
+dangerous to use.
+
+### `server/src/algorithms/cvTailor.js`
+
+The rewrite itself. Also pure — a CV and some advert text in, a draft out.
+No database, no network, which is what lets it be unit-tested without Mongo
+and explained on its own.
+
+| Function               | Does                                                           |
+| ---------------------- | -------------------------------------------------------------- |
+| `buildJobProfile()`    | Weights the advert and keeps its top 60 terms as the yardstick |
+| `relevanceOf(text)`    | The share of that vocabulary a piece of CV text covers         |
+| `buildVocabularyMap()` | The alias swaps this advert justifies (`js` to `JavaScript`)   |
+| `alignVocabulary()`    | Applies them, with boundaries that survive `Node.js` and `c++` |
+| `tailorSkills()`       | The three-way split: promoted, added, suggested                |
+| `buildSummary()`       | Five sentences, each from a named source on the CV             |
+| `yearsOfExperience()`  | The span from earliest start to latest end, never the sum      |
+| `tailorCV()`           | Orchestrates the seven steps and records every change          |
+
+`tailorCV` returns `{ draft, changes, suggestedSkills, notes }`. `changes` is
+what the review screen lists, each with a `before`, an `after` and a `reason`;
+`notes` is the advice the module could not act on itself.
+
+It reads `skillsFromSection` from `jobMatcher.js` and `hasQuantifiedResult`
+from `cvStrengthScorer.js` rather than reimplementing either, so "what counts
+as a listed skill" and "what counts as quantified" have one definition each
+across all three algorithms.
+
+### `server/src/controllers/cvTailor.controller.js`
+
+Two handlers, and the split between them is the point of the feature.
+
+- `previewTailoredCV` — `POST /api/cvs/:id/tailor`. Checks ownership, loads
+  the corpus, runs the rewrite, and runs `analyseMatch` over both the original
+  and the draft so the response can show before and after. **Stores nothing.**
+- `saveTailoredCV` — `POST /api/cvs/:id/tailor/save`. Creates a new CV from
+  the draft the user ended up with, starting from the source CV so anything
+  the draft omits is carried over rather than lost. The rewrite is _not_
+  re-run here: doing so would throw away the user's edits.
+
+Both go through a local `findOwnedCV` that returns 404 rather than 403, as
+everywhere else in the project. The preview shares `jobMatchLimiter` with the
+analyses, because it is the most expensive request the server serves — one
+weighting plus two full analyses. The save is not rate limited: a user who has
+sat and edited a draft should never be told to wait before keeping it.
+
+Field whitelist: a saved draft may only set the same fields
+`cv.controller.js` allows, so a user editing a draft cannot set the owner, the
+primary flag or the score. The new CV is never primary, whatever the source
+CV was — a CV written for one advert is the wrong default for every other
+application.
+
+### Model and logging
+
+- `CV.tailoredFor` — `{ job, jobTitle, sourceCv, tailoredAt }`, and `null` on
+  every CV that was not produced this way. It defaults to `null` rather than
+  to an empty object because "not tailored" and "tailored for nothing in
+  particular" are different states, and the dashboard badge depends on telling
+  them apart.
+- `CV_TAILOR` added to `ACTIVITY_ACTIONS`, logged on save with the source CV
+  and the job.
+
+### Client
+
+| File                             | Does                                                   |
+| -------------------------------- | ------------------------------------------------------ |
+| `api/tailor.js`                  | The two calls                                          |
+| `pages/user/TailorCVPage.jsx`    | `/cvs/:id/tailor` — choose the advert, then review     |
+| `components/cv/TailorReview.jsx` | The editable draft, the change list and the two scores |
+
+Reached from a "Tailor for a job" action on each row of My CVs. The advert is
+either chosen from the board or pasted in; most adverts a student applies to
+are not on this board, so pasting is a first-class option rather than an
+afterthought.
+
+The review screen lists the changes **with their reasons before** it shows the
+fields, rather than presenting a finished document to accept or reject. A user
+who can see why their summary was replaced can judge whether to keep it; one
+who only sees the new summary cannot. The before-and-after score is shown
+honestly — if the rewrite did not help, that is what the user sees.

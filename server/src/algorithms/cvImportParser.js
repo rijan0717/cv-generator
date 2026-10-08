@@ -137,6 +137,12 @@ const LEVEL_WORDS = {
  * repeated spaces from column alignment, and stray carriage returns. Cleaning
  * this up first means every later rule can assume simple input.
  *
+ * A run of two or more spaces is kept (as exactly two), because in a CV it is
+ * not noise: it is the gap between two columns, such as an employer on the
+ * left and its dates on the right, or a label beside its values. Several
+ * rules below split on it, so flattening it to one space would throw away the
+ * only clue that those are separate fields.
+ *
  * @param {string} text - Raw text from the document.
  * @returns {string[]} Trimmed, non-empty lines.
  */
@@ -147,7 +153,7 @@ export function normaliseLines(text) {
     .replace(/[‘’]/g, "'") // smart quotes
     .replace(/[“”]/g, '"')
     .split('\n')
-    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .map((line) => line.replace(/[^\S\n]+/g, (run) => (run.length > 1 ? '  ' : ' ')).trim())
     .filter((line) => line.length > 0);
 }
 
@@ -196,15 +202,18 @@ export function parseContact(lines) {
  * as the headline.
  *
  * @param {string[]} lines - Normalised lines.
+ * @param {{linkedin?: string, github?: string, email?: string}} [contact] -
+ *        Contact details, used to put the space back into a name whose
+ *        spacing the PDF lost.
  * @returns {{fullName: string, headline: string}}
  */
-export function parseNameAndHeadline(lines) {
+export function parseNameAndHeadline(lines, contact = {}) {
   const candidates = lines.slice(0, 6);
 
   const nameIndex = candidates.findIndex((line) => looksLikeName(line));
   if (nameIndex === -1) return { fullName: '', headline: '' };
 
-  const fullName = candidates[nameIndex];
+  const fullName = restoreNameSpacing(candidates[nameIndex], contact);
 
   // The headline is the next line, provided it is short prose rather than a
   // contact line or a section heading.
@@ -222,7 +231,57 @@ export function parseNameAndHeadline(lines) {
 }
 
 /**
+ * Puts the space back into a name the PDF ran together.
+ *
+ * A name set in letter-spaced capitals — R I J A N   P A R I Y A R — reaches
+ * us as "RIJANPARIYAR", because the gap between the two words is written in
+ * the file exactly like the gaps between the letters. Nothing in the text can
+ * say where the name ends, but the CV almost always repeats it in a profile
+ * link, where a hyphen or a dot keeps the two parts apart.
+ *
+ * So the handle is split, and if its parts spell the same letters as the run
+ * of capitals, the run is cut in the same places. The check is all or
+ * nothing: a handle that does not match the name exactly is ignored rather
+ * than guessed at.
+ *
+ * @param {string} name - The name as it was read.
+ * @param {{linkedin?: string, github?: string, email?: string}} contact
+ * @returns {string} The name, spaced if it could be, unchanged if not.
+ */
+function restoreNameSpacing(name, contact) {
+  if (name.includes(' ') || name.length < 6) return name;
+
+  const handles = [contact.linkedin, contact.github, (contact.email ?? '').split('@')[0]]
+    .filter(Boolean)
+    .flatMap((value) => value.split('/'))
+    .filter((segment) => /[-._]/.test(segment));
+
+  for (const handle of handles) {
+    const parts = handle.split(/[-._]+/).filter(Boolean);
+
+    if (parts.length >= 2 && parts.join('').toLowerCase() === name.toLowerCase()) {
+      let position = 0;
+
+      return parts
+        .map((part) => {
+          const slice = name.slice(position, position + part.length);
+          position += part.length;
+          return slice;
+        })
+        .join(' ');
+    }
+  }
+
+  return name;
+}
+
+/**
  * Reports whether a line plausibly is a person's name.
+ *
+ * One word is allowed as well as two to five, because a letter-spaced name
+ * arrives from a PDF as a single run of capitals. It has to be long enough
+ * and plain enough not to be a stray word from a header.
+ *
  * @param {string} line - A normalised line.
  * @returns {boolean}
  */
@@ -232,7 +291,11 @@ function looksLikeName(line) {
   if (detectHeading(line)) return false;
 
   const words = line.split(' ').filter(Boolean);
-  if (words.length < 2 || words.length > 5) return false;
+  if (words.length > 5) return false;
+
+  if (words.length === 1) {
+    return line.length >= 6 && /^[A-Za-z][A-Za-z'’-]*$/.test(line);
+  }
 
   // Every word should start with a capital, or the whole line is upper case
   // as many CVs render the name.
@@ -254,6 +317,11 @@ function looksLikeName(line) {
  * heading, but "Experience of working with large teams" inside a summary is
  * not, and length is the cheapest way to tell them apart.
  *
+ * Matching ignores spaces entirely. A heading set in letter-spaced capitals
+ * loses its word boundaries when the PDF is read, so "PROFESSIONAL SUMMARY"
+ * can arrive as "PROFESSIONALSUMMARY"; comparing without spaces recognises
+ * both and costs nothing, as no two section names differ only by a space.
+ *
  * @param {string} line - A normalised line.
  * @returns {string|null} The section key, or null if this is not a heading.
  */
@@ -267,8 +335,35 @@ export function detectHeading(line) {
 
   if (!cleaned || cleaned.length > 40) return null;
 
+  const direct = matchSectionName(cleaned);
+  if (direct) return direct;
+
+  // A combined heading such as "Education and Languages" or
+  // "Skills & Technologies". Both halves must name a section, or an ordinary
+  // sentence containing "and" would be mistaken for one. The first half wins,
+  // and the inline labels handled in splitIntoSections usually pick the
+  // second half up from the lines underneath.
+  const halves = cleaned.split(/\s+(?:and|&|\/)\s+|\s*\/\s*/).filter(Boolean);
+
+  if (halves.length >= 2) {
+    const keys = halves.map(matchSectionName);
+    if (keys.every(Boolean)) return keys[0];
+  }
+
+  return null;
+}
+
+/**
+ * Matches one cleaned, lowercased name against the synonym lists.
+ * @param {string} name - A candidate section name.
+ * @returns {string|null} The section key, or null.
+ */
+function matchSectionName(name) {
+  const squashed = name.replace(/\s+/g, '');
+  if (!squashed) return null;
+
   for (const [key, synonyms] of Object.entries(SECTION_SYNONYMS)) {
-    if (synonyms.includes(cleaned)) return key;
+    if (synonyms.some((synonym) => synonym.replace(/\s+/g, '') === squashed)) return key;
   }
 
   return null;
@@ -280,6 +375,18 @@ export function detectHeading(line) {
  * Anything before the first heading is returned as `header`, since that is
  * where the name and contact details normally live.
  *
+ * A section also starts at an inline label — a line such as
+ * "Languages    English, Nepali", where the name of the section sits in a
+ * left-hand column instead of on a line of its own. Compact one-page CVs are
+ * written this way constantly, and without this rule everything under a
+ * combined heading like "Education and Languages" would be filed as
+ * education. The label is removed and the rest of the line kept as content.
+ *
+ * Inline labels are ignored inside the skills section, where lines like
+ * "Languages    JavaScript, Python" are category labels for skills rather
+ * than a new section, and reading them as one would move half the skills
+ * somewhere else.
+ *
  * @param {string[]} lines - Normalised lines.
  * @returns {{header: string[], sections: Record<string, string[]>}}
  */
@@ -289,14 +396,27 @@ export function splitIntoSections(lines) {
 
   let current = null;
 
+  /** Starts (or resumes) a section, keeping anything already collected. */
+  const startSection = (key) => {
+    current = key;
+    // A repeated heading appends rather than replacing, so a CV split
+    // across columns or pages does not lose half its content.
+    if (!sections[current]) sections[current] = [];
+  };
+
   for (const line of lines) {
     const heading = detectHeading(line);
 
     if (heading) {
-      current = heading;
-      // A repeated heading appends rather than replacing, so a CV split
-      // across columns or pages does not lose half its content.
-      if (!sections[current]) sections[current] = [];
+      startSection(heading);
+      continue;
+    }
+
+    const inline = current === 'skills' ? null : detectInlineLabel(line);
+
+    if (inline) {
+      startSection(inline.key);
+      if (inline.rest) sections[current].push(inline.rest);
       continue;
     }
 
@@ -305,6 +425,27 @@ export function splitIntoSections(lines) {
   }
 
   return { header, sections };
+}
+
+/**
+ * Detects a section name used as a label at the start of a line.
+ *
+ * The label must be followed by a column gap (two or more spaces, which
+ * `normaliseLines` preserves) or a colon, so a sentence that merely begins
+ * with the word "Education" is not mistaken for one.
+ *
+ * @param {string} line - A normalised line.
+ * @returns {{key: string, rest: string}|null} The section and the remaining
+ *          text, or null when the line has no inline label.
+ */
+function detectInlineLabel(line) {
+  if (BULLET_MARKERS.test(line)) return null;
+
+  const match = line.match(/^([A-Za-z][A-Za-z &/]{2,28}?)\s*(?::|\s{2,})\s*(.+)$/);
+  if (!match) return null;
+
+  const key = matchSectionName(match[1].trim().toLowerCase());
+  return key ? { key, rest: match[2].trim() } : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -420,6 +561,13 @@ export function splitIntoEntries(lines) {
 
 /**
  * Separates an entry's bullet lines from its prose lines.
+ *
+ * A bullet longer than the page is wide is stored as several lines, and only
+ * the first carries the bullet character. A plain line that follows an
+ * unfinished bullet is therefore the rest of it, not a new thought, and is
+ * joined back on — otherwise every achievement is cut off mid-sentence and
+ * its ending is filed as the job description.
+ *
  * @param {string[]} lines - The lines of one entry.
  * @returns {{bullets: string[], prose: string[]}}
  */
@@ -430,9 +578,18 @@ export function extractBullets(lines) {
   for (const line of lines) {
     if (BULLET_MARKERS.test(line)) {
       bullets.push(line.replace(BULLET_MARKERS, '').trim());
-    } else {
-      prose.push(line);
+      continue;
     }
+
+    const last = bullets[bullets.length - 1];
+
+    // Unfinished means it does not end in sentence punctuation.
+    if (last && !/[.!?:]$/.test(last)) {
+      bullets[bullets.length - 1] = `${last} ${line}`;
+      continue;
+    }
+
+    prose.push(line);
   }
 
   return { bullets, prose };
@@ -443,11 +600,65 @@ export function extractBullets(lines) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Words that appear in job titles but not in company names.
+ *
+ * Used only to tell which of two lines is the role, so it does not need to be
+ * exhaustive: when nothing matches, the parser falls back to the usual order.
+ */
+const ROLE_WORDS = [
+  'engineer',
+  'developer',
+  'specialist',
+  'manager',
+  'analyst',
+  'designer',
+  'consultant',
+  'intern',
+  'trainee',
+  'officer',
+  'assistant',
+  'associate',
+  'administrator',
+  'architect',
+  'executive',
+  'coordinator',
+  'director',
+  'supervisor',
+  'technician',
+  'lead',
+  'head',
+  'tester',
+  'accountant',
+  'teacher',
+  'nurse',
+  'scientist',
+  'writer',
+  'marketer',
+  'programmer',
+];
+
+/**
+ * Reports whether a line reads as a job title rather than an employer.
+ * @param {string} line - A line from an experience entry.
+ * @returns {boolean}
+ */
+function looksLikeJobTitle(line) {
+  const lower = line.toLowerCase();
+  return ROLE_WORDS.some((word) => new RegExp(`\\b${word}s?\\b`).test(lower));
+}
+
+/**
  * Parses one experience entry.
  *
  * The usual shape is a title line carrying the dates, then a line naming the
  * company, then bullets. The title line is split on the common separators so
  * "Developer, Acme Ltd" and "Developer | Acme" both work.
+ *
+ * Plenty of CVs invert this and put "Acme Ltd — London    Jan 2023 – Present"
+ * first with the job title underneath, so the two lines are compared before
+ * either is used: the one that reads as a job title becomes the position and
+ * the other becomes the employer. Without that check the employer's city ends
+ * up recorded as the job.
  *
  * @param {string[]} lines - The lines of one entry.
  * @returns {object} An experience sub-document.
@@ -466,9 +677,18 @@ export function parseExperienceEntry(lines) {
   let company = parts[1] ?? '';
   let location = parts[2] ?? '';
 
-  // When the title line held only the position, the next line is usually the
-  // employer.
-  if (!company && second && second !== first && !parseDateRange(second)) {
+  const hasSecondLine = Boolean(second) && second !== first && !parseDateRange(second);
+
+  if (hasSecondLine && !looksLikeJobTitle(titleLine) && looksLikeJobTitle(second)) {
+    // Employer first, role underneath.
+    position = second.trim();
+    company = parts[0] ?? '';
+    // Everything after the employer is the place it was in; rejoining keeps
+    // "Kathmandu, Nepal" whole instead of dropping the country.
+    location = parts.slice(1).join(', ');
+  } else if (!company && hasSecondLine) {
+    // When the title line held only the position, the next line is usually
+    // the employer.
     const secondParts = splitOnSeparators(second);
     company = secondParts[0] ?? '';
     location = location || (secondParts[1] ?? '');
@@ -505,8 +725,16 @@ export function parseEducationEntry(lines) {
     /^(BSc|BA|BE|BCA|BBA|MSc|MA|MBA|MCA|PhD|Diploma|Certificate|Bachelor[^,]*|Master[^,]*)\b[\s,]*(.*)$/i,
   );
 
-  const degree = degreeMatch ? degreeMatch[1].trim() : qualification.trim();
-  const fieldOfStudy = degreeMatch ? degreeMatch[2].trim() : '';
+  let degree = degreeMatch ? degreeMatch[1].trim() : qualification.trim();
+  let fieldOfStudy = degreeMatch ? degreeMatch[2].trim() : '';
+
+  // "Bachelor of Computer Applications (BCA)" is all one qualification, so a
+  // remainder with no words in it — a stray bracket — means the split was
+  // wrong and the line is better left whole.
+  if (!/[A-Za-z0-9]/.test(fieldOfStudy)) {
+    degree = qualification.trim();
+    fieldOfStudy = '';
+  }
 
   let institution = parts[1] ?? '';
   if (!institution && second && !parseDateRange(second)) {
@@ -542,6 +770,10 @@ export function parseEducationEntry(lines) {
  * "Category: a, b, c". All three are flattened into individual skills, and a
  * level word in brackets is picked up when present.
  *
+ * A category is also recognised when it is set in a left-hand column with no
+ * colon — "Automation    Playwright, Cypress" — which is how most one-page
+ * technical CVs lay the section out.
+ *
  * @param {string[]} lines - The lines of the skills section.
  * @returns {Array<{name: string, level: string}>}
  */
@@ -551,8 +783,18 @@ export function parseSkills(lines) {
   for (const rawLine of lines) {
     const line = rawLine.replace(BULLET_MARKERS, '');
 
-    // Drop a leading category label: "Languages: JavaScript, Python".
-    const withoutCategory = line.includes(':') ? line.slice(line.indexOf(':') + 1) : line;
+    // Drop a leading category label: "Languages: JavaScript, Python", or the
+    // same thing written as a column.
+    let withoutCategory = line.includes(':') ? line.slice(line.indexOf(':') + 1) : line;
+
+    const columnLabel = withoutCategory.match(/^[A-Za-z][A-Za-z &/]{2,28}?\s{2,}(.+)$/);
+    if (columnLabel) withoutCategory = columnLabel[1];
+
+    // A bracketed list is itself a list of skills — "Playwright (TypeScript,
+    // JavaScript, Python)" names four of them — so its brackets become
+    // separators. A bracket without a comma is left alone, because that is
+    // how a level is written: "JavaScript (Advanced)".
+    withoutCategory = withoutCategory.replace(/\(([^)]*,[^)]*)\)/g, ', $1');
 
     for (const piece of withoutCategory.split(/[,;|•·]/)) {
       const name = piece.trim();
@@ -593,7 +835,7 @@ export function parseLanguages(lines) {
   for (const rawLine of lines) {
     const line = rawLine.replace(BULLET_MARKERS, '');
 
-    for (const piece of line.split(/[,;|]/)) {
+    for (const piece of line.split(/[,;|•·]/)) {
       const text = piece.trim();
       if (!text) continue;
 
@@ -636,10 +878,23 @@ export function parseProjects(lines) {
           .filter(Boolean)
       : [];
 
+    // A short second part with no digits is a role ("Lead Developer");
+    // anything longer is the start of the description, as in
+    // "Ease-meds — Online medicine delivery system in core PHP and MySQL".
+    const second = (parts[1] ?? '').trim();
+    const role = second.length <= 40 && !/\d/.test(second) ? second : '';
+
+    // Whatever of the first line was not the name or the role is description,
+    // so none of it is lost.
+    const tail = parts.slice(role ? 2 : 1).join(', ');
+
     return {
       name: (parts[0] ?? '').trim(),
-      role: (parts[1] ?? '').trim(),
-      description: [...rest.filter((line) => line !== techLine), ...bullets].join(' ').trim(),
+      role,
+      description: [tail, ...rest.filter((line) => line !== techLine), ...bullets]
+        .filter(Boolean)
+        .join(' ')
+        .trim(),
       technologies,
       link,
     };
@@ -650,8 +905,15 @@ export function parseProjects(lines) {
  * Splits the projects section into entries.
  *
  * Projects rarely carry dates, so the rule used for jobs does not apply. A
- * new project is assumed to start at a non-bullet line that is short enough
- * to be a title.
+ * new project starts at a non-bullet line that either names itself with a
+ * dash — "Ease-meds — Online medicine delivery system…" — or is a short line
+ * following a finished sentence.
+ *
+ * The second half of that rule matters because a PDF breaks a paragraph into
+ * lines wherever it ran out of width. Treating every short line as a title,
+ * as a simpler rule would, turns the tail of one description into a project
+ * of its own; requiring the previous line to have ended in a full stop keeps
+ * a wrapped sentence together.
  *
  * @param {string[]} lines - The lines of the projects section.
  * @returns {string[][]}
@@ -659,15 +921,21 @@ export function parseProjects(lines) {
 function splitProjectEntries(lines) {
   const entries = [];
   let current = [];
+  let previous = '';
 
   for (const line of lines) {
-    const isTitle = !BULLET_MARKERS.test(line) && line.length <= 80 && !line.endsWith('.');
+    const namedWithDash = /^.{2,60}?\s[–—]\s/.test(line);
+    const afterFullStop = previous.endsWith('.') && line.length <= 80 && !line.endsWith('.');
+
+    const isTitle = !BULLET_MARKERS.test(line) && (namedWithDash || afterFullStop);
 
     if (isTitle && current.length > 0) {
       entries.push(current);
       current = [];
     }
+
     current.push(line);
+    previous = line;
   }
 
   if (current.length > 0) entries.push(current);
@@ -738,7 +1006,7 @@ export function parseCVText(text) {
   // Contact details are searched for across the whole document, because a
   // sidebar CV may put them below the first heading.
   const contact = parseContact(lines);
-  const { fullName, headline } = parseNameAndHeadline(header.length > 0 ? header : lines);
+  const { fullName, headline } = parseNameAndHeadline(header.length > 0 ? header : lines, contact);
 
   return {
     personal: {

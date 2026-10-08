@@ -4,7 +4,7 @@ import * as jobApi from '../../api/jobs.js';
 import { useAuth } from '../../context/useAuth.js';
 import { useJobMatchScores } from '../../utils/useJobMatchScores.js';
 import JobCard from '../../components/jobs/JobCard.jsx';
-import Pagination from '../../components/admin/Pagination.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -114,11 +114,20 @@ export default function JobsPage() {
         </div>
 
         {isAuthenticated && (
-          <Link to="/company">
-            <Button variant="secondary" size="sm">
-              Post a job
-            </Button>
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* The primary action on this page for someone looking for
+                work, so it leads rather than sitting beside "Post a job",
+                which is the action for the other half of the audience. */}
+            <Link to="/jobs/match">
+              <Button size="sm">Match my CV</Button>
+            </Link>
+
+            <Link to="/company">
+              <Button variant="secondary" size="sm">
+                Post a job
+              </Button>
+            </Link>
+          </div>
         )}
       </header>
 
@@ -262,7 +271,7 @@ export default function JobsPage() {
         </div>
       )}
 
-      <Pagination pagination={pagination} onChange={setPage} />
+      <Pagination pagination={pagination} onChange={setPage} label="jobs" />
     </div>
   );
 }

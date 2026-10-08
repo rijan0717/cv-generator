@@ -132,6 +132,31 @@ const personalSchema = new mongoose.Schema(
   { _id: false },
 );
 
+/**
+ * Where a tailored CV came from.
+ *
+ * Only set on a CV produced by the Job-Tailored CV Rewrite, which is why
+ * the whole sub-document defaults to null rather than to an empty object:
+ * "this CV was not tailored" and "this CV was tailored for nothing in
+ * particular" are different states, and the dashboard badge depends on
+ * telling them apart.
+ */
+const tailoredForSchema = new mongoose.Schema(
+  {
+    /** The advert, when it came from the job board rather than pasted in. */
+    job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job', default: null },
+
+    /** Kept separately, so the badge still reads correctly if the job is removed. */
+    jobTitle: { type: String, trim: true, default: '' },
+
+    /** The CV this one was tailored from. */
+    sourceCv: { type: mongoose.Schema.Types.ObjectId, ref: 'CV', default: null },
+
+    tailoredAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
 const cvSchema = new mongoose.Schema(
   {
     user: {
@@ -179,6 +204,9 @@ const cvSchema = new mongoose.Schema(
      * query that lists CVs already has it, with no extra lookup.
      */
     isPrimary: { type: Boolean, default: false },
+
+    /** Set only on a CV created by the Job-Tailored CV Rewrite. */
+    tailoredFor: { type: tailoredForSchema, default: null },
 
     isDeleted: { type: Boolean, default: false },
   },

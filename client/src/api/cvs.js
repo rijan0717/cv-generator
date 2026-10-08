@@ -2,11 +2,16 @@ import api from './axios.js';
 
 /**
  * Lists the logged-in user's CVs for the dashboard.
- * @returns {Promise<Array<object>>}
+ *
+ * Returns the page object rather than the bare array, because the caller
+ * needs the totals to draw the page controls.
+ *
+ * @param {{page?: number, limit?: number}} [params] - Which page to load.
+ * @returns {Promise<{cvs: Array<object>, pagination: object}>}
  */
-export async function listCVs() {
-  const { data } = await api.get('/api/cvs');
-  return data.data.cvs;
+export async function listCVs(params = {}) {
+  const { data } = await api.get('/api/cvs', { params });
+  return data.data;
 }
 
 /**

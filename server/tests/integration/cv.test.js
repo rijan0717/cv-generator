@@ -211,3 +211,66 @@ describe('CV lifecycle', () => {
     expect(res.body.data.cvs.map((cv) => cv.title)).not.toContain('Theirs');
   });
 });
+
+describe('GET /api/cvs pagination', () => {
+  let agent;
+
+  beforeEach(async () => {
+    agent = await signUp('pager@example.com');
+
+    // Created one after another rather than in parallel, so `updatedAt`
+    // increases predictably and the newest-first order can be asserted.
+    for (let i = 1; i <= 25; i += 1) {
+      await agent.post('/api/cvs').send({ title: `CV ${String(i).padStart(2, '0')}` });
+    }
+  });
+
+  it('returns the first page and the totals', async () => {
+    const res = await agent.get('/api/cvs');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.cvs).toHaveLength(12);
+    expect(res.body.data.pagination).toMatchObject({ page: 1, limit: 12, total: 25, pages: 3 });
+  });
+
+  it('returns a later page with the remaining CVs', async () => {
+    const res = await agent.get('/api/cvs').query({ page: 3, limit: 12 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.cvs).toHaveLength(1);
+    expect(res.body.data.pagination).toMatchObject({ page: 3, pages: 3 });
+  });
+
+  it('does not repeat a CV across pages', async () => {
+    const first = await agent.get('/api/cvs').query({ page: 1, limit: 10 });
+    const second = await agent.get('/api/cvs').query({ page: 2, limit: 10 });
+
+    const firstIds = first.body.data.cvs.map((cv) => cv._id);
+    const secondIds = second.body.data.cvs.map((cv) => cv._id);
+
+    expect(firstIds).toHaveLength(10);
+    expect(secondIds).toHaveLength(10);
+    expect(firstIds.filter((id) => secondIds.includes(id))).toEqual([]);
+  });
+
+  it('clamps a page size above the maximum', async () => {
+    const res = await agent.get('/api/cvs').query({ limit: 5000 });
+
+    expect(res.body.data.pagination.limit).toBe(100);
+    expect(res.body.data.cvs.length).toBeLessThanOrEqual(100);
+  });
+
+  it('treats a nonsense page number as the first page', async () => {
+    const res = await agent.get('/api/cvs').query({ page: -4 });
+
+    expect(res.body.data.pagination.page).toBe(1);
+  });
+
+  it('reports one page when the user has no CVs', async () => {
+    const other = await signUp('empty@example.com');
+    const res = await other.get('/api/cvs');
+
+    expect(res.body.data.cvs).toEqual([]);
+    expect(res.body.data.pagination).toMatchObject({ total: 0, pages: 1 });
+  });
+});

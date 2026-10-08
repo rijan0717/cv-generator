@@ -29,12 +29,39 @@ export async function scoreJobs(jobIds) {
 }
 
 /**
- * The caller's own analysis history, newest first.
- * @returns {Promise<Array<object>>}
+ * Uploads a CV file and ranks every open job against it.
+ *
+ * Nothing is stored: the parsed CV comes straight back so the page can
+ * preview it, and the ranking is thrown away when the user leaves.
+ *
+ * @param {File} file - A PDF, .docx or .txt CV.
+ * @returns {Promise<{cv: object, strength: object,
+ *                    results: Array<{job: object, match: object}>, stats: object}>}
  */
-export async function listMatches() {
-  const { data } = await api.get('/api/job-match');
-  return data.data.jobMatches;
+export async function matchUploadedCV(file) {
+  const form = new FormData();
+  form.append('document', file);
+
+  // The shared Axios instance defaults every request to `application/json`,
+  // and Axios converts a FormData body into a JSON object when that is the
+  // content type — so the file never reaches the server and multer finds
+  // nothing. Naming multipart here (as the other uploads do) prevents that;
+  // Axios then removes the header before sending so the browser can set it
+  // with the correct boundary.
+  const { data } = await api.post('/api/job-match/from-upload', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+}
+
+/**
+ * The caller's own analysis history, newest first.
+ * @param {{page?: number, limit?: number}} [params] - Which page to load.
+ * @returns {Promise<{jobMatches: Array<object>, pagination: object}>}
+ */
+export async function listMatches(params = {}) {
+  const { data } = await api.get('/api/job-match', { params });
+  return data.data;
 }
 
 /**

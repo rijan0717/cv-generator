@@ -13,6 +13,7 @@ import { scoreCV } from '../algorithms/cvStrengthScorer.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
+import { readPagination, buildPagination } from '../utils/pagination.js';
 import { UPLOAD_DIR } from '../middleware/upload.js';
 
 /** Fields the client may change. Anything else in the body is ignored. */
@@ -46,15 +47,30 @@ async function findOwnedCV(cvId, userId) {
 
 /**
  * GET /api/cvs
+ *
  * Lists the user's CVs for the dashboard. Only the fields the list shows are
  * selected, so a user with many long CVs does not transfer all of them.
+ *
+ * Paginated for the same reason the admin lists are: a user who has built a
+ * CV per application accumulates dozens, and the dashboard should not get
+ * slower the more use someone makes of it. The default page size is larger
+ * than the admin lists' because CV rows are short and the dashboard is a
+ * grid rather than a table.
  */
 export async function listCVs(req, res) {
-  const cvs = await CV.find({ user: req.user._id, isDeleted: false })
-    .select('title templateKey strengthScore isPrimary updatedAt createdAt')
-    .sort({ updatedAt: -1 });
+  const { page, limit, skip } = readPagination(req, 12);
+  const filter = { user: req.user._id, isDeleted: false };
 
-  sendSuccess(res, { cvs }, 'Your CVs');
+  const [cvs, total] = await Promise.all([
+    CV.find(filter)
+      .select('title templateKey strengthScore isPrimary tailoredFor updatedAt createdAt')
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    CV.countDocuments(filter),
+  ]);
+
+  sendSuccess(res, { cvs, pagination: buildPagination({ page, limit }, total) }, 'Your CVs');
 }
 
 /**

@@ -4,17 +4,25 @@ import * as adminApi from '../../api/admin.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 
 /**
  * One user, with the CVs they have created and their recent activity.
  *
  * This is the page that answers "what has this person actually done", which
  * is what an admin needs before blocking an account or removing a CV.
+ *
+ * Both lists page independently, and both page numbers are held here
+ * because one request returns both lists. Changing either re-fetches the
+ * page; the other list comes back on whatever page it was already on,
+ * because its number is sent unchanged.
  */
 export default function AdminUserDetailPage() {
   const { id } = useParams();
 
   const [data, setData] = useState(null);
+  const [cvPage, setCvPage] = useState(1);
+  const [activityPage, setActivityPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -22,7 +30,7 @@ export default function AdminUserDetailPage() {
     let cancelled = false;
 
     adminApi
-      .getUser(id)
+      .getUser(id, { cvPage, activityPage })
       .then((result) => {
         if (!cancelled) setData(result);
       })
@@ -36,9 +44,12 @@ export default function AdminUserDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, cvPage, activityPage]);
 
-  if (isLoading) {
+  // Only the first load blanks the page. Paging one of the two lists
+  // afterwards leaves the rest of the page in place, so the account
+  // summary does not flash away and back for a change further down.
+  if (isLoading && !data) {
     return (
       <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
         <Spinner label="Loading user" />
@@ -57,7 +68,7 @@ export default function AdminUserDetailPage() {
     );
   }
 
-  const { user, cvs, recentActivity } = data;
+  const { user, cvs, cvPagination, recentActivity, activityPagination } = data;
 
   return (
     <div>
@@ -113,7 +124,8 @@ export default function AdminUserDetailPage() {
       {/* Their CVs */}
       <section className="mt-5">
         <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-          CVs <span className="text-slate-500 dark:text-slate-400">({cvs.length})</span>
+          CVs{' '}
+          <span className="text-slate-500 dark:text-slate-400">({cvPagination?.total ?? 0})</span>
         </h3>
 
         {cvs.length === 0 ? (
@@ -149,6 +161,10 @@ export default function AdminUserDetailPage() {
             ))}
           </ul>
         )}
+
+        {cvs.length > 0 && (
+          <Pagination pagination={cvPagination} onChange={setCvPage} label="CVs" />
+        )}
       </section>
 
       {/* Recent activity */}
@@ -170,6 +186,14 @@ export default function AdminUserDetailPage() {
               </li>
             ))}
           </ul>
+        )}
+
+        {recentActivity.length > 0 && (
+          <Pagination
+            pagination={activityPagination}
+            onChange={setActivityPage}
+            label="entries"
+          />
         )}
       </section>
     </div>

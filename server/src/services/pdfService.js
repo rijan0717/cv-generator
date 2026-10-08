@@ -30,16 +30,36 @@ import { ApiError } from '../utils/ApiError.js';
 let browserPromise = null;
 
 /**
+ * True when the print page is served over HTTPS with a certificate Chromium
+ * will not trust on its own (the development setup).
+ * @returns {boolean}
+ */
+function usesSelfSignedHttps() {
+  return env.clientUrl.startsWith('https://') && env.https.allowSelfSigned;
+}
+
+/**
  * Returns the shared browser, starting it if necessary.
  * @returns {Promise<import('puppeteer').Browser>}
  */
 async function getBrowser() {
   if (!browserPromise) {
+    const args = ['--no-sandbox', '--disable-dev-shm-usage'];
+
+    // When the developer runs the client over HTTPS with a locally generated
+    // certificate, Chromium would refuse to open the print page because no
+    // authority it trusts signed it. Accepting it is safe here: the only page
+    // this browser ever opens is our own print route.
+    if (usesSelfSignedHttps()) {
+      args.push('--ignore-certificate-errors');
+    }
+
     browserPromise = puppeteer
       .launch({
         headless: true,
         // Required to run as root inside a container, and harmless locally.
-        args: ['--no-sandbox', '--disable-dev-shm-usage'],
+        args,
+        acceptInsecureCerts: usesSelfSignedHttps(),
       })
       .catch((error) => {
         // Clear the cached promise so the next request can try again rather

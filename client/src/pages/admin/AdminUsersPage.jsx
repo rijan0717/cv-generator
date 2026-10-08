@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
-import Pagination from '../../components/admin/Pagination.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -243,7 +243,7 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <Pagination pagination={pagination} onChange={setPage} />
+      <Pagination pagination={pagination} onChange={setPage} label="users" />
     </div>
   );
 }

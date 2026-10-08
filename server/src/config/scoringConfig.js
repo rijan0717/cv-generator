@@ -192,3 +192,72 @@ export const STRENGTH_TOTALS = {
 };
 
 STRENGTH_TOTALS.overall = STRENGTH_TOTALS.completeness + STRENGTH_TOTALS.quality;
+
+/**
+ * Job-Tailored CV Rewrite.
+ *
+ * The rewrite never invents experience. Everything it writes is assembled
+ * from facts already in the user's CV, re-ordered and re-worded against
+ * the advert's own vocabulary. These numbers decide how far it goes.
+ */
+export const TAILOR_CONFIG = {
+  /**
+   * How many of the advert's highest-weighted terms are used when
+   * measuring how relevant a single CV entry is.
+   *
+   * The whole job vector would work too, but its long tail is mostly
+   * noise on a corpus this size: a word used once in one advert carries
+   * real weight, and letting it decide whether a role is relevant makes
+   * the ordering look arbitrary. The top slice is the part that actually
+   * describes the job.
+   */
+  relevanceTerms: 60,
+
+  summary: {
+    /**
+     * The generated summary aims for this range, which is the same range
+     * the strength scorer rewards. Writing to a different target would
+     * mean the tailor and the scorer disagreed about a good summary.
+     */
+    minWords: STRENGTH_CONFIG.thresholds.summaryMinWords,
+    maxWords: STRENGTH_CONFIG.thresholds.summaryMaxWords,
+
+    /** Skills named in the opening sentences. More reads as a list. */
+    maxSkillsNamed: 6,
+  },
+
+  skills: {
+    /**
+     * Skills the advert asks for that the CV proves elsewhere but does
+     * not list. These are added automatically, because the evidence is
+     * already in the user's own words. Capped so a broad advert cannot
+     * flood the section.
+     */
+    maxAutoAdded: 8,
+
+    /**
+     * Skills the advert asks for that appear nowhere in the CV. These
+     * are only ever *suggested* — adding them automatically would be
+     * putting words in the user's mouth about what they can do.
+     */
+    maxSuggested: 10,
+  },
+
+  /**
+   * Sections that may be re-ordered by relevance.
+   *
+   * `summary` is excluded because it belongs at the top whatever it
+   * says, and `references` because it belongs at the bottom. The rest
+   * are ordered by how much of the advert they speak to.
+   */
+  reorderableSections: ['experience', 'projects', 'skills', 'education', 'certifications'],
+
+  /**
+   * How much more relevant one section must be than another before they
+   * are swapped.
+   *
+   * Without a margin, two sections that are effectively equal swap places
+   * on a rounding difference, which looks like the feature misbehaving.
+   */
+  sectionSwapMargin: 0.02,
+};

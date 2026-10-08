@@ -10,9 +10,11 @@ import {
   getJobMatch,
   deleteJobMatch,
   scoreJobsForBoard,
+  matchUploadedCV,
 } from '../controllers/jobMatch.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
+import { uploadDocument, handleUploadErrors } from '../middleware/upload.js';
 import { jobMatchLimiter } from '../middleware/rateLimit.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -63,6 +65,21 @@ router.post(
   ],
   validate,
   asyncHandler(scoreJobsForBoard),
+);
+
+/**
+ * Ranks the whole board against a CV file the user has just dropped.
+ *
+ * Declared before `/:id` for the same reason as `/scores`. Rate limited
+ * with the other analyses, because reading a PDF and then weighting every
+ * open advert against it is the most expensive request the server serves.
+ */
+router.post(
+  '/from-upload',
+  jobMatchLimiter,
+  uploadDocument.single('document'),
+  handleUploadErrors,
+  asyncHandler(matchUploadedCV),
 );
 
 router.get('/', asyncHandler(listJobMatches));

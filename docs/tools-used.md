@@ -75,6 +75,7 @@ dependencies are added in later phases.
 | Mermaid            | ER-style collection diagram and algorithm flowcharts                             |
 | MongoDB Compass    | Inspecting the database during development                                       |
 | Postman            | Manual API testing                                                               |
+| OpenSSL            | Creates the self-signed certificate used when HTTPS is enabled in development    |
 
 ## Own modules (not libraries)
 

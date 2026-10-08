@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import multer from 'multer';
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
+import { resolveDocumentKind } from '../services/documentTextService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -58,12 +59,6 @@ export const uploadImage = multer({
   },
 });
 
-/** Document types the CV importer accepts. */
-const ALLOWED_DOCUMENT_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'text/plain',
-];
 
 /**
  * Multer instance for CV imports.
@@ -76,8 +71,17 @@ const ALLOWED_DOCUMENT_TYPES = [
 export const uploadDocument = multer({
   storage: multer.memoryStorage(),
   fileFilter(_req, file, cb) {
-    if (!ALLOWED_DOCUMENT_TYPES.includes(file.mimetype)) {
-      return cb(ApiError.badRequest('Please upload a PDF, a Word (.docx) file or a text file'));
+    // Judged on the media type *or* the extension. A Word file dragged
+    // onto the page often arrives as `application/octet-stream` with no
+    // usable media type, and rejecting it here would look to the user
+    // like .docx is simply not supported. See `resolveDocumentKind`.
+    if (!resolveDocumentKind(file)) {
+      return cb(
+        ApiError.badRequest(
+          'Please upload a PDF, a Word (.docx) file or a text file. ' +
+            'An old .doc file needs saving as .docx first.',
+        ),
+      );
     }
     cb(null, true);
   },

@@ -1,7 +1,61 @@
 # Feature 6 — Job-Tailored CV Rewriting
 
-Status: **planned, not built.** This file is the build spec. Nothing in
-`server/src` or `client/src` has been changed for it yet.
+Status: **built.** The algorithm is written up in `docs/algorithms.md`
+section 3; this file is kept as the original spec plus a record of where the
+build departed from it and why.
+
+## 0. What was actually built, and how it differs from this spec
+
+Sections 1–8 below are the spec as written before the build. They are left
+unedited, because the reasoning in them is still the reasoning behind the
+feature. Five things changed during the build.
+
+**1. The result is a new CV, not an in-place suggestion panel.** The spec had
+the rewrite propose edits beside the current text, accepted section by section
+and applied to the same CV through `PUT /api/cvs/:id`. The build produces a
+**draft of a whole second CV**, which the user edits and saves as a new
+record. This was a deliberate change of requirement: one CV per application is
+how people actually use the feature, and it means the original CV cannot be
+damaged by a bad rewrite. `POST /api/cvs/:id/tailor/save` is the extra route
+this needs.
+
+**2. The entry point is My CVs, not a tab in the editor.** `/cvs/:id/tailor`
+is its own page, reached from a "Tailor for a job" action on each row of the
+dashboard. Tailoring creates a row in that list, so it belongs with the other
+actions that do.
+
+**3. It will not prepend a verb it had to choose.** Section 2, step 2 of the
+spec has a topic-to-verb table — `api` gives _Built_, `team` gives _Led_,
+default _Delivered_. The build does not do this. "Responsible for the stock
+room" would become "Delivered the stock room", which is not what the user did
+and is not English. The rewriter promotes a verb **only when the user's own
+sentence contains one** (`Responsible for managing X` gives `Managed X`), and
+reports the rest as advice in `notes`. This is a smaller feature and a
+defensible one; the table can be added later if the examples it produces turn
+out to read well.
+
+**4. No `rewriteService.js` provider switch.** The spec kept a seam for a
+Claude provider. The match analyser and the strength scorer both call their
+algorithm straight from the controller, and adding a service layer to one
+feature out of three would be inconsistent. Section 8 still applies if an LLM
+is ever added: `cvTailor.js` is pure, so a provider switch can be introduced
+in front of it then, without the controller or the client changing.
+
+**5. Summary target is 30–120 words, not 40–60.** The spec's window was
+narrower than the one `scoringConfig.js` rewards. The build reads the range
+straight out of `STRENGTH_CONFIG.thresholds`, so the tailor and the scorer
+cannot disagree about what a good summary is.
+
+**File names.** `algorithms/cvTailor.js` and `algorithms/phraseRewriter.js`
+rather than `cvRewriter.js` and `data/rewritePhrases.js`; the routes live in
+the existing `cv.routes.js` beside the other `/api/cvs/:id/*` routes rather
+than in a new `rewrite.routes.js`. The phrase tables are small enough to sit
+in the module that uses them.
+
+Everything else in the spec was built as written: the TF-IDF relevance
+measure, the three-way skill split, the alias swap to the advert's wording,
+the "never invent a number" note, the reorder-never-delete rule, the
+`CV_TAILOR` activity action, and the before-and-after score.
 
 ---
 
@@ -19,21 +73,21 @@ on its own.
 
 ### Decisions already taken
 
-| Question | Decision | Why |
-| --- | --- | --- |
-| Where the result goes | Preview panel, accept/reject per section | Nothing is overwritten silently; it demos well and is easy to explain in the viva |
-| Job description source | Both — pasted text **and** a job from the `Job` collection | The job board already exists, so tailoring from a job detail page costs almost nothing |
-| Rewrite engine | **Our own module in plain JavaScript.** No LLM API | TU rule: core logic must be the student's own module. Also free, offline, and cannot fail in the exam room |
-| LLM later | Kept possible behind `services/rewriteService.js` | A Claude provider can be added later without restructuring anything |
+| Question               | Decision                                                   | Why                                                                                                        |
+| ---------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Where the result goes  | Preview panel, accept/reject per section                   | Nothing is overwritten silently; it demos well and is easy to explain in the viva                          |
+| Job description source | Both — pasted text **and** a job from the `Job` collection | The job board already exists, so tailoring from a job detail page costs almost nothing                     |
+| Rewrite engine         | **Our own module in plain JavaScript.** No LLM API         | TU rule: core logic must be the student's own module. Also free, offline, and cannot fail in the exam room |
+| LLM later              | Kept possible behind `services/rewriteService.js`          | A Claude provider can be added later without restructuring anything                                        |
 
-The Claude API was priced up and rejected *for now*: it is pay-as-you-go
+The Claude API was priced up and rejected _for now_: it is pay-as-you-go
 (roughly $0.01–$0.05 per rewrite depending on model), needs a card and
 internet during the demo, and an external examiner can reasonably say the
 rewriting is Anthropic's work rather than yours. See section 8 for how to
 add it later as an optional enhancement.
 
-> **The word "AI" in the UI.** Label the button *"Tailor to a job"*, not
-> *"AI rewrite"*. The rewriter is a rule-based text transformer, and
+> **The word "AI" in the UI.** Label the button _"Tailor to a job"_, not
+> _"AI rewrite"_. The rewriter is a rule-based text transformer, and
 > claiming it is AI is a claim you would have to defend in the viva.
 
 ---
@@ -78,18 +132,18 @@ Four transformations, applied in order to each bullet:
    `Tasked with `, `Worked on `, `Helped with `, `In charge of ` are removed.
 2. **Front an action verb.** If the bullet no longer starts with a word that
    `isActionVerb()` accepts, prepend one chosen from a small mapping table
-   keyed on what the bullet is about (`test` → *Tested*, `design` →
-   *Designed*, `api`/`endpoint` → *Built*, `team`/`junior` → *Led*, default
-   *Delivered*). The verb comes from `data/actionVerbs.js`, and the choice is
+   keyed on what the bullet is about (`test` → _Tested_, `design` →
+   _Designed_, `api`/`endpoint` → _Built_, `team`/`junior` → _Led_, default
+   _Delivered_). The verb comes from `data/actionVerbs.js`, and the choice is
    a table lookup, not a guess.
 3. **Swap in the advert's vocabulary.** Where the CV and the advert mean the
    same thing but say it differently, use the advert's word — this is what
    an ATS keyword-matches on. Driven by the alias lists already in
    `skillsDictionary.js` (CV says "JS", advert says "JavaScript" → the
    bullet says "JavaScript"). Only ever swaps between known aliases of the
-   *same* canonical skill, so it cannot change meaning.
+   _same_ canonical skill, so it cannot change meaning.
 4. **Flag missing quantification.** If the bullet contains no digit, attach a
-   note (not text) — *"Add a number: how many, how much, how often?"* The
+   note (not text) — _"Add a number: how many, how much, how often?"_ The
    rewriter does not invent a figure.
 
 ### Step 4 — Rewrite the summary
@@ -120,7 +174,7 @@ is the same window `scoringConfig.js` already rewards.
 ### Step 6 — Report the change
 
 For each suggestion return `{ before, after, changes[], note }` so the UI can
-show *why*, and so the viva answer to "what did it change and why" is on the
+show _why_, and so the viva answer to "what did it change and why" is on the
 screen. Also return an estimated strength-score delta by re-running
 `cvStrengthScorer.js` over the rewritten CV.
 
@@ -188,10 +242,24 @@ Response:
   "message": "Rewrite ready",
   "data": {
     "jobTitle": "Backend Developer",
-    "summary":  { "before": "…", "after": "…", "changes": ["…"] },
+    "summary": { "before": "…", "after": "…", "changes": ["…"] },
     "experience": [
-      { "index": 0, "field": "description", "before": "…", "after": "…", "changes": ["…"], "note": "" },
-      { "index": 0, "field": "achievements", "itemIndex": 1, "before": "…", "after": "…", "changes": [] }
+      {
+        "index": 0,
+        "field": "description",
+        "before": "…",
+        "after": "…",
+        "changes": ["…"],
+        "note": ""
+      },
+      {
+        "index": 0,
+        "field": "achievements",
+        "itemIndex": 1,
+        "before": "…",
+        "after": "…",
+        "changes": []
+      }
     ],
     "projects": [],
     "skills": { "suggestedOrder": ["Node.js", "MongoDB"], "matched": [], "missing": [] },
@@ -228,18 +296,18 @@ layout is needed.
 
 `TailorPanel.jsx`:
 
-1. **Choose the job.** A radio pair — *Paste a job advert* (textarea, with a
-   character counter and the 50–8000 limits shown) or *Pick from the job
-   board* (a select populated from `listJobs()`).
+1. **Choose the job.** A radio pair — _Paste a job advert_ (textarea, with a
+   character counter and the 50–8000 limits shown) or _Pick from the job
+   board_ (a select populated from `listJobs()`).
 2. **Tailor** button → spinner → suggestions.
 3. **Suggestions.** One card per item: the current text, the suggested text,
    the list of changes, and **Accept** / **Keep mine**. Accepted items are
    merged into the editor's `cv` state through the existing `handleChange()`,
    so autosave picks them up exactly like typing would.
 4. **Accept all** / **Reject all** at the top, and a running
-   *"3 of 9 accepted"* counter.
+   _"3 of 9 accepted"_ counter.
 5. A skills strip showing matched (green) and missing (amber) keywords, with
-   *"Add to skills"* on each missing one.
+   _"Add to skills"_ on each missing one.
 6. The estimated score before → after, so the benefit is visible.
 
 States to handle, per `CLAUDE.md` section 11: loading, empty (no jobs on the
@@ -252,16 +320,16 @@ written should say so rather than invent changes.
 
 **Unit — `server/tests/unit/cvRewriter.test.js`** (no database needed):
 
-| Test | Expectation |
-| --- | --- |
-| Strips duty phrasing | `"Responsible for testing the API"` → starts with an action verb |
-| Keeps a good bullet | A bullet already starting with an action verb and containing a number is returned unchanged |
-| Aliases swap to advert wording | CV "JS", advert "JavaScript" → output says "JavaScript" |
-| Never invents a number | No digit in input → no digit in output, and a note is attached |
-| Missing skills | Advert asks Docker, CV has none → `missing` contains "Docker" |
-| Skill reorder keeps everything | Output skills are a permutation of the input, same length |
-| Empty CV | Returns empty suggestions, does not throw |
-| Summary word count | Rewritten summary lands in the 40–60 word window when the source has enough material |
+| Test                           | Expectation                                                                                 |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| Strips duty phrasing           | `"Responsible for testing the API"` → starts with an action verb                            |
+| Keeps a good bullet            | A bullet already starting with an action verb and containing a number is returned unchanged |
+| Aliases swap to advert wording | CV "JS", advert "JavaScript" → output says "JavaScript"                                     |
+| Never invents a number         | No digit in input → no digit in output, and a note is attached                              |
+| Missing skills                 | Advert asks Docker, CV has none → `missing` contains "Docker"                               |
+| Skill reorder keeps everything | Output skills are a permutation of the input, same length                                   |
+| Empty CV                       | Returns empty suggestions, does not throw                                                   |
+| Summary word count             | Rewritten summary lands in the 40–60 word window when the source has enough material        |
 
 **Integration — `server/tests/integration/rewrite.test.js`**, following
 `tests/integration/cv.test.js`:
