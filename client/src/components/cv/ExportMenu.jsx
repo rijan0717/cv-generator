@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import api from '../../api/axios.js';
 import Button from '../ui/Button.jsx';
+import { readBlobError } from '../../utils/blobError.js';
 
 /**
  * The three download formats.
@@ -66,17 +67,7 @@ export default function ExportMenu({ cvId, onDownloaded }) {
       // Only now, after the file has actually been handed to the browser.
       onDownloaded?.(format);
     } catch (err) {
-      // An error response arrives as a Blob because of responseType, so the
-      // JSON message has to be read back out of it.
-      let message = err.message;
-      if (err.response?.data instanceof Blob) {
-        try {
-          message = JSON.parse(await err.response.data.text()).message ?? message;
-        } catch {
-          // Not JSON; keep the original message.
-        }
-      }
-      setError(message);
+      setError(await readBlobError(err));
     } finally {
       setBusyFormat(null);
     }
