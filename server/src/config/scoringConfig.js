@@ -194,6 +194,98 @@ export const STRENGTH_TOTALS = {
 STRENGTH_TOTALS.overall = STRENGTH_TOTALS.completeness + STRENGTH_TOTALS.quality;
 
 /**
+ * The page-fill model, used by `algorithms/pageFill.js`.
+ *
+ * A tailored CV that stops half way down the page looks unfinished
+ * whatever it says. These numbers let the rewrite notice that and do
+ * something about it, and they live here so the model can be explained
+ * and adjusted in one place rather than hidden in the measurement code.
+ *
+ * The geometry is real: A4 is 297mm tall, the templates use a 20mm
+ * margin, and a point is 0.3528mm. The rest are estimates calibrated
+ * against the five templates at their default settings.
+ */
+export const PAGE_FILL_CONFIG = {
+  /** 297mm of page less the top and bottom margins the templates use. */
+  usableHeightMm: 257,
+
+  /** Millimetres per typographic point. Fixed by definition. */
+  pointToMm: 0.3528,
+
+  /** The line height the templates set on body text. */
+  lineHeight: 1.45,
+
+  /**
+   * Body size per font-size setting, matching `FONT_SIZES` in
+   * `client/src/templates/templateUtils.js`. The two must agree: if the
+   * client renders at a size the server did not measure, the fill
+   * estimate describes a page nobody is looking at.
+   */
+  fontSizePt: { small: 9.5, medium: 10.5, large: 11.5 },
+
+  /**
+   * Roughly how many words fit on a line of prose, per font size. Words
+   * rather than characters, because the six fonts on offer differ enough
+   * in width that character counting would only look more precise.
+   */
+  wordsPerLine: { small: 15, medium: 13, large: 12 },
+
+  /** Extra lines the gap above a section heading is worth. */
+  spacingLines: { compact: 0.5, normal: 0.85 },
+
+  /** The gap between two entries of the same section, in lines. */
+  entryGapLines: 0.4,
+
+  /** Contact details that fit on one line under the name. */
+  contactPerLine: 3,
+
+  /** Skills or languages that fit on one line as chips. */
+  chipsPerLine: 4,
+
+  /**
+   * Templates that put some sections in a side column, and which ones.
+   *
+   * It changes the arithmetic completely. In a single-column template the
+   * page is as tall as the sum of its sections; in these two it is as
+   * tall as the *taller column*, because the sidebar sits beside the main
+   * content rather than under it. Treating a two-column CV as one column
+   * overstates how full the page is by however much is in the sidebar —
+   * which is exactly the case this whole model exists to catch.
+   *
+   * Taken from `SIDEBAR_SECTIONS` in `ModernTemplate.jsx` and
+   * `RAIL_SECTIONS` in `ExecutiveTemplate.jsx`. If a template's layout
+   * changes, this changes with it.
+   */
+  sideColumns: {
+    modern: ['skills', 'languages', 'certifications'],
+    executive: ['education', 'skills', 'languages', 'certifications'],
+  },
+
+  /**
+   * How full a page should be before the rewrite stops trying to fill it.
+   *
+   * Not 1.0. A CV ending exactly at the bottom margin is a CV one word
+   * away from spilling onto a second page, and the user is about to edit
+   * it. Nine tenths reads as a full page with room to type.
+   */
+  targetRatio: 0.9,
+
+  /**
+   * The most the summary may grow to when the page is short.
+   *
+   * Every sentence in it is built from a fact already on the CV, so a
+   * longer one invents nothing — but a summary that runs past this stops
+   * being a summary. When this is not enough to fill the page, the honest
+   * answer is that the CV needs more content, which is what the rewrite
+   * then says.
+   */
+  expandedSummaryMaxWords: 110,
+
+  /** Skills the expanded summary may name, up from the usual six. */
+  expandedSummarySkills: 10,
+};
+
+/**
  * Job-Tailored CV Rewrite.
  *
  * The rewrite never invents experience. Everything it writes is assembled
@@ -241,7 +333,52 @@ export const TAILOR_CONFIG = {
      * putting words in the user's mouth about what they can do.
      */
     maxSuggested: 10,
+
+    /**
+     * How many unevidenced skills the target pass below may assume.
+     *
+     * A hard ceiling on the one part of the rewrite that states
+     * something the CV does not support. Six is enough to rescue a
+     * near-miss; beyond that the honest answer is that the CV does not
+     * fit the advert, and no amount of re-ordering changes that.
+     */
+    maxAssumed: 6,
   },
+
+  /**
+   * The match score the rewrite aims for.
+   *
+   * On a CV in the right field this is reached without the target pass
+   * doing anything: re-ordering, re-wording and listing the skills the
+   * CV already evidences is usually worth thirty or forty points on its
+   * own. The pass exists for the case where it is not enough.
+   *
+   * When it is not, the rewrite adds the smallest number of the
+   * advert's remaining skills that gets over the line, **one at a time,
+   * re-scoring after each**, and stops the moment it is there. Every
+   * skill added this way is reported separately from the rest and
+   * labelled in the UI as assumed, because it is the only thing the
+   * rewrite puts on a CV that the CV does not already support. The user
+   * removes any they do not have, and the score falls again — which is
+   * the honest behaviour.
+   */
+  targetScore: 80,
+
+  /**
+   * The ceiling on the alignment sentence (lever two of `reachTarget`).
+   *
+   * Twelve of the advert's words is already a long sentence; past that
+   * it stops reading as a line on a CV and starts reading as a list of
+   * keywords, which is the thing the match analyser exists to catch.
+   */
+  maxFocusTerms: 12,
+
+  /**
+   * How many terms are added between re-scores. One at a time would be
+   * a dozen extra analyses per request for a point or two of precision
+   * in a sentence the user is about to edit anyway.
+   */
+  focusBatchSize: 3,
 
   /**
    * Sections that may be re-ordered by relevance.
