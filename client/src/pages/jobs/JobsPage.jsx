@@ -13,6 +13,71 @@ const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Temporar
 const WORK_MODES = ['On-site', 'Hybrid', 'Remote'];
 
 /**
+ * How many jobs are fetched at once when filtering by match.
+ *
+ * `MAX_PAGE_SIZE` on the server, which is the most one request may ask
+ * for. The match filter has to see every job to give an honest answer, so
+ * it takes the lot in one go rather than filtering a page at a time.
+ */
+const WHOLE_BOARD = 100;
+
+/**
+ * The match filter's options.
+ *
+ * One threshold, two directions. The four-band version this replaced read
+ * like a precision the score does not have: the difference between a 64%
+ * and a 66% match is noise in an estimate, and offering it as a choice
+ * invited the user to believe otherwise. Half is the one cut that means
+ * something plain — worth applying for, or not yet.
+ */
+const MATCH_FILTERS = [
+  { value: '', label: 'Any match' },
+  { value: 'above', label: 'Above 50%' },
+  { value: 'below', label: 'Below 50%' },
+];
+
+/** The cut the two filters are either side of. */
+const MATCH_THRESHOLD = 50;
+
+/**
+ * The score a filter should judge a job by.
+ *
+ * Where the user has tailored a CV for the advert, that CV's score is the
+ * honest answer: it is the best they can currently send, and filtering it
+ * out of the strong matches because their primary CV scores badly would
+ * hide the very job they have done the most work on.
+ *
+ * @param {{matchScore: number|null, tailored: object|null}|null} match
+ * @returns {number|null} The score to filter on, or null if unscored.
+ */
+function effectiveScore(match) {
+  if (!match) return null;
+  if (Number.isFinite(match.tailored?.matchScore)) return match.tailored.matchScore;
+  return Number.isFinite(match.matchScore) ? match.matchScore : null;
+}
+
+/**
+ * Whether one job passes the match filter.
+ *
+ * An unscored job fails both filters. That is deliberate: a user asking
+ * which jobs score above half is asking a question the system cannot
+ * answer for an unscored job, and showing it anyway would be answering
+ * "yes" by default.
+ *
+ * @param {object|null} match - The job's score, if it has one.
+ * @param {string} filter - A value from `MATCH_FILTERS`.
+ * @returns {boolean} True to keep the job.
+ */
+function passesMatchFilter(match, filter) {
+  if (!filter) return true;
+
+  const score = effectiveScore(match);
+  if (score === null) return false;
+
+  return filter === 'above' ? score >= MATCH_THRESHOLD : score < MATCH_THRESHOLD;
+}
+
+/**
  * The public job board.
  *
  * Every job posted by any company is listed here and is visible to every
@@ -35,6 +100,32 @@ export default function JobsPage() {
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState(null);
 
+  /*
+    Kept apart from `filters` because it is not a server filter: the
+    scores come from a second request, after the jobs themselves have been
+    fetched, so the database cannot narrow the query by them.
+
+    It is still applied to the whole board rather than to one page. While
+    it is on, the list is fetched unpaginated and the pager comes off the
+    bottom of the page — a filter that narrowed page 1 of 6 while the
+    pager still offered six pages would be reporting a number of results
+    it had not actually counted.
+  */
+  const [matchFilter, setMatchFilter] = useState('');
+
+  /**
+   * Changes the match filter and returns to page one.
+   *
+   * Turning it off drops back to a paginated board, and the page the user
+   * was on before they filtered is not a page they have seen since.
+   *
+   * @param {string} value - A value from `MATCH_FILTERS`.
+   */
+  function setMatch(value) {
+    setMatchFilter(value);
+    setPage(1);
+  }
+
   // Match badges, scored against the user's primary CV.
   const { scores, primaryCv, isScoring } = useJobMatchScores(jobs, isAuthenticated);
 
@@ -44,7 +135,12 @@ export default function JobsPage() {
 
     try {
       const data = await jobApi.listJobs({
-        page,
+        // One page of everything while filtering by match, so the filter
+        // sees the whole board. `WHOLE_BOARD` is the largest page the
+        // server allows; past that the board has outgrown this approach
+        // and the scoring would have to move server-side.
+        page: matchFilter ? 1 : page,
+        limit: matchFilter ? WHOLE_BOARD : undefined,
         search: filters.search || undefined,
         location: filters.location || undefined,
         jobType: filters.jobType || undefined,
@@ -57,11 +153,19 @@ export default function JobsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, filters]);
+  }, [page, filters, matchFilter]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // While the scores are still arriving nothing is filtered out, or the
+  // list would empty itself for a moment on every page change and look
+  // like a failed search.
+  const visibleJobs =
+    !matchFilter || isScoring
+      ? jobs
+      : jobs.filter((job) => passesMatchFilter(scores[job._id] ?? null, matchFilter));
 
   /**
    * Changes a filter and returns to page one, since the current page may
@@ -132,8 +236,8 @@ export default function JobsPage() {
       </header>
 
       {/* Filters */}
-      <div className="mt-6 grid gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-4 dark:bg-slate-900 dark:ring-slate-700">
-        <div className="sm:col-span-2">
+      <div className="mt-6 grid gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-6 dark:bg-slate-900 dark:ring-slate-700">
+        <div className="sm:col-span-2 lg:col-span-2">
           <label
             htmlFor="job-search"
             className="block text-sm font-medium text-slate-700 dark:text-slate-300"
@@ -164,7 +268,7 @@ export default function JobsPage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 lg:col-span-2">
           <div>
             <label
               htmlFor="job-type"
@@ -209,6 +313,34 @@ export default function JobsPage() {
             </select>
           </div>
         </div>
+
+        {/*
+          Only offered to someone who has scores to filter by. For a
+          visitor every job is unscored, so the control could only ever
+          empty the list.
+        */}
+        {isAuthenticated && (
+          <div>
+            <label
+              htmlFor="job-match"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
+              Match
+            </label>
+            <select
+              id="job-match"
+              value={matchFilter}
+              onChange={(e) => setMatch(e.target.value)}
+              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            >
+              {MATCH_FILTERS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {error && (
@@ -235,6 +367,22 @@ export default function JobsPage() {
             line a number on a card is unexplained, and the first question
             anyone asks is "matched against what?".
           */}
+          {isAuthenticated && matchFilter && !isScoring && (
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {visibleJobs.length} of {jobs.length} job{jobs.length === 1 ? '' : 's'} match
+              {visibleJobs.length === 1 ? 'es' : ''} {matchFilter === 'above' ? 'above' : 'below'}{' '}
+              50%.{' '}
+              <button
+                type="button"
+                onClick={() => setMatch('')}
+                className="font-medium underline hover:text-slate-900 dark:hover:text-slate-100"
+              >
+                Clear the match filter
+              </button>{' '}
+              to see the rest.
+            </p>
+          )}
+
           {isAuthenticated && (
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {isScoring ? (
@@ -258,7 +406,7 @@ export default function JobsPage() {
             </p>
           )}
 
-          {jobs.map((job) => (
+          {visibleJobs.map((job) => (
             <JobCard
               key={job._id}
               job={job}
@@ -268,10 +416,28 @@ export default function JobsPage() {
               match={scores[job._id] ?? null}
             />
           ))}
+
+          {visibleJobs.length === 0 && (
+            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-slate-900">
+              <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+                No jobs match that filter
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+                {matchFilter === 'above'
+                  ? 'Nothing on the board scores above 50% against your primary CV yet. Tailoring a CV for a job is the quickest way to change that.'
+                  : 'Everything on the board scores above 50% against your primary CV.'}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
-      <Pagination pagination={pagination} onChange={setPage} label="jobs" />
+      {/*
+        No pager while filtering by match. The filtered list is the whole
+        board already, so a pager could only offer pages of results that
+        do not exist.
+      */}
+      {!matchFilter && <Pagination pagination={pagination} onChange={setPage} label="jobs" />}
     </div>
   );
 }
