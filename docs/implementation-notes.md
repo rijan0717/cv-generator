@@ -364,6 +364,17 @@ analyses, because it is the most expensive request the server serves — one
 weighting plus two full analyses. The save is not rate limited: a user who has
 sat and edited a draft should never be told to wait before keeping it.
 
+Naming: `buildTitle(userName, jobTitle)` offers `"<account name>-<advertised
+role>"` — "Test Person-Backend Developer" — falling back to
+`"<account name>-tailored"` when the advert had no title, and truncated to the
+100 characters the model allows so a long role cannot fail validation after
+the user has finished editing. It is built from the **account**, not the
+source CV's title: a tailored CV is written to be sent to one employer, so the
+person and the post are what identify it, whereas the source title is a
+private working label ("My CV", "Copy of CV 2") that read as a variant of an
+existing document rather than an application. The title is only ever offered —
+the review step lets the user replace it, and a `title` in the save body wins.
+
 Field whitelist: a saved draft may only set the same fields
 `cv.controller.js` allows, so a user editing a draft cannot set the owner, the
 primary flag or the score. The new CV is never primary, whatever the source

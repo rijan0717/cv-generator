@@ -140,6 +140,18 @@ describe('POST /api/cvs/:id/tailor', () => {
     expect(suggestedTitle).toContain('Backend Developer');
   });
 
+  it('offers a title made from the account name and the advertised role', async () => {
+    const agent = await signUp('named@example.com');
+    const cvId = await createFilledCV(agent);
+
+    const res = await agent
+      .post(`/api/cvs/${cvId}/tailor`)
+      .send({ jobDescription: ADVERT, jobTitle: 'Backend Developer' });
+
+    // Not the source CV's title: the document is going to an employer.
+    expect(res.body.data.suggestedTitle).toBe('Test Person-Backend Developer');
+  });
+
   it('stores nothing', async () => {
     const agent = await signUp('nothing@example.com');
     const cvId = await createFilledCV(agent);
@@ -165,6 +177,36 @@ describe('POST /api/cvs/:id/tailor', () => {
 });
 
 describe('POST /api/cvs/:id/tailor/save', () => {
+  it('names the CV after the account and the role when the offered title is kept', async () => {
+    const agent = await signUp('savedname@example.com');
+    const cvId = await createFilledCV(agent);
+
+    const preview = await agent
+      .post(`/api/cvs/${cvId}/tailor`)
+      .send({ jobDescription: ADVERT, jobTitle: 'Backend Developer' });
+
+    // No `title` in the body — the user left the offered one alone.
+    const res = await agent
+      .post(`/api/cvs/${cvId}/tailor/save`)
+      .send({ draft: preview.body.data.draft, jobTitle: 'Backend Developer' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.cv.title).toBe('Test Person-Backend Developer');
+  });
+
+  it('still lets the user name the CV themselves', async () => {
+    const agent = await signUp('owntitle@example.com');
+    const cvId = await createFilledCV(agent);
+
+    const preview = await agent.post(`/api/cvs/${cvId}/tailor`).send({ jobDescription: ADVERT });
+
+    const res = await agent
+      .post(`/api/cvs/${cvId}/tailor/save`)
+      .send({ draft: preview.body.data.draft, title: 'For Acme, final' });
+
+    expect(res.body.data.cv.title).toBe('For Acme, final');
+  });
+
   it('creates a new CV and leaves the original alone', async () => {
     const agent = await signUp('save@example.com');
     const cvId = await createFilledCV(agent);

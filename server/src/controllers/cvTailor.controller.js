@@ -215,7 +215,7 @@ async function respondWithPreview(req, res, cv) {
       // A title is offered rather than imposed; the user edits it before
       // saving, and two CVs tailored for the same role would otherwise
       // be indistinguishable in the list.
-      suggestedTitle: buildTitle(cv.title, jobTitle),
+      suggestedTitle: buildTitle(req.user.name, jobTitle),
 
       job: job ? { _id: job._id, title: job.title, company: job.company?.name ?? '' } : null,
       jobTitle,
@@ -282,7 +282,7 @@ export async function saveTailoredCV(req, res) {
     user: req.user._id,
     // What the user typed in the review step, or the offered title if
     // they left it alone.
-    title: (req.body.title?.trim() || buildTitle(source.title, jobTitle)).slice(0, 100),
+    title: (req.body.title?.trim() || buildTitle(req.user.name, jobTitle)).slice(0, 100),
     isPrimary: false,
     isDeleted: false,
     tailoredFor: {
@@ -352,15 +352,28 @@ async function measureAgainstAdvert(body, source, content) {
 /**
  * The title offered for a tailored CV.
  *
- * The source title and the advertised role, joined. Truncated to the 100
- * characters the model allows, so a long job title cannot make the save
- * fail validation after the user has done all the editing.
+ * The name on the account and the advertised role, joined — not the
+ * source CV's title. A tailored CV exists to be sent to one employer, so
+ * the person and the post are what identify it. Building the title from
+ * the source instead produced "My CV — Backend Developer": it carried a
+ * private working title into a document meant to leave the system, and
+ * it read as a variant of an existing CV rather than an application for
+ * a job.
  *
- * @param {string} sourceTitle - The CV being tailored.
+ * Truncated to the 100 characters the model allows, so a long job title
+ * cannot make the save fail validation after the user has done all the
+ * editing. The title is only ever offered — the review step lets the
+ * user replace it before saving.
+ *
+ * @param {string} userName - The name on the account the CV belongs to.
  * @param {string} jobTitle - The advertised role, if known.
  * @returns {string} A title of at most 100 characters.
  */
-function buildTitle(sourceTitle, jobTitle) {
-  const proposed = jobTitle ? `${sourceTitle} — ${jobTitle}` : `${sourceTitle} (tailored)`;
-  return proposed.slice(0, 100);
+function buildTitle(userName, jobTitle) {
+  // An account always has a name, but a blank one must not leave a title
+  // that is nothing but a hyphen.
+  const name = userName?.trim() || 'CV';
+  const position = jobTitle?.trim();
+
+  return (position ? `${name}-${position}` : `${name}-tailored`).slice(0, 100);
 }

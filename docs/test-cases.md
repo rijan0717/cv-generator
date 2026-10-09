@@ -157,6 +157,9 @@ block of `server/tests/unit/cvTailor.test.js` (7 cases).
 | S-TR-12 | Tailor save  | Match figures land on the new CV only  | Save a tailored draft, then reload the source CV     | New CV has `baselineMatchScore` < `matchScore`; the source's `tailoredFor` is still null and its strength score unchanged | As expected   | Pass   |
 | S-TR-13 | Tailor save  | The saved draft is what gets scored    | Strip the summary and skills out before saving       | Stored `matchScore` is below the figure the preview promised                                                              | As expected   | Pass   |
 | S-TR-14 | Tailor save  | No advert means no score, not a guess  | Save with no `jobId` and no `jobDescription`         | Both figures null                                                                                                         | As expected   | Pass   |
+| S-TR-15 | Tailor API   | Offers a title from the name and role  | Preview with jobTitle “Backend Developer”            | `suggestedTitle` is `Test Person-Backend Developer`, not the source CV title                                              | As expected   | Pass   |
+| S-TR-16 | Tailor save  | Keeps the offered title when untouched | Save with no `title` in the body                     | The saved CV is named `Test Person-Backend Developer`                                                                     | As expected   | Pass   |
+| S-TR-17 | Tailor save  | The user can still name it themselves  | Save with `title: “For Acme, final”`                 | The saved CV keeps the typed title                                                                                        | As expected   | Pass   |
 
 ---
 
