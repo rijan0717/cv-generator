@@ -1,7 +1,5 @@
 # Smart CV Generator with ATS-Based CV–Job Matching
 
-Academic project for **Tribhuvan University, BCA 6th semester, Project II (CAPJ356)**.
-
 A MERN-stack web application that lets a user build multiple CVs from five
 templates, customise them, export them as PDF and Excel, score how strong a CV
 is, and measure how well a CV matches a pasted job description using an
@@ -14,36 +12,16 @@ JavaScript — no NLP, machine-learning or string-similarity libraries are used.
 
 ## 1. Technology
 
-|  | How the whole system works, end to end. Start here |
-| Layer                |  | How the whole system works, end to end. Start here |
-| Technology                                                        |
-|  | How the whole system works, end to end. Start here |
-| -------------------- |  | How the whole system works, end to end. Start here |
-| ----------------------------------------------------------------- |
-|  | How the whole system works, end to end. Start here |
-| Frontend (`client/`) |  | How the whole system works, end to end. Start here |
-| React 18 + Vite, React Router, Tailwind CSS, Axios, Recharts      |
-|  | How the whole system works, end to end. Start here |
-| Backend (`server/`)  |  | How the whole system works, end to end. Start here |
-| Node.js + Express 4, ES modules                                   |
-|  | How the whole system works, end to end. Start here |
-| Database             |  | How the whole system works, end to end. Start here |
-| MongoDB with Mongoose                                             |
-|  | How the whole system works, end to end. Start here |
-| Authentication       |  | How the whole system works, end to end. Start here |
-| bcryptjs, jsonwebtoken, cookie-parser (JWT in an httpOnly cookie) |
-|  | How the whole system works, end to end. Start here |
-| Security             |  | How the whole system works, end to end. Start here |
-| helmet, cors, express-rate-limit, express-validator               |
-|  | How the whole system works, end to end. Start here |
-| Export               |  | How the whole system works, end to end. Start here |
-| puppeteer (PDF), exceljs (Excel)                                  |
-|  | How the whole system works, end to end. Start here |
-| Testing              |  | How the whole system works, end to end. Start here |
-| Vitest, Supertest, mongodb-memory-server, React Testing Library   |
-|  | How the whole system works, end to end. Start here |
-| Tooling              |  | How the whole system works, end to end. Start here |
-| ESLint, Prettier, nodemon, concurrently                           |
+| Layer                | Technology                                                        |
+| -------------------- | ----------------------------------------------------------------- |
+| Frontend (`client/`) | React 18 + Vite, React Router, Tailwind CSS, Axios, Recharts      |
+| Backend (`server/`)  | Node.js + Express 4, ES modules                                   |
+| Database             | MongoDB with Mongoose                                             |
+| Authentication       | bcryptjs, jsonwebtoken, cookie-parser (JWT in an httpOnly cookie) |
+| Security             | helmet, cors, express-rate-limit, express-validator               |
+| Export               | puppeteer (PDF), exceljs (Excel)                                  |
+| Testing              | Vitest, Supertest, mongodb-memory-server, React Testing Library   |
+| Tooling              | ESLint, Prettier, nodemon, concurrently                           |
 
 ---
 
@@ -95,24 +73,12 @@ cp client/.env.example client/.env
 
 Then open `server/.env` and set at least:
 
-|  | How the whole system works, end to end. Start here |
-| Variable                        |  | How the whole system works, end to end. Start here |
-| Purpose                                          |
-|  | How the whole system works, end to end. Start here |
-| ------------------------------- |  | How the whole system works, end to end. Start here |
-| ------------------------------------------------ |
-|  | How the whole system works, end to end. Start here |
-| `MONGODB_URI`                   |  | How the whole system works, end to end. Start here |
-| Where MongoDB is running                         |
-|  | How the whole system works, end to end. Start here |
-| `JWT_SECRET`                    |  | How the whole system works, end to end. Start here |
-| Long random string used to sign login tokens     |
-|  | How the whole system works, end to end. Start here |
-| `PRINT_TOKEN_SECRET`            |  | How the whole system works, end to end. Start here |
-| Long random string used to sign PDF print tokens |
-|  | How the whole system works, end to end. Start here |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` |  | How the whole system works, end to end. Start here |
-| Credentials used by `npm run seed:admin`         |
+| Variable                        | Purpose                                          |
+| ------------------------------- | ------------------------------------------------ |
+| `MONGODB_URI`                   | Where MongoDB is running                         |
+| `JWT_SECRET`                    | Long random string used to sign login tokens     |
+| `PRINT_TOKEN_SECRET`            | Long random string used to sign PDF print tokens |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Credentials used by `npm run seed:admin`         |
 
 Generate a secret with:
 
@@ -133,21 +99,11 @@ npm run dev
 
 This starts both processes together:
 
-|  | How the whole system works, end to end. Start here |
-| Process      |  | How the whole system works, end to end. Start here |
-| URL                              |
-|  | How the whole system works, end to end. Start here |
-| ------------ |  | How the whole system works, end to end. Start here |
-| -------------------------------- |
-|  | How the whole system works, end to end. Start here |
-| Express API  |  | How the whole system works, end to end. Start here |
-| http://localhost:5000            |
-|  | How the whole system works, end to end. Start here |
-| React client |  | How the whole system works, end to end. Start here |
-| http://localhost:5173            |
-|  | How the whole system works, end to end. Start here |
-| Health check |  | How the whole system works, end to end. Start here |
-| http://localhost:5000/api/health |
+| Process      | URL                              |
+| ------------ | -------------------------------- |
+| Express API  | http://localhost:5000            |
+| React client | http://localhost:5173            |
+| Health check | http://localhost:5000/api/health |
 
 The Vite dev server proxies `/api` and `/uploads` to the Express server, so the
 browser treats both as the same origin and the authentication cookie works
@@ -231,51 +187,25 @@ settings out entirely also keeps the original behaviour.
 
 ## 5. All commands
 
-|  | How the whole system works, end to end. Start here |
-| Command                     |  | How the whole system works, end to end. Start here |
-| What it does                                                          |
-|  | How the whole system works, end to end. Start here |
-| --------------------------- |  | How the whole system works, end to end. Start here |
-| --------------------------------------------------------------------- |
-|  | How the whole system works, end to end. Start here |
-| `bash scripts/setup-wsl.sh` |  | How the whole system works, end to end. Start here |
-| One-time environment setup on WSL/Linux (Node, MongoDB, dependencies) |
-|  | How the whole system works, end to end. Start here |
-| `npm run install:all`       |  | How the whole system works, end to end. Start here |
-| Install dependencies for the root, the server and the client          |
-|  | How the whole system works, end to end. Start here |
-| `npm run dev`               |  | How the whole system works, end to end. Start here |
-| Start the client and the server together                              |
-|  | How the whole system works, end to end. Start here |
-| `npm run dev:server`        |  | How the whole system works, end to end. Start here |
-| Start only the Express server (nodemon)                               |
-|  | How the whole system works, end to end. Start here |
-| `npm run dev:client`        |  | How the whole system works, end to end. Start here |
-| Start only the Vite dev server                                        |
-|  | How the whole system works, end to end. Start here |
-| `npm run build`             |  | How the whole system works, end to end. Start here |
-| Build the client for production                                       |
-|  | How the whole system works, end to end. Start here |
-| `npm test`                  |  | How the whole system works, end to end. Start here |
-| Run all server and client tests                                       |
-|  | How the whole system works, end to end. Start here |
-| `npm run test:server`       |  | How the whole system works, end to end. Start here |
-| Run server tests only (Vitest + Supertest)                            |
-|  | How the whole system works, end to end. Start here |
-| `npm run test:client`       |  | How the whole system works, end to end. Start here |
-| Run client tests only (Vitest + React Testing Library)                |
-|  | How the whole system works, end to end. Start here |
-| `npm run seed:admin`        |  | How the whole system works, end to end. Start here |
-| Create the admin account from `server/.env` _(Phase 1)_               |
-|  | How the whole system works, end to end. Start here |
-| `npm run seed:templates`    |  | How the whole system works, end to end. Start here |
-| Insert the five CV templates _(Phase 3)_                              |
-|  | How the whole system works, end to end. Start here |
-| `npm run lint`              |  | How the whole system works, end to end. Start here |
-| Check code style with ESLint                                          |
-|  | How the whole system works, end to end. Start here |
-| `npm run format`            |  | How the whole system works, end to end. Start here |
-| Format the whole project with Prettier                                |
+| Command                     | What it does                                                          |
+| --------------------------- | --------------------------------------------------------------------- |
+| `bash scripts/setup-wsl.sh` | One-time environment setup on WSL/Linux (Node, MongoDB, dependencies) |
+| `npm run install:all`       | Install dependencies for the root, the server and the client          |
+| `npm run dev`               | Start the client and the server together                              |
+| `npm run dev:server`        | Start only the Express server (nodemon)                               |
+| `npm run dev:client`        | Start only the Vite dev server                                        |
+| `npm run build`             | Build the client for production                                       |
+| `npm test`                  | Run all server and client tests                                       |
+| `npm run test:server`       | Run server tests only (Vitest + Supertest)                            |
+| `npm run test:client`       | Run client tests only (Vitest + React Testing Library)                |
+| `npm run seed:admin`        | Create the admin account from `server/.env`                           |
+| `npm run seed:templates`    | Insert the five CV templates                                          |
+| `npm run seed:jobs`         | Insert the ten sample job adverts                                     |
+| `npm run seed:qa-demo`      | Insert the QA demo data set                                           |
+| `npm run seed:loadtest`     | Bulk test data for load and performance testing                       |
+| `npm run certs:dev`         | Create a self-signed HTTPS certificate for localhost                  |
+| `npm run lint`              | Check code style with ESLint                                          |
+| `npm run format`            | Format the whole project with Prettier                                |
 
 ---
 
@@ -351,52 +281,7 @@ npm test
 
 ---
 
-## 9. Development phases
-
-|  | How the whole system works, end to end. Start here |
-| Phase |  | How the whole system works, end to end. Start here |
-| Scope                                                                                |  | How the whole system works, end to end. Start here |
-| Status      |
-|  | How the whole system works, end to end. Start here |
-| ----- |  | How the whole system works, end to end. Start here |
-| ------------------------------------------------------------------------------------ |  | How the whole system works, end to end. Start here |
-| ----------- |
-|  | How the whole system works, end to end. Start here |
-| 0     |  | How the whole system works, end to end. Start here |
-| Monorepo setup, tooling, environment files, MongoDB connection, health check, README |  | How the whole system works, end to end. Start here |
-| In progress |
-|  | How the whole system works, end to end. Start here |
-| 1     |  | How the whole system works, end to end. Start here |
-| Authentication, roles, admin seed script, protected routes, profile                  |  | How the whole system works, end to end. Start here |
-| Not started |
-|  | How the whole system works, end to end. Start here |
-| 2     |  | How the whole system works, end to end. Start here |
-| CV model and CRUD API, multi-step builder, photo upload, autosave, My CVs dashboard  |  | How the whole system works, end to end. Start here |
-| Not started |
-|  | How the whole system works, end to end. Start here |
-| 3     |  | How the whole system works, end to end. Start here |
-| Five templates, live preview, customisation panel                                    |  | How the whole system works, end to end. Start here |
-| Not started |
-|  | How the whole system works, end to end. Start here |
-| 4     |  | How the whole system works, end to end. Start here |
-| PDF and Excel export, download logging                                               |  | How the whole system works, end to end. Start here |
-| Not started |
-|  | How the whole system works, end to end. Start here |
-| 5     |  | How the whole system works, end to end. Start here |
-| CV Strength Score and CV–Job Match Analyser + unit tests                             |  | How the whole system works, end to end. Start here |
-| Not started |
-|  | How the whole system works, end to end. Start here |
-| 6     |  | How the whole system works, end to end. Start here |
-| Admin panel: BI dashboard, users, CVs, templates, reports, activity log              |  | How the whole system works, end to end. Start here |
-| Not started |
-|  | How the whole system works, end to end. Start here |
-| 7     |  | How the whole system works, end to end. Start here |
-| Integration and system tests, responsive/accessibility polish, documentation         |  | How the whole system works, end to end. Start here |
-| Not started |
-
----
-
-## 10. Documentation
+## 9. Documentation
 
 Supporting material for the project report lives in `docs/`:
 
@@ -412,7 +297,7 @@ Supporting material for the project report lives in `docs/`:
 
 ---
 
-## 11. Troubleshooting
+## 10. Troubleshooting
 
 | Problem | Fix |
 | --- | --- |
