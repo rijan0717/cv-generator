@@ -23,7 +23,11 @@ import {
   getPrintData,
   importCV,
 } from '../controllers/cvExport.controller.js';
-import { previewTailoredCV, saveTailoredCV } from '../controllers/cvTailor.controller.js';
+import {
+  previewTailoredCV,
+  previewTailoredPrimaryCV,
+  saveTailoredCV,
+} from '../controllers/cvTailor.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { uploadImage, uploadDocument, handleUploadErrors } from '../middleware/upload.js';
@@ -125,6 +129,21 @@ const jobSourceChecks = [
 ];
 
 /**
+ * Tailoring the primary CV, for the job page — where the user has
+ * chosen an advert rather than a CV.
+ *
+ * Declared before `/:id/tailor`, or Express would read "primary" as a
+ * CV id and the `isMongoId` check would reject it.
+ */
+router.post(
+  '/primary/tailor',
+  jobMatchLimiter,
+  jobSourceChecks,
+  validate,
+  asyncHandler(previewTailoredPrimaryCV),
+);
+
+/**
  * Rate limited with the analyses. Tailoring weights the advert against
  * the whole corpus and then runs the match analyser twice, before and
  * after, so it is the more expensive of the two requests.
@@ -153,6 +172,16 @@ router.post(
       .isLength({ min: 1, max: 100 })
       .withMessage('Title must be between 1 and 100 characters'),
     body('jobId').optional().isMongoId().withMessage('That job id is not valid'),
+
+    // Carried through from the preview so the save can measure the draft
+    // against the same advert. Needed only when the advert was pasted in
+    // rather than chosen from the board, where `jobId` is enough.
+    body('jobDescription')
+      .optional()
+      .trim()
+      .isLength({ min: 50, max: 8000 })
+      .withMessage('Paste a job description of between 50 and 8000 characters'),
+
     body('jobTitle')
       .optional()
       .trim()

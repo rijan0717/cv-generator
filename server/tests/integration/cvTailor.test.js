@@ -253,4 +253,71 @@ describe('POST /api/cvs/:id/tailor/save', () => {
     expect(logged).not.toBeNull();
     expect(logged.meta.jobTitle).toBe('Backend Developer');
   });
+  it('records the match figures on the new CV and leaves the original unmarked', async () => {
+    const agent = await signUp('figures@example.com');
+    const cvId = await createFilledCV(agent);
+
+    const before = await CV.findById(cvId);
+
+    const preview = await agent
+      .post(`/api/cvs/${cvId}/tailor`)
+      .send({ jobDescription: ADVERT, jobTitle: 'Backend Developer' });
+
+    const res = await agent.post(`/api/cvs/${cvId}/tailor/save`).send({
+      draft: preview.body.data.draft,
+      jobDescription: ADVERT,
+      jobTitle: 'Backend Developer',
+    });
+
+    const { tailoredFor } = res.body.data.cv;
+
+    expect(tailoredFor.baselineMatchScore).toEqual(expect.any(Number));
+    expect(tailoredFor.matchScore).toEqual(expect.any(Number));
+    expect(tailoredFor.matchScore).toBeGreaterThan(tailoredFor.baselineMatchScore);
+
+    // The whole point: tailoring produces a new document and does not
+    // re-mark the one it was written from.
+    const after = await CV.findById(cvId);
+    expect(after.tailoredFor).toBeNull();
+    expect(after.strengthScore).toBe(before.strengthScore);
+  });
+
+  it('scores the draft the user kept, not the one the algorithm wrote', async () => {
+    const agent = await signUp('kept@example.com');
+    const cvId = await createFilledCV(agent);
+
+    const preview = await agent
+      .post(`/api/cvs/${cvId}/tailor`)
+      .send({ jobDescription: ADVERT, jobTitle: 'Backend Developer' });
+
+    // A user who strips the rewrite back to almost nothing should see
+    // that reflected, not the figure the preview promised.
+    const gutted = { ...preview.body.data.draft, summary: '', skills: [] };
+
+    const res = await agent.post(`/api/cvs/${cvId}/tailor/save`).send({
+      draft: gutted,
+      jobDescription: ADVERT,
+    });
+
+    expect(res.body.data.cv.tailoredFor.matchScore).toBeLessThan(
+      preview.body.data.comparison.after.matchScore,
+    );
+  });
+
+  it('saves without match figures when no advert is named', async () => {
+    const agent = await signUp('noadvert@example.com');
+    const cvId = await createFilledCV(agent);
+
+    const preview = await agent
+      .post(`/api/cvs/${cvId}/tailor`)
+      .send({ jobDescription: ADVERT, jobTitle: 'Backend Developer' });
+
+    const res = await agent
+      .post(`/api/cvs/${cvId}/tailor/save`)
+      .send({ draft: preview.body.data.draft });
+
+    // No score is better than one measured against an advert nobody named.
+    expect(res.body.data.cv.tailoredFor.baselineMatchScore).toBeNull();
+    expect(res.body.data.cv.tailoredFor.matchScore).toBeNull();
+  });
 });
