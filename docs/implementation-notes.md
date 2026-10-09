@@ -348,7 +348,15 @@ Two handlers, and the split between them is the point of the feature.
 - `saveTailoredCV` — `POST /api/cvs/:id/tailor/save`. Creates a new CV from
   the draft the user ended up with, starting from the source CV so anything
   the draft omits is carried over rather than lost. The rewrite is _not_
-  re-run here: doing so would throw away the user's edits.
+  re-run here: doing so would throw away the user's edits. It does re-run
+  `analyseMatch` twice — once over the source CV and once over the draft being
+  saved — and records both figures on the **new** CV. Measuring at save time
+  rather than reusing the preview's numbers matters: the user spends the
+  review step removing assumed skills and rewriting lines, so the preview's
+  "after" describes a draft they did not keep. The advert is named again in
+  the save body (`jobId`, or `jobDescription` when it was pasted) so that this
+  measurement is possible; without it the CV is saved with no match figures
+  rather than with wrong ones.
 
 Both go through a local `findOwnedCV` that returns 404 rather than 403, as
 everywhere else in the project. The preview shares `jobMatchLimiter` with the
@@ -364,11 +372,18 @@ application.
 
 ### Model and logging
 
-- `CV.tailoredFor` — `{ job, jobTitle, sourceCv, tailoredAt }`, and `null` on
-  every CV that was not produced this way. It defaults to `null` rather than
-  to an empty object because "not tailored" and "tailored for nothing in
-  particular" are different states, and the dashboard badge depends on telling
-  them apart.
+- `CV.tailoredFor` — `{ job, jobTitle, sourceCv, baselineMatchScore,
+matchScore, tailoredAt }`, and `null` on every CV that was not produced this
+  way. It defaults to `null` rather than to an empty object because "not
+  tailored" and "tailored for nothing in particular" are different states, and
+  the dashboard badge depends on telling them apart.
+- The two scores live on the tailored CV and are **never written back to the
+  source**. Tailoring produces a new document; it does not re-mark the one it
+  was written from, so a user who tailors the same CV for five adverts sees
+  its row in My CVs stay exactly as it was. `baselineMatchScore` is what the
+  source scored against that advert and `matchScore` what the saved draft
+  scored, so every screen draws the same "before → after" from one pair of
+  numbers instead of each recomputing a figure of its own.
 - `CV_TAILOR` added to `ACTIVITY_ACTIONS`, logged on save with the source CV
   and the job.
 
@@ -376,9 +391,43 @@ application.
 
 | File                             | Does                                                   |
 | -------------------------------- | ------------------------------------------------------ |
-| `api/tailor.js`                  | The two calls                                          |
+| `api/tailor.js`                  | The three calls                                        |
 | `pages/user/TailorCVPage.jsx`    | `/cvs/:id/tailor` — choose the advert, then review     |
 | `components/cv/TailorReview.jsx` | The editable draft, the change list and the two scores |
+| `pages/jobs/JobDetailPage.jsx`   | The same rewrite from an advert, then save-and-apply   |
+| `components/jobs/JobCard.jsx`    | The board badge, one figure or the before → after pair |
+| `pages/user/DashboardPage.jsx`   | The growth pill on a tailored CV's row in My CVs       |
+
+### Where the growth is shown
+
+Three places read the same stored pair, so none of them can disagree:
+
+- **My CVs** — a `18% → 82%` pill on the row of any tailored CV.
+- **The job board** — the same pair replaces the single "AI match (18%)"
+  badge on an advert the user has already rewritten for. `scoreJobsForBoard`
+  looks the tailored CVs up by `tailoredFor.job` and returns them alongside
+  the live primary-CV scores, so the badges arrive in the one request the
+  board already makes. A board row also no longer needs a primary CV to carry
+  a badge: a tailored CV is enough.
+- **The job page** — after the draft is saved the whole review panel collapses
+  to a one-line summary carrying the pair, a link to the CV in My CVs and an
+  "Apply with it" button. The same summary is rebuilt on a later visit from
+  the `tailoredCv` that `GET /api/jobs/:id` now returns, so the result does
+  not disappear when the tab is closed.
+
+On the job page the leading action after a rewrite is **Save and apply with
+it**: it saves the draft and opens the apply form already set to the new CV. A
+rewrite that was never saved could not be sent to the employer anyway, and
+asking for two presses to express one intention is a worse form.
+
+The board's **Match** filter (`Any / Strong / Good / Fair / Weak / Already
+tailored`) narrows the page on screen rather than the query. The scores are
+produced by a second request, after the page of jobs has been chosen, so the
+server could not filter by them without scoring every job in the database on
+every search. The list says which page it is filtering so the user is not left
+wondering why the pagination disagrees. Where a job has a tailored CV, that
+CV's score is what the filter judges by — it is the best the user can
+currently send.
 
 Reached from a "Tailor for a job" action on each row of My CVs. The advert is
 either chosen from the board or pasted in; most adverts a student applies to
@@ -390,3 +439,23 @@ fields, rather than presenting a finished document to accept or reject. A user
 who can see why their summary was replaced can judge whether to keep it; one
 who only sees the new summary cannot. The before-and-after score is shown
 honestly — if the rewrite did not help, that is what the user sees.
+
+It is a two-column layout from `lg` upwards: the editable fields on the left,
+a live A4 `CVPreview` of the draft sticky on the right. The preview is the
+same component the builder uses, so what is on screen is geometrically the
+PDF. Two reasons it belongs here rather than after saving. A rewrite is a
+change to a document and a list of changed sentences is not a document — the
+question a user is actually deciding is how the page reads, which previously
+could only be answered by saving first. And the screen was one narrow column
+of fields with the right-hand half of a desktop window empty, which reads as
+though something had failed to load. Below `lg` the preview moves underneath,
+since a phone is one column regardless. Both pages that host the review widen
+to `max-w-6xl` while it is open and return to their normal width afterwards.
+
+A `Carried over unchanged` block lists education, certifications, languages
+and references read-only. They are facts rather than phrasing, so a rewrite
+aimed at one advert has nothing to improve in them — but a review that shows
+only the changed parts invites the reader to assume the rest was dropped, and
+the whole CV is what is about to be saved. They stay read-only because editing
+the facts of a degree belongs in the builder, which opens on the CV the moment
+it is saved.
