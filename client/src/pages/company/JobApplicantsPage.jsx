@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import Pagination from '../../components/ui/Pagination.jsx';
+import { readBlobError } from '../../utils/blobError.js';
 
 /** The statuses an employer may set. Withdrawal belongs to the applicant. */
 const EMPLOYER_STATUSES = ['submitted', 'reviewed', 'shortlisted', 'rejected'];
@@ -234,17 +235,7 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
     try {
       await applicationApi.downloadApplicationCV(applicationId, format);
     } catch (err) {
-      // The error arrives as a Blob because of responseType, so the JSON
-      // message has to be read back out of it.
-      let message = err.message;
-      if (err.response?.data instanceof Blob) {
-        try {
-          message = JSON.parse(await err.response.data.text()).message ?? message;
-        } catch {
-          // Not JSON; keep the original message.
-        }
-      }
-      setError(message);
+      setError(await readBlobError(err));
     } finally {
       setDownloading(null);
     }

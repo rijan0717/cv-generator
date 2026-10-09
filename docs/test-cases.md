@@ -22,7 +22,8 @@ written up from the suites that already exist in `server/tests/unit/`.
 ### 1.1 Job-Tailored CV Rewrite
 
 `server/tests/unit/phraseRewriter.test.js` (20 cases) and
-`server/tests/unit/cvTailor.test.js` (25 cases). The table lists the ones that
+`server/tests/unit/cvTailor.test.js` (32 cases, with its page-fill block
+listed separately in 1.2). The table lists the ones that
 pin down a decision; the rest are ordinary coverage of the same functions.
 
 | Test ID | Module         | Description                               | Input / Steps                                                     | Expected Result                                          | Actual Result | Status |
@@ -48,6 +49,30 @@ pin down a decision; the rest are ordinary coverage of the same functions.
 | U-TC-13 | cvTailor       | Every change carries a reason             | Any tailored CV                                                   | Each change has a section, a kind and a reason           | As expected   | Pass   |
 | U-TC-14 | cvTailor       | The source CV is not modified             | Tailor a CV, compare it before and after                          | Byte-identical                                           | As expected   | Pass   |
 | U-TC-15 | cvTailor       | Copes with an empty CV                    | `tailorCV({}, advert)`                                            | Empty sections, no exception                             | As expected   | Pass   |
+
+---
+
+### 1.2 Page fill
+
+`server/tests/unit/pageFill.test.js` (10 cases) and the `filling the page`
+block of `server/tests/unit/cvTailor.test.js` (7 cases).
+
+| Test ID | Module   | Description                                  | Input / Steps                                              | Expected Result                                                    | Actual Result | Status |
+| ------- | -------- | -------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ | ------------- | ------ |
+| U-PF-01 | pageFill | An A4 page holds a plausible number of lines | `pageCapacity({ fontSize: 'medium' })`                     | Between 40 and 55                                                  | As expected   | Pass   |
+| U-PF-02 | pageFill | Larger type fits fewer lines                 | `large` vs `small`                                         | `large` capacity is lower                                          | As expected   | Pass   |
+| U-PF-03 | pageFill | A thin CV reads as thin                      | One role, one qualification, three skills                  | Under 70% of a page, not full                                      | As expected   | Pass   |
+| U-PF-04 | pageFill | A CV with real content reads as full         | Three roles with three achievements each, plus a project   | `isFull` true, shortfall 0                                         | As expected   | Pass   |
+| U-PF-05 | pageFill | A sidebar is not counted as stacked content  | The same CV as `classic` and as `modern`                   | The two-column estimate is lower                                   | As expected   | Pass   |
+| U-PF-06 | pageFill | A hidden section does not fill the page      | `hiddenSections: ['experience']`                           | Fewer lines; that section measures 0                               | As expected   | Pass   |
+| U-PF-07 | pageFill | Survives an empty CV                         | `estimateFill({})`                                         | A finite ratio, not full, no exception                             | As expected   | Pass   |
+| U-TF-01 | cvTailor | The rewrite reports how full the page is     | Tailor a one-role CV                                       | `pageFill` carries ratio, capacity and `isFull`                    | As expected   | Pass   |
+| U-TF-02 | cvTailor | It never ends emptier than it started        | The same                                                   | `ratio >= startRatio`                                              | As expected   | Pass   |
+| U-TF-03 | cvTailor | Type is set larger rather than leaving a gap | A thin CV against a long advert                            | `fontSize` is `large`, with a recorded reason                      | As expected   | Pass   |
+| U-TF-04 | cvTailor | The longer summary invents nothing           | The same                                                   | Summary names the CV's own qualification and its own "120%" figure | As expected   | Pass   |
+| U-TF-05 | cvTailor | It refuses, then helps                       | A shop CV against a backend advert                         | A note with the percentage and "will not invent experience"        | As expected   | Pass   |
+| U-TF-06 | cvTailor | A hidden section with content is shown again | `hiddenSections: ['education']` on a CV that has education | Removed from `hiddenSections`, recorded as a change                | As expected   | Pass   |
+| U-TF-07 | cvTailor | A full page is left alone                    | A CV with four roles                                       | `isFull` true and the font size is not raised                      | As expected   | Pass   |
 
 ---
 
@@ -114,21 +139,40 @@ pin down a decision; the rest are ordinary coverage of the same functions.
 
 ### 2.6 Job-Tailored CV Rewrite
 
-`server/tests/integration/cvTailor.test.js` (11 cases).
+`server/tests/integration/cvTailor.test.js` (14 cases).
 
-| Test ID | Module       | Description                            | Input / Steps                                        | Expected Result                                             | Actual Result | Status |
-| ------- | ------------ | -------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------- | ------------- | ------ |
-| S-TR-01 | Tailor API   | Rejects an anonymous caller            | `POST /api/cvs/:id/tailor` with no session           | 401                                                         | As expected   | Pass   |
-| S-TR-02 | Tailor API   | Another user's CV is not reachable     | Sign in as a second user, tailor the first user's CV | 404, not 403 — 403 would confirm the id is real             | As expected   | Pass   |
-| S-TR-03 | Tailor API   | Validates the advert                   | `jobDescription: "Dev wanted"`                       | 400                                                         | As expected   | Pass   |
-| S-TR-04 | Tailor API   | Returns draft, changes and comparison  | A filled CV and a pasted advert                      | 200 with `draft`, `changes`, `comparison`, `suggestedTitle` | As expected   | Pass   |
-| S-TR-05 | Tailor API   | The preview stores nothing             | Run a preview, then count CVs                        | Still one CV                                                | As expected   | Pass   |
-| S-TR-06 | Tailor API   | Accepts a job from the board           | `{ jobId }` for an open job                          | 200, headline set to that job's title                       | As expected   | Pass   |
-| S-TR-07 | Tailor save  | Creates a new CV, original untouched   | Preview, then `POST /api/cvs/:id/tailor/save`        | 201, two CVs, the original's headline and summary unchanged | As expected   | Pass   |
-| S-TR-08 | Tailor save  | Stores the user's edits, not the draft | Edit the summary before saving                       | The saved CV has the edited summary                         | As expected   | Pass   |
-| S-TR-09 | Tailor save  | The tailored CV is never primary       | Tailor from a primary CV                             | New CV `isPrimary: false`; the original keeps the flag      | As expected   | Pass   |
-| S-TR-10 | Tailor save  | Refuses a body with no draft           | `POST .../tailor/save` with only a title             | 400                                                         | As expected   | Pass   |
-| S-TR-11 | Activity log | The save is recorded                   | Save a tailored CV, read the log                     | A `CV_TAILOR` entry with the job title in `meta`            | As expected   | Pass   |
+| Test ID | Module       | Description                            | Input / Steps                                        | Expected Result                                                                                                           | Actual Result | Status |
+| ------- | ------------ | -------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------- | ------ |
+| S-TR-01 | Tailor API   | Rejects an anonymous caller            | `POST /api/cvs/:id/tailor` with no session           | 401                                                                                                                       | As expected   | Pass   |
+| S-TR-02 | Tailor API   | Another user's CV is not reachable     | Sign in as a second user, tailor the first user's CV | 404, not 403 — 403 would confirm the id is real                                                                           | As expected   | Pass   |
+| S-TR-03 | Tailor API   | Validates the advert                   | `jobDescription: "Dev wanted"`                       | 400                                                                                                                       | As expected   | Pass   |
+| S-TR-04 | Tailor API   | Returns draft, changes and comparison  | A filled CV and a pasted advert                      | 200 with `draft`, `changes`, `comparison`, `suggestedTitle`                                                               | As expected   | Pass   |
+| S-TR-05 | Tailor API   | The preview stores nothing             | Run a preview, then count CVs                        | Still one CV                                                                                                              | As expected   | Pass   |
+| S-TR-06 | Tailor API   | Accepts a job from the board           | `{ jobId }` for an open job                          | 200, headline set to that job's title                                                                                     | As expected   | Pass   |
+| S-TR-07 | Tailor save  | Creates a new CV, original untouched   | Preview, then `POST /api/cvs/:id/tailor/save`        | 201, two CVs, the original's headline and summary unchanged                                                               | As expected   | Pass   |
+| S-TR-08 | Tailor save  | Stores the user's edits, not the draft | Edit the summary before saving                       | The saved CV has the edited summary                                                                                       | As expected   | Pass   |
+| S-TR-09 | Tailor save  | The tailored CV is never primary       | Tailor from a primary CV                             | New CV `isPrimary: false`; the original keeps the flag                                                                    | As expected   | Pass   |
+| S-TR-10 | Tailor save  | Refuses a body with no draft           | `POST .../tailor/save` with only a title             | 400                                                                                                                       | As expected   | Pass   |
+| S-TR-11 | Activity log | The save is recorded                   | Save a tailored CV, read the log                     | A `CV_TAILOR` entry with the job title in `meta`                                                                          | As expected   | Pass   |
+| S-TR-12 | Tailor save  | Match figures land on the new CV only  | Save a tailored draft, then reload the source CV     | New CV has `baselineMatchScore` < `matchScore`; the source's `tailoredFor` is still null and its strength score unchanged | As expected   | Pass   |
+| S-TR-13 | Tailor save  | The saved draft is what gets scored    | Strip the summary and skills out before saving       | Stored `matchScore` is below the figure the preview promised                                                              | As expected   | Pass   |
+| S-TR-14 | Tailor save  | No advert means no score, not a guess  | Save with no `jobId` and no `jobDescription`         | Both figures null                                                                                                         | As expected   | Pass   |
+| S-TR-15 | Tailor API   | Offers a title from the name and role  | Preview with jobTitle “Backend Developer”            | `suggestedTitle` is `Test Person-Backend Developer`, not the source CV title                                              | As expected   | Pass   |
+| S-TR-16 | Tailor save  | Keeps the offered title when untouched | Save with no `title` in the body                     | The saved CV is named `Test Person-Backend Developer`                                                                     | As expected   | Pass   |
+| S-TR-17 | Tailor save  | The user can still name it themselves  | Save with `title: “For Acme, final”`                 | The saved CV keeps the typed title                                                                                        | As expected   | Pass   |
+
+---
+
+### 2.7 Match badges on the job board
+
+`server/tests/integration/jobMatch.test.js`, `POST /api/job-match/scores`
+(8 cases). The three below cover the before-and-after badge.
+
+| Test ID | Module    | Description                                    | Input / Steps                                        | Expected Result                                                        | Actual Result | Status |
+| ------- | --------- | ---------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------- | ------------- | ------ |
+| S-MB-01 | Board API | Reports a CV already tailored for a job        | Tailor and save a CV for a job, then score the board | That job's row carries `tailored` with both figures and the CV's title | As expected   | Pass   |
+| S-MB-02 | Board API | A tailored CV shows without a primary CV       | The same, with no CV starred                         | `cv` is null, `matchScore` is null, `tailored` is still returned       | As expected   | Pass   |
+| S-MB-03 | Board API | No tailored CV is reported where there is none | Score a job the user has not rewritten for           | `tailored` is null                                                     | As expected   | Pass   |
 
 ---
 

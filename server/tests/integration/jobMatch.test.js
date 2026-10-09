@@ -41,24 +41,22 @@ async function createFilledCV(agent) {
   const created = await agent.post('/api/cvs').send({ title: 'Backend CV' });
   const cvId = created.body.data.cv._id;
 
-  await agent
-    .put(`/api/cvs/${cvId}`)
-    .send({
-      summary: 'Backend developer building REST APIs with Node.js, Express and MongoDB.',
-      skills: [
-        { name: 'Node.js', level: 'Advanced' },
-        { name: 'Express', level: 'Advanced' },
-        { name: 'MongoDB', level: 'Intermediate' },
-      ],
-      experience: [
-        {
-          company: 'Acme',
-          position: 'Backend Developer',
-          description: 'Built REST APIs with Node.js and Express, backed by MongoDB.',
-          achievements: ['Reduced response time by 30%'],
-        },
-      ],
-    });
+  await agent.put(`/api/cvs/${cvId}`).send({
+    summary: 'Backend developer building REST APIs with Node.js, Express and MongoDB.',
+    skills: [
+      { name: 'Node.js', level: 'Advanced' },
+      { name: 'Express', level: 'Advanced' },
+      { name: 'MongoDB', level: 'Intermediate' },
+    ],
+    experience: [
+      {
+        company: 'Acme',
+        position: 'Backend Developer',
+        description: 'Built REST APIs with Node.js and Express, backed by MongoDB.',
+        achievements: ['Reduced response time by 30%'],
+      },
+    ],
+  });
 
   return cvId;
 }
@@ -255,7 +253,9 @@ describe('POST /api/job-match/scores', () => {
   });
 
   it('refuses an anonymous caller', async () => {
-    const res = await request(app).post('/api/job-match/scores').send({ jobIds: [jobId] });
+    const res = await request(app)
+      .post('/api/job-match/scores')
+      .send({ jobIds: [jobId] });
     expect(res.status).toBe(401);
   });
 
@@ -294,5 +294,46 @@ describe('POST /api/job-match/scores', () => {
 
     expect((await owner.post('/api/job-match/scores').send({ jobIds: [] })).status).toBe(400);
     expect((await owner.post('/api/job-match/scores').send({ jobIds: ['nope'] })).status).toBe(400);
+  });
+  it('reports a CV already tailored for one of the jobs', async () => {
+    await owner.patch(`/api/cvs/${cvId}/primary`);
+
+    const preview = await owner.post(`/api/cvs/${cvId}/tailor`).send({ jobId });
+    await owner
+      .post(`/api/cvs/${cvId}/tailor/save`)
+      .send({ draft: preview.body.data.draft, jobId, title: 'Backend CV — tailored' });
+
+    const res = await owner.post('/api/job-match/scores').send({ jobIds: [jobId] });
+    const { tailored } = res.body.data.scores[0];
+
+    expect(tailored).not.toBeNull();
+    expect(tailored.title).toBe('Backend CV — tailored');
+
+    // The pair is what the badge draws the before-and-after arrow from.
+    expect(tailored.baselineMatchScore).toEqual(expect.any(Number));
+    expect(tailored.matchScore).toBeGreaterThan(tailored.baselineMatchScore);
+  });
+
+  it('reports a tailored CV even when no CV is primary', async () => {
+    const preview = await owner.post(`/api/cvs/${cvId}/tailor`).send({ jobId });
+    await owner
+      .post(`/api/cvs/${cvId}/tailor/save`)
+      .send({ draft: preview.body.data.draft, jobId });
+
+    const res = await owner.post('/api/job-match/scores').send({ jobIds: [jobId] });
+
+    // Nothing to compare against, but the work the user has already done
+    // on this advert is still worth showing.
+    expect(res.body.data.cv).toBeNull();
+    expect(res.body.data.scores[0].matchScore).toBeNull();
+    expect(res.body.data.scores[0].tailored).not.toBeNull();
+  });
+
+  it('leaves tailored empty for a job the user has not rewritten for', async () => {
+    await owner.patch(`/api/cvs/${cvId}/primary`);
+
+    const res = await owner.post('/api/job-match/scores').send({ jobIds: [jobId] });
+
+    expect(res.body.data.scores[0].tailored).toBeNull();
   });
 });

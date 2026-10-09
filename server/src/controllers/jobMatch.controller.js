@@ -173,10 +173,13 @@ export async function createJobMatch(req, res) {
  */
 export async function scoreJobsForBoard(req, res) {
   const primary = await CV.findOne({ user: req.user._id, isPrimary: true, isDeleted: false });
+  const tailored = await loadTailoredCVs(req.user._id, req.body.jobIds);
 
-  // No primary CV is an ordinary state, not an error: the client simply
-  // shows no badges, and can prompt the user to choose one.
-  if (!primary) {
+  // No primary CV is an ordinary state, not an error. There may still be
+  // tailored CVs to report, so this no longer returns early: a user who
+  // rewrote a CV for one of these jobs should see that result whether or
+  // not they ever got round to starring a CV.
+  if (!primary && tailored.size === 0) {
     sendSuccess(res, { cv: null, scores: [] }, 'No primary CV set');
     return;
   }
@@ -185,19 +188,88 @@ export async function scoreJobsForBoard(req, res) {
     'title description skills',
   );
 
-  const scores = scoreJobsAgainstCV(
-    primary,
-    jobs.map((job) => ({
-      id: job._id.toString(),
-      text: `${job.title}\n${job.description}\nSkills: ${(job.skills ?? []).join(', ')}`,
-    })),
-  );
+  const primaryScores = primary
+    ? scoreJobsAgainstCV(
+        primary,
+        jobs.map((job) => ({
+          id: job._id.toString(),
+          text: `${job.title}\n${job.description}\nSkills: ${(job.skills ?? []).join(', ')}`,
+        })),
+      )
+    : [];
+
+  const byJob = new Map(primaryScores.map((score) => [score.id, score]));
+
+  // One row per job the user has something to say about: a primary score,
+  // a tailored CV, or both. A job with neither is left out rather than
+  // sent as a null, which keeps the "no badge" case on the client a
+  // simple missing key.
+  const scores = jobs
+    .map((job) => {
+      const id = job._id.toString();
+      const score = byJob.get(id);
+      const tailoredCV = tailored.get(id) ?? null;
+
+      if (!score && !tailoredCV) return null;
+
+      return {
+        id,
+        matchScore: score ? score.matchScore : null,
+        band: score ? score.band : null,
+        skillCoverage: score ? score.skillCoverage : null,
+        tailored: tailoredCV,
+      };
+    })
+    .filter(Boolean);
 
   sendSuccess(
     res,
-    { cv: { _id: primary._id, title: primary.title }, scores },
+    { cv: primary ? { _id: primary._id, title: primary.title } : null, scores },
     'Scored against your primary CV',
   );
+}
+
+/**
+ * The CVs this user has already tailored for the jobs on screen.
+ *
+ * Keyed by job id, carrying the two figures recorded when each was saved.
+ * They are read back rather than recomputed, for two reasons: they are
+ * the numbers the user saw and approved in the review step, so the badge
+ * on the board says exactly what the job page said; and the board would
+ * otherwise pay for a separate TF-IDF pass per tailored CV to arrive at
+ * the same answer.
+ *
+ * Where a user has tailored more than one CV for the same advert the most
+ * recent wins, since that is the one they are working from.
+ *
+ * @param {string} userId - The caller.
+ * @param {string[]} jobIds - The jobs on screen.
+ * @returns {Promise<Map<string, object>>} Job id to tailored CV summary.
+ */
+async function loadTailoredCVs(userId, jobIds) {
+  const cvs = await CV.find({
+    user: userId,
+    isDeleted: false,
+    'tailoredFor.job': { $in: jobIds },
+  })
+    .select('title tailoredFor')
+    // Oldest first, so the newest overwrites it in the map below.
+    .sort({ 'tailoredFor.tailoredAt': 1 })
+    .lean();
+
+  const byJob = new Map();
+
+  for (const cv of cvs) {
+    byJob.set(cv.tailoredFor.job.toString(), {
+      cvId: cv._id,
+      title: cv.title,
+      baselineMatchScore: cv.tailoredFor.baselineMatchScore,
+      matchScore: cv.tailoredFor.matchScore,
+      tailoredAt: cv.tailoredFor.tailoredAt,
+    });
+  }
+
+  return byJob;
 }
 
 /**

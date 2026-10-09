@@ -13,6 +13,7 @@
     "seed:admin": "node scripts/seedAdmin.js",
     "seed:templates": "node scripts/seedTemplates.js",
     "seed:jobs": "node scripts/seedJobs.js",
+    "seed:qa-demo": "node scripts/seedQaDemo.js",
     "seed:loadtest": "node scripts/seedLoadTestUsers.js"
   },
   "dependencies": {

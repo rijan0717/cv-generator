@@ -30,6 +30,7 @@
     "seed:admin": "npm run seed:admin --prefix server",
     "seed:templates": "npm run seed:templates --prefix server",
     "seed:jobs": "npm run seed:jobs --prefix server",
+    "seed:qa-demo": "npm run seed:qa-demo --prefix server",
     "seed:loadtest": "npm run seed:loadtest --prefix server --",
     "lint": "eslint .",
     "format": "prettier --write ."

@@ -238,22 +238,20 @@ export default function DashboardPage() {
                 <PrimaryToggle cv={cv} onToggle={() => togglePrimary(cv)} />
               </div>
 
+              {/*
+                Only tailored CVs carry match figures, and only they
+                should: the number belongs to the advert the CV was
+                written for, and a general CV has no single job to be
+                measured against.
+              */}
+              <MatchGrowthPill tailoredFor={cv.tailoredFor} />
+
               <ScorePill score={cv.strengthScore} />
 
               <div className="relative z-10 flex items-center gap-2">
                 <Link to={`/cvs/${cv._id}`}>
                   <Button size="sm" variant="secondary">
                     Edit
-                  </Button>
-                </Link>
-                {/*
-                  Tailoring produces a new CV rather than changing this
-                  one, so it sits with the other actions that add a row
-                  to this list rather than with Edit.
-                */}
-                <Link to={`/cvs/${cv._id}/tailor`}>
-                  <Button size="sm" variant="ghost">
-                    Tailor for a job
                   </Button>
                 </Link>
                 <Button
@@ -323,6 +321,55 @@ function ScorePill({ score }) {
       title={`AI score ${value} out of 100, from how complete this CV is and how well it is written`}
     >
       AI score ({value})
+    </span>
+  );
+}
+
+/**
+ * What the rewrite achieved for a tailored CV, on the row for that CV.
+ *
+ * The pair rather than the gain alone, because the starting figure is
+ * what gives the jump its meaning — 18 to 82 and 70 to 82 are different
+ * results and "+12" would describe neither.
+ *
+ * These are the figures recorded when the CV was saved, measured against
+ * the draft the user actually kept rather than the one the algorithm
+ * proposed. They sit on this CV only: tailoring never re-marks the CV it
+ * was written from, so the original's row is unaffected by anything that
+ * happens here.
+ *
+ * Nothing is shown for an ordinary CV, or for one tailored before the
+ * figures were recorded. An absent score is left absent rather than
+ * filled in with a zero that would read as a bad match.
+ *
+ * @param {{tailoredFor: object|null|undefined}} props
+ */
+function MatchGrowthPill({ tailoredFor }) {
+  if (!tailoredFor) return null;
+
+  const { baselineMatchScore, matchScore, jobTitle } = tailoredFor;
+  if (!Number.isFinite(baselineMatchScore) || !Number.isFinite(matchScore)) return null;
+
+  const difference = matchScore - baselineMatchScore;
+
+  const tone =
+    difference > 0
+      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+      : difference < 0
+        ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+        : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+
+  return (
+    <span
+      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}
+      title={`Job match${jobTitle ? ` for ${jobTitle}` : ''}: ${baselineMatchScore}% before this CV was tailored, ${matchScore}% after`}
+    >
+      <span className="font-normal opacity-70">{baselineMatchScore}%</span>
+      <span aria-hidden="true">&rarr;</span>
+      <span>{matchScore}%</span>
+      <span className="sr-only">
+        job match after tailoring, up from {baselineMatchScore} per cent
+      </span>
     </span>
   );
 }

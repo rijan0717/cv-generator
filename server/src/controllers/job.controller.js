@@ -5,6 +5,7 @@ import { Job } from '../models/Job.js';
 import { Company } from '../models/Company.js';
 import { Application } from '../models/Application.js';
 import { SavedJob } from '../models/SavedJob.js';
+import { CV } from '../models/CV.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -147,17 +148,38 @@ export async function getJob(req, res) {
 
   let isSaved = false;
   let hasApplied = false;
+  let tailoredCv = null;
 
   if (req.user) {
-    const [saved, applied] = await Promise.all([
+    const [saved, applied, tailored] = await Promise.all([
       SavedJob.exists({ user: req.user._id, job: job._id }),
       Application.exists({ applicant: req.user._id, job: job._id }),
+
+      // The CV this user has already rewritten for this advert, if any.
+      // It is what lets the page show the growth the rewrite delivered
+      // after a reload, instead of the figures vanishing the moment the
+      // user navigates away from the review step.
+      CV.findOne({ user: req.user._id, isDeleted: false, 'tailoredFor.job': job._id })
+        .select('title tailoredFor')
+        .sort({ 'tailoredFor.tailoredAt': -1 })
+        .lean(),
     ]);
+
     isSaved = Boolean(saved);
     hasApplied = Boolean(applied);
+
+    if (tailored) {
+      tailoredCv = {
+        _id: tailored._id,
+        title: tailored.title,
+        baselineMatchScore: tailored.tailoredFor.baselineMatchScore,
+        matchScore: tailored.tailoredFor.matchScore,
+        tailoredAt: tailored.tailoredFor.tailoredAt,
+      };
+    }
   }
 
-  sendSuccess(res, { job, isSaved, hasApplied }, 'Job');
+  sendSuccess(res, { job, isSaved, hasApplied, tailoredCv }, 'Job');
 }
 
 /**

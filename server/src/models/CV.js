@@ -152,6 +152,25 @@ const tailoredForSchema = new mongoose.Schema(
     /** The CV this one was tailored from. */
     sourceCv: { type: mongoose.Schema.Types.ObjectId, ref: 'CV', default: null },
 
+    /**
+     * What the source CV scored against this advert, measured when this
+     * CV was saved.
+     *
+     * Both figures live here, on the tailored CV, and neither is ever
+     * written back to the source. The rewrite produces a new document;
+     * it does not re-mark the old one, and a user who tailors the same
+     * CV for five adverts must not watch its score move five times.
+     *
+     * Storing the pair is what lets every screen show the growth the
+     * rewrite actually delivered — the dashboard row, the job board
+     * badge and the job page all read these two numbers instead of each
+     * recomputing a figure of its own and disagreeing.
+     */
+    baselineMatchScore: { type: Number, default: null, min: 0, max: 100 },
+
+    /** What this CV scored against the same advert, as the user saved it. */
+    matchScore: { type: Number, default: null, min: 0, max: 100 },
+
     tailoredAt: { type: Date, default: Date.now },
   },
   { _id: false },
@@ -255,6 +274,10 @@ cvSchema.pre('save', function recalculateStrength(next) {
 cvSchema.index({ user: 1, isDeleted: 1, updatedAt: -1 });
 // Finding a user primary CV, which the apply form does on every open.
 cvSchema.index({ user: 1, isPrimary: 1 });
+// Finding the CVs a user has already tailored for a page of adverts,
+// which the job board does once per page to show the before-and-after
+// badges. Sparse because only tailored CVs carry the field at all.
+cvSchema.index({ user: 1, 'tailoredFor.job': 1 }, { sparse: true });
 
 export const CV = mongoose.model('CV', cvSchema);
 export default CV;

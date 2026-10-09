@@ -32,11 +32,21 @@
  * `notes` rather than as a change — the module will not choose a verb or
  * invent a figure on the user's behalf.
  *
- * What it deliberately will not do is add a skill the CV never mentions.
  * A skill the advert asks for and the CV proves *somewhere* (described in
  * a role but missing from the skills list) is added, because the evidence
  * is the user's own. A skill with no evidence at all is only ever
  * *suggested*, and the user decides.
+ *
+ * The one exception is the target pass (step 8, `reachTarget`). The
+ * feature is specified to produce a CV that clears a `targetScore`
+ * match, and on a CV that the honest steps leave short of it, the only
+ * lever left is to list skills the CV cannot evidence. So it adds them —
+ * the fewest that get over the line, re-scoring after each one, and
+ * never more than `maxAssumed`. They come back under `assumedSkills`
+ * rather than mixed in with the rest, and the review screen labels every
+ * one as an assumption for the user to confirm or delete. On a CV in the
+ * right field the pass adds nothing at all: the honest steps are
+ * normally worth more than it is.
  *
  * Nothing here touches the database and nothing here is saved. The caller
  * returns the draft to the user, who edits it and then chooses to keep it
@@ -51,11 +61,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TAILOR_CONFIG } from '../config/scoringConfig.js';
+import { TAILOR_CONFIG, PAGE_FILL_CONFIG } from '../config/scoringConfig.js';
 import { processText, cvToText, normaliseText, tokenise } from './textProcessor.js';
 import { documentFrequency, tfidfVector, topTerms } from './tfidf.js';
-import { skillsFromSection } from './jobMatcher.js';
+import { skillsFromSection, analyseMatch, buildSurfaceForms } from './jobMatcher.js';
 import { hasQuantifiedResult } from './cvStrengthScorer.js';
+import { estimateFill } from './pageFill.js';
 import { SKILLS, findSkills } from '../data/skillsDictionary.js';
 import { rewriteDescription, rewriteAsAction, tidy } from './phraseRewriter.js';
 
@@ -280,11 +291,26 @@ function wordCount(text) {
  * enough to reach the minimum, a short summary is returned and the caller
  * reports that rather than padding it out with filler.
  *
+ * The two ceilings are options rather than constants because the page-fill
+ * step raises them. A CV that leaves half the page blank is better served
+ * by a summary that says everything it can source than by one trimmed to
+ * the length the strength scorer prefers — and since every sentence is
+ * sourced, a longer one invents nothing.
+ *
  * @param {object} cv - The source CV.
- * @param {{targetTitle: string, namedSkills: string[]}} context
+ * @param {{targetTitle: string, namedSkills: string[], maxWords?: number,
+ *          maxSkillsNamed?: number}} context
  * @returns {{text: string, sentences: string[], short: boolean}}
  */
-export function buildSummary(cv, { targetTitle, namedSkills }) {
+export function buildSummary(
+  cv,
+  {
+    targetTitle,
+    namedSkills,
+    maxWords = TAILOR_CONFIG.summary.maxWords,
+    maxSkillsNamed = TAILOR_CONFIG.summary.maxSkillsNamed,
+  },
+) {
   const sentences = [];
 
   // 1. Who they are. The advert's job title when there is one, because
@@ -300,7 +326,7 @@ export function buildSummary(cv, { targetTitle, namedSkills }) {
 
   // 2. What they work with. Already ordered by the caller so the skills
   //    this advert asks for come first.
-  const skills = namedSkills.slice(0, TAILOR_CONFIG.summary.maxSkillsNamed);
+  const skills = namedSkills.slice(0, maxSkillsNamed);
   if (skills.length > 0) {
     sentences.push(`Skilled in ${listPhrase(skills)}.`);
   }
@@ -330,7 +356,7 @@ export function buildSummary(cv, { targetTitle, namedSkills }) {
   const kept = [];
   for (const sentence of sentences) {
     const candidate = [...kept, sentence].join(' ');
-    if (kept.length >= 2 && wordCount(candidate) > TAILOR_CONFIG.summary.maxWords) break;
+    if (kept.length >= 2 && wordCount(candidate) > maxWords) break;
     kept.push(sentence);
   }
 
@@ -623,7 +649,7 @@ function canonicalOf(skill) {
 /**
  * Produces a tailored draft of one CV for one advert.
  *
- * The seven steps, in order:
+ * The eight steps, in order:
  *
  *   1. Weight the advert, giving the relevance yardstick.
  *   2. Point the headline at the advertised role.
@@ -635,6 +661,8 @@ function canonicalOf(skill) {
  *      relevance — unlike roles, projects have no expected order.
  *   6. Assemble a summary from facts already on the CV.
  *   7. Order the sections so the most relevant one is read first.
+ *   8. Score the draft, and if it falls short of the target, add the
+ *      fewest unevidenced skills that clear it (see `reachTarget`).
  *
  * Experience entries are never re-ordered. A CV is read in reverse
  * chronological order and a reader uses that to judge a career; shuffling
@@ -844,7 +872,8 @@ export function tailorCV(cv, jobText, options = {}) {
       .filter((name) => name && !alreadyNamed.has(name)),
   ];
 
-  const summary = buildSummary(source, { targetTitle: jobTitle, namedSkills });
+  const summaryContext = { targetTitle: jobTitle, namedSkills };
+  const summary = buildSummary(source, summaryContext);
 
   if (summary.text && summary.text !== source.summary) {
     record({
@@ -872,12 +901,302 @@ export function tailorCV(cv, jobText, options = {}) {
   // --- Step 7: section order ----------------------------------------------
   draft.settings.sectionOrder = orderSections(source, draft, profile, record);
 
+  // --- Step 8: reach the target score -------------------------------------
+  const target = reachTarget(draft, jobText, skillResult.suggested, {
+    priorJobDescriptions,
+    profile,
+    record,
+    // The *source* CV decides whether there is anything to tailor. By
+    // this point the draft always has a summary, because step 6 built
+    // one out of the job title alone — so asking the draft would answer
+    // "yes" for a completely empty CV.
+    source,
+  });
+
+  if (!target.reached) {
+    notes.push(
+      `The best honest match for this advert is ${target.score}%, short of the ` +
+        `${TAILOR_CONFIG.targetScore}% target. The score weighs how much your CV *reads* like ` +
+        'the advert as well as which skills it names, and listing more skills cannot fix the ' +
+        'first of those. Describing this kind of work in your own roles is what closes it.',
+    );
+  }
+
+  // --- Step 9: fill the page ----------------------------------------------
+  // Last, because it measures the finished draft: run any earlier and it
+  // would be sizing a document the target pass had not written yet.
+  const pageFill = fillPage(draft, { source, summaryContext, record, notes });
+
   return {
     draft,
     changes,
-    suggestedSkills: skillResult.suggested,
+    suggestedSkills: target.stillSuggested,
+    assumedSkills: target.assumed,
+    focusTerms: target.focus,
+    matchScore: target.score,
+    targetReached: target.reached,
+    pageFill,
     notes,
   };
+}
+
+/**
+ * Whether there is enough on a CV for tailoring to mean anything.
+ *
+ * An empty CV scores zero against every advert, so the target pass
+ * would bolt its full allowance of assumed skills onto a document with
+ * no experience, no summary and nothing else in it. That is not a
+ * tailored CV, it is a list of the advert's requirements — and it would
+ * be the one case where the feature produced something entirely
+ * unsupported by the user.
+ *
+ * It is asked of the **source** CV, never the draft: by the time the
+ * target pass runs, step 6 has given the draft a summary built out of
+ * the job title alone, so the draft of a completely empty CV would
+ * answer "yes".
+ *
+ * @param {object} source - The CV the rewrite started from.
+ * @returns {boolean} True when there is something to tailor.
+ */
+function hasContentToTailor(source) {
+  return Boolean(
+    source?.summary?.trim() ||
+    source?.experience?.length ||
+    source?.projects?.length ||
+    source?.skills?.length,
+  );
+}
+
+/**
+ * Adds the fewest unevidenced skills needed to clear the target score.
+ *
+ * This is the one place the rewrite states something the CV does not
+ * support, so it is deliberately the smallest and loudest part of the
+ * module:
+ *
+ *   - **Smallest.** Skills are added one at a time, the draft is
+ *     re-scored after each, and the loop stops the instant the target is
+ *     reached. A CV already over the line gets nothing added at all,
+ *     which on a CV in the right field is the usual outcome — the honest
+ *     steps are normally worth more than this one.
+ *   - **Loudest.** What it adds comes back as `assumed`, separately from
+ *     everything else, and the review screen labels each one as an
+ *     assumption for the user to confirm or remove. Removing one lowers
+ *     the score again, which is the behaviour that keeps the number
+ *     meaningful.
+ *
+ * The advert's most heavily weighted skills are tried first, so if only
+ * one is needed it is the one the advert cares most about.
+ *
+ * **The target is not always reachable, and the pass does not pretend
+ * otherwise.** The match score weighs how much the CV *reads* like the
+ * advert (scaled cosine similarity, 45%) as well as which skills it
+ * names (coverage, 55%), so a CV from another field can cover every
+ * named skill and still sit in the seventies — listing skills cannot
+ * make a shop CV read like a backend advert. When the queue runs out
+ * below the target the pass stops, reports `reached: false`, and the
+ * caller tells the user why. Inventing experience to close that gap is
+ * the one thing this module will not do.
+ *
+ * Scoring uses `analyseMatch` — the same analyser the match page uses —
+ * rather than a private copy of the formula, so the score the rewrite
+ * optimises against and the score the user is shown are the same number
+ * by construction.
+ *
+ * @param {object} draft - The draft so far. Its skills array is replaced.
+ * @param {string} jobText - The advert.
+ * @param {string[]} suggested - Skills the advert wants and the CV cannot
+ *   evidence, from `tailorSkills`.
+ * @param {{priorJobDescriptions: string[], profile: object,
+ *          record: (change: object) => void}} context
+ * @returns {{assumed: string[], stillSuggested: string[], score: number,
+ *            reached: boolean}}
+ */
+function reachTarget(draft, jobText, suggested, context) {
+  const { priorJobDescriptions, profile, record, source } = context;
+
+  let score = analyseMatch(draft, jobText, { priorJobDescriptions }).matchScore;
+  const target = TAILOR_CONFIG.targetScore;
+
+  if (score >= target || !hasContentToTailor(source)) {
+    return {
+      assumed: [],
+      focus: [],
+      stillSuggested: suggested,
+      score,
+      reached: score >= target,
+    };
+  }
+
+  // Most-wanted first, so a single addition is the most useful one.
+  const queue = [...suggested].sort((a, b) => relevanceOf(b, profile) - relevanceOf(a, profile));
+
+  const assumed = [];
+
+  while (queue.length > 0 && score < target && assumed.length < TAILOR_CONFIG.skills.maxAssumed) {
+    const name = queue.shift();
+
+    draft.skills = [...draft.skills, { name, level: 'Intermediate' }];
+    assumed.push(name);
+
+    score = analyseMatch(draft, jobText, { priorJobDescriptions }).matchScore;
+  }
+
+  // --- Lever two: speak the advert's language ----------------------------
+  //
+  // Coverage is only 55% of the score. The other 45% asks how much the CV
+  // *reads* like the advert, and on a CV that already names every skill
+  // the advert wants, listing more cannot move it at all — which is why
+  // the first lever alone leaves some CVs stuck in the fifties.
+  //
+  // The lever that does move it is vocabulary: the advert's own phrases
+  // for the work ("organic search", "cost per acquisition", "channel
+  // performance"). Mirroring an advert's language is ordinary CV advice
+  // and what every ATS rewards, but it is also the point at which this
+  // module writes a line the user did not, so it is done in the open:
+  // one clearly-named sentence at the end of the summary, listing the
+  // terms, recorded as its own change, and sitting in the summary box
+  // the user edits before saving. Nothing is slipped into their roles.
+  //
+  // Terms are added a few at a time and the draft re-scored after each
+  // batch, so the sentence stays as short as the target allows.
+  const focus = [];
+  const candidates = advertVocabulary(draft, jobText, profile);
+
+  while (candidates.length > 0 && score < target && focus.length < TAILOR_CONFIG.maxFocusTerms) {
+    focus.push(...candidates.splice(0, TAILOR_CONFIG.focusBatchSize));
+    draft.summary = withFocusSentence(draft.summary, focus);
+
+    score = analyseMatch(draft, jobText, { priorJobDescriptions }).matchScore;
+  }
+
+  if (focus.length > 0) {
+    record({
+      section: 'summary',
+      kind: 'aligned',
+      after: focusSentence(focus),
+      reason:
+        `Added to reach a ${target}% match. These are the advert's own words for the work, ` +
+        "which your CV never uses — and matching an advert's language is most of what a " +
+        'screening system measures. Keep only the ones that describe work you have actually ' +
+        'done, and reword the sentence so it sounds like you.',
+    });
+  }
+
+  for (const name of assumed) {
+    record({
+      section: 'skills',
+      kind: 'assumed',
+      after: name,
+      reason:
+        `Added to reach a ${target}% match. Your CV does not mention ${name} anywhere, so ` +
+        'this is an assumption, not something the rewrite found. Remove it if you do not ' +
+        'have it — the score will fall, and it should.',
+    });
+  }
+
+  return { assumed, focus, stillSuggested: queue, score, reached: score >= target };
+}
+
+/** The fixed opening of the alignment sentence, so it is easy to spot and delete. */
+const FOCUS_PREFIX = 'Focus for this role:';
+
+/**
+ * The advert's own words for the work, which this CV never uses.
+ *
+ * Taken from the relevance profile — the advert's highest-weighted
+ * terms — minus everything the CV already says. Stems are mapped back
+ * to a readable word with `buildSurfaceForms`, the same way the match
+ * analyser turns "manag" back into "managing" before showing it to a
+ * user.
+ *
+ * Very short terms are dropped: a three-letter word carrying TF-IDF
+ * weight on a corpus this size is usually an artefact, and listing it
+ * would make the sentence look like noise.
+ *
+ * @param {object} draft - The draft as it currently stands.
+ * @param {string} jobText - The advert.
+ * @param {{weights: Map<string, number>, totalWeight: number}} profile
+ * @returns {string[]} Display words, most heavily weighted first.
+ */
+function advertVocabulary(draft, jobText, profile) {
+  const cvTerms = new Set(processText(cvToText(draft)));
+  const surfaceForms = buildSurfaceForms(jobText);
+
+  const words = [];
+  const seen = new Set();
+
+  // The profile is already ordered by weight, highest first.
+  for (const term of profile.weights.keys()) {
+    if (cvTerms.has(term)) continue;
+
+    const word = term.includes('_') ? term.split('_').join(' ') : (surfaceForms.get(term) ?? term);
+
+    if (word.length < 4 || seen.has(word)) continue;
+
+    seen.add(word);
+    words.push(word);
+  }
+
+  // A phrase and its parts both carry weight, so "content marketing",
+  // "content" and "marketing" can all arrive. Listing all three reads
+  // as padding and wastes two of the twelve slots, so the parts of a
+  // phrase already in the list are dropped.
+  const phrases = words.filter((word) => word.includes(' '));
+
+  return words
+    .filter(
+      (word) => word.includes(' ') || !phrases.some((phrase) => phrase.split(' ').includes(word)),
+    )
+    .map(capitaliseWords);
+}
+
+/**
+ * Title-cases a term for display: "content marketing" -> "Content Marketing".
+ *
+ * The terms come out of the pipeline lowercased, and a sentence listing
+ * "seo, content marketing and analytics" reads as though it were typed
+ * carelessly rather than as a deliberate list of the advert's language.
+ *
+ * @param {string} words - One term, possibly of several words.
+ * @returns {string} The term, capitalised.
+ */
+function capitaliseWords(words) {
+  return words
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+/**
+ * The alignment sentence on its own.
+ * @param {string[]} focus - The terms to name.
+ * @returns {string} The sentence.
+ */
+function focusSentence(focus) {
+  // Commas rather than "a, b and c": this is a list of the advert's
+  // terms, and dressing it up as prose would disguise what it is.
+  return `${FOCUS_PREFIX} ${focus.join(', ')}.`;
+}
+
+/**
+ * Puts the alignment sentence at the end of the summary, replacing any
+ * earlier version of itself.
+ *
+ * Replacing rather than appending matters, because the loop calls this
+ * once per batch: appending would leave the summary with three or four
+ * "Focus for this role" sentences, each a superset of the last.
+ *
+ * @param {string} summary - The summary so far.
+ * @param {string[]} focus - Every term chosen up to now.
+ * @returns {string} The summary with exactly one alignment sentence.
+ */
+function withFocusSentence(summary, focus) {
+  const withoutPrevious = String(summary ?? '')
+    .split(FOCUS_PREFIX)[0]
+    .trim();
+
+  return `${withoutPrevious} ${focusSentence(focus)}`.trim();
 }
 
 /**
@@ -970,3 +1289,199 @@ function orderSections(source, draft, profile, record) {
 }
 
 export default tailorCV;
+
+/**
+ * Fills the page, as far as the user's own material allows.
+ *
+ * A rewrite that leaves half an A4 page blank has produced a document
+ * that looks unfinished whatever it says, and the rest of this file had
+ * no way of noticing. This step measures the draft against a page and,
+ * when it falls short, pulls the levers it legitimately has — in order,
+ * stopping the moment the page is full.
+ *
+ * The order is content first, then presentation:
+ *
+ *   1. **Show what is already there.** A section hidden in the settings
+ *      but full of content is the cheapest thing on the page to find.
+ *   2. **Let the summary run longer.** `buildSummary` normally stops at
+ *      the word count the strength scorer rewards. Every sentence it
+ *      could have added is built from a fact already on the CV, so
+ *      raising the ceiling lengthens the summary without inventing
+ *      anything — it only stops holding facts back.
+ *   3. **Set the type larger.** Same words, more page. Nothing is
+ *      claimed by an 11.5pt CV that was not claimed at 9.5pt.
+ *
+ * What it will **not** do is write experience the user does not have.
+ * That is the line this whole module is built around, and a blank half
+ * page is not a good enough reason to cross it: an employer reading an
+ * invented paragraph is being deceived, and the candidate is the one who
+ * has to defend it at interview. Where the levers run out, the step says
+ * exactly what is missing and leaves the writing to the person whose CV
+ * it is.
+ *
+ * @param {object} draft - The draft, modified in place.
+ * @param {object} context - `{ source, summaryContext, record, notes }`.
+ * @returns {object} The final fill estimate.
+ */
+function fillPage(draft, { source, summaryContext, record, notes }) {
+  const before = estimateFill(draft);
+  if (before.isFull) return { ...before, startRatio: before.ratio };
+
+  // --- Lever 1: sections that are hidden but have something in them ----
+  const hidden = draft.settings.hiddenSections ?? [];
+  const revealed = hidden.filter(
+    (key) =>
+      (estimateFill({ ...draft, settings: { ...draft.settings, hiddenSections: [] } }).sections[
+        key
+      ] ?? 0) > 0,
+  );
+
+  if (revealed.length > 0) {
+    draft.settings.hiddenSections = hidden.filter((key) => !revealed.includes(key));
+    record({
+      section: 'settings',
+      field: 'hidden sections',
+      kind: 'reordered',
+      after: revealed.join(', '),
+      reason:
+        `Your CV fills about ${Math.round(before.ratio * 100)}% of a page, and ` +
+        `${listPhrase(revealed)} ${revealed.length === 1 ? 'was' : 'were'} hidden ` +
+        'despite having content. Shown again so the page is not half empty.',
+    });
+  }
+
+  if (estimateFill(draft).isFull) {
+    return { ...estimateFill(draft), startRatio: before.ratio };
+  }
+
+  // --- Lever 2: let the summary say everything it can source -----------
+  const longer = buildSummary(source, {
+    ...summaryContext,
+    maxWords: PAGE_FILL_CONFIG.expandedSummaryMaxWords,
+    maxSkillsNamed: PAGE_FILL_CONFIG.expandedSummarySkills,
+  });
+
+  if (longer.text && longer.text.length > (draft.summary ?? '').length) {
+    const previous = draft.summary;
+    const focus = focusOf(previous);
+    draft.summary = focus.length > 0 ? withFocusSentence(longer.text, focus) : longer.text;
+
+    record({
+      section: 'summary',
+      kind: 'replaced',
+      before: previous,
+      after: draft.summary,
+      reason:
+        'Lengthened because the page was half empty. Every extra sentence is built from ' +
+        'something already on your CV — your qualification, your skills, your own ' +
+        'achievement — so nothing here is invented, it is only no longer left out.',
+    });
+  }
+
+  if (estimateFill(draft).isFull) {
+    return { ...estimateFill(draft), startRatio: before.ratio };
+  }
+
+  // --- Lever 3: larger type --------------------------------------------
+  const sizes = ['small', 'medium', 'large'];
+  const startedAt = draft.settings.fontSize ?? 'medium';
+  let index = Math.max(0, sizes.indexOf(startedAt));
+
+  while (index < sizes.length - 1 && !estimateFill(draft).isFull) {
+    index += 1;
+    draft.settings.fontSize = sizes[index];
+  }
+
+  if (draft.settings.fontSize !== startedAt) {
+    record({
+      section: 'settings',
+      field: 'font size',
+      kind: 'replaced',
+      before: startedAt,
+      after: draft.settings.fontSize,
+      reason:
+        'Set larger so the content fills the page rather than stopping half way down. ' +
+        'This changes nothing about what your CV says — change it back in the builder ' +
+        'if you prefer the smaller setting.',
+    });
+  }
+
+  const after = estimateFill(draft);
+
+  // --- What is left is content, and only the user can write it ---------
+  if (!after.isFull) {
+    notes.push(
+      `Your CV fills about ${Math.round(after.ratio * 100)}% of an A4 page. The rewrite has ` +
+        'gone as far as it honestly can — it will not invent experience you do not have, so ' +
+        `the rest is yours to write. ${whatWouldFillIt(draft, after)}`,
+    );
+  }
+
+  return { ...after, startRatio: before.ratio };
+}
+
+/**
+ * The most useful thing the user could add, given what is thin.
+ *
+ * Specific advice, not "add more": the sections are ranked by what a
+ * reader of a CV actually misses, and the first one that is empty or
+ * nearly empty is named. A prompt a user can act on in a minute is worth
+ * more than an accurate description of the problem.
+ *
+ * @param {object} draft - The draft as it stands.
+ * @param {object} fill - Its fill estimate.
+ * @returns {string} One sentence of advice.
+ */
+function whatWouldFillIt(draft, fill) {
+  const roles = (draft.experience ?? []).length;
+  const thinRoles = (draft.experience ?? []).filter(
+    (role) => (role?.achievements ?? []).filter(Boolean).length < 2,
+  );
+
+  if (roles === 0) {
+    return 'Adding a role, or a project you built, would fill most of what is missing.';
+  }
+
+  if (thinRoles.length > 0) {
+    const named = thinRoles[0].position || 'your most recent role';
+    return (
+      `Two or three more bullet points under ${named} — what you did, and what changed ` +
+      'because you did it — would fill most of it.'
+    );
+  }
+
+  if ((draft.projects ?? []).length === 0) {
+    return 'A projects section is usually the quickest way to fill the rest.';
+  }
+
+  if ((draft.certifications ?? []).length === 0) {
+    return 'Certifications or training would fill some of the rest.';
+  }
+
+  return `About ${Math.ceil(fill.shortfallLines)} more lines of content would fill it.`;
+}
+
+/**
+ * Reads the "Focus for this role" line back out of a summary.
+ *
+ * The expanded summary is rebuilt from the source CV, which never had
+ * that line, so it has to be carried across by hand or the target pass's
+ * work is silently undone.
+ *
+ * @param {string} summary - The summary the focus line may be in.
+ * @returns {string[]} The focus terms, or an empty list.
+ */
+function focusOf(summary) {
+  const sentence = String(summary ?? '')
+    .split(/(?<=\.)\s+/)
+    .find((part) => part.startsWith(FOCUS_PREFIX));
+
+  if (!sentence) return [];
+
+  return sentence
+    .slice(FOCUS_PREFIX.length)
+    .replace(/\.$/, '')
+    .split(',')
+    .map((term) => term.trim())
+    .filter(Boolean);
+}

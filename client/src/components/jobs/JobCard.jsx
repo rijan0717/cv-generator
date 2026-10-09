@@ -9,7 +9,8 @@ import CompanyLogo from '../company/CompanyLogo.jsx';
  *
  * @param {{job: object, onToggleSave?: (job: object) => void,
  *          isSaving?: boolean, showSave?: boolean,
- *          match?: {matchScore: number, band: string}|null}} props
+ *          match?: {matchScore: number|null, band: string|null,
+ *                   tailored: object|null}|null}} props
  */
 export default function JobCard({
   job,
@@ -59,7 +60,7 @@ export default function JobCard({
 
         <div className="flex shrink-0 items-center gap-2">
           {/* A 0 is a score like any other, so this tests for the object, not the number. */}
-          {match != null && <MatchBadge matchScore={match.matchScore} band={match.band} />}
+          {match != null && <MatchBadge match={match} />}
 
           {showSave && onToggleSave && (
             <button
@@ -136,37 +137,86 @@ export default function JobCard({
 }
 
 /**
- * How well this job matches the user's primary CV.
+ * How well this job matches the user's CV.
  *
- * The colour carries the same meaning as the number, but colour alone is
- * never the only signal — the percentage and the band are both written
- * out, so the badge still reads correctly to anyone who cannot
- * distinguish the shades.
+ * Two shapes, because there are two things worth saying. Normally it is
+ * one figure, scored against the primary CV. Once the user has rewritten
+ * a CV for this particular advert it becomes the pair — what they started
+ * at and what the tailored CV reached — because the growth is the point
+ * of having done it, and a single number would hide the work.
+ *
+ * The colour carries the same meaning as the number, but colour is never
+ * the only signal: the percentages and the band are both written out, so
+ * the badge still reads correctly to anyone who cannot tell the shades
+ * apart.
  *
  * Every scored job gets a badge, including one that scores 0. A job the
  * CV does not match at all is a real answer, and the whole point of the
  * board is being able to tell it apart from a job that does.
  *
- * @param {{matchScore: number, band: string}} props
+ * @param {{match: {matchScore: number|null, band: string|null,
+ *                  tailored: object|null}}} props
  */
-function MatchBadge({ matchScore, band }) {
-  const tone =
-    matchScore >= 65
-      ? 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900'
-      : matchScore >= 50
-        ? 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-900'
-        : matchScore >= 30
-          ? 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900'
-          : 'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700';
+function MatchBadge({ match }) {
+  const { matchScore, band, tailored } = match;
+
+  // The pair is only shown when both halves of it are known. A CV
+  // tailored before the figures were recorded has neither, and inventing
+  // a "before" from the primary CV's current score would be comparing two
+  // different documents and calling the difference growth.
+  const hasGrowth =
+    tailored &&
+    Number.isFinite(tailored.baselineMatchScore) &&
+    Number.isFinite(tailored.matchScore);
+
+  if (hasGrowth) {
+    const difference = tailored.matchScore - tailored.baselineMatchScore;
+
+    return (
+      <span
+        className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${toneFor(tailored.matchScore)}`}
+        title={`Rewritten for this job as "${tailored.title}": ${tailored.baselineMatchScore}% before, ${tailored.matchScore}% after`}
+      >
+        <span className="font-normal opacity-70">{tailored.baselineMatchScore}%</span>
+        <span aria-hidden="true">&rarr;</span>
+        <span>{tailored.matchScore}%</span>
+        {difference > 0 && <span className="font-normal opacity-70">(+{difference})</span>}
+        <span className="sr-only">
+          after rewriting your CV for this job. It was {tailored.baselineMatchScore} per cent
+          before.
+        </span>
+      </span>
+    );
+  }
+
+  if (!Number.isFinite(matchScore)) return null;
 
   return (
     <span
-      className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${tone}`}
+      className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${toneFor(matchScore)}`}
       title={`${band} — scored against your primary CV`}
     >
       AI match ({matchScore}%)
     </span>
   );
+}
+
+/**
+ * The badge colour for a score, on the same four bands the analyser uses.
+ * @param {number} score - A match score out of 100.
+ * @returns {string} Tailwind classes for the pill.
+ */
+function toneFor(score) {
+  if (score >= 65) {
+    return 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900';
+  }
+  if (score >= 50) {
+    return 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-900';
+  }
+  if (score >= 30) {
+    return 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900';
+  }
+  return 'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700';
 }
 
 /**

@@ -149,8 +149,9 @@ the behaviour an ATS has and the previous model did not.
 
 ## 3. Job-Tailored CV Rewrite
 
-Files: `server/src/algorithms/cvTailor.js` and
-`server/src/algorithms/phraseRewriter.js`.
+Files: `server/src/algorithms/cvTailor.js`,
+`server/src/algorithms/phraseRewriter.js` and
+`server/src/algorithms/pageFill.js`.
 Weights and thresholds: `TAILOR_CONFIG` in `server/src/config/scoringConfig.js`.
 
 ### 3.1 Purpose
@@ -160,7 +161,7 @@ advert, together with a list of every change and the reason for it.
 
 **Input:** a CV document, the advert text, and the adverts already analysed in
 the system (which join the TF-IDF corpus).
-**Output:** `{ draft, changes[], suggestedSkills[], notes[] }`.
+**Output:** `{ draft, changes[], suggestedSkills[], pageFill, notes[] }`.
 
 ### 3.2 The constraint that shapes it
 
@@ -203,7 +204,7 @@ The weighting is the same `tfidf.js` the match analyser uses, over the same
 corpus, so a change the tailor makes and the score the analyser reports cannot
 disagree about what the advert is asking for.
 
-### 3.4 The seven steps
+### 3.4 The nine steps
 
 1. **Weight the advert.** Build the relevance profile above.
 2. **Headline.** Set it to the advertised job title.
@@ -219,6 +220,8 @@ disagree about what the advert is asking for.
 7. **Section order.** Sort the movable sections by relevance, within the slots
    they already occupy — `summary` stays at the top and `references` at the
    bottom. A margin of 0.02 stops near-equal sections swapping on noise.
+8. **Reach the target score** (section 3.8).
+9. **Fill the page** (section 3.9).
 
 ### 3.5 The three kinds of skill
 
@@ -326,3 +329,60 @@ MongoDB. Docker and AWS essential. Write unit tests, work in an agile team._
 The controller runs `analyseMatch` over the original and over the draft and
 returns both scores, so the user can see whether the rewrite actually helped
 rather than taking it on trust.
+
+### 3.9 Filling the page
+
+File: `server/src/algorithms/pageFill.js`. Numbers: `PAGE_FILL_CONFIG`.
+
+A tailored CV that stops half way down the page looks unfinished whatever it
+says, and the eight steps above had no way of noticing. This one measures the
+draft against an A4 page and, when it falls short, pulls the levers it
+legitimately has.
+
+**The measurement.** The server cannot see the browser lay the page out, and
+rendering one through Puppeteer on every rewrite would be absurd, so the
+height is estimated in lines of text:
+
+```
+capacity(settings) = usableHeightMm / (fontSizePt × 0.3528 × lineHeight)
+                   = 257 / (10.5 × 0.3528 × 1.45)  ≈  47.8 lines at medium
+
+lines(cv) = Σ sectionLines(section)       for a one-column template
+          = max(mainColumn, sideColumn)   for modern and executive
+```
+
+The two-column case is not a detail. A sidebar of skills sits _beside_ the
+experience, not under it, so summing every section would report a page as
+nearly full while half the main column is white space — which is precisely the
+situation being looked for. `sideColumns` in the config mirrors
+`SIDEBAR_SECTIONS` in `ModernTemplate.jsx` and `RAIL_SECTIONS` in
+`ExecutiveTemplate.jsx`.
+
+A CV counts as full at 90% of the page rather than 100%: a page that ends
+exactly on the bottom margin is one word away from spilling onto a second, and
+the user is about to edit it.
+
+**The levers**, applied in order and stopping the moment the page is full —
+content first, then presentation:
+
+| #   | Lever                                                            | What it costs the reader                                 |
+| --- | ---------------------------------------------------------------- | -------------------------------------------------------- |
+| 1   | Show sections hidden in the settings that have content           | Nothing — it was their content                           |
+| 2   | Let the summary run to 110 words and name 10 skills instead of 6 | Nothing — every sentence was already sourced from the CV |
+| 3   | Step the font size up towards `large`                            | Nothing — the same words, more page                      |
+
+Lever 2 is worth being precise about. `buildSummary` normally stops at the
+word count the strength scorer rewards; raising the ceiling does not make it
+write anything new, it only stops it holding back sentences it had already
+assembled from the user's qualification, skills and quantified achievement.
+
+**What it will not do** is write experience the user does not have. That is
+the line the whole module is built around, and a blank half page is not a good
+enough reason to cross it: the employer would be deceived and the candidate is
+the one who has to defend it at interview. Where the levers run out, the step
+reports the shortfall and names the most useful thing the user could add — two
+more bullet points under a thin role, a projects section, a certification —
+chosen from what is actually missing rather than as generic advice.
+
+In practice a one-role CV in the Modern template goes from about 48% of a page
+to about 61%. The remaining gap is content, and only the user has it.
