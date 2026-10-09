@@ -123,6 +123,10 @@ export default function TailorCVPage() {
         draft,
         title: title.trim(),
         jobId: result.job?._id,
+        // Sent back for a pasted advert so the save can measure the draft
+        // against the same text. A board job needs only its id, which the
+        // server resolves to the same description either way.
+        jobDescription: result.job ? undefined : pastedDescription.trim(),
         jobTitle: result.jobTitle,
       });
       navigate(`/cvs/${created._id}`);
@@ -144,7 +148,10 @@ export default function TailorCVPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    // The review step puts a live A4 preview beside the fields, which
+    // needs room the chooser does not. Widening only for that step keeps
+    // the advert form from stretching into a line too long to read.
+    <div className={`mx-auto px-4 py-10 ${result ? 'max-w-6xl' : 'max-w-3xl'}`}>
       <header>
         <Link
           to="/dashboard"
