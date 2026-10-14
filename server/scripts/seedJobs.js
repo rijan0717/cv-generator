@@ -197,7 +197,16 @@ async function seedJobs() {
   // One company per user, so this is an upsert rather than a create.
   const company = await Company.findOneAndUpdate(
     { owner: admin._id },
-    { $set: { ...COMPANY, owner: admin._id, isDeleted: false } },
+    {
+      $set: {
+        ...COMPANY,
+        owner: admin._id,
+        isDeleted: false,
+        // Seeded companies are approved, so their jobs are on the board.
+        status: 'approved',
+        reviewedAt: new Date(),
+      },
+    },
     { new: true, upsert: true, setDefaultsOnInsert: true },
   );
 

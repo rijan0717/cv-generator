@@ -5,30 +5,29 @@ import { Job } from '../../src/models/Job.js';
 import { Application } from '../../src/models/Application.js';
 import { CV } from '../../src/models/CV.js';
 import { connectMemoryDb, clearMemoryDb, closeMemoryDb } from '../helpers/memoryDb.js';
+import { signUpAs, createApprovedCompany, COMPANY_DETAILS } from '../helpers/accounts.js';
 
 const app = createApp();
 
 /**
- * Registers a user and returns an agent holding their session.
+ * Registers a user (a job seeker unless told otherwise) and returns an
+ * agent holding their session.
  * @param {string} email
+ * @param {'jobseeker'|'employer'} [accountType]
  * @returns {Promise<import('supertest').SuperAgentTest>}
  */
-async function signUp(email) {
-  const agent = request.agent(app);
-  await agent
-    .post('/api/auth/register')
-    .send({ name: 'Test Person', email, password: 'password123' });
-  return agent;
+async function signUp(email, accountType = 'jobseeker') {
+  return signUpAs(app, email, accountType);
 }
 
 /**
- * Creates a user with a company and one open job.
+ * Creates an employer with an approved company and one open job.
  * @param {string} email
  * @returns {Promise<{agent: object, jobId: string}>}
  */
 async function signUpEmployer(email) {
-  const agent = await signUp(email);
-  await agent.post('/api/companies').send({ name: 'Acme Ltd' });
+  const agent = await signUp(email, 'employer');
+  await createApprovedCompany(agent);
 
   const created = await agent.post('/api/jobs').send({
     title: 'Software Developer',
@@ -94,7 +93,7 @@ describe('the job board is public', () => {
 
 describe('posting a job', () => {
   it('requires a company first', async () => {
-    const agent = await signUp('nocompany@example.com');
+    const agent = await signUp('nocompany@example.com', 'employer');
 
     const res = await agent.post('/api/jobs').send({
       title: 'Developer',
@@ -111,16 +110,17 @@ describe('posting a job', () => {
   });
 
   it('refuses a second company for the same user', async () => {
-    const agent = await signUp('owner@example.com');
-    await agent.post('/api/companies').send({ name: 'First' });
+    const agent = await signUp('owner@example.com', 'employer');
+    await agent.post('/api/companies').send({ ...COMPANY_DETAILS, name: 'First' });
 
-    const res = await agent.post('/api/companies').send({ name: 'Second' });
+    const res = await agent.post('/api/companies').send({ ...COMPANY_DETAILS, name: 'Second' });
     expect(res.status).toBe(409);
   });
 
   it('hides the job of another user from editing behind a 404', async () => {
     const { jobId } = await signUpEmployer('employer@example.com');
-    const intruder = await signUp('intruder@example.com');
+    // Another employer: a job seeker would be refused earlier, with a 403.
+    const intruder = await signUp('intruder@example.com', 'employer');
 
     const res = await intruder.put(`/api/jobs/${jobId}`).send({ title: 'Hijacked' });
 
@@ -178,12 +178,12 @@ describe('applying', () => {
     expect(res.status).toBe(404);
   });
 
-  it('refuses an application to your own posting', async () => {
-    const employerCv = await createCV(employer);
+  it('refuses an application from an employer account', async () => {
+    // Applying is for job seekers; an employer (here, the job's own poster)
+    // is refused before the request reaches the controller.
+    const res = await employer.post(`/api/jobs/${jobId}/apply`).send({ cvId });
 
-    const res = await employer.post(`/api/jobs/${jobId}/apply`).send({ cvId: employerCv });
-
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(403);
   });
 
   it('refuses an application to a closed job', async () => {

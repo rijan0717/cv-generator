@@ -17,6 +17,7 @@
  */
 import { Application } from '../models/Application.js';
 import { Job } from '../models/Job.js';
+import { Company } from '../models/Company.js';
 import { CV } from '../models/CV.js';
 import { generatePdf } from '../services/pdfService.js';
 import { generateDocx } from '../services/docxService.js';
@@ -68,6 +69,10 @@ export async function applyToJob(req, res) {
 
   const job = await Job.findOne({ _id: req.params.id, isDeleted: false });
   if (!job) throw ApiError.notFound('Job not found');
+
+  // Only an approved company's job can be applied to.
+  const approved = await Company.exists({ _id: job.company, status: 'approved', isDeleted: false });
+  if (!approved) throw ApiError.notFound('Job not found');
 
   if (!job.isAcceptingApplications()) {
     throw ApiError.badRequest('This job is no longer accepting applications');

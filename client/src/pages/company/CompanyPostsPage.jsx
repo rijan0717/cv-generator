@@ -15,7 +15,9 @@ import Spinner from '../../components/ui/Spinner.jsx';
  * off a post in turn.
  */
 export default function CompanyPostsPage() {
-  const { setCounts } = useOutletContext();
+  const { company, setCounts } = useOutletContext();
+  // Posting is open only to an approved company; the server checks it too.
+  const canPost = company?.status === 'approved';
 
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +44,16 @@ export default function CompanyPostsPage() {
       cancelled = true;
     };
   }, []);
+
+  // Until the admin approves the company there is nothing to do here, so
+  // the page says only that.
+  if (!canPost) {
+    return (
+      <p className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
+        You can&apos;t add any posts until the admin approves your company.
+      </p>
+    );
+  }
 
   if (isLoading) {
     return (

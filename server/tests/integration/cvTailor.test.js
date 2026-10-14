@@ -13,6 +13,7 @@ import { createApp } from '../../src/app.js';
 import { CV } from '../../src/models/CV.js';
 import { ActivityLog } from '../../src/models/ActivityLog.js';
 import { connectMemoryDb, clearMemoryDb, closeMemoryDb } from '../helpers/memoryDb.js';
+import { signUpAs, createApprovedCompany } from '../helpers/accounts.js';
 
 const app = createApp();
 
@@ -26,11 +27,8 @@ const ADVERT =
  * @returns {Promise<import('supertest').SuperAgentTest>}
  */
 async function signUp(email) {
-  const agent = request.agent(app);
-  await agent
-    .post('/api/auth/register')
-    .send({ name: 'Test Person', email, password: 'password123' });
-  return agent;
+  // A job seeker: the person whose CV is rewritten.
+  return signUpAs(app, email, 'jobseeker');
 }
 
 /**
@@ -67,8 +65,8 @@ async function createFilledCV(agent) {
  * @returns {Promise<string>} The job id.
  */
 async function postJob(email) {
-  const agent = await signUp(email);
-  await agent.post('/api/companies').send({ name: 'Acme Ltd' });
+  const agent = await signUpAs(app, email, 'employer');
+  await createApprovedCompany(agent);
 
   const created = await agent.post('/api/jobs').send({
     title: 'Backend Developer',

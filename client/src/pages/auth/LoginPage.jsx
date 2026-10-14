@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
 import Alert from '../../components/ui/Alert.jsx';
+import { homePathFor } from '../../utils/homePath.js';
 
 /**
  * Login page.
@@ -12,7 +13,7 @@ import Alert from '../../components/ui/Alert.jsx';
  * whether the credentials are right, and its message is what gets shown.
  */
 export default function LoginPage() {
-  const { login, isAuthenticated, isLoading } = useAuth();
+  const { user, login, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,11 +22,12 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Where the user was heading before the guard redirected them here.
-  const redirectTo = location.state?.from?.pathname ?? '/dashboard';
+  // Without one, each kind of account goes to its own home page.
+  const redirectFor = (signedIn) => location.state?.from?.pathname ?? homePathFor(signedIn);
 
   // Someone already logged in has no business on this page.
   if (!isLoading && isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to={redirectFor(user)} replace />;
   }
 
   /** Keeps the form state in step with whichever input changed. */
@@ -41,8 +43,8 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login(form);
-      navigate(redirectTo, { replace: true });
+      const signedIn = await login(form);
+      navigate(redirectFor(signedIn), { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

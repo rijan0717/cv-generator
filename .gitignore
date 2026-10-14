@@ -34,3 +34,6 @@ coverage/
 .idea/
 .DS_Store
 Thumbs.db
+
+# private uploads (company registration documents)
+server/private-uploads/

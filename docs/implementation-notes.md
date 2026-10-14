@@ -470,3 +470,60 @@ only the changed parts invites the reader to assume the rest was dropped, and
 the whole CV is what is about to be saved. They stay read-only because editing
 the facts of a degree belongs in the builder, which opens on the CV the moment
 it is saved.
+
+## Feature 7 — Account types and company approval
+
+**Why:** job seekers and employers need different parts of the system, and an
+employer's company must be checked before its jobs reach job seekers.
+
+### Account type (`User.accountType`)
+
+- `jobseeker` | `employer` | `null`. `null` until chosen; admins have none.
+- `PATCH /api/users/me/account-type` (`user.controller.js → setAccountType`)
+  sets it **once**; a second call is refused with 409.
+- `requireAccountType(type)` (`middleware/role.js`) guards routes: company and
+  job-posting routes need `employer`; save and apply need `jobseeker`. Admins
+  always pass.
+
+### Company approval (`Company` model)
+
+- New fields: `registrationNumber`, `phone`, `email`, `documentFile` (private),
+  `status` (`pending` | `approved` | `rejected`), `rejectionReason`,
+  `reviewedAt`, `reviewedBy`, `submittedAt`.
+- A new company is `pending`. Editing a `rejected` one, or replacing its
+  document, sends it back to `pending`.
+- An `approved` company is locked: `PUT /companies/mine` and the document
+  upload return 403; only the logo can change.
+- The registration document is stored in `server/private-uploads/company-docs`
+  (git-ignored, **not** under the public `/uploads`) and is streamed only to the
+  owner or an admin by `GET /api/companies/:id/document`; anyone else gets 404.
+- `services/companyVisibility.js → visibleJobsFilter()` limits every public job
+  query (board, job page, upload ranking, match scores) to approved companies.
+  Posting a job and applying both check the company is approved.
+
+### Admin review (`controllers/adminCompany.controller.js`)
+
+- `listCompanies` — one status at a time (pending oldest first), search, and a
+  count per status for the tabs.
+- `reviewCompany` — approval needs a document on file; rejection needs a
+  reason (≥ 5 characters) that the employer sees. Logged as `ADMIN_ACTION` with
+  `COMPANY_APPROVE` / `COMPANY_REJECT`.
+
+### Client
+
+- `pages/user/WelcomePage.jsx` — the one-time choice; `ProtectedRoute` sends any
+  account without a type there, and the layout hides the sidebar on it.
+- `utils/homePath.js → homePathFor(user)` — admin → `/admin`, employer →
+  `/company`, job seeker → `/dashboard`, no type → `/welcome`.
+- `routes/AccountTypeRoute.jsx` — groups job-seeker and employer pages.
+- Sidebar per type: job seeker (CVs, Match my CV, jobs, saved, applications);
+  employer (company profile, my posts, browse jobs); admin (everything a job
+  seeker sees plus Administration → Companies).
+- `components/company/CompanyStatusBanner.jsx`, `pages/company/CompanyForm.jsx`
+  (required fields + document), `pages/admin/AdminCompaniesPage.jsx`.
+
+### Migration
+
+`npm run migrate:accounts` (`scripts/migrateAccountTypes.js`): existing
+companies → approved, their owners → employers, everyone else chooses on next
+login. Idempotent.

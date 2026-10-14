@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth.js';
 import Spinner from '../components/ui/Spinner.jsx';
+import { needsAccountType } from '../utils/homePath.js';
 
 /**
  * Guards routes that require a logged-in user.
@@ -10,7 +11,7 @@ import Spinner from '../components/ui/Spinner.jsx';
  * route checks the session cookie and the ownership of the resource.
  */
 export default function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
   // While the start-up "who am I" request is in flight we know nothing yet.
@@ -27,6 +28,11 @@ export default function ProtectedRoute() {
     // `state.from` lets the login page send the user back where they meant
     // to go, and `replace` keeps the guarded URL out of the history.
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  // A new account chooses job seeker or employer once, before anything else.
+  if (needsAccountType(user) && location.pathname !== '/welcome') {
+    return <Navigate to="/welcome" replace />;
   }
 
   return <Outlet />;

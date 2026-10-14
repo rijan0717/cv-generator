@@ -206,6 +206,9 @@ export default function JobDetailPage() {
 
   const { job, isSaved, hasApplied } = data;
   const isOwnPosting = user && job.postedBy === user.id;
+  // Rewriting, saving and applying are for job seekers. A visitor still
+  // sees them (they lead to the login page); an employer does not.
+  const canActAsSeeker = !user || user.role === 'admin' || user.accountType === 'jobseeker';
   const isClosed =
     job.status !== 'open' || (job.closingDate && new Date(job.closingDate) < new Date());
 
@@ -254,13 +257,15 @@ export default function JobDetailPage() {
               posting is not something you apply to, and a closed advert
               is not worth writing a CV for.
             */}
-            {!isOwnPosting && !isClosed && (
+            {canActAsSeeker && !isOwnPosting && !isClosed && (
               <RewriteButton isLoading={isRewriting} onClick={startRewrite} />
             )}
 
-            <Button variant="secondary" size="sm" isLoading={isSaving} onClick={toggleSave}>
-              {isSaved ? 'Saved' : 'Save'}
-            </Button>
+            {canActAsSeeker && (
+              <Button variant="secondary" size="sm" isLoading={isSaving} onClick={toggleSave}>
+                {isSaved ? 'Saved' : 'Save'}
+              </Button>
+            )}
 
             {isOwnPosting ? (
               <Link to="/company/posts">
@@ -268,27 +273,14 @@ export default function JobDetailPage() {
                   Manage this posting
                 </Button>
               </Link>
-            ) : hasApplied ? (
-              <span className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                You have applied
-              </span>
             ) : (
-              <Button
-                size="sm"
-                disabled={isClosed}
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    navigate('/login', { state: { from: { pathname: `/jobs/${id}` } } });
-                    return;
-                  }
-                  // A CV written for this advert is the obvious thing to
-                  // apply with, however the form was opened.
-                  setApplyWithCvId(tailoredCv?._id ?? '');
-                  setIsApplyOpen(true);
-                }}
-              >
-                {isClosed ? 'Applications closed' : 'Apply'}
-              </Button>
+              // No Apply button here: applying happens from the rewritten
+              // CV ("Save and apply with it" / "Apply with it" below).
+              hasApplied && (
+                <span className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                  You have applied
+                </span>
+              )
             )}
           </div>
         </div>
@@ -466,9 +458,10 @@ export default function JobDetailPage() {
  * 82 is a different story from 70 to 82, and the difference on its own
  * tells neither.
  *
- * Both figures are the ones recorded when the CV was saved, measured
- * against what the user actually kept. They are not recomputed here, so
- * nothing on this page can disagree with the badge on the job board.
+ * "After" is the score recorded when the CV was saved. "Before" is how the
+ * user's current primary CV scores on this job, worked out by the server
+ * on each visit, so the growth follows whichever CV is primary. The job
+ * board badge uses the same server rule, so the two never disagree.
  *
  * @param {{cv: object, canApply: boolean, onApply: () => void}} props
  */
@@ -494,9 +487,12 @@ function TailoredSummary({ cv, canApply, onApply }) {
 
         {hasFigures && (
           <div className="flex items-center gap-3">
-            <div className="text-right">
+            <div
+              className="text-right"
+              title={cv.baselineCvTitle ? `Your primary CV: “${cv.baselineCvTitle}”` : undefined}
+            >
               <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                Before
+                {cv.baselineCvTitle ? 'Primary CV' : 'Before'}
               </p>
               <p className="text-xl font-bold text-slate-500 dark:text-slate-400">
                 {cv.baselineMatchScore}%

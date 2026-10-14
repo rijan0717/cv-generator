@@ -13,13 +13,20 @@ const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Temporar
 const WORK_MODES = ['On-site', 'Hybrid', 'Remote'];
 
 /**
- * How many jobs are fetched at once when filtering by match.
+ * How many jobs are fetched per request when filtering by match.
  *
- * `MAX_PAGE_SIZE` on the server, which is the most one request may ask
- * for. The match filter has to see every job to give an honest answer, so
- * it takes the lot in one go rather than filtering a page at a time.
+ * The largest page the jobs route accepts (its `limit` validator allows
+ * 1–50). Asking for more is rejected with "Invalid input", which is what
+ * this used to do. The match filter has to see every job to give an honest
+ * answer, so it fetches page after page of this size.
  */
-const WHOLE_BOARD = 100;
+const MATCH_PAGE_SIZE = 50;
+
+/**
+ * A ceiling on those pages, so a very large board cannot turn one filter
+ * change into an unbounded run of requests. 20 × 50 = 1,000 jobs.
+ */
+const MAX_MATCH_PAGES = 20;
 
 /**
  * The match filter's options.
@@ -85,7 +92,12 @@ function passesMatchFilter(match, filter) {
  * it is not required to browse.
  */
 export default function JobsPage() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
+
+  // Match scores, the match filter and saving are job-seeker features; an
+  // employer's view of the board is read-only, and only an employer posts.
+  const isJobSeeker = isAuthenticated && (isAdmin || user?.accountType === 'jobseeker');
+  const isEmployer = isAuthenticated && !isAdmin && user?.accountType === 'employer';
 
   const [jobs, setJobs] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -127,27 +139,39 @@ export default function JobsPage() {
   }
 
   // Match badges, scored against the user's primary CV.
-  const { scores, primaryCv, isScoring } = useJobMatchScores(jobs, isAuthenticated);
+  const { scores, primaryCv, isScoring } = useJobMatchScores(jobs, isJobSeeker);
 
   const load = useCallback(async () => {
     setIsLoading(true);
     setError('');
 
     try {
-      const data = await jobApi.listJobs({
-        // One page of everything while filtering by match, so the filter
-        // sees the whole board. `WHOLE_BOARD` is the largest page the
-        // server allows; past that the board has outgrown this approach
-        // and the scoring would have to move server-side.
-        page: matchFilter ? 1 : page,
-        limit: matchFilter ? WHOLE_BOARD : undefined,
+      const query = {
         search: filters.search || undefined,
         location: filters.location || undefined,
         jobType: filters.jobType || undefined,
         workMode: filters.workMode || undefined,
-      });
-      setJobs(data.jobs);
-      setPagination(data.pagination);
+      };
+
+      if (!matchFilter) {
+        const data = await jobApi.listJobs({ ...query, page });
+        setJobs(data.jobs);
+        setPagination(data.pagination);
+        return;
+      }
+
+      // Filtering by match: fetch every page, so the filter sees the whole
+      // board rather than only its first page.
+      const first = await jobApi.listJobs({ ...query, page: 1, limit: MATCH_PAGE_SIZE });
+      const lastPage = Math.min(Math.max(1, first.pagination?.pages ?? 1), MAX_MATCH_PAGES);
+      const rest = await Promise.all(
+        Array.from({ length: lastPage - 1 }, (_, index) =>
+          jobApi.listJobs({ ...query, page: index + 2, limit: MATCH_PAGE_SIZE }),
+        ),
+      );
+
+      setJobs([first, ...rest].flatMap((data) => data.jobs));
+      setPagination(first.pagination);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -217,15 +241,10 @@ export default function JobsPage() {
           </p>
         </div>
 
-        {isAuthenticated && (
+        {isEmployer && (
           <div className="flex flex-wrap items-center gap-2">
-            {/* The primary action on this page for someone looking for
-                work, so it leads rather than sitting beside "Post a job",
-                which is the action for the other half of the audience. */}
-            <Link to="/jobs/match">
-              <Button size="sm">Match my CV</Button>
-            </Link>
-
+            {/* Match my CV is a main module in the sidebar, so it is not
+                repeated here. */}
             <Link to="/company">
               <Button variant="secondary" size="sm">
                 Post a job
@@ -319,7 +338,7 @@ export default function JobsPage() {
           visitor every job is unscored, so the control could only ever
           empty the list.
         */}
-        {isAuthenticated && (
+        {isJobSeeker && (
           <div>
             <label
               htmlFor="job-match"
@@ -367,7 +386,7 @@ export default function JobsPage() {
             line a number on a card is unexplained, and the first question
             anyone asks is "matched against what?".
           */}
-          {isAuthenticated && matchFilter && !isScoring && (
+          {isJobSeeker && matchFilter && !isScoring && (
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {visibleJobs.length} of {jobs.length} job{jobs.length === 1 ? '' : 's'} match
               {visibleJobs.length === 1 ? 'es' : ''} {matchFilter === 'above' ? 'above' : 'below'}{' '}
@@ -383,7 +402,7 @@ export default function JobsPage() {
             </p>
           )}
 
-          {isAuthenticated && (
+          {isJobSeeker && (
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {isScoring ? (
                 'Scoring these jobs against your primary CV…'
@@ -410,7 +429,7 @@ export default function JobsPage() {
             <JobCard
               key={job._id}
               job={job}
-              showSave={isAuthenticated}
+              showSave={isJobSeeker}
               isSaving={savingId === job._id}
               onToggleSave={toggleSave}
               match={scores[job._id] ?? null}

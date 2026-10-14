@@ -94,3 +94,25 @@ export async function listActivity(params = {}) {
   const { data } = await api.get('/api/admin/activity', { params });
   return data.data;
 }
+
+/**
+ * Lists companies in one review state, with a count for every state.
+ * @param {{status?: 'pending'|'approved'|'rejected', search?: string, page?: number}} params
+ * @returns {Promise<{companies: Array<object>, counts: object, pagination: object}>}
+ */
+export async function listCompanies(params = {}) {
+  const { data } = await api.get('/api/admin/companies', { params });
+  return data.data;
+}
+
+/**
+ * Approves or rejects a company. A rejection needs a reason.
+ * @param {string} id
+ * @param {'approved'|'rejected'} status
+ * @param {string} [reason]
+ * @returns {Promise<object>} The updated company.
+ */
+export async function reviewCompany(id, status, reason = '') {
+  const { data } = await api.patch(`/api/admin/companies/${id}/status`, { status, reason });
+  return data.data.company;
+}

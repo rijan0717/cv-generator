@@ -5,6 +5,7 @@
  * storage is used. Two checks guard the upload: the MIME type must be one of
  * the three allowed image types, and multer enforces the size limit itself.
  */
+import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -17,6 +18,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** Absolute path of the uploads directory (server/uploads). */
 export const UPLOAD_DIR = path.resolve(__dirname, '../../uploads');
+
+/**
+ * Company registration documents. Deliberately outside UPLOAD_DIR, which
+ * is served publicly: a certificate is only ever read through the
+ * owner/admin download route.
+ */
+export const COMPANY_DOC_DIR = path.resolve(__dirname, '../../private-uploads/company-docs');
 
 /** Only these image types may be uploaded. */
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -91,6 +99,38 @@ export const uploadDocument = multer({
     fileSize: 10 * 1024 * 1024,
     files: 1,
   },
+});
+
+/** Types accepted for a registration document. */
+const COMPANY_DOC_TYPES = new Map([
+  ['application/pdf', '.pdf'],
+  ['image/jpeg', '.jpg'],
+  ['image/png', '.png'],
+]);
+
+/**
+ * Multer instance for a company registration document (PDF, JPG or PNG,
+ * up to 5 MB). The file name is generated, and the extension comes from
+ * the checked media type rather than the uploaded name.
+ */
+export const uploadCompanyDocument = multer({
+  storage: multer.diskStorage({
+    destination(_req, _file, cb) {
+      fs.mkdirSync(COMPANY_DOC_DIR, { recursive: true });
+      cb(null, COMPANY_DOC_DIR);
+    },
+    filename(_req, file, cb) {
+      const unique = crypto.randomBytes(16).toString('hex');
+      cb(null, `${Date.now()}-${unique}${COMPANY_DOC_TYPES.get(file.mimetype)}`);
+    },
+  }),
+  fileFilter(_req, file, cb) {
+    if (!COMPANY_DOC_TYPES.has(file.mimetype)) {
+      return cb(ApiError.badRequest('The registration document must be a PDF, JPG or PNG file'));
+    }
+    cb(null, true);
+  },
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
 });
 
 /**

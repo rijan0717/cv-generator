@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import * as companyApi from '../../api/companies.js';
 import CompanyLogo from '../../components/company/CompanyLogo.jsx';
 import CompanyForm from './CompanyForm.jsx';
+import CompanyStatusBanner from '../../components/company/CompanyStatusBanner.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
-
-/** The sections inside the company module. */
-const TABS = [
-  { to: '/company', label: 'Company profile', end: true },
-  { to: '/company/posts', label: 'My posts' },
-];
 
 /**
  * The frame around the employer side.
@@ -20,9 +15,10 @@ const TABS = [
  * through the router's outlet context, so moving between the two tabs does
  * not refetch it and the header never flickers.
  *
- * Creating a company is what lets a user post, so anyone can reach this
- * page: with no company it shows the set-up form and no tabs, because
- * neither section means anything yet.
+ * Only employer accounts (and the admin) reach this page. With no company
+ * it shows the registration form and no tabs, because neither section
+ * means anything yet. A company must be approved by the admin before it
+ * can post jobs; the banner under the header says where it stands.
  */
 export default function CompanyLayout() {
   const [company, setCompany] = useState(null);
@@ -84,10 +80,12 @@ export default function CompanyLayout() {
                 ]
                   .filter(Boolean)
                   .join(' · ')
-              : 'Create a company profile, then you can post jobs for others to apply to.'}
+              : 'Register your company. An admin approves it, then you can post jobs.'}
           </p>
         </div>
       </header>
+
+      <CompanyStatusBanner company={company} />
 
       {error && (
         <Alert variant="error" className="mt-4">
@@ -99,32 +97,9 @@ export default function CompanyLayout() {
         <CompanyForm onSaved={setCompany} />
       ) : (
         <>
-          <nav
-            className="mt-6 flex flex-wrap gap-2 border-b border-slate-200 pb-3 dark:border-slate-700"
-            aria-label="My company"
-          >
-            {TABS.map((tab) => (
-              <NavLink
-                key={tab.to}
-                to={tab.to}
-                end={tab.end}
-                className={({ isActive }) =>
-                  [
-                    'rounded-lg px-3 py-1.5 text-sm font-medium transition',
-                    isActive
-                      ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                      : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
-                  ].join(' ')
-                }
-              >
-                {tab.label}
-              </NavLink>
-            ))}
-          </nav>
-
           <div className="mt-6">
-            {/* The company and a setter go down to both tabs: editing the
-                profile in one must update the header rendered here. */}
+            {/* The company and a setter go down to both sections (chosen in
+                the sidebar): editing the profile must update the header. */}
             <Outlet context={{ company, setCompany, counts, setCounts }} />
           </div>
         </>

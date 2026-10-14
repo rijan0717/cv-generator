@@ -62,3 +62,29 @@ export async function removeLogo() {
   const { data } = await api.delete('/api/companies/mine/logo');
   return data.data.company;
 }
+
+/**
+ * Uploads the company registration document (PDF, JPG or PNG).
+ * @param {File} file - The chosen file.
+ * @returns {Promise<object>} The updated company.
+ */
+export async function uploadDocument(file) {
+  const formData = new FormData();
+  formData.append('document', file);
+
+  const { data } = await api.post('/api/companies/mine/document', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data.company;
+}
+
+/**
+ * The address the registration document can be opened at. Same-origin, so
+ * the session cookie goes with it; the server lets only the owner or an
+ * admin read it.
+ * @param {string} companyId
+ * @returns {string}
+ */
+export function documentUrl(companyId) {
+  return `/api/companies/${companyId}/document`;
+}

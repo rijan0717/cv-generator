@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
 import Button from '../ui/Button.jsx';
 import ThemeToggle from '../ui/ThemeToggle.jsx';
+import { homePathFor } from '../../utils/homePath.js';
 
 /**
  * The slim bar across the top.
@@ -31,7 +32,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
   }
 
   return (
-    <header className="sticky top-0 z-40 h-14 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+    <header className="sticky top-0 z-40 h-14 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
       <div className="flex h-full items-center justify-between gap-4 px-4">
         <div className="flex items-center gap-2">
           {/* Only shown when there is a sidebar to open. */}
@@ -60,7 +61,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
           )}
 
           <Link
-            to={isAuthenticated ? '/dashboard' : '/'}
+            to={isAuthenticated ? homePathFor(user) : '/'}
             className="flex items-center gap-2 font-semibold text-slate-900 dark:text-slate-100"
           >
             <span
@@ -87,6 +88,12 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
             </div>
           ) : (
             <div className="flex items-center gap-2">
+              <Link
+                to="/jobs"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Jobs
+              </Link>
               <Link
                 to="/login"
                 className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"

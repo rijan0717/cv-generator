@@ -273,22 +273,64 @@ matches `node` inside `Node.js` (giving `Node.js.js`) and `js` inside `Vue.js`
 (giving `Vue.JavaScript`). A match joined to more text by `.`, `+` or `#` is
 therefore refused.
 
+#### 3.6.1 Clean-up and tense (added to improve writing quality)
+
+Each sentence of a description is now polished on its own
+(`splitSentences` splits on ". " followed by a capital), through three steps
+in `polishSentence`. None of them adds a fact, number, skill or verb — each
+only removes words or changes a verb's tense.
+
+```
+polishSentence(line, present):
+    1. rewriteAsAction       "Responsible for managing X" -> "Managed X"
+    2. removeFiller          filler words first, then a leading "I"/"We"
+                             before a verb
+    3. normaliseTense        only if step 1 changed nothing
+```
+
+| Rule                        | Before                                    | After                        |
+| --------------------------- | ----------------------------------------- | ---------------------------- |
+| Leading pronoun             | I conducted API testing                   | Conducted API testing        |
+| "was able to" + user's verb | Was able to reduce costs by 20%           | Reduced costs by 20%         |
+| Filler words                | Successfully built…, in order to, utilise | Built…, to, use              |
+| Gerund, finished role       | Performing automation testing             | Performed automation testing |
+| Gerund, current role        | Performing automation testing             | Perform automation testing   |
+| Third-person, finished role | Leads the QA team                         | Led the QA team              |
+| Noun phrase (left alone)    | Testing of payment flows                  | _unchanged_                  |
+
+A bare base form ("Test cases for login") is never converted, because too many
+of them are also nouns. A first word followed by "of", "is", "were", "and"…
+is treated as a noun and left alone.
+
 ### 3.7 Assembling the summary
 
 Five sentences, each from a named source, added until the word budget runs
 out. The first two are never dropped.
 
-| #   | Sentence                                        | Source                                              |
-| --- | ----------------------------------------------- | --------------------------------------------------- |
-| 1   | "Backend Developer with 3+ years' experience."  | Advert's job title; dates on the experience section |
-| 2   | "Skilled in Node.js, Express and Docker."       | Skills, the advert's ones first                     |
-| 3   | "Cut API response time by 40% with caching."    | The first achievement containing a number, quoted   |
-| 4   | "Holds a BCA in Computer Applications from TU." | The first education entry                           |
-| 5   | "Now seeking a Backend Developer role."         | Advert's job title                                  |
+| #   | Sentence                                                        | Source                                                                |
+| --- | --------------------------------------------------------------- | --------------------------------------------------------------------- |
+| 1   | "Backend Developer with 3+ years of hands-on experience."       | Advert's job title (softened, below); dates on the experience section |
+| 2   | "Core skills include Node.js, Express and Docker."              | Skills, the advert's ones first                                       |
+| 3   | "Notable result: cut API response time by 40%."                 | The first achievement containing a number, cleaned up, then quoted    |
+| 4   | "Holds a BCA in Computer Applications from TU."                 | The first education entry                                             |
+| 5   | "Looking to bring these strengths to a Backend Developer role." | Advert's job title, as advertised                                     |
 
-Years of experience are the **span from earliest start to latest end**, not
-the sum of the roles. Two overlapping three-year jobs are three years of
-experience, not six — overstating a career is the one thing a generated
+**Varied phrasing.** Sentences 1, 2, 3 and 5 each have three interchangeable
+phrasings. One is picked with a string hash of the person's name
+(`hash = (hash × 31 + charCode) mod 1000003`), offset per sentence, so two
+people's summaries read differently but one CV gets the same summary on every
+rewrite — deterministic, so it can be tested.
+
+**Seniority guard (`softenTitle`).** The headline and sentence 1 use the
+advert's title minus any seniority word (senior, lead, principal, head, …)
+that no title on the CV already contains. "Senior QA Engineer" becomes "QA
+Engineer" for a candidate with no senior role; the closing sentence still names
+the advertised role, because that is what they are applying for.
+
+**Years of experience** count the **months actually worked**: each role becomes
+a [start, end] range, overlapping ranges are merged, and the merged ranges are
+added. Two overlapping three-year jobs are three years, not six, and a gap
+between jobs is not counted — overstating a career is the one thing a generated
 summary must never do.
 
 If the CV does not hold enough to reach the 30-word minimum, a short summary

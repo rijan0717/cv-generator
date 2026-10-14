@@ -12,6 +12,8 @@
  */
 import { User } from '../models/User.js';
 import { CV } from '../models/CV.js';
+import { Company } from '../models/Company.js';
+import { Job } from '../models/Job.js';
 import { ActivityLog } from '../models/ActivityLog.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
@@ -158,12 +160,14 @@ export async function getUser(req, res) {
       .lean(),
     CV.countDocuments(cvFilter),
     ActivityLog.find(activityFilter)
+      .populate('cv', 'title')
       .sort({ createdAt: -1 })
       .skip(activityPaging.skip)
       .limit(activityPaging.limit)
       .lean(),
     ActivityLog.countDocuments(activityFilter),
   ]);
+  await attachMetaNames(recentActivity);
 
   sendSuccess(
     res,
@@ -319,16 +323,69 @@ export async function listActivity(req, res) {
   const [entries, total] = await Promise.all([
     ActivityLog.find(filter)
       .populate('user', 'name email')
+      .populate('cv', 'title')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean(),
     ActivityLog.countDocuments(filter),
   ]);
+  await attachMetaNames(entries);
 
   sendSuccess(
     res,
     { entries, pagination: buildPagination({ page, limit }, total) },
     'Activity log',
   );
+}
+
+/**
+ * Resolves the ids stored in activity `meta` into the names an admin can read.
+ *
+ * `meta` keeps only ids (a user, a company, a job), because names change and
+ * the log must not go stale. This looks the ids up once per page — one query
+ * per collection, not one per row — and adds an `entry.refs` object:
+ * `{ targetUser: { name, email }, company: { name }, job: { title } }`.
+ * A record that has since been deleted is simply absent from `refs`.
+ *
+ * @param {Array<object>} entries - Lean activity log documents, changed in place.
+ * @returns {Promise<void>}
+ */
+async function attachMetaNames(entries) {
+  const ids = { targetUser: new Set(), company: new Set(), job: new Set() };
+
+  for (const { meta = {} } of entries) {
+    if (meta.targetUser) ids.targetUser.add(String(meta.targetUser));
+    if (meta.company) ids.company.add(String(meta.company));
+    // CV_TAILOR stores the advert as `jobId`, the job actions as `job`.
+    const jobId = meta.job ?? meta.jobId;
+    if (jobId) ids.job.add(String(jobId));
+  }
+
+  const [users, companies, jobs] = await Promise.all([
+    User.find({ _id: { $in: [...ids.targetUser] } }).select('name email').lean(),
+    Company.find({ _id: { $in: [...ids.company] } }).select('name').lean(),
+    Job.find({ _id: { $in: [...ids.job] } }).select('title').lean(),
+  ]);
+
+  const byId = (docs) => new Map(docs.map((doc) => [String(doc._id), doc]));
+  const userMap = byId(users);
+  const companyMap = byId(companies);
+  const jobMap = byId(jobs);
+
+  for (const entry of entries) {
+    const meta = entry.meta ?? {};
+    const refs = {};
+
+    const user = userMap.get(String(meta.targetUser));
+    if (user) refs.targetUser = { name: user.name, email: user.email };
+
+    const company = companyMap.get(String(meta.company));
+    if (company) refs.company = { name: company.name };
+
+    const job = jobMap.get(String(meta.job ?? meta.jobId));
+    if (job) refs.job = { title: job.title };
+
+    entry.refs = refs;
+  }
 }

@@ -1,11 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as jobMatchApi from '../../api/jobMatch.js';
+import * as cvApi from '../../api/cvs.js';
 import CVPreview from '../../components/cv/CVPreview.jsx';
 import JobCard from '../../components/jobs/JobCard.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import { useAuth } from '../../context/useAuth.js';
 
 /**
  * What the server will accept, repeated here so an obvious mistake is
@@ -132,8 +134,8 @@ export default function MatchMyCVPage() {
             Match my CV
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-            Drop your CV below. It is read on the spot and scored against every open job, best
-            match first. Nothing is saved — this is just to show you where you stand.
+            Drop your CV below. It is read on the spot and scored against every open job, best match
+            first. Nothing is saved unless you choose to keep the CV.
           </p>
         </div>
 
@@ -229,7 +231,9 @@ function Results({ result }) {
       {/* Live preview of what was read */}
       <section className="lg:sticky lg:top-6 lg:self-start">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Your CV, as we read it</h2>
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+            Your CV, as we read it
+          </h2>
           <span className="text-xs text-slate-500 dark:text-slate-400">
             strength {strength?.totalScore ?? 0}/100
           </span>
@@ -239,6 +243,8 @@ function Results({ result }) {
           {stats?.linesRead ?? 0} lines read &middot; {cv.skills?.length ?? 0} skills &middot;{' '}
           {cv.experience?.length ?? 0} roles found
         </p>
+
+        <KeepDroppedCV cv={cv} bestJobId={results[0]?.job?._id} />
 
         <div className="mt-3 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
           <CVPreview cv={cv} />
@@ -251,12 +257,6 @@ function Results({ result }) {
           Anything missing here was not found in the file, and the scores below reflect only what
           was read. You can build a full CV in the editor for a more accurate result.
         </p>
-
-        <Link to="/dashboard" className="mt-3 inline-block">
-          <Button size="sm" variant="secondary">
-            Build a CV in the editor
-          </Button>
-        </Link>
       </section>
 
       {/* The ranked board */}
@@ -283,6 +283,148 @@ function Results({ result }) {
           </ul>
         )}
       </section>
+    </div>
+  );
+}
+
+/** The CV sections copied from the dropped file into a saved CV. */
+const CONTENT_FIELDS = [
+  'personal',
+  'summary',
+  'experience',
+  'education',
+  'skills',
+  'projects',
+  'certifications',
+  'languages',
+];
+
+/**
+ * The title a saved dropped CV gets: the account holder's name and the
+ * role the CV is for, e.g. "Rijan Pariyar - Associate QA Engineer".
+ *
+ * The role is the CV's headline, or failing that its most recent job
+ * title. Truncated to the 100 characters the model allows.
+ *
+ * @param {string} userName - The name on the account.
+ * @param {object} cv - The parsed CV.
+ * @returns {string}
+ */
+function buildDroppedTitle(userName, cv) {
+  const name = userName?.trim() || cv.personal?.fullName?.trim() || 'My';
+  const role = cv.personal?.headline?.trim() || cv.experience?.[0]?.position?.trim();
+  return (role ? `${name} - ${role}` : `${name} - CV`).slice(0, 100);
+}
+
+/**
+ * Buttons to keep the dropped CV: save it to My CVs, make it the primary
+ * CV, and then rewrite it for a job.
+ *
+ * Saving is two existing requests — create a CV, then fill it with what
+ * was read from the file — so no new server route is needed. "Save & set
+ * as primary" saves first if that has not happened yet, so it is one press.
+ *
+ * @param {{cv: object, bestJobId?: string}} props - The parsed CV, and the
+ *   best-matching job so the rewrite can open on it.
+ */
+function KeepDroppedCV({ cv, bestJobId }) {
+  const { user } = useAuth();
+  const title = buildDroppedTitle(user?.name, cv);
+
+  const [saved, setSaved] = useState(null);
+  const [isPrimary, setIsPrimary] = useState(false);
+  const [busy, setBusy] = useState('');
+  const [error, setError] = useState('');
+
+  /**
+   * Saves the dropped CV once and returns it; later calls reuse it.
+   * @returns {Promise<object>} The saved CV.
+   */
+  async function ensureSaved() {
+    if (saved) return saved;
+
+    const created = await cvApi.createCV({ title, templateKey: cv.templateKey });
+    const content = Object.fromEntries(CONTENT_FIELDS.map((field) => [field, cv[field]]));
+    const filled = await cvApi.updateCV(created._id, content);
+
+    setSaved(filled);
+    return filled;
+  }
+
+  /**
+   * Saves, and optionally makes the CV primary, with a shared busy/error state.
+   * @param {'save'|'primary'} action - Which button was pressed.
+   */
+  async function keep(action) {
+    setBusy(action);
+    setError('');
+
+    try {
+      const savedCv = await ensureSaved();
+      if (action === 'primary') {
+        await cvApi.setPrimaryCV(savedCv._id);
+        setIsPrimary(true);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy('');
+    }
+  }
+
+  return (
+    <div className="mt-3">
+      {error && (
+        <Alert variant="error" className="mb-2">
+          {error}
+        </Alert>
+      )}
+
+      <div className="flex flex-wrap items-center gap-2">
+        {!saved && (
+          <Button
+            size="sm"
+            variant="secondary"
+            isLoading={busy === 'save'}
+            onClick={() => keep('save')}
+          >
+            Save CV
+          </Button>
+        )}
+
+        {isPrimary ? (
+          <span className="rounded-lg bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+            Primary ✓
+          </span>
+        ) : (
+          <Button size="sm" isLoading={busy === 'primary'} onClick={() => keep('primary')}>
+            {saved ? 'Set as primary' : 'Save & set as primary'}
+          </Button>
+        )}
+
+        {saved && (
+          <>
+            <Link to={`/cvs/${saved._id}/tailor${bestJobId ? `?job=${bestJobId}` : ''}`}>
+              <Button size="sm" variant="secondary">
+                Rewrite this CV
+              </Button>
+            </Link>
+            <Link to={`/cvs/${saved._id}`}>
+              <Button size="sm" variant="ghost">
+                Open in editor
+              </Button>
+            </Link>
+          </>
+        )}
+      </div>
+
+      <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+        {saved ? 'Saved to My CVs as ' : 'Will be saved to My CVs as '}
+        <span className="font-medium text-slate-700 dark:text-slate-300">
+          “{saved?.title ?? title}”
+        </span>
+        {isPrimary && ' and set as your primary CV'}.
+      </p>
     </div>
   );
 }

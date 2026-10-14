@@ -44,6 +44,18 @@ const userSchema = new mongoose.Schema(
       default: 'user',
     },
 
+    /**
+     * What a `user` account is for, chosen once after registering:
+     * a job seeker builds CVs and applies; an employer runs a company and
+     * posts jobs. `null` until chosen — the client shows the one-time
+     * choice while it is null. Not used for admins.
+     */
+    accountType: {
+      type: String,
+      enum: ['jobseeker', 'employer', null],
+      default: null,
+    },
+
     avatarUrl: {
       type: String,
       default: '',
@@ -98,7 +110,8 @@ userSchema.methods.comparePassword = function comparePassword(plainPassword) {
  * Used everywhere instead of returning the raw document, so a password hash
  * can never leak through a response.
  * @returns {{id: string, name: string, email: string, role: string,
- *            avatarUrl: string, status: string, createdAt: Date}}
+ *            accountType: string|null, avatarUrl: string, status: string,
+ *            createdAt: Date}}
  */
 userSchema.methods.toPublicJSON = function toPublicJSON() {
   return {
@@ -106,6 +119,7 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     name: this.name,
     email: this.email,
     role: this.role,
+    accountType: this.accountType ?? null,
     avatarUrl: this.avatarUrl,
     status: this.status,
     createdAt: this.createdAt,

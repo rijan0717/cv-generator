@@ -46,16 +46,16 @@ describe('App routing', () => {
       renderAt('/');
 
       expect(
-        await screen.findByRole('heading', { name: /write a cv that gets past the filter/i }),
+        await screen.findByRole('heading', { level: 1, name: /build a cv that gets you shortlisted/i }),
       ).toBeInTheDocument();
     });
 
     it('offers a way to create an account', async () => {
       renderAt('/');
 
-      // The landing page has two of these: one in the hero, one in the
-      // closing call to action.
-      const links = await screen.findAllByRole('link', { name: /create a free account/i });
+      // The header's "Get started" is a button, so the link is the one on
+      // the landing page itself.
+      const links = await screen.findAllByRole('link', { name: /get started/i });
       expect(links.length).toBeGreaterThan(0);
       expect(links[0]).toHaveAttribute('href', '/register');
     });
@@ -86,6 +86,7 @@ describe('App routing', () => {
         name: 'Test User',
         email: 'test.user@example.com',
         role: 'user',
+        accountType: 'jobseeker',
         avatarUrl: '',
         status: 'active',
       });

@@ -10,6 +10,7 @@ import request from 'supertest';
 import { createApp } from '../../src/app.js';
 import { JobMatch } from '../../src/models/JobMatch.js';
 import { connectMemoryDb, clearMemoryDb, closeMemoryDb } from '../helpers/memoryDb.js';
+import { signUpAs, createApprovedCompany } from '../helpers/accounts.js';
 
 const app = createApp();
 
@@ -23,13 +24,22 @@ const ADVERT =
  * @returns {Promise<import('supertest').SuperAgentTest>}
  */
 async function signUp(email) {
-  const agent = request.agent(app);
-  await agent.post('/api/auth/register').send({
-    name: 'Test Person',
-    email,
-    password: 'password123',
+  // A job seeker: the person whose CV is matched.
+  return signUpAs(app, email, 'jobseeker');
+}
+
+/**
+ * An employer with an approved company, who posts the jobs the tests match
+ * against. A separate account, because one account cannot both post jobs
+ * and keep CVs.
+ * @returns {Promise<import('supertest').SuperAgentTest>}
+ */
+async function employerWithCompany() {
+  const employer = await signUpAs(app, 'employer@example.com', 'employer');
+  await createApprovedCompany(employer, {
+    description: 'A company that exists only for this test.',
   });
-  return agent;
+  return employer;
 }
 
 /**
@@ -133,12 +143,9 @@ describe('POST /api/job-match', () => {
   });
 
   it('accepts a job taken from the board instead of pasted text', async () => {
-    await owner.post('/api/companies').send({
-      name: 'Acme Ltd',
-      description: 'A company that exists only for this test.',
-    });
+    const employer = await employerWithCompany();
 
-    const job = await owner.post('/api/jobs').send({
+    const job = await employer.post('/api/jobs').send({
       title: 'Backend Developer',
       description: ADVERT,
       skills: ['Node.js', 'MongoDB'],
@@ -238,12 +245,9 @@ describe('POST /api/job-match/scores', () => {
     owner = await signUp('owner@example.com');
     cvId = await createFilledCV(owner);
 
-    await owner.post('/api/companies').send({
-      name: 'Acme Ltd',
-      description: 'A company that exists only for this test.',
-    });
+    const employer = await employerWithCompany();
 
-    const job = await owner.post('/api/jobs').send({
+    const job = await employer.post('/api/jobs').send({
       title: 'Backend Developer',
       description: ADVERT,
       skills: ['Node.js', 'MongoDB'],

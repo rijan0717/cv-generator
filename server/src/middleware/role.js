@@ -26,3 +26,26 @@ export function requireRole(...allowedRoles) {
 
 /** Convenience middleware for admin-only routes. */
 export const requireAdmin = requireRole('admin');
+
+/**
+ * Allows only a `user` account of the given type — "employer" for company
+ * and job-posting routes, "jobseeker" for applying. Admins pass, because
+ * the admin can see and do everything.
+ *
+ * @param {'jobseeker'|'employer'} accountType
+ * @returns {import('express').RequestHandler}
+ */
+export function requireAccountType(accountType) {
+  return function checkAccountType(req, _res, next) {
+    if (!req.user) {
+      return next(ApiError.unauthorized('You must be logged in to do that'));
+    }
+    if (req.user.role === 'admin' || req.user.accountType === accountType) return next();
+
+    const message =
+      accountType === 'employer'
+        ? 'Only employer accounts can manage a company and post jobs'
+        : 'Only job seeker accounts can do that';
+    next(ApiError.forbidden(message));
+  };
+}

@@ -18,6 +18,7 @@ const ICONS = {
   create: 'M12 5v14M5 12h14',
   jobs: 'M3 7h18v13H3z M8 7V4h8v3',
   saved: 'M6 3h12v18l-6-4-6 4z',
+  match: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M21 21l-5-5 M8 11l2 2 4-4',
   applications: 'M4 4h16v16H4z M8 9h8M8 13h8M8 17h4',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
   settings:
@@ -82,29 +83,49 @@ function Group({ title, children }) {
 }
 
 export default function Sidebar({ onNavigate }) {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
+
+  // What each account sees:
+  //   job seeker - CVs, matching, the board, saved jobs, applications
+  //   employer   - their company and posts, plus the board (read-only)
+  //   admin      - everything a job seeker sees, plus administration,
+  //                where companies are reviewed instead of created
+  const isJobSeeker = isAdmin || user?.accountType === 'jobseeker';
+  const isEmployer = !isAdmin && user?.accountType === 'employer';
 
   return (
     <nav aria-label="Sections" className="p-4">
-      <Group title="My work">
-        <Item to="/dashboard" icon="cvs" label="My CVs" onNavigate={onNavigate} />
-        <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
-        <Item to="/saved-jobs" icon="saved" label="Saved jobs" onNavigate={onNavigate} />
-        <Item
-          to="/applications"
-          icon="applications"
-          label="My applications"
-          onNavigate={onNavigate}
-        />
-      </Group>
+      {isJobSeeker && (
+        <Group title="My work">
+          <Item to="/dashboard" icon="cvs" label="My CVs" onNavigate={onNavigate} />
+          <Item to="/match-cv" icon="match" label="Match my CV" onNavigate={onNavigate} />
+          <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
+          <Item to="/saved-jobs" icon="saved" label="Saved jobs" onNavigate={onNavigate} />
+          <Item
+            to="/applications"
+            icon="applications"
+            label="My applications"
+            onNavigate={onNavigate}
+          />
+        </Group>
+      )}
 
       {/* My company is a module of its own rather than an account
           setting: it has sections beneath it, and a post belongs to the
           company that made it. */}
-      <Group title="My company">
-        <Item to="/company" icon="companies" label="Company profile" end onNavigate={onNavigate} />
-        <Item to="/company/posts" icon="jobs" label="My posts" onNavigate={onNavigate} />
-      </Group>
+      {isEmployer && (
+        <Group title="My company">
+          <Item
+            to="/company"
+            icon="companies"
+            label="Company profile"
+            end
+            onNavigate={onNavigate}
+          />
+          <Item to="/company/posts" icon="jobs" label="My posts" onNavigate={onNavigate} />
+          <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
+        </Group>
+      )}
 
       <Group title="Account">
         <Item to="/profile" icon="profile" label="Profile" onNavigate={onNavigate} />
@@ -115,6 +136,7 @@ export default function Sidebar({ onNavigate }) {
         <Group title="Administration">
           <Item to="/admin" icon="overview" label="Overview" end onNavigate={onNavigate} />
           <Item to="/admin/users" icon="users" label="Users" onNavigate={onNavigate} />
+          <Item to="/admin/companies" icon="companies" label="Companies" onNavigate={onNavigate} />
           <Item to="/admin/cvs" icon="cvs" label="All CVs" onNavigate={onNavigate} />
           <Item to="/admin/activity" icon="activity" label="Activity" onNavigate={onNavigate} />
         </Group>

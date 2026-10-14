@@ -88,7 +88,8 @@ export default function RegisterPage() {
         email: form.email.trim(),
         password: form.password,
       });
-      navigate('/dashboard', { replace: true });
+      // A new account always starts by choosing job seeker or employer.
+      navigate('/welcome', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

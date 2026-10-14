@@ -3,6 +3,7 @@ import * as adminApi from '../../api/admin.js';
 import Pagination from '../../components/ui/Pagination.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import { describeActivity } from '../../utils/activityDetails.js';
 
 /** The actions that can be filtered on, matching the ActivityLog enum. */
 const ACTIONS = [
@@ -17,6 +18,10 @@ const ACTIONS = [
   'CV_IMPORT',
   'CV_TAILOR',
   'JOB_MATCH',
+  'COMPANY_CREATE',
+  'JOB_CREATE',
+  'JOB_DELETE',
+  'JOB_APPLY',
   'ADMIN_ACTION',
 ];
 
@@ -127,10 +132,8 @@ export default function AdminActivityPage() {
                       {entry.action}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-xs text-slate-500 dark:text-slate-400">
-                    {entry.meta && Object.keys(entry.meta).length > 0
-                      ? JSON.stringify(entry.meta)
-                      : '—'}
+                  <td className="px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400">
+                    {describeActivity(entry)}
                   </td>
                 </tr>
               ))}

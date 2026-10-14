@@ -160,10 +160,10 @@ export default function JobCard({
 function MatchBadge({ match }) {
   const { matchScore, band, tailored } = match;
 
-  // The pair is only shown when both halves of it are known. A CV
-  // tailored before the figures were recorded has neither, and inventing
-  // a "before" from the primary CV's current score would be comparing two
-  // different documents and calling the difference growth.
+  // The pair is only shown when both halves of it are known. "Before" is
+  // how the current primary CV scores on this job (set by the server), so
+  // the growth always compares the rewrite with the CV the user would
+  // otherwise send.
   const hasGrowth =
     tailored &&
     Number.isFinite(tailored.baselineMatchScore) &&
@@ -175,15 +175,15 @@ function MatchBadge({ match }) {
     return (
       <span
         className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${toneFor(tailored.matchScore)}`}
-        title={`Rewritten for this job as "${tailored.title}": ${tailored.baselineMatchScore}% before, ${tailored.matchScore}% after`}
+        title={`Rewritten for this job as "${tailored.title}": ${tailored.matchScore}%, against ${tailored.baselineMatchScore}% for ${tailored.baselineCvTitle ? `your primary CV "${tailored.baselineCvTitle}"` : "the original CV"}`}
       >
         <span className="font-normal opacity-70">{tailored.baselineMatchScore}%</span>
         <span aria-hidden="true">&rarr;</span>
         <span>{tailored.matchScore}%</span>
         {difference > 0 && <span className="font-normal opacity-70">(+{difference})</span>}
         <span className="sr-only">
-          after rewriting your CV for this job. It was {tailored.baselineMatchScore} per cent
-          before.
+          after rewriting your CV for this job, against {tailored.baselineMatchScore} per cent
+          for your primary CV.
         </span>
       </span>
     );

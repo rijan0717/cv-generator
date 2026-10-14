@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/useAuth.js';
 import Spinner from '../components/ui/Spinner.jsx';
+import { homePathFor } from '../utils/homePath.js';
 
 /**
  * Guards the admin area.
@@ -10,7 +11,7 @@ import Spinner from '../components/ui/Spinner.jsx';
  * because logging in again would not help them.
  */
 export default function AdminRoute() {
-  const { isAuthenticated, isAdmin, isLoading } = useAuth();
+  const { user, isAuthenticated, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -21,7 +22,7 @@ export default function AdminRoute() {
   }
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!isAdmin) return <Navigate to="/dashboard" replace />;
+  if (!isAdmin) return <Navigate to={homePathFor(user)} replace />;
 
   return <Outlet />;
 }

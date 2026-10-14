@@ -18,6 +18,7 @@ import {
   relevanceOf,
   buildSummary,
   yearsOfExperience,
+  softenTitle,
 } from '../../src/algorithms/cvTailor.js';
 import { analyseMatch } from '../../src/algorithms/jobMatcher.js';
 import { TAILOR_CONFIG } from '../../src/config/scoringConfig.js';
@@ -621,5 +622,70 @@ describe('tailorCV', () => {
       expect(pageFill.isFull).toBe(true);
       expect(draft.settings.fontSize).not.toBe('large');
     });
+  });
+});
+
+describe('yearsOfExperience — gaps', () => {
+  it('does not count a gap between jobs', () => {
+    // Two years, a three-year gap, then one more year: three years worked.
+    const years = yearsOfExperience([
+      { startDate: '2015-01', endDate: '2017-01' },
+      { startDate: '2020-01', endDate: '2021-01' },
+    ]);
+    expect(years).toBe(3);
+  });
+});
+
+describe('softenTitle', () => {
+  const cv = {
+    personal: { headline: 'QA Engineer' },
+    experience: [{ position: 'Junior QA Analyst' }],
+  };
+
+  it('drops a seniority word the CV does not support', () => {
+    expect(softenTitle('Senior QA Engineer', cv)).toEqual({
+      title: 'QA Engineer',
+      removed: ['Senior'],
+    });
+  });
+
+  it('keeps it when the CV already shows that level', () => {
+    const senior = { ...cv, experience: [{ position: 'Senior Tester' }] };
+    expect(softenTitle('Senior QA Engineer', senior).title).toBe('Senior QA Engineer');
+  });
+
+  it('falls back to the CV headline when the rest is not a title', () => {
+    expect(softenTitle('Head of Quality', cv).title).toBe('QA Engineer');
+  });
+});
+
+describe('tailorCV — wording', () => {
+  it('rewords weak bullets without changing their facts', () => {
+    const cv = {
+      personal: { fullName: 'A Person', headline: 'QA Engineer' },
+      experience: [
+        {
+          position: 'QA Engineer',
+          startDate: '2021-01',
+          endDate: '2024-01',
+          description: 'Performing regression testing. I wrote 300 Cypress tests.',
+          achievements: ['Was able to reduce release time by 30%'],
+        },
+      ],
+      skills: [{ name: 'Cypress' }],
+    };
+
+    const { draft } = tailorCV(cv, 'Senior QA Engineer. Cypress, regression testing.', {
+      jobTitle: 'Senior QA Engineer',
+    });
+
+    expect(draft.experience[0].description).toBe(
+      'Performed regression testing. Wrote 300 Cypress tests.',
+    );
+    expect(draft.experience[0].achievements[0]).toBe('Reduced release time by 30%');
+    // No senior role on the CV, so the headline does not claim one.
+    expect(draft.personal.headline).toBe('QA Engineer');
+    // The closing sentence still names the role being applied for.
+    expect(draft.summary).toContain('Senior QA Engineer');
   });
 });

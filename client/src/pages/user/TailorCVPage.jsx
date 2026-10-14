@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
 import * as jobsApi from '../../api/jobs.js';
 import * as tailorApi from '../../api/tailor.js';
@@ -28,6 +28,9 @@ import Spinner from '../../components/ui/Spinner.jsx';
 export default function TailorCVPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  // `?job=<id>` opens the page with that advert already chosen, e.g. the
+  // best match from Match my CV.
+  const [searchParams] = useSearchParams();
 
   const [cv, setCv] = useState(null);
   const [isLoadingCV, setIsLoadingCV] = useState(true);
@@ -36,7 +39,7 @@ export default function TailorCVPage() {
   const [jobs, setJobs] = useState([]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
   const [search, setSearch] = useState('');
-  const [selectedJobId, setSelectedJobId] = useState('');
+  const [selectedJobId, setSelectedJobId] = useState(searchParams.get('job') ?? '');
 
   const [pastedTitle, setPastedTitle] = useState('');
   const [pastedDescription, setPastedDescription] = useState('');

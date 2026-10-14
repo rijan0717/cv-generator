@@ -14,6 +14,8 @@ import { parseCVText } from '../algorithms/cvImportParser.js';
 import { scoreCV } from '../algorithms/cvStrengthScorer.js';
 import { extractText } from '../services/documentTextService.js';
 import { logActivity } from '../services/activityLogger.js';
+import { applyPrimaryBaselines } from '../services/rewriteGrowthService.js';
+import { visibleJobsFilter } from '../services/companyVisibility.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import { readPagination, buildPagination } from '../utils/pagination.js';
@@ -174,6 +176,8 @@ export async function createJobMatch(req, res) {
 export async function scoreJobsForBoard(req, res) {
   const primary = await CV.findOne({ user: req.user._id, isPrimary: true, isDeleted: false });
   const tailored = await loadTailoredCVs(req.user._id, req.body.jobIds);
+  // "Before" on each rewrite badge is the current primary CV's score.
+  await applyPrimaryBaselines(req.user._id, [...tailored.values()]);
 
   // No primary CV is an ordinary state, not an error. There may still be
   // tailored CVs to report, so this no longer returns early: a user who
@@ -184,9 +188,9 @@ export async function scoreJobsForBoard(req, res) {
     return;
   }
 
-  const jobs = await Job.find({ _id: { $in: req.body.jobIds }, isDeleted: false }).select(
-    'title description skills',
-  );
+  const jobs = await Job.find(
+    await visibleJobsFilter({ _id: { $in: req.body.jobIds }, isDeleted: false }),
+  ).select('title description skills');
 
   const primaryScores = primary
     ? scoreJobsAgainstCV(
@@ -261,6 +265,7 @@ async function loadTailoredCVs(userId, jobIds) {
 
   for (const cv of cvs) {
     byJob.set(cv.tailoredFor.job.toString(), {
+      jobId: cv.tailoredFor.job,
       cvId: cv._id,
       title: cv.title,
       baselineMatchScore: cv.tailoredFor.baselineMatchScore,
@@ -322,7 +327,7 @@ export async function matchUploadedCV(req, res) {
     settings: {},
   };
 
-  const jobs = await Job.find({ isDeleted: false, status: 'open' })
+  const jobs = await Job.find(await visibleJobsFilter({ isDeleted: false, status: 'open' }))
     .select('title description skills location jobType workMode salaryRange company createdAt')
     .populate('company', 'name logoUrl location')
     .sort({ createdAt: -1 })

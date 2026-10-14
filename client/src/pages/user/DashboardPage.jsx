@@ -347,7 +347,7 @@ function ScorePill({ score }) {
 function MatchGrowthPill({ tailoredFor }) {
   if (!tailoredFor) return null;
 
-  const { baselineMatchScore, matchScore, jobTitle } = tailoredFor;
+  const { baselineMatchScore, baselineCvTitle, matchScore, jobTitle } = tailoredFor;
   if (!Number.isFinite(baselineMatchScore) || !Number.isFinite(matchScore)) return null;
 
   const difference = matchScore - baselineMatchScore;
@@ -362,13 +362,13 @@ function MatchGrowthPill({ tailoredFor }) {
   return (
     <span
       className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}
-      title={`Job match${jobTitle ? ` for ${jobTitle}` : ''}: ${baselineMatchScore}% before this CV was tailored, ${matchScore}% after`}
+      title={`Job match${jobTitle ? ` for ${jobTitle}` : ''}: ${matchScore}% for this CV, against ${baselineMatchScore}% for ${baselineCvTitle ? `your primary CV "${baselineCvTitle}"` : 'the original CV'}`}
     >
       <span className="font-normal opacity-70">{baselineMatchScore}%</span>
       <span aria-hidden="true">&rarr;</span>
       <span>{matchScore}%</span>
       <span className="sr-only">
-        job match after tailoring, up from {baselineMatchScore} per cent
+        job match after tailoring, against {baselineMatchScore} per cent for your primary CV
       </span>
     </span>
   );

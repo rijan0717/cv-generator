@@ -149,11 +149,12 @@ The user pastes a job description and selects one of their CVs; the system measu
 All routes are prefixed with `/api`. JSON responses use the shape `{ success, data, message }`. Errors go through one central error-handling middleware.
 
 - **Auth:** `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`
-- **Profile:** `PUT /users/me`, `PUT /users/me/password`, `POST /users/me/avatar`
+- **Profile:** `PUT /users/me`, `PUT /users/me/password`, `POST /users/me/avatar`, `PATCH /users/me/account-type` (body: accountType `jobseeker` | `employer`; set once)
+- **Companies (employer accounts only):** `GET /companies/mine`, `POST /companies` (name, location, registrationNumber, phone, email required; starts `pending`), `PUT /companies/mine` (refused once approved; resubmits a rejected company), `POST /companies/mine/logo`, `DELETE /companies/mine/logo`, `POST /companies/mine/document` (registration document, PDF/JPG/PNG ≤ 5 MB, private), `GET /companies/:id/document` (owner or admin only), `GET /companies/:id` (public profile, approved companies only)
 - **CVs (owner only):** `GET /cvs`, `POST /cvs`, `GET /cvs/:id`, `PUT /cvs/:id`, `DELETE /cvs/:id`, `POST /cvs/:id/duplicate`, `POST /cvs/:id/photo`, `GET /cvs/:id/score`, `GET /cvs/:id/export/pdf`, `GET /cvs/:id/export/excel`, `GET /cvs/:id/print-data` (print token only)
 - **Job match:** `POST /job-match` (body: cvId, jobDescription, jobTitle), `GET /job-match` (own history, paginated), `GET /job-match/:id`, `POST /job-match/scores` (badges for a page of the board), `POST /job-match/from-upload` (multipart: a dropped CV file, ranked against every open job; nothing is stored)
 - **Templates:** `GET /templates` (active only)
-- **Admin (admin role only):** `GET /admin/stats`, `GET /admin/users`, `GET /admin/users/:id`, `PATCH /admin/users/:id/status`, `DELETE /admin/users/:id`, `GET /admin/cvs`, `GET /admin/cvs/:id`, `DELETE /admin/cvs/:id`, `GET /admin/templates`, `PATCH /admin/templates/:id`, `GET /admin/reports/:type?from=&to=&format=xlsx|pdf`, `GET /admin/activity`
+- **Admin (admin role only):** `GET /admin/stats`, `GET /admin/users`, `GET /admin/users/:id`, `PATCH /admin/users/:id/status`, `DELETE /admin/users/:id`, `GET /admin/cvs`, `GET /admin/cvs/:id`, `DELETE /admin/cvs/:id`, `GET /admin/companies?status=pending|approved|rejected&search=&page=`, `GET /admin/companies/:id`, `PATCH /admin/companies/:id/status` (body: status `approved` | `rejected`, reason required to reject; approval needs a document), `GET /admin/templates`, `PATCH /admin/templates/:id`, `GET /admin/reports/:type?from=&to=&format=xlsx|pdf`, `GET /admin/activity`
 
 ## 8. Folder structure
 
@@ -231,6 +232,7 @@ The report follows the **Object-Oriented approach** from the TU guideline.
 - `npm run seed:admin` — create the admin account from `.env`
 - `npm run seed:templates` — insert the five templates
 - `npm run seed:jobs` — insert the ten sample job adverts
+- `npm run migrate:accounts` — one-off upgrade for a database created before account types: existing companies become approved, company owners become employers, everyone else chooses on next login (safe to re-run)
 - `npm run seed:loadtest` — bulk test data for load and performance testing: ~100 users with
   CVs, 150 jobs across 8 companies, 24 reviews, job matches and activity
   (`-- --clear` to replace the previous run, `-- --only-clear` to remove it; flags

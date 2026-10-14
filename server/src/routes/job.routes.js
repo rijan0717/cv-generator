@@ -24,6 +24,7 @@ import {
 } from '../controllers/job.controller.js';
 import { applyToJob, listJobApplications } from '../controllers/application.controller.js';
 import { requireAuth } from '../middleware/auth.js';
+import { requireAccountType } from '../middleware/role.js';
 import { optionalAuth } from '../middleware/optionalAuth.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -82,20 +83,26 @@ router.get('/:id', optionalAuth, [validId], validate, asyncHandler(getJob));
 
 // --- Posting and managing -------------------------------------------------
 
-router.post('/', requireAuth, jobRules(true), validate, asyncHandler(createJob));
-router.put('/:id', requireAuth, [validId, ...jobRules(false)], validate, asyncHandler(updateJob));
-router.delete('/:id', requireAuth, [validId], validate, asyncHandler(deleteJob));
+// Employer accounts only. Posting also needs an approved company, which
+// the controller checks.
+const employer = [requireAuth, requireAccountType('employer')];
+// Saving and applying are for job seekers; an employer's board is read-only.
+const jobseeker = [requireAuth, requireAccountType('jobseeker')];
+
+router.post('/', ...employer, jobRules(true), validate, asyncHandler(createJob));
+router.put('/:id', ...employer, [validId, ...jobRules(false)], validate, asyncHandler(updateJob));
+router.delete('/:id', ...employer, [validId], validate, asyncHandler(deleteJob));
 
 // --- Saving ---------------------------------------------------------------
 
-router.post('/:id/save', requireAuth, [validId], validate, asyncHandler(saveJob));
-router.delete('/:id/save', requireAuth, [validId], validate, asyncHandler(unsaveJob));
+router.post('/:id/save', ...jobseeker, [validId], validate, asyncHandler(saveJob));
+router.delete('/:id/save', ...jobseeker, [validId], validate, asyncHandler(unsaveJob));
 
 // --- Applying -------------------------------------------------------------
 
 router.post(
   '/:id/apply',
-  requireAuth,
+  ...jobseeker,
   [
     validId,
     body('cvId').isMongoId().withMessage('Please choose a CV to apply with'),

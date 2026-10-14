@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import Pagination from '../../components/ui/Pagination.jsx';
+import { describeActivity } from '../../utils/activityDetails.js';
 
 /**
  * One user, with the CVs they have created and their recent activity.
@@ -177,10 +178,17 @@ export default function AdminUserDetailPage() {
           <ul className="mt-3 divide-y divide-slate-100 dark:divide-slate-800 rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
             {recentActivity.map((entry) => (
               <li key={entry._id} className="flex justify-between gap-4 px-4 py-2.5 text-sm">
-                <span className="font-mono text-xs text-slate-700 dark:text-slate-300">
-                  {entry.action}
+                <span className="min-w-0">
+                  <span className="font-mono text-xs text-slate-700 dark:text-slate-300">
+                    {entry.action}
+                  </span>
+                  {describeActivity(entry) !== '—' && (
+                    <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+                      {describeActivity(entry)}
+                    </span>
+                  )}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
                   {new Date(entry.createdAt).toLocaleString('en-GB')}
                 </span>
               </li>

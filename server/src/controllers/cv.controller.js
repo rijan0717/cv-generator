@@ -11,6 +11,7 @@ import path from 'node:path';
 import { CV } from '../models/CV.js';
 import { scoreCV } from '../algorithms/cvStrengthScorer.js';
 import { logActivity } from '../services/activityLogger.js';
+import { applyPrimaryBaselines } from '../services/rewriteGrowthService.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import { readPagination, buildPagination } from '../utils/pagination.js';
@@ -70,7 +71,28 @@ export async function listCVs(req, res) {
     CV.countDocuments(filter),
   ]);
 
-  sendSuccess(res, { cvs, pagination: buildPagination({ page, limit }, total) }, 'Your CVs');
+  // A tailored CV's growth badge compares it with the current primary CV,
+  // so "before" is measured now rather than read from the stored figure.
+  const rows = cvs.map((cv) => cv.toJSON());
+  const growth = rows
+    .filter((cv) => cv.tailoredFor?.job)
+    .map((cv) => ({
+      jobId: cv.tailoredFor.job,
+      cvId: cv._id,
+      baselineMatchScore: cv.tailoredFor.baselineMatchScore,
+      tailoredFor: cv.tailoredFor,
+    }));
+  await applyPrimaryBaselines(req.user._id, growth);
+  for (const item of growth) {
+    item.tailoredFor.baselineMatchScore = item.baselineMatchScore;
+    if (item.baselineCvTitle) item.tailoredFor.baselineCvTitle = item.baselineCvTitle;
+  }
+
+  sendSuccess(
+    res,
+    { cvs: rows, pagination: buildPagination({ page, limit }, total) },
+    'Your CVs',
+  );
 }
 
 /**

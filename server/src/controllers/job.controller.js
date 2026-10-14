@@ -7,6 +7,8 @@ import { Application } from '../models/Application.js';
 import { SavedJob } from '../models/SavedJob.js';
 import { CV } from '../models/CV.js';
 import { logActivity } from '../services/activityLogger.js';
+import { visibleJobsFilter } from '../services/companyVisibility.js';
+import { applyPrimaryBaselines } from '../services/rewriteGrowthService.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 
@@ -78,7 +80,8 @@ export async function listJobs(req, res) {
   const { page, limit, skip } = readPagination(req);
   const { search, location, jobType, workMode } = req.query;
 
-  const filter = { isDeleted: false, status: 'open' };
+  // Only approved companies' jobs are on the public board.
+  const filter = await visibleJobsFilter({ isDeleted: false, status: 'open' });
 
   if (jobType) filter.jobType = jobType;
   if (workMode) filter.workMode = workMode;
@@ -141,10 +144,18 @@ export async function listJobs(req, res) {
  */
 export async function getJob(req, res) {
   const job = await Job.findOne({ _id: req.params.id, isDeleted: false })
-    .populate('company', 'name description website location industry logoUrl')
+    .populate('company', 'name description website location industry logoUrl status')
     .lean();
 
   if (!job) throw ApiError.notFound('Job not found');
+
+  // A job from a company that is not approved is visible only to the
+  // employer who posted it and to the admin.
+  const isOwnerOrAdmin =
+    req.user && (req.user.role === 'admin' || job.postedBy?.equals?.(req.user._id));
+  if (job.company?.status !== 'approved' && !isOwnerOrAdmin) {
+    throw ApiError.notFound('Job not found');
+  }
 
   let isSaved = false;
   let hasApplied = false;
@@ -171,11 +182,15 @@ export async function getJob(req, res) {
     if (tailored) {
       tailoredCv = {
         _id: tailored._id,
+        cvId: tailored._id,
+        jobId: job._id,
         title: tailored.title,
         baselineMatchScore: tailored.tailoredFor.baselineMatchScore,
         matchScore: tailored.tailoredFor.matchScore,
         tailoredAt: tailored.tailoredFor.tailoredAt,
       };
+      // "Before" is the current primary CV's score for this job.
+      await applyPrimaryBaselines(req.user._id, [tailoredCv]);
     }
   }
 
@@ -190,6 +205,13 @@ export async function createJob(req, res) {
   const company = await Company.findOne({ owner: req.user._id, isDeleted: false });
   if (!company) {
     throw ApiError.badRequest('Set up your company before posting a job');
+  }
+  if (company.status !== 'approved') {
+    throw ApiError.forbidden(
+      company.status === 'rejected'
+        ? 'Your company was not approved. Update it and resubmit before posting jobs.'
+        : 'Your company is waiting for admin approval. You can post jobs once it is approved.',
+    );
   }
 
   const job = await Job.create({
@@ -295,21 +317,62 @@ export async function unsaveJob(req, res) {
 
 /**
  * GET /api/jobs/mine/saved
- * The caller's saved jobs.
+ * The caller's saved jobs, plus every job they have applied to.
+ *
+ * An applied job carries a small `application` summary — its id, status,
+ * date and the title of the CV that was sent — so the page can offer a
+ * preview of exactly what the employer received.
  */
 export async function listSavedJobs(req, res) {
-  const saved = await SavedJob.find({ user: req.user._id })
-    .populate({
-      path: 'job',
-      select: 'title location jobType workMode salaryRange status isDeleted createdAt',
-      populate: { path: 'company', select: 'name logoUrl' },
-    })
-    .sort({ createdAt: -1 })
-    .lean();
+  const jobPopulate = {
+    path: 'job',
+    select: 'title location jobType workMode salaryRange status isDeleted createdAt',
+    populate: { path: 'company', select: 'name logoUrl' },
+  };
 
-  // A saved job whose posting has since been removed is filtered out
-  // rather than shown as a broken row.
-  const jobs = saved.map((row) => row.job).filter((job) => job && !job.isDeleted);
+  const [saved, applications] = await Promise.all([
+    SavedJob.find({ user: req.user._id }).populate(jobPopulate).lean(),
+    Application.find({ applicant: req.user._id })
+      .select('job status createdAt cvSnapshot.title')
+      .populate(jobPopulate)
+      .lean(),
+  ]);
+
+  // One row per job. `sortDate` is when the job landed on this list: the
+  // later of saving it and applying to it.
+  const rows = new Map();
+
+  for (const row of saved) {
+    if (!row.job || row.job.isDeleted) continue;
+    rows.set(String(row.job._id), {
+      job: row.job,
+      application: null,
+      isSaved: true,
+      sortDate: row.createdAt,
+    });
+  }
+
+  for (const app of applications) {
+    // A posting removed since is filtered out rather than shown as a broken row.
+    if (!app.job || app.job.isDeleted) continue;
+
+    const key = String(app.job._id);
+    const application = {
+      id: app._id,
+      status: app.status,
+      appliedAt: app.createdAt,
+      cvTitle: app.cvSnapshot?.title ?? '',
+    };
+
+    const existing = rows.get(key);
+    const sortDate =
+      existing && existing.sortDate > app.createdAt ? existing.sortDate : app.createdAt;
+    rows.set(key, { job: app.job, application, isSaved: Boolean(existing?.isSaved), sortDate });
+  }
+
+  const jobs = [...rows.values()]
+    .sort((a, b) => b.sortDate - a.sortDate)
+    .map(({ job, application, isSaved }) => ({ ...job, application, isSaved }));
 
   sendSuccess(res, { jobs }, 'Your saved jobs');
 }

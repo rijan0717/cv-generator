@@ -71,3 +71,13 @@ export async function uploadAvatar(file) {
   });
   return data.data.user;
 }
+
+/**
+ * Records the one-time account type choice.
+ * @param {'jobseeker'|'employer'} accountType
+ * @returns {Promise<object>} The updated user.
+ */
+export async function setAccountType(accountType) {
+  const { data } = await api.patch('/api/users/me/account-type', { accountType });
+  return data.data.user;
+}

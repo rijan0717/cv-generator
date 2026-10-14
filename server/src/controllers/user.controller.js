@@ -84,3 +84,25 @@ export async function uploadAvatar(req, res) {
 
   sendSuccess(res, { user: req.user.toPublicJSON() }, 'Your photo has been updated');
 }
+
+/**
+ * PATCH /api/users/me/account-type
+ *
+ * Records whether this account is a job seeker or an employer. It can be
+ * set only once: the two kinds of account see different parts of the
+ * system, and an employer who could turn into a job seeker would keep a
+ * company and job posts they could no longer reach. Admins have no type.
+ */
+export async function setAccountType(req, res) {
+  if (req.user.role === 'admin') {
+    throw ApiError.badRequest('Admin accounts do not have an account type');
+  }
+  if (req.user.accountType) {
+    throw ApiError.conflict('Your account type has already been chosen');
+  }
+
+  req.user.accountType = req.body.accountType;
+  await req.user.save();
+
+  sendSuccess(res, { user: req.user.toPublicJSON() }, 'Account type saved');
+}

@@ -654,6 +654,8 @@ function buildUser(rng, passwordHash, usedEmails, registrationWindow) {
     email,
     passwordHash,
     role: 'user',
+    // Job seekers by default; the few who own a company become employers.
+    accountType: 'jobseeker',
     avatarUrl: '',
     status,
     lastLoginAt: dateBetween(rng, createdAt, registrationWindow.to),
@@ -1042,10 +1044,18 @@ async function seedJobBoard(rng, users, jobCount, now) {
             `${employer.name} is a ${employer.industry.toLowerCase()} business based in ` +
             `${employer.location}. This employer exists to give the job board realistic volume.`,
           isDeleted: false,
+          // Seeded companies are approved, so their jobs are on the board.
+          status: 'approved',
+          reviewedAt: new Date(),
+          registrationNumber: `LT-${String(i + 1).padStart(5, '0')}`,
+          phone: '+977 1 4000000',
+          email: `hr${i + 1}@loadtest.example`,
         },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true },
     );
+    // A company owner is an employer account.
+    await User.updateOne({ _id: owner._id }, { $set: { accountType: 'employer' } });
 
     companies.push({ company, owner });
   }

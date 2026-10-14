@@ -122,8 +122,61 @@ export default function CompanyProfilePage() {
 
       <section className="mt-6">
         <h2 className="font-semibold text-slate-900 dark:text-slate-100">Company details</h2>
-        <CompanyForm company={company} onSaved={setCompany} />
+        {/* Approved details are locked (the server refuses edits too); only
+            the logo above can still change. */}
+        {company.status === 'approved' ? (
+          <LockedDetails company={company} />
+        ) : (
+          <CompanyForm company={company} onSaved={setCompany} />
+        )}
       </section>
     </>
+  );
+}
+
+/** The labels and fields shown for an approved company, in order. */
+const DETAIL_FIELDS = [
+  ['Company name', 'name'],
+  ['Location', 'location'],
+  ['Registration / PAN / VAT number', 'registrationNumber'],
+  ['Industry', 'industry'],
+  ['Company phone', 'phone'],
+  ['Company email', 'email'],
+  ['Website', 'website'],
+];
+
+/**
+ * An approved company's details, read-only.
+ * @param {{company: object}} props
+ */
+function LockedDetails({ company }) {
+  return (
+    <div className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <p className="text-sm text-slate-500 dark:text-slate-400">
+        Your company is approved, so these details are locked. Only the logo can be changed.
+      </p>
+
+      <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+        {DETAIL_FIELDS.map(([label, field]) => (
+          <div key={field}>
+            <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {label}
+            </dt>
+            <dd className="text-slate-900 dark:text-slate-100">{company[field] || '—'}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {company.description && (
+        <div className="mt-4 text-sm">
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            About the company
+          </p>
+          <p className="mt-1 whitespace-pre-line text-slate-800 dark:text-slate-200">
+            {company.description}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

@@ -14,7 +14,8 @@
     "seed:templates": "node scripts/seedTemplates.js",
     "seed:jobs": "node scripts/seedJobs.js",
     "seed:qa-demo": "node scripts/seedQaDemo.js",
-    "seed:loadtest": "node scripts/seedLoadTestUsers.js"
+    "seed:loadtest": "node scripts/seedLoadTestUsers.js",
+    "migrate:accounts": "node scripts/migrateAccountTypes.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

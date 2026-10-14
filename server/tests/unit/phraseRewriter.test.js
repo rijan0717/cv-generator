@@ -12,6 +12,10 @@ import {
   tidy,
   rewriteAsAction,
   rewriteDescription,
+  removeFiller,
+  normaliseTense,
+  polishSentence,
+  splitSentences,
 } from '../../src/algorithms/phraseRewriter.js';
 
 describe('gerundToBase', () => {
@@ -136,5 +140,63 @@ describe('rewriteDescription', () => {
 
   it('returns an empty result for empty input', () => {
     expect(rewriteDescription('')).toEqual({ text: '', changed: false, reasons: [] });
+  });
+});
+
+describe('removeFiller', () => {
+  it('drops a leading pronoun before a verb', () => {
+    expect(removeFiller('I developed the billing API').text).toBe('Developed the billing API');
+  });
+
+  it('keeps a leading "I" that is not a pronoun', () => {
+    expect(removeFiller('I/O testing for the firmware').text).toBe('I/O testing for the firmware');
+  });
+
+  it('turns "was able to" into the users own verb and removes filler', () => {
+    const result = removeFiller('Was able to reduce costs by 20% by utilizing caching');
+    expect(result.text).toBe('Reduced costs by 20% by using caching');
+    expect(result.removed).toEqual(['"was able to"', '"utilise"']);
+  });
+
+  it('never touches a number', () => {
+    expect(removeFiller('Successfully cut load time by 3.5s').text).toBe('Cut load time by 3.5s');
+  });
+});
+
+describe('normaliseTense', () => {
+  it('puts a finished role in the past tense', () => {
+    expect(normaliseTense('Performing automation testing').text).toBe(
+      'Performed automation testing',
+    );
+    expect(normaliseTense('Leads the QA team').text).toBe('Led the QA team');
+  });
+
+  it('puts a current role in the present tense', () => {
+    expect(normaliseTense('Performing automation testing', { present: true }).text).toBe(
+      'Perform automation testing',
+    );
+  });
+
+  it('leaves a noun phrase alone', () => {
+    expect(normaliseTense('Testing of payment flows').changed).toBe(false);
+    expect(normaliseTense('Reports were sent weekly').changed).toBe(false);
+  });
+});
+
+describe('polishSentence', () => {
+  it('applies the opener, filler and tense steps together', () => {
+    expect(polishSentence('I successfully conducted API testing').text).toBe(
+      'Conducted API testing',
+    );
+  });
+});
+
+describe('splitSentences', () => {
+  it('splits on a full stop followed by a capital', () => {
+    expect(splitSentences('Built X. Tested Y. Used v2.1 tools.')).toEqual([
+      'Built X.',
+      'Tested Y.',
+      'Used v2.1 tools.',
+    ]);
   });
 });

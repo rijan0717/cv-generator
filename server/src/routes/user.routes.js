@@ -4,7 +4,12 @@
  */
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { updateProfile, changePassword, uploadAvatar } from '../controllers/user.controller.js';
+import {
+  updateProfile,
+  changePassword,
+  uploadAvatar,
+  setAccountType,
+} from '../controllers/user.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { uploadImage, handleUploadErrors } from '../middleware/upload.js';
@@ -43,6 +48,18 @@ router.put(
   ],
   validate,
   asyncHandler(changePassword),
+);
+
+// The one-time "I'm an employer / I'm a job seeker" choice.
+router.patch(
+  '/me/account-type',
+  [
+    body('accountType')
+      .isIn(['jobseeker', 'employer'])
+      .withMessage('Choose either job seeker or employer'),
+  ],
+  validate,
+  asyncHandler(setAccountType),
 );
 
 router.post(

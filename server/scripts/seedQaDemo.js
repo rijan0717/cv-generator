@@ -688,7 +688,16 @@ async function findOrCreateUser(person) {
 async function seedJobs(employer) {
   const company = await Company.findOneAndUpdate(
     { owner: employer._id },
-    { $set: { ...EMPLOYER_COMPANY, owner: employer._id, isDeleted: false } },
+    {
+      $set: {
+        ...EMPLOYER_COMPANY,
+        owner: employer._id,
+        isDeleted: false,
+        // Seeded companies are approved, so their jobs are on the board.
+        status: 'approved',
+        reviewedAt: new Date(),
+      },
+    },
     { new: true, upsert: true, setDefaultsOnInsert: true },
   );
 
@@ -747,6 +756,10 @@ async function seedQaDemo() {
 
   const { user: seeker, created: seekerCreated } = await findOrCreateUser(SEEKER);
   const { user: employer, created: employerCreated } = await findOrCreateUser(EMPLOYER);
+
+  // One of each account type, so the demo needs no first-login choice.
+  await User.updateOne({ _id: seeker._id }, { $set: { accountType: 'jobseeker' } });
+  await User.updateOne({ _id: employer._id }, { $set: { accountType: 'employer' } });
 
   const jobs = await seedJobs(employer);
   const cvs = await seedCVs(seeker);

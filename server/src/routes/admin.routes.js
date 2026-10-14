@@ -19,6 +19,12 @@ import {
   deleteAnyCV,
   listActivity,
 } from '../controllers/admin.controller.js';
+import {
+  listCompanies,
+  getCompanyForReview,
+  reviewCompany,
+  COMPANY_STATUSES,
+} from '../controllers/adminCompany.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/role.js';
 import { validate } from '../middleware/validate.js';
@@ -84,6 +90,34 @@ router.get(
 
 router.get('/cvs/:id', [validId], validate, asyncHandler(getAnyCV));
 router.delete('/cvs/:id', [validId], validate, asyncHandler(deleteAnyCV));
+
+// --- Company review --------------------------------------------------------
+
+router.get(
+  '/companies',
+  [
+    ...paginationRules,
+    query('status').optional().isIn(COMPANY_STATUSES).withMessage('Unknown status'),
+    query('search').optional().trim().isLength({ max: 120 }),
+  ],
+  validate,
+  asyncHandler(listCompanies),
+);
+
+router.get('/companies/:id', [validId], validate, asyncHandler(getCompanyForReview));
+
+router.patch(
+  '/companies/:id/status',
+  [
+    validId,
+    body('status')
+      .isIn(['approved', 'rejected'])
+      .withMessage('Status must be approved or rejected'),
+    body('reason').optional().trim().isLength({ max: 500 }).withMessage('Reason is too long'),
+  ],
+  validate,
+  asyncHandler(reviewCompany),
+);
 
 // --- Activity log ----------------------------------------------------------
 

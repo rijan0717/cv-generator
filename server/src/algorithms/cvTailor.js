@@ -68,7 +68,7 @@ import { skillsFromSection, analyseMatch, buildSurfaceForms } from './jobMatcher
 import { hasQuantifiedResult } from './cvStrengthScorer.js';
 import { estimateFill } from './pageFill.js';
 import { SKILLS, findSkills } from '../data/skillsDictionary.js';
-import { rewriteDescription, rewriteAsAction, tidy } from './phraseRewriter.js';
+import { rewriteDescription, polishSentence, tidy } from './phraseRewriter.js';
 
 /**
  * The same seed adverts the match analyser weights against.
@@ -226,31 +226,44 @@ function orderChanged(ranked) {
  * Dates are stored as "YYYY-MM" strings by the builder. An entry marked
  * as current, or with no end date, runs to today.
  *
- * The span is measured from the earliest start to the latest end rather
- * than by adding the roles up, because overlapping roles would otherwise
- * be double-counted and the summary would overstate the user's career —
- * the one thing a generated summary must never do.
+ * It counts the months actually worked, so the summary never overstates
+ * the user's career — the one thing a generated summary must never do:
+ *   1. Turn each role into a [start, end] range of month numbers.
+ *   2. Sort the ranges by start and merge any that overlap, so two jobs
+ *      held at the same time are counted once.
+ *   3. Add up the merged ranges. A gap between jobs falls between two
+ *      ranges and so is not counted.
  *
  * @param {Array<object>} experience - The experience section.
  * @returns {number} Whole years, or 0 when the dates do not support a figure.
  */
 export function yearsOfExperience(experience = []) {
-  const months = [];
+  // Step 1: one range per dated role.
+  const ranges = [];
 
   for (const entry of experience) {
     const start = monthNumber(entry?.startDate);
     if (start === null) continue;
 
     const end = entry?.isCurrent ? monthNumber(today()) : monthNumber(entry?.endDate);
-    months.push([start, end ?? monthNumber(today())]);
+    const finish = end ?? monthNumber(today());
+    if (finish >= start) ranges.push([start, finish]);
   }
 
-  if (months.length === 0) return 0;
+  if (ranges.length === 0) return 0;
 
-  const earliest = Math.min(...months.map(([start]) => start));
-  const latest = Math.max(...months.map(([, end]) => end));
+  // Step 2: merge overlapping ranges.
+  ranges.sort((a, b) => a[0] - b[0]);
+  const merged = [ranges[0].slice()];
+  for (const [start, end] of ranges.slice(1)) {
+    const last = merged.at(-1);
+    if (start <= last[1]) last[1] = Math.max(last[1], end);
+    else merged.push([start, end]);
+  }
 
-  return Math.max(0, Math.floor((latest - earliest) / 12));
+  // Step 3: total months worked.
+  const months = merged.reduce((total, [start, end]) => total + (end - start), 0);
+  return Math.floor(months / 12);
 }
 
 /** Today as "YYYY-MM". @returns {string} */
@@ -281,74 +294,127 @@ function wordCount(text) {
 /**
  * Builds a professional summary out of facts the CV already states.
  *
- * Every clause is sourced, and the source is named in the comment beside
- * it. The connecting words ("with", "Skilled in", "Holds a") are the only
- * language this module contributes; every noun, verb, number and skill
- * comes from the user's own CV or from the advert's job title.
+ * Every clause is sourced: every noun, verb, number and skill comes from
+ * the user's own CV or from the advert's job title. What this module adds
+ * is only the connecting language — and so that two CVs do not read like
+ * the same form filled in twice, each sentence has a few interchangeable
+ * phrasings. The phrasing is picked from a hash of the person's name, so it
+ * differs between people but stays the same every time one CV is rewritten.
  *
- * Sentences are added in order of how much they are worth to a reader,
- * and stop once the target length is reached. If the CV does not contain
- * enough to reach the minimum, a short summary is returned and the caller
- * reports that rather than padding it out with filler.
+ * Step by step:
+ *   1. **Who they are.** Their role (the advert's title, softened so it
+ *      never claims more seniority than the CV shows) and the years they
+ *      have actually worked — gaps between jobs are not counted.
+ *   2. **What they work with.** Up to `maxSkillsNamed` skills, the
+ *      advert's first, with the one the advert weights most named as the
+ *      main strength.
+ *   3. **Proof.** The most relevant quantified achievement, quoted as
+ *      written — rewording a number risks changing it.
+ *   4. **Qualifications.** The first education entry.
+ *   5. **Intent.** The role being applied for, by its advertised title.
  *
- * The two ceilings are options rather than constants because the page-fill
- * step raises them. A CV that leaves half the page blank is better served
- * by a summary that says everything it can source than by one trimmed to
- * the length the strength scorer prefers — and since every sentence is
- * sourced, a longer one invents nothing.
+ * Sentences are added in that order and stop at `maxWords`. The first two
+ * are never dropped. If the CV does not hold enough for `minWords`, a short
+ * summary is returned and the caller says so rather than padding it.
+ *
+ * The two ceilings are options because the page-fill step raises them: a
+ * CV that leaves half the page blank is better served by a summary that
+ * says everything it can source, and a longer sourced summary invents
+ * nothing.
  *
  * @param {object} cv - The source CV.
- * @param {{targetTitle: string, namedSkills: string[], maxWords?: number,
- *          maxSkillsNamed?: number}} context
+ * @param {{targetTitle: string, appliedRole?: string, namedSkills: string[],
+ *          maxWords?: number, maxSkillsNamed?: number}} context
+ *   `targetTitle` is the (softened) title used to describe the person;
+ *   `appliedRole` the job's own title, used in the closing sentence.
  * @returns {{text: string, sentences: string[], short: boolean}}
  */
 export function buildSummary(
   cv,
   {
     targetTitle,
+    appliedRole = targetTitle,
     namedSkills,
     maxWords = TAILOR_CONFIG.summary.maxWords,
     maxSkillsNamed = TAILOR_CONFIG.summary.maxSkillsNamed,
   },
 ) {
   const sentences = [];
+  const pick = phrasePicker(cv);
 
-  // 1. Who they are. The advert's job title when there is one, because
-  //    that is the role being applied for; otherwise their own headline.
-  const role = tidy(targetTitle || cv.personal?.headline || '');
+  // 1. Who they are.
+  const role = tidy(targetTitle || cv.personal?.headline || cv.experience?.[0]?.position || '');
   const years = yearsOfExperience(cv.experience);
+  const roles = (cv.experience ?? []).filter((entry) => entry?.position).length;
 
-  if (role) {
-    sentences.push(years >= 1 ? `${role} with ${years}+ years' experience.` : `${role}.`);
+  if (role && years >= 1) {
+    sentences.push(
+      pick([
+        `${role} with ${years}+ years of hands-on experience.`,
+        `${role} bringing ${years}+ years of practical experience.`,
+        roles > 1
+          ? `${role} with ${years}+ years' experience across ${roles} roles.`
+          : `${role} with ${years}+ years of professional experience.`,
+      ]),
+    );
+  } else if (role) {
+    sentences.push(`${role}.`);
   } else if (years >= 1) {
-    sentences.push(`Professional with ${years}+ years' experience.`);
+    sentences.push(`Professional with ${years}+ years of hands-on experience.`);
   }
 
-  // 2. What they work with. Already ordered by the caller so the skills
-  //    this advert asks for come first.
+  // 2. What they work with. Already ordered so the advert's skills lead.
   const skills = namedSkills.slice(0, maxSkillsNamed);
-  if (skills.length > 0) {
+  if (skills.length >= 3) {
+    const [lead, ...others] = skills;
+    sentences.push(
+      pick([
+        `Works across ${listPhrase(others)}, with particular strength in ${lead}.`,
+        `Core skills include ${listPhrase(skills)}.`,
+        `Experienced with ${listPhrase(others)}, and strongest in ${lead}.`,
+      ]),
+    );
+  } else if (skills.length > 0) {
     sentences.push(`Skilled in ${listPhrase(skills)}.`);
   }
 
-  // 3. Proof. The most relevant achievement that quantifies something,
-  //    quoted as written — a number the user put there is the strongest
-  //    line in any CV, and rewording it would risk changing it.
+  // 3. Proof, quoted as written. Lower-cased only when it opens with a
+  //    capitalised verb, so names and acronyms keep their capitals.
   const proof = strongestAchievement(cv);
-  if (proof) sentences.push(endWithFullStop(proof));
+  if (proof) {
+    const asClause = /^[A-Z][a-z]/.test(proof)
+      ? proof.charAt(0).toLowerCase() + proof.slice(1)
+      : proof;
+    sentences.push(
+      endWithFullStop(
+        pick([
+          `Notable result: ${asClause}`,
+          `Recent highlight: ${asClause}`,
+          `Track record includes: ${asClause}`,
+        ]),
+      ),
+    );
+  }
 
   // 4. Qualifications, from the first education entry.
   const education = (cv.education ?? []).find((entry) => entry?.degree || entry?.fieldOfStudy);
   if (education) {
+    const degree = education.degree || 'a qualification';
     const field = education.fieldOfStudy ? ` in ${education.fieldOfStudy}` : '';
     const place = education.institution ? ` from ${education.institution}` : '';
-    sentences.push(tidy(`Holds a ${education.degree || 'qualification'}${field}${place}.`));
+    sentences.push(tidy(`Holds a ${degree}${field}${place}.`));
   }
 
-  // 5. What they are applying for. Last, because it is the only sentence
-  //    about the future rather than about evidence.
-  if (targetTitle) {
-    sentences.push(`Now seeking a ${tidy(targetTitle)} role.`);
+  // 5. Intent, by the advertised title — this is what they are applying for.
+  if (appliedRole) {
+    const applied = tidy(appliedRole);
+    sentences.push(
+      pick([
+        `Looking to bring these strengths to a ${applied} role.`,
+        `Keen to apply this experience as a ${applied}.`,
+        `Ready to contribute as a ${applied} from day one.`,
+      ]),
+    );
   }
 
   // Trim from the end until the summary fits. The first two sentences are
@@ -370,6 +436,88 @@ export function buildSummary(
 }
 
 /**
+ * Returns a function that picks one phrasing from a list.
+ *
+ * The choice comes from a simple string hash of the person's name (or the
+ * CV title), offset by a counter, so each sentence of one summary uses a
+ * different position in its list while the whole summary stays the same
+ * on every rewrite of that CV. Deterministic on purpose: a rewrite that
+ * changed its wording every time it ran would be impossible to test, and
+ * confusing to the user.
+ *
+ * @param {object} cv - The source CV.
+ * @returns {(options: string[]) => string}
+ */
+function phrasePicker(cv) {
+  const seedText = cv.personal?.fullName || cv.title || '';
+  let hash = 0;
+  for (const char of seedText) hash = (hash * 31 + char.charCodeAt(0)) % 1000003;
+
+  let calls = 0;
+  return (options) => options[(hash + calls++) % options.length];
+}
+
+/**
+ * Words in a job title that state seniority.
+ */
+const SENIORITY_WORDS = new Set([
+  'senior',
+  'sr',
+  'lead',
+  'principal',
+  'staff',
+  'head',
+  'chief',
+  'director',
+]);
+
+/**
+ * The advert's job title, softened so it never claims more seniority than
+ * the CV shows.
+ *
+ * "Senior QA Engineer" stays as it is for someone whose CV already holds a
+ * senior or lead title. For someone whose titles are "QA Engineer" and
+ * "Junior Analyst", the seniority word is dropped and the headline reads
+ * "QA Engineer" — still the advert's wording, without a claim the
+ * candidate would have to defend at interview. If dropping the word would
+ * leave something that is not a title ("Head of Sales" -> "of Sales"), the
+ * CV's own headline is used instead.
+ *
+ * @param {string} jobTitle - The advertised title.
+ * @param {object} cv - The source CV.
+ * @returns {{title: string, removed: string[]}}
+ */
+export function softenTitle(jobTitle, cv) {
+  const title = String(jobTitle ?? '').trim();
+  if (!title) return { title: '', removed: [] };
+
+  const ownWords = new Set(
+    [cv.personal?.headline, ...(cv.experience ?? []).map((entry) => entry?.position)]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .split(/[^a-z]+/),
+  );
+
+  const words = title.split(/\s+/);
+  const removed = words.filter((word) => {
+    const lower = word.toLowerCase().replace(/[^a-z]/g, '');
+    return SENIORITY_WORDS.has(lower) && !ownWords.has(lower);
+  });
+
+  if (removed.length === 0) return { title, removed: [] };
+
+  const softened = words
+    .filter((word) => !removed.includes(word))
+    .join(' ')
+    .trim();
+  const usable = softened && !/^(of|for|and|&)\b/i.test(softened);
+  const fallback = cv.personal?.headline?.trim() || cv.experience?.[0]?.position?.trim() || '';
+
+  return { title: usable ? softened : fallback, removed };
+}
+
+/**
  * The achievement most worth quoting: one that contains a number.
  *
  * @param {object} cv - The source CV.
@@ -378,7 +526,10 @@ export function buildSummary(
 function strongestAchievement(cv) {
   for (const entry of cv.experience ?? []) {
     for (const achievement of entry?.achievements ?? []) {
-      if (hasQuantifiedResult(achievement)) return tidy(achievement);
+      // Quoted after the same clean-up the bullets get ("Was able to
+      // reduce" -> "Reduced"), so the summary never repeats filler the
+      // rewrite has just removed. The number itself is never touched.
+      if (hasQuantifiedResult(achievement)) return polishSentence(achievement).text;
     }
   }
   return '';
@@ -523,11 +674,11 @@ export function alignVocabulary(text, swaps) {
  *            refusal: string}}
  */
 function polishLine(line, swaps, options = {}) {
-  const verb = rewriteAsAction(line, options);
+  const verb = polishSentence(line, options);
   const aligned = alignVocabulary(verb.text, swaps);
 
   const reasons = [];
-  if (verb.changed && verb.reason) reasons.push(verb.reason);
+  if (verb.changed) reasons.push(...verb.reasons);
   if (aligned.swaps.length > 0) {
     reasons.push(`Used this advert's wording: ${aligned.swaps.join(', ')}.`);
   }
@@ -538,7 +689,7 @@ function polishLine(line, swaps, options = {}) {
     reasons,
     // A rewrite the module refused to make, which the caller passes on
     // to the user as advice instead.
-    refusal: verb.changed ? '' : verb.reason,
+    refusal: verb.changed ? '' : verb.refusal,
   };
 }
 
@@ -700,18 +851,26 @@ export function tailorCV(cv, jobText, options = {}) {
   draft.personal = { ...(source.personal ?? {}) };
 
   // --- Step 2: the headline ----------------------------------------------
-  if (jobTitle && draft.personal.headline !== jobTitle) {
+  // The advert's title, minus any seniority word the CV does not support
+  // ("Senior QA Engineer" -> "QA Engineer" for someone with no senior role).
+  const headline = softenTitle(jobTitle, source);
+
+  if (headline.title && draft.personal.headline !== headline.title) {
     record({
       section: 'personal',
       field: 'headline',
       kind: 'replaced',
       before: draft.personal.headline ?? '',
-      after: jobTitle,
+      after: headline.title,
       reason:
         'The headline is the first line a screening system reads. Matching it to the ' +
-        'advertised job title is the single cheapest thing you can change.',
+        'advertised job title is the single cheapest thing you can change.' +
+        (headline.removed.length > 0
+          ? ` "${headline.removed.join(' ')}" was left out, because no role on your CV ` +
+            'shows that level yet — a claim you would have to defend at interview.'
+          : ''),
     });
-    draft.personal.headline = jobTitle;
+    draft.personal.headline = headline.title;
   }
 
   // --- Step 3: skills -----------------------------------------------------
@@ -872,7 +1031,7 @@ export function tailorCV(cv, jobText, options = {}) {
       .filter((name) => name && !alreadyNamed.has(name)),
   ];
 
-  const summaryContext = { targetTitle: jobTitle, namedSkills };
+  const summaryContext = { targetTitle: headline.title, appliedRole: jobTitle, namedSkills };
   const summary = buildSummary(source, summaryContext);
 
   if (summary.text && summary.text !== source.summary) {

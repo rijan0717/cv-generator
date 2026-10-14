@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
 import Topbar from './Topbar.jsx';
 import Sidebar from './Sidebar.jsx';
 import Footer from './Footer.jsx';
+import { needsAccountType } from '../../utils/homePath.js';
 
 /**
  * The application frame.
@@ -17,8 +18,17 @@ import Footer from './Footer.jsx';
  * than squeezing it.
  */
 export default function Layout() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+
+  // No sidebar until the account type is chosen: the welcome step is the
+  // only thing such an account can do, so it gets the whole page.
+  const showSidebar = isAuthenticated && !needsAccountType(user);
+  const { pathname } = useLocation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // The footer belongs to the public landing page only: a visitor on the
+  // home route sees it, a signed-in user never does.
+  const showFooter = pathname === '/' && !isAuthenticated;
 
   const closeDrawer = () => setIsDrawerOpen(false);
 
@@ -33,13 +43,13 @@ export default function Layout() {
       </a>
 
       <Topbar
-        showMenuButton={isAuthenticated}
+        showMenuButton={showSidebar}
         isDrawerOpen={isDrawerOpen}
         onToggleDrawer={() => setIsDrawerOpen((open) => !open)}
       />
 
       <div className="flex flex-1">
-        {isAuthenticated && (
+        {showSidebar && (
           <>
             {/* Permanent sidebar from large screens up. */}
             <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white lg:block dark:border-slate-700 dark:bg-slate-900">
@@ -71,7 +81,7 @@ export default function Layout() {
         </main>
       </div>
 
-      <Footer />
+      {showFooter && <Footer />}
     </div>
   );
 }

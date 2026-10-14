@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout.jsx';
 import AdminLayout from './components/admin/AdminLayout.jsx';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
+import AccountTypeRoute from './routes/AccountTypeRoute.jsx';
+import WelcomePage from './pages/user/WelcomePage.jsx';
 import AdminRoute from './routes/AdminRoute.jsx';
 
 import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
@@ -11,6 +13,7 @@ import AdminUserDetailPage from './pages/admin/AdminUserDetailPage.jsx';
 import AdminCVsPage from './pages/admin/AdminCVsPage.jsx';
 import AdminCVDetailPage from './pages/admin/AdminCVDetailPage.jsx';
 import AdminActivityPage from './pages/admin/AdminActivityPage.jsx';
+import AdminCompaniesPage from './pages/admin/AdminCompaniesPage.jsx';
 
 import HomePage from './pages/HomePage.jsx';
 import HealthPage from './pages/HealthPage.jsx';
@@ -63,26 +66,38 @@ export default function App() {
 
         {/* Requires a logged-in user */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/cvs/:id" element={<CVEditorPage />} />
-          {/* Tailoring reads one CV and one advert and writes a new CV;
-              it never changes the CV it was started from. */}
-          <Route path="/cvs/:id/tailor" element={<TailorCVPage />} />
+          {/* The one-time "job seeker or employer" step after registering. */}
+          <Route path="/welcome" element={<WelcomePage />} />
+
+          {/* Any account type */}
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
-          {/* Dropping a CV reads a file and scores the whole board, so it
-              is behind the session and the job-match rate limit rather
-              than open to anyone passing. */}
-          <Route path="/jobs/match" element={<MatchMyCVPage />} />
-          <Route path="/saved-jobs" element={<SavedJobsPage />} />
-          <Route path="/applications" element={<ApplicationsPage />} />
-          {/* My company is the module; the profile and the job posts are
-              sections inside it, and a post's applicants hang off a post. */}
-          <Route path="/company" element={<CompanyLayout />}>
-            <Route index element={<CompanyProfilePage />} />
-            <Route path="posts" element={<CompanyPostsPage />} />
+
+          {/* Job seekers (and the admin) */}
+          <Route element={<AccountTypeRoute allow={['jobseeker']} />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/cvs/:id" element={<CVEditorPage />} />
+            {/* Tailoring reads one CV and one advert and writes a new CV;
+                it never changes the CV it was started from. */}
+            <Route path="/cvs/:id/tailor" element={<TailorCVPage />} />
+            {/* Dropping a CV reads a file and scores the whole board, so it
+                is behind the session and the job-match rate limit rather
+                than open to anyone passing. */}
+            <Route path="/match-cv" element={<MatchMyCVPage />} />
+            <Route path="/saved-jobs" element={<SavedJobsPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
           </Route>
-          <Route path="/company/posts/:id/applicants" element={<JobApplicantsPage />} />
+
+          {/* Employers (and the admin). My company is the module; the
+              profile and the job posts are sections inside it, and a
+              post's applicants hang off a post. */}
+          <Route element={<AccountTypeRoute allow={['employer']} />}>
+            <Route path="/company" element={<CompanyLayout />}>
+              <Route index element={<CompanyProfilePage />} />
+              <Route path="posts" element={<CompanyPostsPage />} />
+            </Route>
+            <Route path="/company/posts/:id/applicants" element={<JobApplicantsPage />} />
+          </Route>
         </Route>
 
         {/* Admin area. AdminRoute sends a non-admin to their own dashboard;
@@ -92,6 +107,7 @@ export default function App() {
             <Route index element={<AdminOverviewPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="users/:id" element={<AdminUserDetailPage />} />
+            <Route path="companies" element={<AdminCompaniesPage />} />
             <Route path="cvs" element={<AdminCVsPage />} />
             <Route path="cvs/:id" element={<AdminCVDetailPage />} />
             <Route path="activity" element={<AdminActivityPage />} />
