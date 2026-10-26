@@ -193,3 +193,63 @@ describe('the writing checks', () => {
     expect(startsWithActionVerb('Responsible for the reporting pipeline')).toBe(false);
   });
 });
+
+describe('fixes found by scoring sample CVs', () => {
+  const byCriterion = (result, name) =>
+    result.breakdown.find((item) => item.criterion.startsWith(name));
+
+  it('does not count a year as a quantified result', () => {
+    expect(hasQuantifiedResult('Joined the company in 2021')).toBe(false);
+    expect(hasQuantifiedResult('Worked on the 2022 and 2023 audits')).toBe(false);
+    expect(hasQuantifiedResult('Served 2500 customers a month')).toBe(true);
+  });
+
+  it('counts rupee amounts and lakh/crore figures', () => {
+    expect(hasQuantifiedResult('Saved Rs. 5,000 a month')).toBe(true);
+    expect(hasQuantifiedResult('Managed a budget of 5 lakh')).toBe(true);
+    expect(hasQuantifiedResult('Handled NPR 2 crore in payments')).toBe(true);
+  });
+
+  it('recognises common verbs from outside software', () => {
+    for (const line of ['Prepared VAT returns', 'Reconciled accounts', 'Taught 40 students']) {
+      expect(startsWithActionVerb(line)).toBe(true);
+    }
+  });
+
+  it('gives the photo marks when the template never prints a photo', () => {
+    const ats = scoreCV({
+      ...strong,
+      templateKey: 'ats',
+      personal: { ...strong.personal, photoUrl: '' },
+    });
+    const modern = scoreCV({
+      ...strong,
+      templateKey: 'modern',
+      personal: { ...strong.personal, photoUrl: '' },
+    });
+
+    expect(byCriterion(ats, 'Photo').earned).toBe(byCriterion(ats, 'Photo').maxPoints);
+    expect(byCriterion(modern, 'Photo').earned).toBe(0);
+  });
+
+  it('does not give the length marks to a summary of repeated words', () => {
+    const padded = scoreCV({ ...strong, summary: 'great '.repeat(40) });
+    expect(byCriterion(padded, 'Summary length').earned).toBeLessThan(1);
+  });
+
+  it('takes date marks off for an undated role and for a start date in the future', () => {
+    const undated = scoreCV({
+      ...strong,
+      experience: [{ ...strong.experience[0], startDate: '', endDate: '' }],
+      education: [{ institution: 'TU', startDate: '2015-01', endDate: '2019-01' }],
+    });
+    const future = scoreCV({
+      ...strong,
+      experience: [{ ...strong.experience[0], startDate: '2099-01', endDate: '' }],
+      education: [],
+    });
+
+    expect(byCriterion(undated, 'Consistent dates').earned).toBe(3);
+    expect(byCriterion(future, 'Consistent dates').earned).toBe(0);
+  });
+});

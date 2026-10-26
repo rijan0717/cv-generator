@@ -48,18 +48,29 @@ function wordCount(text) {
  * "worked in a team of 5" is a fact, not an achievement, and counting it
  * would reward padding.
  *
+ * Years are excluded too. "Joined in 2021" or "worked on the 2023 audit"
+ * says when, not how much, and counting them let a CV with no results at
+ * all take full marks on this criterion.
+ *
  * @param {string} text - A description or achievement line.
  * @returns {boolean} True when something is quantified.
  */
 export function hasQuantifiedResult(text) {
   const value = String(text ?? '');
 
+  // Plain numbers of two or more digits, minus anything that reads as a
+  // year (1950 to 2049).
+  const plainNumbers = (value.match(/\b\d{2,}\b/g) ?? []).filter(
+    (number) => !(number.length === 4 && Number(number) >= 1950 && Number(number) <= 2049),
+  );
+
   return (
     /\d+\s*%/.test(value) || // 40%
-    /[£$€]\s*\d/.test(value) || // £5,000
-    /\b\d+(?:\.\d+)?\s*(?:k|m|bn|million|billion|thousand)\b/i.test(value) || // 500k
+    /[£$€₹]\s*\d/.test(value) || // £5,000
+    /\b(?:rs|npr|inr|usd)\.?\s*\d/i.test(value) || // Rs. 50,000, NPR 2,000
+    /\b\d+(?:\.\d+)?\s*(?:k|m|bn|million|billion|thousand|lakhs?|crores?)\b/i.test(value) || // 5 lakh
     /\b\d+\s*x\b/i.test(value) || // 3x
-    /\b\d{2,}\b/.test(value) // 20 or more
+    plainNumbers.length > 0 // 20 or more
   );
 }
 
@@ -127,15 +138,18 @@ function scoreCompleteness(cv) {
     suggestions.push('Fill in your name, headline, email and phone number.');
   }
 
-  // Photo.
+  // Photo. Not needed when the chosen template never prints one.
   const hasPhoto = Boolean(personal.photoUrl);
+  const photoNotUsed = STRENGTH_CONFIG.templatesWithoutPhoto.includes(cv.templateKey);
+  const photoOk = hasPhoto || photoNotUsed;
+
   criteria.push({
-    criterion: 'Photo',
+    criterion: photoNotUsed && !hasPhoto ? 'Photo (not used by this template)' : 'Photo',
     maxPoints: C.photo,
-    earned: hasPhoto ? C.photo : 0,
-    passed: hasPhoto,
+    earned: photoOk ? C.photo : 0,
+    passed: photoOk,
   });
-  if (!hasPhoto) {
+  if (!photoOk) {
     suggestions.push('Add a photo, or choose a template that does not use one.');
   }
 
@@ -217,7 +231,17 @@ function scoreQuality(cv) {
   const suggestions = [];
 
   // --- Summary length ---
-  const summaryWords = wordCount(cv.summary);
+  // A summary made mostly of repeats counts only its different words, so
+  // padding it does not earn the length marks.
+  const allSummaryWords = String(cv.summary ?? '')
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+  const distinctSummaryWords = new Set(allSummaryWords).size;
+  const isRepetitive =
+    allSummaryWords.length > 0 &&
+    distinctSummaryWords / allSummaryWords.length < T.summaryMinDistinctRatio;
+  const summaryWords = isRepetitive ? distinctSummaryWords : wordCount(cv.summary);
   let summaryPoints = 0;
 
   if (summaryWords >= T.summaryMinWords && summaryWords <= T.summaryMaxWords) {
@@ -238,7 +262,11 @@ function scoreQuality(cv) {
     passed: summaryWords >= T.summaryMinWords && summaryWords <= T.summaryMaxWords,
   });
 
-  if (summaryWords === 0) {
+  if (isRepetitive) {
+    suggestions.push(
+      'Your summary repeats the same words. Write it as two or three real sentences.',
+    );
+  } else if (summaryWords === 0) {
     suggestions.push('Your summary is empty. Two or three sentences is enough.');
   } else if (summaryWords < T.summaryMinWords) {
     suggestions.push(
@@ -349,32 +377,50 @@ function scoreQuality(cv) {
   if (!phoneValid) suggestions.push('Check your phone number — it does not look valid.');
 
   // --- Date consistency ---
-  // Only awarded once there are dates to be consistent about. Giving the
-  // full six points to a CV with no entries at all rewarded an empty form
-  // for a problem it cannot yet have.
+  // Partial credit: the share of roles and education entries whose dates
+  // are both present and sensible. Step by step:
+  //   1. Every experience and education entry is checked, not only the
+  //      dated ones: a role with no dates is a gap a reader will notice.
+  //   2. An entry fails if it has no start date, if it ends before it
+  //      starts, or if it starts in the future.
+  //   3. Marks = passing entries / all entries x the points available.
+  // With no entries at all there is nothing to be consistent about, so
+  // nothing is awarded; an empty form should not earn these points.
   const dated = [...(cv.experience ?? []), ...(cv.education ?? [])];
-  const datedEntries = dated.filter((entry) => entry.startDate || entry.endDate);
-  const inconsistent = datedEntries.filter(
+  const thisMonth = new Date().toISOString().slice(0, 7);
+
+  const missingDates = dated.filter((entry) => !entry.startDate);
+  const endsBeforeStart = dated.filter(
     (entry) =>
       entry.startDate && entry.endDate && !entry.isCurrent && entry.endDate < entry.startDate,
   );
-  const datesConsistent = datedEntries.length > 0 && inconsistent.length === 0;
+  const startsInFuture = dated.filter((entry) => entry.startDate && entry.startDate > thisMonth);
+
+  const failing = new Set([...missingDates, ...endsBeforeStart, ...startsInFuture]);
+  const dateRatio = dated.length > 0 ? (dated.length - failing.size) / dated.length : 0;
 
   criteria.push({
     criterion: 'Consistent dates',
     maxPoints: Q.dateConsistency,
-    earned: datesConsistent ? Q.dateConsistency : 0,
-    passed: datesConsistent,
+    earned: Math.round(dateRatio * Q.dateConsistency * 10) / 10,
+    passed: dated.length > 0 && failing.size === 0,
   });
 
-  if (datedEntries.length === 0) {
+  if (dated.length === 0 || missingDates.length > 0) {
     suggestions.push('Add start and end dates to your roles and education.');
   }
 
-  if (inconsistent.length > 0) {
+  if (endsBeforeStart.length > 0) {
     suggestions.push(
-      `${inconsistent.length} entr${inconsistent.length === 1 ? 'y has' : 'ies have'} ` +
+      `${endsBeforeStart.length} entr${endsBeforeStart.length === 1 ? 'y has' : 'ies have'} ` +
         'an end date before the start date.',
+    );
+  }
+
+  if (startsInFuture.length > 0) {
+    suggestions.push(
+      `${startsInFuture.length} entr${startsInFuture.length === 1 ? 'y starts' : 'ies start'} ` +
+        'in the future. Check the dates.',
     );
   }
 

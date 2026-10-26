@@ -69,6 +69,13 @@ export const STRENGTH_CONFIG = {
     minFactor: 0.1,
   },
 
+  /**
+   * Templates that never show a photo. A CV using one of these gets the
+   * photo marks without one: it would be wrong to ask someone to upload a
+   * photo that their chosen template will not print.
+   */
+  templatesWithoutPhoto: ['classic', 'ats'],
+
   thresholds: {
     /** Skills needed for full marks on the skills criterion. */
     minSkills: 5,
@@ -92,6 +99,13 @@ export const STRENGTH_CONFIG = {
      * from a list of duties.
      */
     quantifiedTargetRatio: 0.65,
+    /**
+     * Below this share of different words, a summary counts only its
+     * different words towards its length. Stops "a a a a ..." or one
+     * sentence pasted three times from earning the length marks; a normal
+     * summary is well above it (around 0.7 to 0.9).
+     */
+    summaryMinDistinctRatio: 0.5,
   },
 };
 

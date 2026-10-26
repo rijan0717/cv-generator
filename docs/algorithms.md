@@ -70,6 +70,29 @@ unfinished CV.
 A total that rounds to 0 while something was earned is reported as 1, so the
 first thing a user types is visible.
 
+### 1.2 Loopholes closed after testing sample CVs
+
+Five sample CVs were scored by hand: a strong one, a list of duties, one whose
+only numbers were years, a deliberately padded one, and a strong one with an
+undated role. Five rules were giving the wrong answer.
+
+| Problem found                                                                        | Rule now                                                                                                   |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| "Joined in 2021" counted as a quantified result, so a CV with no results scored 82   | Four-digit numbers from 1950 to 2049 are read as years and do not count. Rs/NPR amounts and lakh/crore do. |
+| "Prepared", "Reconciled", "Taught", "Wrote" were not action verbs                    | About 45 common verbs from outside software added, plus irregular past tenses ("wrote", "taught", "sold")  |
+| The Classic and ATS templates never print a photo, yet a CV using them lost 3 points | Photo marks are given when the chosen template does not use a photo (`templatesWithoutPhoto`)              |
+| One dated entry earned all 6 date marks; a start date in the future was not noticed  | Marks = entries with a start date, a sensible end and no future start ÷ all roles and education entries    |
+| A summary of "a a a …" earned the full length marks                                  | If under half the words are different, only the different words count towards the length                   |
+
+Results before → after: strong CV 94 → 100, list of duties 58 → 61, years-only
+CV 82 → 71, padded CV 87 → 77, strong CV with one undated role 94 → 98.
+
+**Limit that remains by design.** The score measures structure and writing
+habits, not truth or relevance: 40 of the 100 points are for sections being
+present, so a CV with every section filled in can still reach the 70s with
+weak content. Relevance to a particular job is the match analyser's job
+(section 2), not this score's.
+
 ---
 
 ## 2. CV–Job Match Analyser (ATS simulation)
