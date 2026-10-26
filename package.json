@@ -27,6 +27,7 @@
     "test": "npm run test --prefix server && npm run test --prefix client",
     "test:server": "npm run test --prefix server",
     "test:client": "npm run test --prefix client",
+    "setup:chrome": "npm run setup:chrome --prefix server",
     "seed:admin": "npm run seed:admin --prefix server",
     "seed:templates": "npm run seed:templates --prefix server",
     "seed:jobs": "npm run seed:jobs --prefix server",

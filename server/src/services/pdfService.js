@@ -73,6 +73,38 @@ async function getBrowser() {
 }
 
 /**
+ * Turns a Chromium launch failure into a message that says what to do next.
+ *
+ * There are two quite different causes and they need different advice. If the
+ * binary is not there at all, it has to be downloaded. If it is there but
+ * will not start, it is almost always because Puppeteer downloads Chromium
+ * without the system libraries it links against — the usual symptom on a bare
+ * Ubuntu, Debian or WSL install is a missing libnspr4/libnss3/libasound2.
+ *
+ * @param {Error} error - The error puppeteer.launch() rejected with.
+ * @returns {string} A message for the client.
+ */
+function describeLaunchFailure(error) {
+  const message = error?.message ?? '';
+
+  if (/error while loading shared libraries|libnspr4|libnss3|libatk|libgbm/i.test(message)) {
+    return (
+      'The PDF service is unavailable: Chromium is installed but cannot start because ' +
+      'some system libraries are missing. Run "npm run setup:chrome" once on this machine.'
+    );
+  }
+
+  if (/Could not find (Chrome|browser)|executablePath|ENOENT/i.test(message)) {
+    return (
+      'The PDF service is unavailable: Chromium is not installed. Run ' +
+      '"npx puppeteer browsers install chrome".'
+    );
+  }
+
+  return 'The PDF service is unavailable: Chromium could not be started.';
+}
+
+/**
  * Closes the shared browser. Called during graceful shutdown.
  * @returns {Promise<void>}
  */
@@ -151,10 +183,7 @@ export async function generatePdf({ cvId, userId }) {
     browser = await getBrowser();
   } catch (error) {
     console.error('[pdfService] could not start Chromium:', error.message);
-    throw new ApiError(
-      503,
-      'The PDF service is unavailable. Chromium may not be installed: run "npx puppeteer browsers install chrome".',
-    );
+    throw new ApiError(503, describeLaunchFailure(error));
   }
 
   const page = await browser.newPage();
@@ -170,12 +199,27 @@ export async function generatePdf({ cvId, userId }) {
     // a PDF being printed mid-render with fallback fonts.
     await page.waitForFunction('window.__CV_READY__ === true', { timeout: 15000 });
 
-    return await page.pdf({
+    // The page is printed, not screenshotted: Chromium lays the CV out as a
+    // run of A4 sheets and starts a new one whenever the content overflows,
+    // obeying the break rules in templates.css. A CV of any length therefore
+    // comes out as a correctly paginated, printable document.
+    //
+    // The sheet size and the margins both come from the @page rules in
+    // templates.css rather than from here, because the first sheet needs a
+    // different top margin from the rest and only CSS can express that. That
+    // is what preferCSSPageSize asks for, and passing no `margin` option is
+    // what leaves the CSS margins in charge.
+    const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,
-      preferCSSPageSize: false,
-      margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      preferCSSPageSize: true,
     });
+
+    // page.pdf() resolves to a Uint8Array, not a Buffer. Express only treats
+    // a real Buffer as binary; anything else that is an object it serialises
+    // as JSON, which would send the bytes as {"0":37,"1":80,…} under a
+    // Content-Type of application/pdf and produce a file no reader can open.
+    return Buffer.from(pdf);
   } catch (error) {
     console.error('[pdfService] render failed:', error.message);
     throw new ApiError(500, 'The CV could not be rendered as a PDF. Please try again.');

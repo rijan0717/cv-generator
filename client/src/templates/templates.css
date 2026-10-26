@@ -44,8 +44,8 @@
 
 .cv-section {
   margin-bottom: var(--cv-section-gap);
-  /* Keep a heading with at least some of its content when a page breaks. */
-  break-inside: avoid-page;
+  /* How a section behaves at a page break is decided in the print block at
+     the end of this file, where the whole pagination story is told. */
 }
 
 .cv-section-title {
@@ -657,10 +657,89 @@
 
 /* --- Print --------------------------------------------------------------- */
 
+/*
+ * Paged output.
+ *
+ * On screen a CV is one tall column; on paper it has to become a sequence of
+ * A4 sheets. The browser does the splitting itself, so the job here is only
+ * to tell it the sheet size, leave room at the top and bottom of every sheet,
+ * and say which pieces must not be cut in half.
+ *
+ * The side margin is zero because several templates are full-bleed — the
+ * Modern sidebar, the Creative band and the Banner strip all run to the edge
+ * of the sheet — and each template already supplies its own inner padding.
+ *
+ * The first sheet also has no top margin, for the same reason: a coloured
+ * header band has to start at the very top of the page. Every sheet after it
+ * gets the gap, which is what stops a second page beginning with text pressed
+ * against the edge of the paper. These two numbers are mirrored by
+ * PAGE_GEOMETRY_MM in templateUtils.js, so the on-screen page guides fall
+ * where the printer will actually break.
+ */
+@page {
+  size: A4;
+  margin: 14mm 0;
+}
+
+@page :first {
+  margin-top: 0;
+}
+
 @media print {
   .cv-page {
     width: auto;
+    /* On screen the page is held open to a full sheet so that a short CV
+       still looks like a page. On paper that would force a blank second
+       sheet. */
     min-height: 0;
     margin: 0;
+    /* The last sheet's bottom gap comes from the @page margin above, so the
+       template's own bottom padding would double it. */
+    padding-bottom: 0;
+  }
+
+  /*
+   * A section is allowed to be split across sheets: a long Experience section
+   * is usually taller than a page, and forbidding the break would leave
+   * Chromium with nowhere to put it. What must not be split is an individual
+   * entry, and a heading must never be the last thing on a sheet.
+   */
+  .cv-section {
+    break-inside: auto;
+  }
+
+  .cv-section-title {
+    break-after: avoid;
+  }
+
+  .cv-entry {
+    break-inside: avoid;
+  }
+
+  .cv-header,
+  .cv-band,
+  .cv-banner-head,
+  .cv-banner-strip,
+  .cv-mono-head,
+  .cv-formal-head,
+  .cv-editorial-head,
+  .cv-exec-head {
+    break-inside: avoid;
+    break-after: avoid;
+  }
+
+  /*
+   * The Modern sidebar is a flex item, and a flex item paints only its own
+   * height, so on a second sheet the coloured column would simply stop. In
+   * print the stripe is painted by the page's own background instead, which
+   * every sheet repeats, and the sidebar itself becomes transparent.
+   */
+  .cv-modern {
+    min-height: 0;
+    background: linear-gradient(to right, var(--cv-primary) 0 68mm, var(--cv-background) 68mm 100%);
+  }
+
+  .cv-modern .cv-sidebar {
+    background: transparent;
   }
 }
