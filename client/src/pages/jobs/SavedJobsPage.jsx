@@ -6,23 +6,19 @@ import { useJobMatchScores } from '../../utils/useJobMatchScores.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
-import StatusBadge from '../../components/jobs/StatusBadge.jsx';
-import SubmittedCV from '../../components/jobs/SubmittedCV.jsx';
 
 /**
  * The jobs this user has bookmarked, plus every job they have applied to.
  *
- * An applied job shows which CV was sent, with a preview of it. A job whose
- * posting has since been removed is filtered out by the server, so the list
- * never shows a dead row.
+ * Which CV was sent with an application is shown on My applications, not
+ * here. A job whose posting has since been removed is filtered out by the
+ * server, so the list never shows a dead row.
  */
 export default function SavedJobsPage() {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [removingId, setRemovingId] = useState(null);
-  // Which applied job has its submitted CV open. One at a time.
-  const [previewId, setPreviewId] = useState(null);
 
   // This page is behind a sign-in, so scoring is always enabled here.
   const { scores } = useJobMatchScores(jobs, true);
@@ -111,40 +107,6 @@ export default function SavedJobsPage() {
                 onToggleSave={job.isSaved ? remove : undefined}
                 match={scores[job._id] ?? null}
               />
-
-              {job.application && (
-                <div className="mt-1 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                      <StatusBadge status={job.application.status} />
-                      <span>
-                        Applied on {new Date(job.application.appliedAt).toLocaleDateString('en-GB')}{' '}
-                        with{' '}
-                        <span className="font-medium text-slate-900 dark:text-slate-100">
-                          “{job.application.cvTitle || 'Untitled CV'}”
-                        </span>
-                      </span>
-                    </p>
-
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      aria-expanded={previewId === job.application.id}
-                      onClick={() =>
-                        setPreviewId((open) =>
-                          open === job.application.id ? null : job.application.id,
-                        )
-                      }
-                    >
-                      {previewId === job.application.id ? 'Hide CV' : 'Preview CV'}
-                    </Button>
-                  </div>
-
-                  {previewId === job.application.id && (
-                    <SubmittedCV applicationId={job.application.id} />
-                  )}
-                </div>
-              )}
             </div>
           ))}
         </div>

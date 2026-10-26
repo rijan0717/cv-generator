@@ -25,6 +25,7 @@ import ProfilePage from './pages/user/ProfilePage.jsx';
 import SettingsPage from './pages/user/SettingsPage.jsx';
 import CVEditorPage from './pages/user/CVEditorPage.jsx';
 import TailorCVPage from './pages/user/TailorCVPage.jsx';
+import RewriteWithJDPage from './pages/user/RewriteWithJDPage.jsx';
 import PrintPage from './pages/print/PrintPage.jsx';
 import JobsPage from './pages/jobs/JobsPage.jsx';
 import JobDetailPage from './pages/jobs/JobDetailPage.jsx';
@@ -80,6 +81,8 @@ export default function App() {
             {/* Tailoring reads one CV and one advert and writes a new CV;
                 it never changes the CV it was started from. */}
             <Route path="/cvs/:id/tailor" element={<TailorCVPage />} />
+            {/* The same rewrite, against the primary CV and a pasted advert. */}
+            <Route path="/rewrite" element={<RewriteWithJDPage />} />
             {/* Dropping a CV reads a file and scores the whole board, so it
                 is behind the session and the job-match rate limit rather
                 than open to anyone passing. */}

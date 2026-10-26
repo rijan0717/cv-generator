@@ -19,6 +19,7 @@ const ICONS = {
   jobs: 'M3 7h18v13H3z M8 7V4h8v3',
   saved: 'M6 3h12v18l-6-4-6 4z',
   match: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M21 21l-5-5 M8 11l2 2 4-4',
+  rewrite: 'M4 20h4L19 9l-4-4L4 16z M13 7l4 4',
   applications: 'M4 4h16v16H4z M8 9h8M8 13h8M8 17h4',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
   settings:
@@ -98,6 +99,7 @@ export default function Sidebar({ onNavigate }) {
       {isJobSeeker && (
         <Group title="My work">
           <Item to="/dashboard" icon="cvs" label="My CVs" onNavigate={onNavigate} />
+          <Item to="/rewrite" icon="rewrite" label="Rewrite with JD" onNavigate={onNavigate} />
           <Item to="/match-cv" icon="match" label="Match my CV" onNavigate={onNavigate} />
           <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
           <Item to="/saved-jobs" icon="saved" label="Saved jobs" onNavigate={onNavigate} />
