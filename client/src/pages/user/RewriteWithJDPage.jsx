@@ -4,6 +4,7 @@ import * as cvApi from '../../api/cvs.js';
 import * as tailorApi from '../../api/tailor.js';
 import TailorReview from '../../components/cv/TailorReview.jsx';
 import ExportMenu from '../../components/cv/ExportMenu.jsx';
+import RewriteButton from '../../components/cv/RewriteButton.jsx';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -177,9 +178,12 @@ export default function RewriteWithJDPage() {
             </span>
           </label>
 
-          <Button type="submit" disabled={!canRewrite} isLoading={busy === 'rewrite'}>
-            Rewrite
-          </Button>
+          <RewriteButton
+            type="submit"
+            disabled={!canRewrite}
+            isLoading={busy === 'rewrite'}
+            title="Rewrite your primary CV for this job description"
+          />
         </form>
       )}
 
