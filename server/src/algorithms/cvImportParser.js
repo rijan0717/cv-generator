@@ -190,7 +190,45 @@ export function parseContact(lines) {
   const website =
     urls.find((url) => !/linkedin\.com|github\.com/i.test(url))?.replace(/[.,;)]+$/, '') ?? '';
 
-  return { email, phone, linkedin, github, website };
+  return { email, phone, linkedin, github, website, address: findAddress(lines, email, phone) };
+}
+
+/**
+ * Finds the town or address on the contact line.
+ *
+ * Most CVs put it beside the email and phone:
+ *     sita@gmail.com | +977 9841234567 | Kathmandu, Nepal
+ * So:
+ *   1. Take the lines that hold the email or phone number.
+ *   2. Split them on the separators used between contact details.
+ *   3. Keep the first part that is only words and commas — not the email,
+ *      phone or a link — and is short enough to be a place.
+ *
+ * @param {string[]} lines - Normalised lines.
+ * @param {string} email - The email already found, if any.
+ * @param {string} phone - The phone number already found, if any.
+ * @returns {string} The address, or '' when none is found.
+ */
+function findAddress(lines, email, phone) {
+  const contactLines = lines.filter(
+    (line) => (email && line.includes(email)) || (phone && line.includes(phone)),
+  );
+
+  for (const line of contactLines) {
+    const parts = line.split(/\s[|•·]\s|\s{2,}|\|/).map((part) => part.trim());
+
+    const place = parts.find(
+      (part) =>
+        part.length >= 3 &&
+        part.length <= 60 &&
+        /^[A-Za-z][A-Za-z .'-]*(,\s*[A-Za-z][A-Za-z .'-]*)*$/.test(part) &&
+        !/linkedin|github|www\./i.test(part),
+    );
+
+    if (place) return place;
+  }
+
+  return '';
 }
 
 /**
@@ -535,6 +573,19 @@ function toYearMonth(fragment) {
  * its dates. If no line has dates, the whole section is treated as one entry
  * rather than being lost.
  *
+ * Many CVs put the dates on the line *below* the heading instead:
+ *
+ *     Accountant, ABC Traders — Kathmandu
+ *     Jan 2021 – Present
+ *     • Prepared monthly VAT returns
+ *
+ * Splitting at the dated line there would cut every heading off from its
+ * dates, and file each heading as the last line of the entry before. So:
+ *   1. The first entry tells us the layout: how many plain lines come
+ *      before its date line (0 when the dates are on the heading itself).
+ *   2. When the next date line arrives, that many lines are taken back off
+ *      the end of the previous entry and start the new one with it.
+ *
  * @param {string[]} lines - The lines belonging to one section.
  * @returns {string[][]} One array of lines per entry.
  */
@@ -542,13 +593,31 @@ export function splitIntoEntries(lines) {
   const entries = [];
   let current = [];
 
-  for (const line of lines) {
-    const isBullet = BULLET_MARKERS.test(line);
-    const startsNewEntry = !isBullet && parseDateRange(line) !== null;
+  const isBullet = (line) => BULLET_MARKERS.test(line);
+  const isDateLine = (line) => !isBullet(line) && parseDateRange(line) !== null;
 
-    if (startsNewEntry && current.length > 0) {
+  for (const line of lines) {
+    // Only a date line can start a new entry, and only once the current
+    // entry already has its own date line; until then the dates belong to
+    // the heading just read.
+    if (isDateLine(line) && current.some(isDateLine)) {
+      // Step 1: how many heading lines this entry had above its dates
+      // (at most two: a title and a company).
+      const headingLines = Math.min(current.findIndex(isDateLine), 2);
+
+      // Step 2: take the same number back off the end, as long as they are
+      // plain lines and not the previous entry's own date line.
+      const tail = headingLines > 0 ? current.slice(-headingLines) : [];
+      const moveTail =
+        tail.length > 0 &&
+        current.length > headingLines + 1 &&
+        tail.every((tailLine) => !isBullet(tailLine) && !isDateLine(tailLine));
+
+      const carried = moveTail ? tail : [];
+      if (moveTail) current = current.slice(0, -headingLines);
+
       entries.push(current);
-      current = [];
+      current = [...carried];
     }
 
     current.push(line);
@@ -648,6 +717,52 @@ function looksLikeJobTitle(line) {
 }
 
 /**
+ * Finds an entry's heading lines and its dates, wherever the dates are.
+ *
+ * The parsers below expect the dates on the first line ("Developer, Acme
+ * | Jan 2023 - Present") with an optional second heading line. When the
+ * dates sit on a line of their own under the heading — one or two lines
+ * down — this rearranges the lines into that expected shape:
+ *   1. Look for the date range in the first three lines.
+ *   2. The lines above it are the heading (title, then company).
+ *   3. Any other text on the date line ("Acme Ltd | Jan 2023 - Present")
+ *      becomes the second heading line if there is not one already.
+ *   4. Everything after the date line is the body.
+ *
+ * @param {string[]} prose - The entry's non-bullet lines.
+ * @returns {{first: string, second: string, rest: string[],
+ *            dates: object|null}}
+ */
+function arrangeHeading(prose) {
+  const [first = '', second = '', ...rest] = prose;
+
+  // Step 1: the dates are on the first or second line; the usual case.
+  const dateIndex = prose.slice(0, 3).findIndex((line) => parseDateRange(line) !== null);
+  if (dateIndex <= 0) {
+    return {
+      first,
+      second,
+      rest,
+      dates: dateIndex === 0 ? parseDateRange(first) : null,
+    };
+  }
+
+  // Steps 2-4: dates below the heading.
+  const dates = parseDateRange(prose[dateIndex]);
+  const heading = prose.slice(0, dateIndex);
+  const leftover = prose[dateIndex]
+    .replace(dates.matched, '')
+    .replace(/^[\s,|–—-]+|[\s,|–—-]+$/g, '');
+
+  return {
+    first: heading[0],
+    second: heading[1] ?? leftover,
+    rest: prose.slice(dateIndex + 1),
+    dates,
+  };
+}
+
+/**
  * Parses one experience entry.
  *
  * The usual shape is a title line carrying the dates, then a line naming the
@@ -665,9 +780,7 @@ function looksLikeJobTitle(line) {
  */
 export function parseExperienceEntry(lines) {
   const { bullets, prose } = extractBullets(lines);
-  const [first = '', second = '', ...rest] = prose;
-
-  const dates = parseDateRange(first) ?? parseDateRange(second) ?? null;
+  const { first, second, rest, dates } = arrangeHeading(prose);
 
   // Remove the matched date text so it does not end up in the job title.
   const titleLine = dates ? first.replace(dates.matched, '') : first;
@@ -713,9 +826,7 @@ export function parseExperienceEntry(lines) {
  */
 export function parseEducationEntry(lines) {
   const { prose } = extractBullets(lines);
-  const [first = '', second = '', ...rest] = prose;
-
-  const dates = parseDateRange(first) ?? parseDateRange(second) ?? null;
+  const { first, second, rest, dates } = arrangeHeading(prose);
   const titleLine = dates ? first.replace(dates.matched, '') : first;
   const parts = splitOnSeparators(titleLine);
 
@@ -1014,7 +1125,7 @@ export function parseCVText(text) {
       headline,
       email: contact.email,
       phone: contact.phone,
-      address: '',
+      address: contact.address,
       website: contact.website,
       linkedin: contact.linkedin,
       github: contact.github,

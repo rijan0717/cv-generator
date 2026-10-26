@@ -181,7 +181,20 @@ const MULTI_WORD_ALIASES = [...ALIAS_TO_NAME.keys()]
  */
 export function canonicalSkill(term) {
   if (!term) return null;
-  return ALIAS_TO_NAME.get(term.trim().toLowerCase()) ?? null;
+
+  const exact = ALIAS_TO_NAME.get(term.trim().toLowerCase());
+  if (exact) return exact;
+
+  // Not an exact spelling: look inside it. "MS Excel" or "Excel (advanced)"
+  // still names Excel, and treating it as unknown made the rewrite add a
+  // second "Excel" next to the user's own "MS Excel". Accepted only when
+  // exactly one skill is found, so "Java and Python" stays ambiguous.
+  const words = term
+    .toLowerCase()
+    .split(/[^a-z0-9+#.]+/)
+    .filter(Boolean);
+  const found = findSkills(term, words);
+  return found.size === 1 ? [...found][0] : null;
 }
 
 /**

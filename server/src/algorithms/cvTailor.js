@@ -402,7 +402,7 @@ export function buildSummary(
     const degree = education.degree || 'a qualification';
     const field = education.fieldOfStudy ? ` in ${education.fieldOfStudy}` : '';
     const place = education.institution ? ` from ${education.institution}` : '';
-    sentences.push(tidy(`Holds a ${degree}${field}${place}.`));
+    sentences.push(tidy(`Holds ${withArticle(degree)}${field}${place}.`));
   }
 
   // 5. Intent, by the advertised title — this is what they are applying for.
@@ -410,9 +410,9 @@ export function buildSummary(
     const applied = tidy(appliedRole);
     sentences.push(
       pick([
-        `Looking to bring these strengths to a ${applied} role.`,
-        `Keen to apply this experience as a ${applied}.`,
-        `Ready to contribute as a ${applied} from day one.`,
+        `Looking to bring these strengths to ${withArticle(applied)} role.`,
+        `Keen to apply this experience as ${withArticle(applied)}.`,
+        `Ready to contribute as ${withArticle(applied)} from day one.`,
       ]),
     );
   }
@@ -517,6 +517,47 @@ export function softenTitle(jobTitle, cv) {
   return { title: usable ? softened : fallback, removed };
 }
 
+/** Words that appear in many job titles and say nothing about the job. */
+const GENERIC_TITLE_WORDS = new Set([
+  'junior',
+  'trainee',
+  'intern',
+  'assistant',
+  'associate',
+  'of',
+  'and',
+  'the',
+]);
+
+/**
+ * Whether a title shares a meaningful word with a title on the CV.
+ *
+ * "Financial Analyst" and "Accountant" share nothing, so a summary must not
+ * call an accountant a financial analyst "with 7+ years of experience".
+ * "QA Engineer" and "Junior QA Engineer" share "qa" and "engineer".
+ *
+ * @param {string} title - The (softened) advertised title.
+ * @param {object} cv - The source CV.
+ * @returns {boolean} True when the CV supports the title.
+ */
+function sharesTitleWord(title, cv) {
+  const wordsOf = (text) =>
+    String(text ?? '')
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter(
+        (word) => word.length > 1 && !GENERIC_TITLE_WORDS.has(word) && !SENIORITY_WORDS.has(word),
+      );
+
+  const own = new Set(
+    [cv.personal?.headline, ...(cv.experience ?? []).map((entry) => entry?.position)].flatMap(
+      wordsOf,
+    ),
+  );
+
+  return wordsOf(title).some((word) => own.has(word));
+}
+
 /**
  * The achievement most worth quoting: one that contains a number.
  *
@@ -533,6 +574,34 @@ function strongestAchievement(cv) {
     }
   }
   return '';
+}
+
+/**
+ * Puts "a" or "an" in front of a phrase, chosen by how it is said.
+ *
+ * Without this the summary wrote "a Accountant role" and "a MSc". The rule:
+ *   1. An acronym (a first word in capitals, like "MSc" or "HR") goes by
+ *      the sound of its first letter: "an MSc", "an HR Officer", "a BBA".
+ *   2. Otherwise a vowel takes "an" — except words said with a "you"
+ *      sound ("a University", "a User Researcher").
+ *
+ * @param {string} phrase - e.g. "Accountant", "MSc", "Senior Developer".
+ * @returns {string} The phrase with its article, e.g. "an Accountant".
+ */
+export function withArticle(phrase) {
+  const text = String(phrase ?? '').trim();
+  const firstWord = text.split(/\s+/)[0] ?? '';
+
+  // Step 1: acronyms, read letter by letter. "MSc" and "BBA" both count:
+  // two or more capitals at the start.
+  if (/^[A-Z]{2,}|^[A-Z][a-z]?[A-Z]/.test(firstWord)) {
+    return `${'AEFHILMNORSX'.includes(firstWord[0]) ? 'an' : 'a'} ${text}`;
+  }
+
+  // Step 2: ordinary words.
+  const lower = firstWord.toLowerCase();
+  const soundsLikeYou = /^(uni|use|usu|eu)/.test(lower);
+  return `${/^[aeiou]/.test(lower) && !soundsLikeYou ? 'an' : 'a'} ${text}`;
 }
 
 /**
@@ -747,6 +816,19 @@ export function tailorSkills(cv, jobText) {
 
   const cvText = cvToText(cv);
   const evidenced = findSkills(cvText, tokenise(normaliseText(cvText)));
+
+  // The dictionary only knows exact spellings, so "accounts payable" and
+  // "budgets" did not count as evidence for Accounting and Budgeting, and
+  // the rewrite then told an accountant that her CV never mentions
+  // accounting. Comparing stems as well catches these. Very short stems
+  // are skipped, because "go" or "r" would be found in almost any text.
+  const cvTerms = new Set(processText(cvText));
+  for (const skill of jobSkills) {
+    const stems = processText(skill);
+    if (stems.length > 0 && stems.every((stem) => stem.length >= 4 && cvTerms.has(stem))) {
+      evidenced.add(skill);
+    }
+  }
 
   const promoted = [];
   const added = [];
@@ -1023,15 +1105,33 @@ export function tailorCV(cv, jobText, options = {}) {
   // first, then the user's strongest remaining ones.
   const alreadyNamed = new Set([...skillResult.promoted, ...skillResult.added]);
 
+  // The user's own spelling is used wherever they have one, so a CV that
+  // lists "MS Excel" is not described as having both "MS Excel" and
+  // "Excel".
+  const ownSkills = (source.skills ?? []).filter((skill) => skill?.name);
+  const ownSpelling = (name) =>
+    ownSkills.find((skill) => canonicalOf(skill) === name)?.name ?? name;
+
   const namedSkills = [
-    ...skillResult.promoted,
+    ...skillResult.promoted.map(ownSpelling),
     ...skillResult.added,
-    ...(source.skills ?? [])
-      .map((skill) => skill?.name)
-      .filter((name) => name && !alreadyNamed.has(name)),
+    ...ownSkills
+      .filter((skill) => !alreadyNamed.has(canonicalOf(skill)))
+      .map((skill) => skill.name),
   ];
 
-  const summaryContext = { targetTitle: headline.title, appliedRole: jobTitle, namedSkills };
+  // The summary's opening sentence states years of experience, so it must
+  // name a role the person has actually held. The advert's title is used
+  // only when the CV's own titles share a word with it ("QA Engineer" for
+  // someone who was a "Junior QA Engineer"); otherwise their own title is
+  // used and the advert's title appears only as the role being applied for.
+  const summaryContext = {
+    targetTitle: sharesTitleWord(headline.title, source)
+      ? headline.title
+      : source.personal?.headline || source.experience?.[0]?.position || headline.title,
+    appliedRole: jobTitle,
+    namedSkills,
+  };
   const summary = buildSummary(source, summaryContext);
 
   if (summary.text && summary.text !== source.summary) {
@@ -1257,6 +1357,60 @@ function reachTarget(draft, jobText, suggested, context) {
   return { assumed, focus, stillSuggested: queue, score, reached: score >= target };
 }
 
+/**
+ * Words adverts use about the job advert itself rather than the work
+ * ("join our team", "a plus"). They can carry TF-IDF weight, but listing
+ * "Join" as a focus area for the role reads as nonsense.
+ */
+const ADVERT_FILLER = new Set([
+  'join',
+  'joining',
+  'team',
+  'teams',
+  'plus',
+  'bonus',
+  'years',
+  'year',
+  'based',
+  'looking',
+  'seeking',
+  'hiring',
+  'salary',
+  'benefits',
+  'office',
+  'location',
+  'full',
+  'time',
+  'part',
+  'remote',
+  'hybrid',
+  'please',
+  'send',
+  'email',
+  'skills',
+  'skill',
+  'knowledge',
+  'ability',
+  'understanding',
+  'strong',
+  'good',
+  // Verbs: what the job is about is a focus area, a bare verb is not.
+  'present',
+  'prepare',
+  'analyse',
+  'analyze',
+  'build',
+  'develop',
+  'manage',
+  'support',
+  'ensure',
+  'provide',
+  'create',
+  'work',
+  'help',
+  'make',
+]);
+
 /** The fixed opening of the alignment sentence, so it is easy to spot and delete. */
 const FOCUS_PREFIX = 'Focus for this role:';
 
@@ -1291,7 +1445,7 @@ function advertVocabulary(draft, jobText, profile) {
 
     const word = term.includes('_') ? term.split('_').join(' ') : (surfaceForms.get(term) ?? term);
 
-    if (word.length < 4 || seen.has(word)) continue;
+    if (word.length < 4 || seen.has(word) || ADVERT_FILLER.has(word.toLowerCase())) continue;
 
     seen.add(word);
     words.push(word);
@@ -1307,7 +1461,20 @@ function advertVocabulary(draft, jobText, profile) {
     .filter(
       (word) => word.includes(' ') || !phrases.some((phrase) => phrase.split(' ').includes(word)),
     )
-    .map(capitaliseWords);
+    .map((word) => displayCase(word, jobText));
+}
+
+/**
+ * How a term is shown in the focus line: the advert's own capitals for an
+ * acronym ("IFRS", not "Ifrs"), otherwise title case.
+ * @param {string} word - The term, lowercased.
+ * @param {string} jobText - The advert.
+ * @returns {string} The term as it should be displayed.
+ */
+function displayCase(word, jobText) {
+  const upper = word.toUpperCase();
+  const isAcronymInAdvert = new RegExp(String.raw`\b${escapeForRegExp(upper)}\b`).test(jobText);
+  return isAcronymInAdvert ? upper : capitaliseWords(word);
 }
 
 /**

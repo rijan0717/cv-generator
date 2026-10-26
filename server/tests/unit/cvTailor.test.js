@@ -19,6 +19,7 @@ import {
   buildSummary,
   yearsOfExperience,
   softenTitle,
+  withArticle,
 } from '../../src/algorithms/cvTailor.js';
 import { analyseMatch } from '../../src/algorithms/jobMatcher.js';
 import { TAILOR_CONFIG } from '../../src/config/scoringConfig.js';
@@ -687,5 +688,61 @@ describe('tailorCV — wording', () => {
     expect(draft.personal.headline).toBe('QA Engineer');
     // The closing sentence still names the role being applied for.
     expect(draft.summary).toContain('Senior QA Engineer');
+  });
+});
+
+describe('fixes found by running a real accountant CV through the rewrite', () => {
+  const accountant = {
+    personal: { fullName: 'Sita Sharma', headline: 'Accountant' },
+    experience: [
+      {
+        position: 'Accountant',
+        company: 'ABC Traders',
+        startDate: '2021-01',
+        isCurrent: true,
+        achievements: ['Managed accounts payable and receivable for 40 clients'],
+      },
+    ],
+    skills: [
+      { name: 'MS Excel', level: 'Advanced' },
+      { name: 'Tally', level: 'Advanced' },
+    ],
+    settings: {},
+  };
+  const advert =
+    'Financial Analyst. Build financial models and budgets. ' +
+    'Skills: Excel, Accounting, SQL, Financial Modelling.';
+
+  it('does not add "Excel" next to the "MS Excel" the user already lists', () => {
+    const { draft } = tailorCV(accountant, advert, { jobTitle: 'Financial Analyst' });
+    const names = draft.skills.map((skill) => skill.name);
+
+    expect(names).toContain('MS Excel');
+    expect(names).not.toContain('Excel');
+  });
+
+  it('counts "accounts payable" as evidence of Accounting, not an assumption', () => {
+    const result = tailorSkills(accountant, advert);
+
+    expect(result.added).toContain('Accounting');
+    expect(result.suggested).not.toContain('Accounting');
+  });
+
+  it('does not call the person by a title their CV does not support', () => {
+    const { draft } = tailorCV(accountant, advert, { jobTitle: 'Financial Analyst' });
+
+    expect(draft.summary).toMatch(/^Accountant with/);
+    expect(draft.summary).toContain('as a Financial Analyst');
+  });
+});
+
+describe('withArticle', () => {
+  it('picks "a" or "an" by sound', () => {
+    expect(withArticle('Accountant')).toBe('an Accountant');
+    expect(withArticle('Developer')).toBe('a Developer');
+    expect(withArticle('MSc')).toBe('an MSc');
+    expect(withArticle('BBA')).toBe('a BBA');
+    expect(withArticle('HR Officer')).toBe('an HR Officer');
+    expect(withArticle('University Lecturer')).toBe('a University Lecturer');
   });
 });

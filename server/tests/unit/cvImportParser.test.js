@@ -131,6 +131,7 @@ describe('parseContact', () => {
       linkedin: '',
       github: '',
       website: '',
+      address: '',
     });
   });
 });
@@ -487,5 +488,59 @@ describe('CVs laid out as a designed PDF', () => {
     });
 
     expect(fullName).toBe('RIJANPARIYAR');
+  });
+});
+
+describe('an entry whose dates are on the line under its heading', () => {
+  const text = [
+    'Sita Sharma',
+    'sita@example.com | +977 9841234567 | Kathmandu, Nepal',
+    'EXPERIENCE',
+    'Accountant, ABC Traders',
+    'Jan 2021 - Present',
+    '- Prepared monthly VAT returns',
+    '- Reconciled bank statements for 40 clients',
+    'Junior Accountant, Everest Bank',
+    'Jun 2019 - Dec 2020',
+    '- Handled petty cash',
+    'EDUCATION',
+    'Bachelor of Business Studies, Tribhuvan University',
+    '2015 - 2019',
+  ].join('\n');
+
+  it('keeps each heading with its own dates and bullets', () => {
+    const { experience } = parseCVText(text);
+
+    expect(experience).toHaveLength(2);
+    expect(experience[0]).toMatchObject({
+      position: 'Accountant',
+      company: 'ABC Traders',
+      startDate: '2021-01',
+      isCurrent: true,
+    });
+    expect(experience[0].achievements).toEqual([
+      'Prepared monthly VAT returns',
+      'Reconciled bank statements for 40 clients',
+    ]);
+    expect(experience[1]).toMatchObject({
+      position: 'Junior Accountant',
+      company: 'Everest Bank',
+      startDate: '2019-06',
+      endDate: '2020-12',
+    });
+  });
+
+  it('reads education laid out the same way as one entry', () => {
+    const { education } = parseCVText(text);
+
+    expect(education).toHaveLength(1);
+    expect(education[0]).toMatchObject({
+      institution: 'Tribhuvan University',
+      startDate: '2015-01',
+    });
+  });
+
+  it('reads the town from the contact line', () => {
+    expect(parseCVText(text).personal.address).toBe('Kathmandu, Nepal');
   });
 });
