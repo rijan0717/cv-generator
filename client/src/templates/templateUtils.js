@@ -7,6 +7,53 @@
  * templates identically.
  */
 
+/**
+ * The printed page, in millimetres.
+ *
+ * These must stay in step with the `@page` rules at the end of
+ * templates.css: the browser uses those when it splits the CV into sheets,
+ * and the preview uses these to draw the guides showing where it will split.
+ * If the two disagree the guides lie, so they are written down once here and
+ * cross-referenced from the stylesheet.
+ */
+export const PAGE_GEOMETRY_MM = {
+  width: 210,
+  height: 297,
+  /** The first sheet runs to the top edge, so full-bleed headers can. */
+  firstPageTopMargin: 0,
+  /** Every later sheet starts below this gap. */
+  topMargin: 14,
+  /** Every sheet, including the first, ends above this gap. */
+  bottomMargin: 14,
+};
+
+/** Millimetres to CSS pixels, at the 96dpi reference the templates assume. */
+export const MM_TO_PX = 96 / 25.4;
+
+/**
+ * Works out where the printed page breaks fall within the continuous
+ * preview column, so the preview can draw a guide at each one.
+ *
+ * The first sheet holds more than the others because it has no top margin,
+ * which is why this cannot simply be "every 297mm".
+ *
+ * @param {number} contentHeightPx - Rendered height of the whole CV.
+ * @returns {number[]} Offsets, in pixels from the top, of each page break.
+ */
+export function pageBreakOffsets(contentHeightPx) {
+  const { height, topMargin, bottomMargin, firstPageTopMargin } = PAGE_GEOMETRY_MM;
+
+  const firstPage = (height - firstPageTopMargin - bottomMargin) * MM_TO_PX;
+  const laterPage = (height - topMargin - bottomMargin) * MM_TO_PX;
+
+  const offsets = [];
+  for (let offset = firstPage; offset < contentHeightPx; offset += laterPage) {
+    offsets.push(offset);
+  }
+
+  return offsets;
+}
+
 /** Font stacks offered in the customisation panel. */
 export const FONT_STACKS = {
   Inter: "'Inter', system-ui, sans-serif",

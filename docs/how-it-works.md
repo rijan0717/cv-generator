@@ -160,6 +160,39 @@ its export.
 The PDF then uses the **same components**: Puppeteer opens the real
 `/print/:id` page rather than the server re-drawing the CV.
 
+### How a long CV becomes several pages
+
+The print page is one continuous column; Chromium is what turns it into a run
+of A4 sheets, and it starts a new sheet automatically whenever the content
+overflows. The rules it follows live in the print block at the end of
+`templates.css`:
+
+| Rule                                       | Why                                                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `@page { size: A4; margin: 14mm 0 }`       | Every sheet after the first starts and ends with a printable margin.                         |
+| `@page :first { margin-top: 0 }`           | A full-bleed header — the Creative band, the Banner strip — has to touch the top of sheet 1. |
+| `.cv-section { break-inside: auto }`       | A long Experience section is taller than a page; forbidding the break has nowhere to go.     |
+| `.cv-section-title { break-after: avoid }` | A heading must not be the last thing on a sheet.                                             |
+| `.cv-entry { break-inside: avoid }`        | One job or one degree is never cut in half.                                                  |
+| `.cv-page { min-height: 0 }` in print      | On screen the page is held open to a full sheet; on paper that would force a blank page 2.   |
+
+`pdfService` passes `preferCSSPageSize: true` and no `margin` option, which is
+what hands the sheet size and the margins to those CSS rules — the first sheet
+needs a different top margin from the rest, and only CSS can say that.
+
+The preview mirrors the same geometry. `PAGE_GEOMETRY_MM` in
+`templateUtils.js` holds the numbers the `@page` rules use, and `CVPreview`
+draws a dashed guide at each point where Chromium will break, so the user can
+see a heading is about to be stranded before they download the file.
+
+### Chromium's own dependencies
+
+`puppeteer` downloads a Chromium binary but not the system libraries it links
+against, so on a bare Ubuntu, Debian or WSL install it fails at launch with
+`error while loading shared libraries: libnspr4.so`. `npm run setup:chrome`
+installs them; the PDF route detects that particular failure and says so
+rather than returning a generic 503.
+
 ### The ATS template breaks the pattern deliberately
 
 It ignores the chosen colours and fonts: single column, no photo, no icons,

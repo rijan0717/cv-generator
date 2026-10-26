@@ -16,7 +16,7 @@ export function ExperienceEntry({ entry, showAchievements = true }) {
   const range = formatDateRange(entry.startDate, entry.endDate, entry.isCurrent);
 
   return (
-    <div style={{ marginBottom: 'var(--cv-item-gap)' }}>
+    <div className="cv-entry" style={{ marginBottom: 'var(--cv-item-gap)' }}>
       <div className="cv-entry-head">
         <span className="cv-entry-title">{entry.position}</span>
         {range && <span className="cv-entry-date">{range}</span>}
@@ -52,7 +52,7 @@ export function EducationEntry({ entry }) {
   const qualification = [entry.degree, entry.fieldOfStudy].filter(Boolean).join(', ');
 
   return (
-    <div style={{ marginBottom: 'var(--cv-item-gap)' }}>
+    <div className="cv-entry" style={{ marginBottom: 'var(--cv-item-gap)' }}>
       <div className="cv-entry-head">
         <span className="cv-entry-title">{qualification || entry.institution}</span>
         {range && <span className="cv-entry-date">{range}</span>}
@@ -75,7 +75,7 @@ export function ProjectEntry({ entry }) {
   const href = toHref(entry.link);
 
   return (
-    <div style={{ marginBottom: 'var(--cv-item-gap)' }}>
+    <div className="cv-entry" style={{ marginBottom: 'var(--cv-item-gap)' }}>
       <div className="cv-entry-head">
         <span className="cv-entry-title">
           {entry.name}
@@ -108,7 +108,7 @@ export function CertificationEntry({ entry }) {
   const href = toHref(entry.credentialLink);
 
   return (
-    <div style={{ marginBottom: 'var(--cv-item-gap)' }}>
+    <div className="cv-entry" style={{ marginBottom: 'var(--cv-item-gap)' }}>
       <div className="cv-entry-head">
         <span className="cv-entry-title">{entry.name}</span>
         {entry.date && <span className="cv-entry-date">{entry.date}</span>}
@@ -211,7 +211,11 @@ export function ReferenceList({ cv }) {
       {cv.references
         .filter((reference) => reference.name?.trim())
         .map((reference) => (
-          <div key={reference._id ?? reference.name} style={{ marginBottom: 'var(--cv-item-gap)' }}>
+          <div
+            key={reference._id ?? reference.name}
+            className="cv-entry"
+            style={{ marginBottom: 'var(--cv-item-gap)' }}
+          >
             <div className="cv-entry-title">{reference.name}</div>
             {(reference.position || reference.company) && (
               <div className="cv-entry-sub">
