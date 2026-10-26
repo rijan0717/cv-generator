@@ -30,17 +30,24 @@ async function findOwnedCV(cvId, userId) {
 /**
  * Sends a generated file as a download.
  * @param {import('express').Response} res - Express response.
- * @param {Buffer} buffer - The file contents.
+ * @param {Buffer|Uint8Array} buffer - The file contents.
  * @param {string} filename - The download filename.
  * @param {string} contentType - The MIME type.
  */
 function sendDownload(res, buffer, filename, contentType) {
+  // Express sends a Buffer as raw bytes but serialises any other object as
+  // JSON, so a generator that returns a Uint8Array or an ArrayBuffer would
+  // produce a file of {"0":37,"1":80,…} under a binary Content-Type — a
+  // download that fails only when the user opens it. Normalising here means
+  // every export route is safe regardless of what its generator hands back.
+  const body = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+
   res.setHeader('Content-Type', contentType);
   // The filename is sanitised in buildExportFilename, so it cannot inject
   // extra header directives here.
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-  res.setHeader('Content-Length', buffer.length);
-  res.send(buffer);
+  res.setHeader('Content-Length', body.length);
+  res.send(body);
 }
 
 /**

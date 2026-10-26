@@ -228,6 +228,8 @@ The report follows the **Object-Oriented approach** from the TU guideline.
 
 - `npm run dev` — start client and server together
 - `npm run test` — run all tests
+- `npm run setup:chrome` — install the system libraries headless Chromium needs for PDF
+  export (Debian/Ubuntu/WSL, needs sudo; run once per machine)
 - `npm run seed:admin` — create the admin account from `.env`
 - `npm run seed:templates` — insert the five templates
 - `npm run seed:jobs` — insert the ten sample job adverts

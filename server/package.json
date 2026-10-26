@@ -10,6 +10,7 @@
     "start": "node src/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "setup:chrome": "bash scripts/installChromeDeps.sh",
     "seed:admin": "node scripts/seedAdmin.js",
     "seed:templates": "node scripts/seedTemplates.js",
     "seed:jobs": "node scripts/seedJobs.js",
