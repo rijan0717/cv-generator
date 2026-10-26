@@ -76,6 +76,47 @@ html.dark body {
   }
 }
 
+/*
+ * The home page review strip. The row holds two copies of the cards, so
+ * moving it left by half its width lands exactly where it started and the
+ * loop has no visible jump. The duration is set inline from the card count.
+ */
+@keyframes cvg-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.cvg-marquee {
+  animation: cvg-marquee 60s linear infinite;
+}
+
+/* Stop so a visitor can read a card, by mouse or keyboard. */
+.cvg-marquee:hover,
+.cvg-marquee:focus-within {
+  animation-play-state: paused;
+}
+
+/* Fade the cards out at both edges instead of cutting them off. */
+.cvg-marquee-mask {
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+/* No sliding for anyone who asked for less motion: the row becomes one a
+   visitor can scroll sideways themselves. */
+@media (prefers-reduced-motion: reduce) {
+  .cvg-marquee {
+    animation: none;
+  }
+
+  .cvg-marquee-mask {
+    overflow-x: auto;
+  }
+}
+
 /* Firefox renders a dark scrollbar only when told. */
 html.dark {
   scrollbar-color: theme('colors.slate.600') theme('colors.slate.900');
