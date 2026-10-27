@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { TEMPLATES } from '../../templates/index.js';
 import { FONT_STACKS, SECTION_LABELS } from '../../templates/templateUtils.js';
+import * as templateApi from '../../api/templates.js';
 
 /**
  * The customisation panel.
@@ -76,6 +78,43 @@ export default function CustomisePanel({ cv, onChange }) {
   const hidden = new Set(settings.hiddenSections ?? []);
 
   /**
+   * The keys the admin is currently offering.
+   *
+   * `null` until the answer arrives, and `null` again if the request
+   * fails: every template is listed in that case rather than none. A
+   * network blip must not leave somebody unable to change their
+   * template, and the server decides nothing here — the list only
+   * filters what the picker shows.
+   */
+  const [activeKeys, setActiveKeys] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    templateApi
+      .listTemplates()
+      .then((data) => {
+        if (!cancelled) setActiveKeys(data.templates.map((template) => template.key));
+      })
+      .catch(() => {
+        if (!cancelled) setActiveKeys(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // The CV's own template is always shown, even if it has since been
+  // deactivated: the picker would otherwise have no option selected and
+  // look as though the CV had lost its template.
+  const offered = activeKeys
+    ? TEMPLATES.filter(
+        (template) => activeKeys.includes(template.key) || template.key === cv.templateKey,
+      )
+    : TEMPLATES;
+
+  /**
    * Applies a change to one or more settings fields.
    * @param {object} patch - The settings fields to change.
    */
@@ -114,7 +153,7 @@ export default function CustomisePanel({ cv, onChange }) {
       <section>
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Template</h3>
         <div className="mt-3 space-y-2">
-          {TEMPLATES.map((template) => (
+          {offered.map((template) => (
             <label
               key={template.key}
               className={[

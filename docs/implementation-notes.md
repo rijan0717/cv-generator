@@ -626,3 +626,71 @@ Writes that bypass Mongoose middleware set the role by hand: `updateOne` in
 `seedQaDemo.js` and `seedLoadTestUsers.js`, the bulk insert in
 `seedLoadTestUsers.js`, and step 3 of `npm run migrate:accounts`, which brings
 an existing database into line.
+
+## Feature 9 — Template catalogue
+
+The admin can now decide which of the eleven templates users are offered,
+and what each is called in the picker.
+
+### Where a template lives
+
+In two places, and the split is the point:
+
+- **The markup is a React component** (`client/src/templates/`). It cannot be
+  anywhere else — a template *is* its layout — and it must not be editable
+  from a database field, or an admin could break every CV in the system with
+  a typo.
+- **The catalogue entry is a document** (`models/Template.js`): key, name,
+  description, `isActive`, `sortOrder`, `usesPhoto`. "Deactivate this
+  template" needs somewhere to be recorded, and that is here.
+
+`key` joins the two, and is the same value a CV stores in `templateKey`. The
+model constrains it to `TEMPLATE_KEYS`, so a catalogue row can never point at
+a template with no component behind it.
+
+### Two failure modes that are designed out
+
+**An unseeded database.** `GET /api/templates` returns the whole catalogue
+with `seeded: false` when the collection is empty, rather than an empty list.
+An empty collection means "nobody has set this up", not "the admin withdrew
+all eleven", and answering with nothing would leave the builder with no
+template to choose — a worse failure than ignoring a setting nobody made.
+The admin screen shows the same distinction and names the seed command.
+
+**Switching off the last one.** `PATCH /admin/templates/:id` refuses to
+deactivate the only active template. An admin unticking boxes one at a time
+would otherwise produce a builder nobody can use, and find out when somebody
+complained.
+
+Deactivating never touches the CVs already using that template: the component
+is still in the build and the CV still stores the key, so it keeps rendering
+and exporting. The admin is withdrawing an option, not deleting work. The
+picker also always shows the CV's current template even when it is no longer
+offered, or the radio group would have nothing selected and look as though
+the CV had lost its template.
+
+### The seed
+
+`npm run seed:templates` upserts from `src/data/templateCatalogue.js` and is
+safe to re-run. Everything an admin can edit — name, description, sortOrder,
+isActive — is written with `$setOnInsert`, so a reseed never undoes them. Only
+`usesPhoto` is forced, because that is a fact about the component rather than
+a setting. The cost is deliberate: a reworded description in the catalogue
+does not reach a database that already has the row, and is changed on the
+admin screen instead.
+
+### Client
+
+- `api/templates.js`, `pages/admin/AdminTemplatesPage.jsx` (activate,
+  deactivate, rename inline), sidebar entry under Administration.
+- `components/cv/CustomisePanel.jsx` filters the picker by the active keys.
+  If that request fails it shows all of them: a network blip must not leave
+  somebody unable to change their template, and the list only decides what is
+  displayed — nothing is enforced client-side that matters.
+
+### Tests
+
+`tests/integration/templates.test.js` — ten cases covering the unseeded
+fallback, public readability, hiding deactivated templates, admin ordering,
+the 403 for an ordinary user, rename, the last-active guard, invalid versus
+unknown ids, and that a CV using a deactivated template still loads.

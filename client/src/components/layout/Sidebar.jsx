@@ -29,6 +29,7 @@ const ICONS = {
     'M9 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M2 20a7 7 0 0 1 14 0 M17 11a3 3 0 1 0 0-6 M18 20a6 6 0 0 0-1-3',
   activity: 'M3 12h4l3-8 4 16 3-8h4',
   reports: 'M6 2h9l4 4v16H6z M8 12h8M8 16h5M8 8h4',
+  templates: 'M4 4h7v16H4z M13 4h7v7h-7z M13 13h7v7h-7z',
   companies: 'M3 21h18 M5 21V7l7-4 7 4v14 M10 12h4M10 16h4',
 };
 
@@ -142,6 +143,7 @@ export default function Sidebar({ onNavigate }) {
           <Item to="/talent" icon="profile" label="People directory" onNavigate={onNavigate} />
           <Item to="/admin/companies" icon="companies" label="Companies" onNavigate={onNavigate} />
           <Item to="/admin/cvs" icon="cvs" label="All CVs" onNavigate={onNavigate} />
+          <Item to="/admin/templates" icon="templates" label="Templates" onNavigate={onNavigate} />
           <Item to="/admin/reports" icon="reports" label="Reports" onNavigate={onNavigate} />
           <Item to="/admin/activity" icon="activity" label="Activity" onNavigate={onNavigate} />
         </Group>

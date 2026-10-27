@@ -14,6 +14,7 @@ import AdminCVsPage from './pages/admin/AdminCVsPage.jsx';
 import AdminCVDetailPage from './pages/admin/AdminCVDetailPage.jsx';
 import AdminActivityPage from './pages/admin/AdminActivityPage.jsx';
 import AdminReportsPage from './pages/admin/AdminReportsPage.jsx';
+import AdminTemplatesPage from './pages/admin/AdminTemplatesPage.jsx';
 import AdminCompaniesPage from './pages/admin/AdminCompaniesPage.jsx';
 
 import HomePage from './pages/HomePage.jsx';
@@ -136,6 +137,7 @@ export default function App() {
             <Route path="cvs" element={<AdminCVsPage />} />
             <Route path="cvs/:id" element={<AdminCVDetailPage />} />
             <Route path="activity" element={<AdminActivityPage />} />
+            <Route path="templates" element={<AdminTemplatesPage />} />
             <Route path="reports" element={<AdminReportsPage />} />
           </Route>
         </Route>
