@@ -47,7 +47,11 @@ export default function TailorReview({ result, draft, onChange, title, onTitleCh
   };
 
   return (
-    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6">
+    // Two equal columns, as in the builder. A 340px rail scaled the A4
+    // page down to roughly a third of its width, which is too small to
+    // read — and reading the document is the whole purpose of a review
+    // screen.
+    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
       <div className="space-y-6">
         <ScoreComparison comparison={result.comparison} />
 
@@ -294,16 +298,24 @@ function PageFillPanel({ fill }) {
  */
 function DraftPreview({ draft }) {
   return (
-    <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0">
-      <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Live preview</h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          The tailored CV as it will be saved. It updates as you edit.
-        </p>
+    // The same furniture as the builder's preview — the heading on the
+    // left, the sheet size on the right, the page on a grey surface —
+    // so the rewrite review and the editor read as one feature rather
+    // than two screens that happen to show a CV.
+    <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start">
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
+        <span className="text-xs text-slate-500 dark:text-slate-400">
+          A4 &middot; 210 &times; 297 mm
+        </span>
+      </div>
 
-        <div className="mt-3 max-h-[75vh] overflow-y-auto rounded-lg bg-slate-200/60 p-3 dark:bg-slate-800/60">
-          <CVPreview cv={draft} />
-        </div>
+      <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+        The tailored CV as it will be saved. It updates as you edit.
+      </p>
+
+      <div className="rounded-xl bg-slate-200/60 p-4 dark:bg-slate-800/60 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto">
+        <CVPreview cv={draft} />
       </div>
     </aside>
   );
