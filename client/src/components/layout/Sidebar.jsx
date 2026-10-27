@@ -46,10 +46,13 @@ function Item({ to, icon, label, end, onNavigate }) {
       onClick={onNavigate}
       className={({ isActive }) =>
         [
-          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition',
+          // The current page is marked with a tint and a bar on the left,
+          // rather than a solid black block that shouts louder than the
+          // page content itself.
+          'relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition',
           isActive
-            ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-            : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
+            ? 'bg-blue-50 text-blue-800 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-600 dark:bg-blue-950/50 dark:text-blue-200 dark:before:bg-blue-400'
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
         ].join(' ')
       }
     >
