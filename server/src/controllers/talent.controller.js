@@ -19,6 +19,7 @@
 import { User } from '../models/User.js';
 import { CV } from '../models/CV.js';
 import { Company } from '../models/Company.js';
+import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import { readPagination, buildPagination } from '../utils/pagination.js';
@@ -145,7 +146,12 @@ export async function listTalent(req, res) {
         return {
           id,
           name: user.name,
-          email: user.email,
+          // No email in the list. A directory page is twenty contact
+          // addresses in one response, which is the shape somebody
+          // scrapes; on the detail page it is one address, read by an
+          // employer who has opened that person deliberately — and that
+          // view is logged. The list is for finding people, not for
+          // collecting their details.
           avatarUrl: user.avatarUrl,
           accountType: user.accountType,
           createdAt: user.createdAt,
@@ -202,6 +208,27 @@ export async function getTalentProfile(req, res) {
       ? Company.findOne({ owner: user._id, isDeleted: false }).lean()
       : null,
   ]);
+
+  // Who looked at whom, and when. A candidate's details are personal
+  // data, so reading them is an event worth being able to account for —
+  // both to answer "who has seen my profile" and to make an employer
+  // paging through every candidate in the system visible to the admin.
+  // Logged only for a real employer: the admin's own browsing would
+  // otherwise bury the entries that matter.
+  if (req.user.role !== 'admin') {
+    await logActivity({
+      userId: req.user._id,
+      action: 'TALENT_VIEW',
+      // `targetUser` and `company` are the keys the admin log already
+      // resolves into names, so this entry reads as a sentence without
+      // the resolver needing to learn a new field.
+      meta: {
+        targetUser: user._id.toString(),
+        company: req.employerCompany?._id?.toString(),
+      },
+      ip: req.ip,
+    });
+  }
 
   sendSuccess(
     res,

@@ -17,6 +17,13 @@ const keywordSchema = new mongoose.Schema(
     keyword: { type: String, required: true },
     /** The TF-IDF weight, kept so the report can show why it mattered. */
     weight: { type: Number, default: 0 },
+    /**
+     * Whether the skills dictionary recognises this as a named skill.
+     * Stored because it is why the keyword was ranked where it was, and
+     * an analysis in somebody's history should still be explainable
+     * months later.
+     */
+    isSkill: { type: Boolean, default: false },
   },
   { _id: false },
 );

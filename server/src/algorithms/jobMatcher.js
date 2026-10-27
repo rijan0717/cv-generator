@@ -192,6 +192,59 @@ const UNACTIONABLE_WORDS = new Set(
     'come',
     'see',
     'give',
+
+    // Indefinite people. "This advert says *someone* and your CV does
+    // not" was the most frequent gap in the whole system before this
+    // was added, which says everything about how useful it was.
+    'someone',
+    'somebody',
+    'anyone',
+    'everyone',
+    'another',
+    'others',
+    'team',
+
+    // Number words. A bare digit is already dropped by the tokeniser,
+    // but "four" in "four years of experience" survives it and then
+    // scores well, because in a small corpus few other adverts happen
+    // to use the same number. "Your CV never says four" is not advice.
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine',
+    'ten',
+    'eleven',
+    'twelve',
+    'fifteen',
+    'twenty',
+    'thirty',
+    'fifty',
+    'hundred',
+    'thousand',
+    'dozen',
+    'first',
+    'second',
+    'third',
+    'fourth',
+    'fifth',
+
+    // Comparatives and vague quantities
+    'small',
+    'large',
+    'big',
+    'little',
+    'many',
+    'much',
+    'prior',
+    'previous',
+    'relevant',
+    'various',
+    'several',
   ].map(stem),
 );
 
@@ -414,10 +467,36 @@ export function analyseMatch(cv, jobDescription, options = {}) {
     // Filtered here rather than earlier, so the score is unaffected.
     if (UNACTIONABLE_WORDS.has(term)) continue;
 
-    const entry = { keyword: display(term), weight: Math.round(weight * 10000) / 10000 };
+    const keyword = display(term);
+    const entry = {
+      keyword,
+      weight: Math.round(weight * 10000) / 10000,
+      // Whether the dictionary recognises this as a named skill. Kept
+      // on the entry so the ordering below can be explained rather than
+      // looking like an arbitrary shuffle.
+      isSkill: Boolean(canonicalSkill(keyword)),
+    };
+
     if (cvTermSet.has(term)) matchedKeywords.push(entry);
     else missingKeywords.push(entry);
   }
+
+  /**
+   * Puts the named skills first, keeping TF-IDF order within each group.
+   *
+   * The list is cut to `maxMissingKeywords`, so ordering decides what
+   * survives — and "you do not mention Docker" is worth more to a
+   * candidate than "you do not mention stakeholder", however the maths
+   * ranked them. Weight still breaks ties inside each group, so this
+   * reorders the advice without inventing a new idea of importance.
+   *
+   * `sort` is stable in Node, so equal keys keep their weighted order.
+   *
+   * @param {Array<object>} entries - Keyword entries.
+   * @returns {Array<object>} The same entries, skills first.
+   */
+  const skillsFirst = (entries) =>
+    [...entries].sort((a, b) => Number(b.isSkill) - Number(a.isSkill));
 
   // --- Step 6: skill coverage --------------------------------------------
   // The dictionary's aliases are whole words ("kubernetes", "javascript"),
@@ -453,8 +532,8 @@ export function analyseMatch(cv, jobDescription, options = {}) {
     scaledSimilarity: Math.round(scaledSimilarity * 10000) / 10000,
     skillCoverage: skillCoverage === null ? null : Math.round(skillCoverage * 1000) / 1000,
 
-    matchedKeywords: matchedKeywords.slice(0, MATCH_CONFIG.maxMatchedKeywords),
-    missingKeywords: missingKeywords.slice(0, MATCH_CONFIG.maxMissingKeywords),
+    matchedKeywords: skillsFirst(matchedKeywords).slice(0, MATCH_CONFIG.maxMatchedKeywords),
+    missingKeywords: skillsFirst(missingKeywords).slice(0, MATCH_CONFIG.maxMissingKeywords),
 
     matchedSkills,
     missingSkills,

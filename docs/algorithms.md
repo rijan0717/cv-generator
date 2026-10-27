@@ -168,6 +168,45 @@ The prose of the advert barely changed between the two rows, so similarity
 stays high; it is coverage, and the cap it sets, that separates them. That is
 the behaviour an ATS has and the previous model did not.
 
+### 2.2 What the keyword gap is allowed to say
+
+The gap list is produced **after** the score, from the same vectors, and two
+rules shape it. Neither can move a score, and that separation is the point:
+if filtering changed the maths, the matcher would be tuning its own marks to
+make its advice read better.
+
+**Unactionable words are dropped** (`UNACTIONABLE_WORDS` in `jobMatcher.js`).
+These are not stop words — they survive the stop-word list and genuinely
+carry TF-IDF weight, because on a small corpus a word appearing in one advert
+and no other looks distinctive whatever it means. The list covers words that
+describe the vacancy rather than the work (_role_, _candidate_, _salary_),
+abstract descriptions of a person (_experience_, _ability_, _strong_),
+indefinite people (_someone_, _anyone_, _team_), and **number words** (_four_,
+_five_, _ten_). The tokeniser already drops a bare digit, but "four" in "four
+years of experience" survives it and then scores well. Before these were
+added, the most frequently reported gap across the whole system was the word
+_someone_, with _four_ and _five_ close behind — the clearest possible
+evidence that a high TF-IDF weight is not the same thing as useful advice.
+
+**Named skills are listed first.** The list is cut to
+`MATCH_CONFIG.maxMissingKeywords`, so the order decides what the user is
+actually told. Each entry carries `isSkill`, set when the term is in
+`skillsDictionary.js`, and the list is sorted on that flag with TF-IDF order
+preserved inside each group (`Array.prototype.sort` is stable in Node). "You
+do not mention Kubernetes" is worth more to a candidate than "you do not
+mention stakeholder", however the weights ranked the two.
+
+Real output for a React CV after both rules, starred where the dictionary
+recognised the term:
+
+| Advert             | Missing keywords, in the order shown                            |
+| ------------------ | --------------------------------------------------------------- |
+| React Developer    | jest\*, typescript\*, tests, component, integration, accessible   |
+| Accounts Assistant | bookkeeping\*, payroll\*, excel\*, accounts, assistant, finance   |
+
+Analyses stored before this change keep the keywords they were saved with, so
+the admin's skill-gap report mixes old and new until the older rows age out.
+
 ---
 
 ## 3. Job-Tailored CV Rewrite

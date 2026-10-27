@@ -79,6 +79,14 @@ export function describeActivity(entry) {
     case 'COMPANY_CREATE':
       return refs.company ? `Created company "${refs.company.name}"` : 'Created a company that was later deleted';
 
+    case 'TALENT_VIEW':
+      // Names the candidate whose profile was opened. Without the name
+      // the entry says only that somebody looked at somebody, which is
+      // the one question this record exists to answer.
+      return refs.targetUser
+        ? `Viewed ${refs.targetUser.name}'s candidate profile`
+        : 'Viewed a candidate profile that has since been deleted';
+
     case 'ADMIN_ACTION': {
       const target = refs.targetUser ? refs.targetUser.email : 'a deleted user';
       if (meta.action === 'USER_STATUS') {
