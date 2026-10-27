@@ -7,13 +7,17 @@ import { ThemeProvider } from './context/ThemeContext.jsx';
 import * as authApi from './api/auth.js';
 import * as cvApi from './api/cvs.js';
 import * as reviewApi from './api/reviews.js';
+import * as applicationApi from './api/applications.js';
+import * as jobApi from './api/jobs.js';
 
-// The auth context calls the API on mount to find out who is logged in, and
-// the dashboard lists CVs. Stubbing both modules keeps these tests
-// independent of a running server.
+// The auth context calls the API on mount to find out who is logged in,
+// and the job seeker's dashboard reads CVs, applications and saved jobs.
+// Stubbing the modules keeps these tests independent of a running server.
 vi.mock('./api/auth.js');
 vi.mock('./api/cvs.js');
 vi.mock('./api/reviews.js');
+vi.mock('./api/applications.js');
+vi.mock('./api/jobs.js');
 
 /**
  * Renders the app at a given route inside the auth provider.
@@ -98,12 +102,33 @@ describe('App routing', () => {
         reviews: [],
         summary: { average: 0, count: 0 },
       });
+      applicationApi.listMyApplications.mockResolvedValue({
+        applications: [],
+        pagination: { page: 1, limit: 5, total: 0, pages: 1 },
+      });
+      jobApi.listSavedJobs.mockResolvedValue([]);
     });
 
     it('shows the dashboard on a guarded route', async () => {
       renderAt('/dashboard');
 
+      expect(await screen.findByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
+    });
+
+    it('shows the CV list on its own route', async () => {
+      renderAt('/cvs');
+
       expect(await screen.findByRole('heading', { name: /my cvs/i })).toBeInTheDocument();
+    });
+
+    it('tells a new job seeker what is missing rather than showing empty panels', async () => {
+      renderAt('/dashboard');
+
+      // The dashboard's whole job for somebody who has just signed up is
+      // to say what they have not done yet.
+      expect(await screen.findByText(/have not created a cv yet/i)).toBeInTheDocument();
+      expect(screen.getByText(/have not applied for anything yet/i)).toBeInTheDocument();
+      expect(screen.getByText(/have not saved any jobs/i)).toBeInTheDocument();
     });
 
     it('shows the logged-in navigation', async () => {

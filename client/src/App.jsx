@@ -21,6 +21,7 @@ import HealthPage from './pages/HealthPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
+import SeekerDashboardPage from './pages/user/SeekerDashboardPage.jsx';
 import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
 import SettingsPage from './pages/user/SettingsPage.jsx';
@@ -37,6 +38,7 @@ import SubmittedCVPage from './pages/jobs/SubmittedCVPage.jsx';
 import TalentPage from './pages/talent/TalentPage.jsx';
 import TalentDetailPage from './pages/talent/TalentDetailPage.jsx';
 import CompanyLayout from './pages/company/CompanyLayout.jsx';
+import CompanyOverviewPage from './pages/company/CompanyOverviewPage.jsx';
 import CompanyProfilePage from './pages/company/CompanyProfilePage.jsx';
 import CompanyPostsPage from './pages/company/CompanyPostsPage.jsx';
 import JobApplicantsPage from './pages/company/JobApplicantsPage.jsx';
@@ -80,7 +82,10 @@ export default function App() {
 
           {/* Job seekers (and the admin) */}
           <Route element={<AccountTypeRoute allow={['jobseeker']} />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
+            {/* The landing page is a summary; the CV list is a page of
+                its own, so neither has to be both. */}
+            <Route path="/dashboard" element={<SeekerDashboardPage />} />
+            <Route path="/cvs" element={<DashboardPage />} />
             <Route path="/cvs/:id" element={<CVEditorPage />} />
             {/* Tailoring reads one CV and one advert and writes a new CV;
                 it never changes the CV it was started from. */}
@@ -103,7 +108,10 @@ export default function App() {
               post's applicants hang off a post. */}
           <Route element={<AccountTypeRoute allow={['employer']} />}>
             <Route path="/company" element={<CompanyLayout />}>
-              <Route index element={<CompanyProfilePage />} />
+              {/* The dashboard is the landing page; the profile form is
+                  a section beside the posts rather than the front door. */}
+              <Route index element={<CompanyOverviewPage />} />
+              <Route path="profile" element={<CompanyProfilePage />} />
               <Route path="posts" element={<CompanyPostsPage />} />
             </Route>
             <Route path="/company/posts/:id/applicants" element={<JobApplicantsPage />} />

@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
-import { getTemplate } from '../../templates/index.js';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import SummaryTiles from '../../components/ui/SummaryTiles.jsx';
+import RecentList from '../../components/ui/RecentList.jsx';
+
+/** A date as the rest of the application writes it. */
+const asDate = (value) => new Date(value).toLocaleDateString('en-GB');
 
 /**
  * The admin overview.
  *
- * This is the KPI half of the business-intelligence dashboard. The charts
- * (registrations per month, score distribution, skill gaps) come later in
- * Phase 6 with Recharts; the numbers here already come from MongoDB
- * aggregation pipelines.
+ * A summary, not an analysis: how big the system is, what is waiting to
+ * be reviewed, and what has arrived lately. Everything with a trend or a
+ * distribution in it lives in Reports, where it can be filtered by date
+ * and exported — a dashboard that tries to do both ends up doing
+ * neither, and nobody reads a chart to find out that one company is
+ * waiting for approval.
  */
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState(null);
@@ -41,112 +47,116 @@ export default function AdminOverviewPage() {
   if (isLoading) {
     return (
       <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
-        <Spinner label="Loading statistics" />
+        <Spinner label="Loading the dashboard" />
       </div>
     );
   }
 
   if (error) return <Alert variant="error">{error}</Alert>;
 
-  const totalDownloads = Object.values(stats.downloads).reduce((sum, n) => sum + n, 0);
+  const totalDownloads = Object.values(stats.downloads).reduce((sum, count) => sum + count, 0);
 
   return (
     <div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Users" value={stats.users.total} hint={`${stats.users.active} active`} />
-        <StatCard label="Blocked" value={stats.users.blocked} hint="accounts" />
-        <StatCard label="CVs" value={stats.cvs.total} hint={`${stats.cvs.deleted} deleted`} />
-        <StatCard label="Downloads" value={totalDownloads} hint="all formats" />
-      </div>
+      <SummaryTiles
+        items={[
+          {
+            label: 'Users',
+            value: stats.users.total,
+            hint: `${stats.users.active} active · ${stats.users.blocked} blocked`,
+            to: '/admin/users',
+          },
+          {
+            label: 'CVs',
+            value: stats.cvs.total,
+            hint: `average strength ${stats.cvs.averageScore} / 100`,
+            to: '/admin/cvs',
+          },
+          {
+            // The one tile that is a job rather than a fact, so it says
+            // so instead of printing a bare zero.
+            label: 'Awaiting review',
+            value: stats.companies.pending,
+            hint:
+              stats.companies.pending === 0
+                ? 'no companies waiting'
+                : 'companies need approving',
+            to: '/admin/companies',
+          },
+          {
+            label: 'Downloads',
+            value: totalDownloads,
+            hint: `${stats.jobs.open} jobs open on the board`,
+            to: '/admin/reports',
+          },
+        ]}
+      />
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Template popularity</h2>
+      {/* `items-start` so each panel is as tall as its own contents. A
+          stretched grid would pad a one-row list out to the height of a
+          five-row one, which reads as a panel that failed to load. */}
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-2">
+        <RecentList
+          title="Companies to review"
+          items={stats.latest.companiesToReview.map((company) => ({
+            id: company.id,
+            primary: company.name,
+            secondary: company.detail,
+            meta: asDate(company.submittedAt),
+            to: '/admin/companies',
+          }))}
+          emptyMessage="Nothing is waiting for approval."
+          viewAll={{ label: 'All companies', to: '/admin/companies' }}
+        />
 
-          {stats.templateUsage.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              No CVs have been created yet.
-            </p>
-          ) : (
-            <ul className="mt-4 space-y-3">
-              {stats.templateUsage.map((row) => {
-                const highest = stats.templateUsage[0].count;
-                const percent = Math.round((row.count / highest) * 100);
+        <RecentList
+          title="Newest accounts"
+          items={stats.latest.users.map((user) => ({
+            id: user.id,
+            primary: user.name,
+            secondary: `${user.email} · ${user.role}`,
+            meta: asDate(user.createdAt),
+            to: `/admin/users/${user.id}`,
+          }))}
+          emptyMessage="Nobody has registered yet."
+          viewAll={{ label: 'All users', to: '/admin/users' }}
+        />
 
-                return (
-                  <li key={row.templateKey}>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-700 dark:text-slate-300">
-                        {getTemplate(row.templateKey).name}
-                      </span>
-                      <span className="text-slate-500 dark:text-slate-400">{row.count}</span>
-                    </div>
-                    {/* A simple bar. Recharts arrives with the full dashboard. */}
-                    <div className="mt-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800">
-                      <div
-                        className="h-2 rounded-full bg-slate-900"
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+        <RecentList
+          title="Newest CVs"
+          items={stats.latest.cvs.map((cv) => ({
+            id: cv.id,
+            primary: cv.title,
+            secondary: `${cv.owner} · strength ${cv.strengthScore}/100`,
+            meta: asDate(cv.createdAt),
+            to: `/admin/cvs/${cv.id}`,
+          }))}
+          emptyMessage="No CVs have been created yet."
+          viewAll={{ label: 'All CVs', to: '/admin/cvs' }}
+        />
+
+        <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Go to</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {[
+              { to: '/admin/users', label: 'Manage users' },
+              { to: '/admin/companies', label: 'Review companies' },
+              { to: '/admin/cvs', label: 'Browse all CVs' },
+              { to: '/admin/reports', label: 'Reports and exports' },
+              { to: '/admin/activity', label: 'Activity log' },
+            ].map((link) => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="font-medium text-slate-900 underline dark:text-slate-100"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
-
-        <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Downloads by format</h2>
-
-          {totalDownloads === 0 ? (
-            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              Nothing has been downloaded yet.
-            </p>
-          ) : (
-            <dl className="mt-4 space-y-2 text-sm">
-              {Object.entries(stats.downloads).map(([action, count]) => (
-                <div key={action} className="flex justify-between">
-                  <dt className="text-slate-600 dark:text-slate-400">
-                    {action.replace('DOWNLOAD_', '')}
-                  </dt>
-                  <dd className="font-medium text-slate-900 dark:text-slate-100">{count}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-
-          <div className="mt-5 flex gap-3 border-t border-slate-200 dark:border-slate-700 pt-4 text-sm">
-            <Link
-              to="/admin/users"
-              className="font-medium text-slate-900 dark:text-slate-100 underline"
-            >
-              Manage users
-            </Link>
-            <Link
-              to="/admin/cvs"
-              className="font-medium text-slate-900 dark:text-slate-100 underline"
-            >
-              Browse all CVs
-            </Link>
-          </div>
-        </section>
       </div>
-    </div>
-  );
-}
-
-/**
- * One KPI tile.
- * @param {{label: string, value: number, hint: string}} props
- */
-function StatCard({ label, value, hint }) {
-  return (
-    <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-        {value}
-      </p>
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
     </div>
   );
 }

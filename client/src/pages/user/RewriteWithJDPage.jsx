@@ -138,7 +138,7 @@ export default function RewriteWithJDPage() {
         <Alert variant="error" className="mt-5">
           {error}{' '}
           {/primary cv/i.test(error) && (
-            <Link to="/dashboard" className="font-medium underline">
+            <Link to="/cvs" className="font-medium underline">
               Go to My CVs
             </Link>
           )}
@@ -231,7 +231,7 @@ export default function RewriteWithJDPage() {
           <h2 className="font-semibold text-slate-900 dark:text-slate-100">Your CV is saved</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
             “{saved.title}” is in{' '}
-            <Link to="/dashboard" className="font-medium underline">
+            <Link to="/cvs" className="font-medium underline">
               My CVs
             </Link>
             {isPrimary ? ' and is now your primary CV.' : '.'}

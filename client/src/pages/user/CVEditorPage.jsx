@@ -130,7 +130,7 @@ export default function CVEditorPage() {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <Alert variant="error">{loadError}</Alert>
-        <Link to="/dashboard" className="mt-6 inline-block">
+        <Link to="/cvs" className="mt-6 inline-block">
           <Button variant="secondary">Back to my CVs</Button>
         </Link>
       </div>
@@ -143,7 +143,7 @@ export default function CVEditorPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <Link
-            to="/dashboard"
+            to="/cvs"
             className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
           >
             &larr; My CVs
