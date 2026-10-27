@@ -125,6 +125,10 @@ export default function Sidebar({ onNavigate }) {
             onNavigate={onNavigate}
           />
           <Item to="/company/posts" icon="jobs" label="My posts" onNavigate={onNavigate} />
+          {/* Shown even while the company is waiting for approval. The
+              page explains the wait, which is more use to the employer
+              than a link that is simply missing with no reason given. */}
+          <Item to="/talent" icon="users" label="Find candidates" onNavigate={onNavigate} />
           <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
         </Group>
       )}
@@ -138,6 +142,7 @@ export default function Sidebar({ onNavigate }) {
         <Group title="Administration">
           <Item to="/admin" icon="overview" label="Overview" end onNavigate={onNavigate} />
           <Item to="/admin/users" icon="users" label="Users" onNavigate={onNavigate} />
+          <Item to="/talent" icon="profile" label="People directory" onNavigate={onNavigate} />
           <Item to="/admin/companies" icon="companies" label="Companies" onNavigate={onNavigate} />
           <Item to="/admin/cvs" icon="cvs" label="All CVs" onNavigate={onNavigate} />
           <Item to="/admin/activity" icon="activity" label="Activity" onNavigate={onNavigate} />

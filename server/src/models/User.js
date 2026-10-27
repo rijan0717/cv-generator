@@ -7,9 +7,56 @@
  */
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { INDUSTRY_VALUES, EMPLOYMENT_TYPE_VALUES } from '../data/industries.js';
 
 /** Cost factor for bcrypt. 12 is slow enough to resist brute force. */
 const BCRYPT_ROUNDS = 12;
+
+/**
+ * What a job seeker chooses to show employers, beyond their name and photo.
+ *
+ * It lives on the user rather than on a CV because it describes the person,
+ * not a document: someone with five tailored CVs has one current position
+ * and one answer to "are you looking?". Keeping it here also means the
+ * candidate directory can filter without reading every CV.
+ *
+ * Employers never see it for an account that is not a job seeker.
+ */
+const jobSeekerProfileSchema = new mongoose.Schema(
+  {
+    /** Current or desired job title, e.g. "Junior Accountant". */
+    position: { type: String, trim: true, maxlength: 100, default: '' },
+
+    /** One of the fixed industry keys, so the directory filter can group. */
+    industry: {
+      type: String,
+      enum: [...INDUSTRY_VALUES, ''],
+      default: '',
+    },
+
+    /**
+     * Total years of work experience, as the candidate states it. Capped at
+     * 60: anything higher is a typo rather than a career.
+     */
+    yearsExperience: { type: Number, min: 0, max: 60, default: 0 },
+
+    /** Whether the candidate wants to be approached about roles. */
+    openToWork: { type: Boolean, default: false },
+
+    /** The kinds of work they will consider. Empty means "not stated". */
+    employmentTypes: {
+      type: [{ type: String, enum: EMPLOYMENT_TYPE_VALUES }],
+      default: [],
+    },
+
+    /** Where they are based, shown to employers as free text. */
+    location: { type: String, trim: true, maxlength: 120, default: '' },
+
+    /** A short introduction in the candidate's own words. */
+    about: { type: String, trim: true, maxlength: 600, default: '' },
+  },
+  { _id: false },
+);
 
 const userSchema = new mongoose.Schema(
   {
@@ -38,9 +85,22 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
+    /**
+     * What this account is, as one word.
+     *
+     * `user` means the account type has not been chosen yet. Once it is,
+     * the role follows it — a job seeker's role reads `jobseeker` and an
+     * employer's reads `employer` — so the database says plainly what each
+     * account is instead of leaving every row as `user`. The `syncRole`
+     * hook below is what keeps the two in step. `admin` is set by the seed
+     * script and is never changed by that hook.
+     *
+     * Permission checks still use `requireAdmin` and `requireAccountType`,
+     * so nothing is decided by this field alone.
+     */
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'jobseeker', 'employer', 'admin'],
       default: 'user',
     },
 
@@ -59,6 +119,12 @@ const userSchema = new mongoose.Schema(
     avatarUrl: {
       type: String,
       default: '',
+    },
+
+    /** Only meaningful for a job seeker; left at its defaults otherwise. */
+    jobSeekerProfile: {
+      type: jobSeekerProfileSchema,
+      default: () => ({}),
     },
 
     status: {
@@ -86,6 +152,13 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ isDeleted: 1, createdAt: -1 });
 
 /**
+ * The candidate directory filters on exactly these fields in this order,
+ * so one compound index serves the whole list, including the common case
+ * of an employer asking only for one industry.
+ */
+userSchema.index({ accountType: 1, isDeleted: 1, status: 1, 'jobSeekerProfile.industry': 1 });
+
+/**
  * Hashes the password before saving, but only when it has actually changed.
  * Without the `isModified` guard, every profile update would re-hash the
  * existing hash and lock the user out.
@@ -93,6 +166,23 @@ userSchema.index({ isDeleted: 1, createdAt: -1 });
 userSchema.pre('save', async function hashPassword(next) {
   if (!this.isModified('passwordHash')) return next();
   this.passwordHash = await bcrypt.hash(this.passwordHash, BCRYPT_ROUNDS);
+  next();
+});
+
+/**
+ * Keeps `role` reading the same as `accountType`, so an employer is stored
+ * as `employer` rather than as a generic `user`.
+ *
+ * Done in one hook rather than at each call site: the account type is set
+ * by the choice screen, by the seed scripts and by the migration, and
+ * three places each remembering to write the role is three chances to
+ * forget. An admin is never rewritten — admins have no account type, and
+ * losing the admin role would lock the panel.
+ */
+userSchema.pre('save', function syncRole(next) {
+  if (this.role !== 'admin') {
+    this.role = this.accountType ?? 'user';
+  }
   next();
 });
 
@@ -111,7 +201,7 @@ userSchema.methods.comparePassword = function comparePassword(plainPassword) {
  * can never leak through a response.
  * @returns {{id: string, name: string, email: string, role: string,
  *            accountType: string|null, avatarUrl: string, status: string,
- *            createdAt: Date}}
+ *            jobSeekerProfile: object, createdAt: Date}}
  */
 userSchema.methods.toPublicJSON = function toPublicJSON() {
   return {
@@ -122,6 +212,17 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     accountType: this.accountType ?? null,
     avatarUrl: this.avatarUrl,
     status: this.status,
+    // Sent to its owner so the profile form can show what is saved. The
+    // directory builds its own shape rather than reusing this one.
+    jobSeekerProfile: {
+      position: this.jobSeekerProfile?.position ?? '',
+      industry: this.jobSeekerProfile?.industry ?? '',
+      yearsExperience: this.jobSeekerProfile?.yearsExperience ?? 0,
+      openToWork: this.jobSeekerProfile?.openToWork ?? false,
+      employmentTypes: this.jobSeekerProfile?.employmentTypes ?? [],
+      location: this.jobSeekerProfile?.location ?? '',
+      about: this.jobSeekerProfile?.about ?? '',
+    },
     createdAt: this.createdAt,
   };
 };

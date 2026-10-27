@@ -10,18 +10,51 @@ import { ApiError } from '../utils/ApiError.js';
 import { UPLOAD_DIR } from '../middleware/upload.js';
 
 /**
+ * The job seeker profile fields a user may set on themselves. Listing them
+ * explicitly is what stops a `jobSeekerProfile` object in a request body
+ * from writing anything else into the sub-document.
+ */
+const PROFILE_FIELDS = [
+  'position',
+  'industry',
+  'yearsExperience',
+  'openToWork',
+  'employmentTypes',
+  'location',
+  'about',
+];
+
+/**
  * PUT /api/users/me
- * Updates the display name. Email and role are deliberately not editable
- * here: the email identifies the account, and the role is an admin concern.
+ * Updates the display name and, for a job seeker, the profile that
+ * employers see. Email and role are deliberately not editable here: the
+ * email identifies the account, and the role is an admin concern.
+ *
+ * The profile is written only for job seekers. An employer has a company
+ * profile instead, and letting them fill in a candidate profile would put
+ * them in the directory they are supposed to be reading.
  *
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<void>}
  */
 export async function updateProfile(req, res) {
-  const { name } = req.body;
+  const { name, jobSeekerProfile } = req.body;
 
-  req.user.name = name;
+  if (name !== undefined) req.user.name = name;
+
+  if (jobSeekerProfile) {
+    if (req.user.accountType !== 'jobseeker') {
+      throw ApiError.forbidden('Only job seeker accounts have a candidate profile');
+    }
+
+    PROFILE_FIELDS.forEach((field) => {
+      if (jobSeekerProfile[field] !== undefined) {
+        req.user.jobSeekerProfile[field] = jobSeekerProfile[field];
+      }
+    });
+  }
+
   await req.user.save();
 
   sendSuccess(res, { user: req.user.toPublicJSON() }, 'Your profile has been updated');

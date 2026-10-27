@@ -653,7 +653,9 @@ function buildUser(rng, passwordHash, usedEmails, registrationWindow) {
     name: `${first} ${last}`,
     email,
     passwordHash,
-    role: 'user',
+    // The role follows the account type. Written out in full because
+    // these documents are inserted in bulk, which skips the model hooks.
+    role: 'jobseeker',
     // Job seekers by default; the few who own a company become employers.
     accountType: 'jobseeker',
     avatarUrl: '',
@@ -1054,8 +1056,12 @@ async function seedJobBoard(rng, users, jobCount, now) {
       },
       { new: true, upsert: true, setDefaultsOnInsert: true },
     );
-    // A company owner is an employer account.
-    await User.updateOne({ _id: owner._id }, { $set: { accountType: 'employer' } });
+    // A company owner is an employer account. The role is written here as
+    // well, because `updateOne` does not run the model's `syncRole` hook.
+    await User.updateOne(
+      { _id: owner._id },
+      { $set: { accountType: 'employer', role: 'employer' } },
+    );
 
     companies.push({ company, owner });
   }

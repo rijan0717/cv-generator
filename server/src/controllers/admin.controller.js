@@ -109,6 +109,12 @@ export async function listUsers(req, res) {
         name: user.name,
         email: user.email,
         role: user.role,
+        // The list doubles as the way into a person's full profile, so it
+        // carries enough of one to tell the rows apart: which kind of
+        // account it is, and whether they are looking for work.
+        accountType: user.accountType ?? null,
+        position: user.jobSeekerProfile?.position ?? '',
+        openToWork: user.jobSeekerProfile?.openToWork ?? false,
         status: user.status,
         avatarUrl: user.avatarUrl,
         lastLoginAt: user.lastLoginAt,
