@@ -296,7 +296,7 @@ describe('DELETE /api/admin/cvs/:id', () => {
 });
 
 describe('GET /api/admin/stats', () => {
-  it('counts users, CVs and template usage', async () => {
+  it('counts users and CVs, and lists the newest of each', async () => {
     const admin = await signInAdmin();
     const alice = await signUpUser('alice@example.com');
     await alice.post('/api/cvs').send({ title: 'One' });
@@ -306,6 +306,23 @@ describe('GET /api/admin/stats', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.users.total).toBe(2);
     expect(res.body.data.cvs.total).toBe(1);
-    expect(res.body.data.templateUsage[0]).toEqual({ templateKey: 'classic', count: 1 });
+
+    // The dashboard is a summary of what has just arrived, so the
+    // newest CV and the newest account come back with the counts.
+    expect(res.body.data.latest.cvs[0]).toMatchObject({ title: 'One' });
+    expect(res.body.data.latest.users[0].email).toBe('alice@example.com');
+    expect(res.body.data.companies.pending).toBe(0);
+  });
+
+  it('returns empty lists rather than omitting them on a fresh system', async () => {
+    const admin = await signInAdmin();
+
+    const res = await admin.get('/api/admin/stats');
+
+    // The dashboard renders its "nothing yet" states from these, so
+    // they have to be arrays even when there is nothing in them.
+    expect(res.body.data.latest.cvs).toEqual([]);
+    expect(res.body.data.latest.companiesToReview).toEqual([]);
+    expect(res.body.data.cvs.averageScore).toBe(0);
   });
 });

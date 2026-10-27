@@ -479,7 +479,7 @@ function TailoredSummary({ cv, canApply, onApply }) {
           </h2>
           <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-400">
             “{cv.title}” is in{' '}
-            <Link to="/dashboard" className="font-medium underline">
+            <Link to="/cvs" className="font-medium underline">
               My CVs
             </Link>
             . Your original CV was not changed.
@@ -647,7 +647,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
           <Alert variant="info">
             You need a CV before you can apply. Create one first, then come back.
           </Alert>
-          <Link to="/dashboard" className="mt-4 inline-block">
+          <Link to="/cvs" className="mt-4 inline-block">
             <Button size="sm">Create a CV</Button>
           </Link>
         </div>

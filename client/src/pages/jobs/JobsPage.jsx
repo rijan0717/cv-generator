@@ -416,7 +416,7 @@ export default function JobsPage() {
                 </>
               ) : (
                 <>
-                  <Link to="/dashboard" className="font-medium hover:underline">
+                  <Link to="/cvs" className="font-medium hover:underline">
                     Choose a primary CV
                   </Link>{' '}
                   to see how well you match each job.

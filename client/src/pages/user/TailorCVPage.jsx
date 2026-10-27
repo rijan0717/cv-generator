@@ -157,7 +157,7 @@ export default function TailorCVPage() {
     <div className={`mx-auto px-4 py-10 ${result ? 'max-w-6xl' : 'max-w-3xl'}`}>
       <header>
         <Link
-          to="/dashboard"
+          to="/cvs"
           className="text-sm text-slate-500 hover:underline dark:text-slate-400"
         >
           ← Back to My CVs

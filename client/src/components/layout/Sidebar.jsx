@@ -99,7 +99,8 @@ export default function Sidebar({ onNavigate }) {
     <nav aria-label="Sections" className="p-4">
       {isJobSeeker && (
         <Group title="My work">
-          <Item to="/dashboard" icon="cvs" label="My CVs" onNavigate={onNavigate} />
+          <Item to="/dashboard" icon="overview" label="Dashboard" end onNavigate={onNavigate} />
+          <Item to="/cvs" icon="cvs" label="My CVs" end onNavigate={onNavigate} />
           <Item to="/rewrite" icon="rewrite" label="Rewrite with JD" onNavigate={onNavigate} />
           <Item to="/match-cv" icon="match" label="Match my CV" onNavigate={onNavigate} />
           <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
@@ -118,11 +119,11 @@ export default function Sidebar({ onNavigate }) {
           company that made it. */}
       {isEmployer && (
         <Group title="My company">
+          <Item to="/company" icon="overview" label="Dashboard" end onNavigate={onNavigate} />
           <Item
-            to="/company"
+            to="/company/profile"
             icon="companies"
             label="Company profile"
-            end
             onNavigate={onNavigate}
           />
           <Item to="/company/posts" icon="jobs" label="My posts" onNavigate={onNavigate} />

@@ -45,7 +45,11 @@ export default function CompanyStatusBanner({ company }) {
       role="status"
       className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
     >
-      ⏳ Pending approval — you can post jobs once the admin approves your company.
+      {/* A dot rather than an emoji: ⏳ falls back to an empty box on a
+          machine with no emoji font, and a status line rendering as a
+          tofu box looks like a fault in the page. */}
+      <span aria-hidden="true" className="mr-1.5 inline-block h-2 w-2 rounded-full bg-amber-500" />
+      Pending approval — you can post jobs once the admin approves your company.
     </p>
   );
 }
