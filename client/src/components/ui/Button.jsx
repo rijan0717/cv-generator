@@ -8,7 +8,14 @@ import Spinner from './Spinner.jsx';
  * button on a dark surface would disappear, so it becomes light-on-dark and
  * needs its own hover colour to match.
  *
- * @param {{variant?: 'primary'|'secondary'|'ghost'|'danger',
+ * `as` renders the same styling on a different element — in practice an
+ * `a`, for an action that is really a navigation, such as opening
+ * something in a new tab. A `<button>` nested inside an `<a>` is invalid
+ * HTML and does not follow the link, so the link has to carry the
+ * styling itself rather than wrap a button.
+ *
+ * @param {{as?: React.ElementType,
+ *          variant?: 'primary'|'secondary'|'ghost'|'danger',
  *          size?: 'sm'|'md'|'lg', isLoading?: boolean, className?: string,
  *          children: React.ReactNode}} props
  */
@@ -41,6 +48,7 @@ const SIZES = {
 };
 
 export default function Button({
+  as: Tag = 'button',
   variant = 'primary',
   size = 'md',
   isLoading = false,
@@ -49,11 +57,15 @@ export default function Button({
   disabled,
   ...rest
 }) {
+  // `disabled` is a button attribute; React would warn about it on an
+  // anchor, and it would do nothing there in any case.
+  const isButton = Tag === 'button';
+
   return (
-    <button
+    <Tag
       // A button that is loading must also be unclickable, or a slow network
       // lets the user submit the same form twice.
-      disabled={disabled || isLoading}
+      disabled={isButton ? disabled || isLoading : undefined}
       className={[
         'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
@@ -66,6 +78,6 @@ export default function Button({
     >
       {isLoading && <Spinner />}
       {children}
-    </button>
+    </Tag>
   );
 }
