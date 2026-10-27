@@ -1,18 +1,15 @@
 import { Link } from 'react-router-dom';
 
 /**
- * A row of plain numbers at the top of a dashboard.
+ * A row of headline figures at the top of a dashboard.
  *
- * Deliberately not charts. The question each of these answers is "how
- * many", and a number answers it faster than any drawing of a number
- * can. Anything that needs a trend or a distribution belongs in Reports,
- * where it can be filtered by date and exported.
+ * Each tile is a label, a large number and a short hint. A tile with a `to`
+ * is a link to the page behind the figure, and shows a small arrow on
+ * hover so it is clear it can be clicked. Numbers use tabular figures, so
+ * a row of tiles lines up however many digits each one has.
  *
- * A tile with a `to` becomes a link, so a count that is really a job to
- * do — companies waiting for review — can be acted on where it is read.
- *
- * @param {{items: Array<{label: string, value: number|string,
- *          hint?: string, to?: string}>}} props
+ * @param {{items: Array<{label: string, value: string|number, hint?: string,
+ *          to?: string}>}} props
  */
 export default function SummaryTiles({ items }) {
   return (
@@ -20,8 +17,20 @@ export default function SummaryTiles({ items }) {
       {items.map((item) => {
         const body = (
           <>
-            <dt className="text-sm text-slate-500 dark:text-slate-400">{item.label}</dt>
-            <dd className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            <div className="flex items-start justify-between gap-2">
+              <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                {item.label}
+              </dt>
+              {item.to && (
+                <span
+                  aria-hidden="true"
+                  className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-slate-600 dark:group-hover:text-blue-400"
+                >
+                  &rarr;
+                </span>
+              )}
+            </div>
+            <dd className="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-slate-100">
               {item.value}
             </dd>
             {item.hint && (
@@ -31,13 +40,13 @@ export default function SummaryTiles({ items }) {
         );
 
         const className =
-          'block rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700';
+          'group block rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900';
 
         return item.to ? (
           <Link
             key={item.label}
             to={item.to}
-            className={`${className} transition hover:ring-slate-400 dark:hover:ring-slate-500`}
+            className={`${className} transition hover:border-slate-300 hover:shadow-sm dark:hover:border-slate-600`}
           >
             {body}
           </Link>

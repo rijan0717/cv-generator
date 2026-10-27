@@ -5,6 +5,34 @@ import ThemeToggle from '../ui/ThemeToggle.jsx';
 import { homePathFor } from '../../utils/homePath.js';
 
 /**
+ * Up to two initials for the avatar: "Rijan Pariyar" -> "RP".
+ * @param {string} name - The account name.
+ * @returns {string} The initials.
+ */
+function initials(name) {
+  const parts = String(name ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (parts.length === 0) return '?';
+  const first = parts[0][0];
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+  return `${first}${last}`.toUpperCase();
+}
+
+/**
+ * The kind of account, in words, shown under the name.
+ * @param {object} user - The signed-in user.
+ * @returns {string} "Admin", "Employer" or "Job seeker".
+ */
+function roleLabel(user) {
+  if (user.role === 'admin') return 'Admin';
+  if (user.accountType === 'employer') return 'Employer';
+  if (user.accountType === 'jobseeker') return 'Job seeker';
+  return 'New account';
+}
+
+/**
  * The slim bar across the top.
  *
  * It carries only what belongs everywhere: the brand, the theme switch, and
@@ -79,9 +107,31 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
 
           {isAuthenticated ? (
             <div className="flex items-center gap-3 border-l border-slate-200 pl-3 dark:border-slate-700">
-              <span className="hidden text-sm text-slate-600 sm:inline dark:text-slate-400">
-                {user.name}
-              </span>
+              {/* Who is signed in, and as what: one glance tells an admin
+                  testing several accounts which one this tab is using. */}
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 rounded-md px-1 py-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="grid h-8 w-8 place-items-center rounded-full bg-blue-100 text-sm font-semibold text-blue-800 dark:bg-blue-950 dark:text-blue-200"
+                  >
+                    {initials(user.name)}
+                  </span>
+                )}
+                <span className="hidden text-left leading-tight sm:block">
+                  <span className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+                    {user.name}
+                  </span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-400">
+                    {roleLabel(user)}
+                  </span>
+                </span>
+              </Link>
               <Button variant="secondary" size="sm" onClick={handleLogout}>
                 Log out
               </Button>

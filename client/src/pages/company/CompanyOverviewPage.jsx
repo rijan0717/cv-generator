@@ -4,6 +4,7 @@ import * as jobApi from '../../api/jobs.js';
 import Spinner from '../../components/ui/Spinner.jsx';
 import SummaryTiles from '../../components/ui/SummaryTiles.jsx';
 import RecentList from '../../components/ui/RecentList.jsx';
+import QuickLinks from '../../components/ui/QuickLinks.jsx';
 
 /** A date as the rest of the application writes it. */
 const asDate = (value) => new Date(value).toLocaleDateString('en-GB');
@@ -101,9 +102,7 @@ export default function CompanyOverviewPage() {
 
       {!isApproved ? (
         <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
-            Waiting for approval
-          </h2>
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Waiting for approval</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
             Once an admin approves your company you can post jobs, read applicants and browse
             candidates. Nothing else is needed from you unless they ask for it.
@@ -133,26 +132,15 @@ export default function CompanyOverviewPage() {
             viewAll={{ label: 'All posts', to: '/company/posts' }}
           />
 
-          <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100">Next steps</h2>
-            <ul className="mt-3 space-y-2 text-sm">
-              {[
-                { to: '/company/posts', label: 'Post a job' },
-                { to: '/talent', label: 'Find candidates' },
-                { to: '/jobs', label: 'See the job board' },
-                { to: '/company/profile', label: 'Update your company profile' },
-              ].map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="font-medium text-slate-900 underline dark:text-slate-100"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
+          <QuickLinks
+            title="Next steps"
+            links={[
+              { to: '/company/posts', label: 'Post a job' },
+              { to: '/talent', label: 'Find candidates' },
+              { to: '/jobs', label: 'See the job board' },
+              { to: '/company/profile', label: 'Update your company profile' },
+            ]}
+          >
             {jobs.length > 0 && totalApplicants === 0 && (
               <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                 Nobody has applied yet. Browsing candidates and approaching them directly often
@@ -165,7 +153,7 @@ export default function CompanyOverviewPage() {
                 Company profile last updated {asDate(company.updatedAt)}.
               </p>
             )}
-          </section>
+          </QuickLinks>
         </div>
       )}
     </div>

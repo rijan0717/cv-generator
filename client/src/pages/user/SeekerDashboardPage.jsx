@@ -9,6 +9,7 @@ import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import SummaryTiles from '../../components/ui/SummaryTiles.jsx';
 import RecentList from '../../components/ui/RecentList.jsx';
+import QuickLinks from '../../components/ui/QuickLinks.jsx';
 
 /** A date as the rest of the application writes it. */
 const asDate = (value) => new Date(value).toLocaleDateString('en-GB');
@@ -175,36 +176,29 @@ export default function SeekerDashboardPage() {
           viewAll={{ label: 'All saved jobs', to: '/saved-jobs' }}
         />
 
-        <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Next steps</h2>
-          <ul className="mt-3 space-y-2 text-sm">
-            {[
-              { to: '/cvs', label: 'Create or edit a CV' },
-              { to: '/match-cv', label: 'Check a CV against a job' },
-              { to: '/rewrite', label: 'Rewrite your CV for an advert' },
-              { to: '/profile', label: 'Update your candidate profile' },
-            ].map((link) => (
-              <li key={link.to}>
-                <Link
-                  to={link.to}
-                  className="font-medium text-slate-900 underline dark:text-slate-100"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
+        <QuickLinks
+          title="Next steps"
+          links={[
+            { to: '/cvs', label: 'Create or edit a CV' },
+            { to: '/match-cv', label: 'Check a CV against a job' },
+            { to: '/rewrite', label: 'Rewrite your CV for an advert' },
+            { to: '/profile', label: 'Update your candidate profile' },
+          ]}
+        >
           {/* The one piece of advice worth putting on the page: an
               employer browsing the directory only ever sees the primary
               CV, and a candidate with none shows up with nothing. */}
           {!primary && data.cvTotal > 0 && (
             <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
               No CV is marked as primary, so employers browsing candidates see none of your work.
-              Set one on the <Link to="/cvs" className="underline">My CVs</Link> page.
+              Set one on the{' '}
+              <Link to="/cvs" className="underline">
+                My CVs
+              </Link>{' '}
+              page.
             </p>
           )}
-        </section>
+        </QuickLinks>
       </div>
     </div>
   );

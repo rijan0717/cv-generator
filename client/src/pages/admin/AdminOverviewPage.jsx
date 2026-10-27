@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import SummaryTiles from '../../components/ui/SummaryTiles.jsx';
 import RecentList from '../../components/ui/RecentList.jsx';
+import QuickLinks from '../../components/ui/QuickLinks.jsx';
 
 /** A date as the rest of the application writes it. */
 const asDate = (value) => new Date(value).toLocaleDateString('en-GB');
@@ -78,9 +78,7 @@ export default function AdminOverviewPage() {
             label: 'Awaiting review',
             value: stats.companies.pending,
             hint:
-              stats.companies.pending === 0
-                ? 'no companies waiting'
-                : 'companies need approving',
+              stats.companies.pending === 0 ? 'no companies waiting' : 'companies need approving',
             to: '/admin/companies',
           },
           {
@@ -135,27 +133,16 @@ export default function AdminOverviewPage() {
           viewAll={{ label: 'All CVs', to: '/admin/cvs' }}
         />
 
-        <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Go to</h2>
-          <ul className="mt-3 space-y-2 text-sm">
-            {[
-              { to: '/admin/users', label: 'Manage users' },
-              { to: '/admin/companies', label: 'Review companies' },
-              { to: '/admin/cvs', label: 'Browse all CVs' },
-              { to: '/admin/reports', label: 'Reports and exports' },
-              { to: '/admin/activity', label: 'Activity log' },
-            ].map((link) => (
-              <li key={link.to}>
-                <Link
-                  to={link.to}
-                  className="font-medium text-slate-900 underline dark:text-slate-100"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <QuickLinks
+          title="Go to"
+          links={[
+            { to: '/admin/users', label: 'Manage users' },
+            { to: '/admin/companies', label: 'Review companies' },
+            { to: '/admin/cvs', label: 'Browse all CVs' },
+            { to: '/admin/reports', label: 'Reports and exports' },
+            { to: '/admin/activity', label: 'Activity log' },
+          ]}
+        />
       </div>
     </div>
   );
