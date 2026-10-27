@@ -6,7 +6,6 @@ import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import Pagination from '../../components/ui/Pagination.jsx';
 import StatusBadge from '../../components/jobs/StatusBadge.jsx';
-import SubmittedCV from '../../components/jobs/SubmittedCV.jsx';
 
 /**
  * The applications this user has submitted.
@@ -21,11 +20,6 @@ export default function ApplicationsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
-
-  // Which row has its CV open. One at a time: two full CV previews on
-  // screen at once is more than the page can usefully show, and the
-  // comparison a user wants is with the advert, not with another CV.
-  const [openCvId, setOpenCvId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -137,16 +131,21 @@ export default function ApplicationsPage() {
                 It matters most here: a user who tailors a CV per advert
                 has several near-identical documents, and "which one did
                 they get?" is not a question they can answer from memory.
+
+                It opens in a new tab so this list keeps its page and
+                scroll position, and so two applications can be compared
+                side by side. A plain anchor rather than a router link,
+                because `target` only does this on a real navigation.
               */}
               <Button
+                as="a"
+                href={`/applications/${application._id}/cv`}
+                target="_blank"
+                rel="noopener noreferrer"
                 size="sm"
                 variant="secondary"
-                aria-expanded={openCvId === application._id}
-                onClick={() =>
-                  setOpenCvId((current) => (current === application._id ? null : application._id))
-                }
               >
-                {openCvId === application._id ? 'Hide CV' : 'View CV'}
+                View CV
               </Button>
 
               {application.status !== 'withdrawn' && (
@@ -160,11 +159,6 @@ export default function ApplicationsPage() {
                 </Button>
               )}
 
-              {openCvId === application._id && (
-                <div className="w-full">
-                  <SubmittedCV applicationId={application._id} />
-                </div>
-              )}
             </li>
           ))}
         </ul>

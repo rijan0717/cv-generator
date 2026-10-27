@@ -32,6 +32,7 @@ import JobDetailPage from './pages/jobs/JobDetailPage.jsx';
 import MatchMyCVPage from './pages/jobs/MatchMyCVPage.jsx';
 import SavedJobsPage from './pages/jobs/SavedJobsPage.jsx';
 import ApplicationsPage from './pages/jobs/ApplicationsPage.jsx';
+import SubmittedCVPage from './pages/jobs/SubmittedCVPage.jsx';
 import CompanyLayout from './pages/company/CompanyLayout.jsx';
 import CompanyProfilePage from './pages/company/CompanyProfilePage.jsx';
 import CompanyPostsPage from './pages/company/CompanyPostsPage.jsx';
@@ -89,6 +90,9 @@ export default function App() {
             <Route path="/match-cv" element={<MatchMyCVPage />} />
             <Route path="/saved-jobs" element={<SavedJobsPage />} />
             <Route path="/applications" element={<ApplicationsPage />} />
+            {/* "View CV" opens this in a new tab, so the list keeps its
+                page and scroll position while the CV is read. */}
+            <Route path="/applications/:id/cv" element={<SubmittedCVPage />} />
           </Route>
 
           {/* Employers (and the admin). My company is the module; the
