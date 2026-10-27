@@ -758,8 +758,16 @@ async function seedQaDemo() {
   const { user: employer, created: employerCreated } = await findOrCreateUser(EMPLOYER);
 
   // One of each account type, so the demo needs no first-login choice.
-  await User.updateOne({ _id: seeker._id }, { $set: { accountType: 'jobseeker' } });
-  await User.updateOne({ _id: employer._id }, { $set: { accountType: 'employer' } });
+  // The role is written alongside it: `updateOne` does not run the
+  // model's `syncRole` hook, so it would otherwise stay at `user`.
+  await User.updateOne(
+    { _id: seeker._id },
+    { $set: { accountType: 'jobseeker', role: 'jobseeker' } },
+  );
+  await User.updateOne(
+    { _id: employer._id },
+    { $set: { accountType: 'employer', role: 'employer' } },
+  );
 
   const jobs = await seedJobs(employer);
   const cvs = await seedCVs(seeker);

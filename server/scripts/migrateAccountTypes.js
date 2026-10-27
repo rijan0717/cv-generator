@@ -9,7 +9,9 @@
  *      jobs already on the board stay visible. They were live before the
  *      approval step existed; hiding them would break the board.
  *   2. Every user who owns a company becomes an `employer`.
- *   3. Everyone else is left without an account type, so they see the
+ *   3. Every non-admin `role` is set from the account type, so an employer
+ *      reads `employer` in the database rather than `user`.
+ *   4. Everyone else is left without an account type, so they see the
  *      one-time "I'm an employer / I'm a job seeker" choice on their next
  *      login.
  *
@@ -39,20 +41,29 @@ async function migrate() {
   // Step 2: company owners are employers.
   const ownerIds = await Company.distinct('owner', { isDeleted: false });
   const employers = await User.updateMany(
-    { _id: { $in: ownerIds }, role: 'user', accountType: { $in: [null, undefined] } },
-    { $set: { accountType: 'employer' } },
+    { _id: { $in: ownerIds }, role: { $ne: 'admin' }, accountType: { $in: [null, undefined] } },
+    { $set: { accountType: 'employer', role: 'employer' } },
   );
 
-  // Step 3: nothing to write — a missing account type already means
+  // Step 3: the role now follows the account type, so a database written
+  // before that was true still reads `user` for everybody. Bring the two
+  // into line. Admins are skipped: they have no account type, and
+  // rewriting their role would shut them out of the admin panel.
+  const roles = await User.updateMany({ role: { $ne: 'admin' } }, [
+    { $set: { role: { $ifNull: ['$accountType', 'user'] } } },
+  ]);
+
+  // Step 4: nothing to write — a missing account type already means
   // "ask on next login". Counted for the report only.
   const undecided = await User.countDocuments({
-    role: 'user',
+    role: { $ne: 'admin' },
     isDeleted: false,
     accountType: { $in: [null, undefined] },
   });
 
   console.log(`[migrate:accounts] Companies marked approved: ${companies.modifiedCount}`);
   console.log(`[migrate:accounts] Company owners made employers: ${employers.modifiedCount}`);
+  console.log(`[migrate:accounts] Roles matched to account type: ${roles.modifiedCount}`);
   console.log(`[migrate:accounts] Users who will choose on next login: ${undecided}`);
 
   await disconnectDB();

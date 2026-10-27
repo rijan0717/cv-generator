@@ -33,6 +33,8 @@ import MatchMyCVPage from './pages/jobs/MatchMyCVPage.jsx';
 import SavedJobsPage from './pages/jobs/SavedJobsPage.jsx';
 import ApplicationsPage from './pages/jobs/ApplicationsPage.jsx';
 import SubmittedCVPage from './pages/jobs/SubmittedCVPage.jsx';
+import TalentPage from './pages/talent/TalentPage.jsx';
+import TalentDetailPage from './pages/talent/TalentDetailPage.jsx';
 import CompanyLayout from './pages/company/CompanyLayout.jsx';
 import CompanyProfilePage from './pages/company/CompanyProfilePage.jsx';
 import CompanyPostsPage from './pages/company/CompanyPostsPage.jsx';
@@ -104,6 +106,13 @@ export default function App() {
               <Route path="posts" element={<CompanyPostsPage />} />
             </Route>
             <Route path="/company/posts/:id/applicants" element={<JobApplicantsPage />} />
+
+            {/* The candidate directory. The route lets every employer in;
+                whether they may actually read it depends on their company
+                being approved, which only the server can answer, so the
+                page itself shows the reason when it cannot. */}
+            <Route path="/talent" element={<TalentPage />} />
+            <Route path="/talent/:id" element={<TalentDetailPage />} />
           </Route>
         </Route>
 

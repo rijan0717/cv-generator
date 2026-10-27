@@ -5,6 +5,8 @@ import JobForm from './JobForm.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import ApprovalNotice from '../../components/company/ApprovalNotice.jsx';
+import { approvalMessageFor } from '../../utils/approvalMessage.js';
 
 /**
  * My posts: every job this company has advertised, and the form for
@@ -45,13 +47,15 @@ export default function CompanyPostsPage() {
     };
   }, []);
 
-  // Until the admin approves the company there is nothing to do here, so
-  // the page says only that.
+  // Until the admin approves the company there is nothing to do here.
+  // The same notice as the candidate directory, so an employer who meets
+  // the approval wall in two places reads one explanation, not two.
   if (!canPost) {
     return (
-      <p className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
-        You can&apos;t add any posts until the admin approves your company.
-      </p>
+      <ApprovalNotice
+        message={approvalMessageFor(company)}
+        detail="A post goes on the job board for every job seeker to see, so a company is checked before it can advertise."
+      />
     );
   }
 

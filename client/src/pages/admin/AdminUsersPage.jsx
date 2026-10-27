@@ -157,6 +157,9 @@ export default function AdminUsersPage() {
                   Role
                 </th>
                 <th scope="col" className="px-4 py-3">
+                  Type
+                </th>
+                <th scope="col" className="px-4 py-3">
                   Status
                 </th>
                 <th scope="col" className="px-4 py-3">
@@ -193,7 +196,33 @@ export default function AdminUsersPage() {
                         admin
                       </span>
                     ) : (
-                      <span className="text-slate-600 dark:text-slate-400">user</span>
+                      // The role follows the account type, so this reads
+                      // `employer` or `jobseeker` once the account has
+                      // chosen, and `user` until then.
+                      <span className="text-slate-600 dark:text-slate-400">{user.role}</span>
+                    )}
+                  </td>
+
+                  {/* The account type, with the position underneath it:
+                      between two accounts of the same name, what the
+                      person does is what tells them apart. */}
+                  <td className="px-4 py-3">
+                    <div className="text-slate-600 dark:text-slate-400">
+                      {user.accountType === 'employer'
+                        ? 'Employer'
+                        : user.accountType === 'jobseeker'
+                          ? 'Job seeker'
+                          : '—'}
+                    </div>
+                    {user.position && (
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {user.position}
+                      </div>
+                    )}
+                    {user.openToWork && (
+                      <div className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                        Open to work
+                      </div>
                     )}
                   </td>
 
@@ -223,6 +252,15 @@ export default function AdminUsersPage() {
 
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
+                      {/* The full profile as an employer sees it, with the
+                          photo, the availability banner and the primary
+                          CV. Admin accounts have no such profile, so the
+                          button is not offered for them. */}
+                      {user.role !== 'admin' && (
+                        <Button as={Link} to={`/talent/${user.id}`} size="sm" variant="ghost">
+                          View
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="ghost"

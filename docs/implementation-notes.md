@@ -527,3 +527,102 @@ employer's company must be checked before its jobs reach job seekers.
 `npm run migrate:accounts` (`scripts/migrateAccountTypes.js`): existing
 companies → approved, their owners → employers, everyone else chooses on next
 login. Idempotent.
+
+## Feature 8 — Candidate directory
+
+An approved employer can browse the people on the system, filter them by
+industry, and read one person's profile together with the CV they have marked
+as primary. Admins see the same screens, and can switch the directory over to
+employer accounts.
+
+### Who may read it
+
+`middleware/talentAccess.js → requireApprovedEmployer` is the gate, and it is
+deliberately the same condition that allows posting a job: an admin, or the
+owner of a company the admin has approved. Candidate profiles are personal
+data, so an unverified account must not be able to page through them. The
+middleware leaves the company on `req.employerCompany` for any handler that
+needs it, and its message says which of the three reasons applied (no company,
+pending, rejected).
+
+Two rules hold for every query in `controllers/talent.controller.js`:
+
+1. Admin accounts are never listed and never readable here — an admin is not a
+   candidate, and the directory is not a way to enumerate who runs the system.
+2. An employer sees job seekers only. `?accountType=employer` is honoured for
+   admins and forced back to `jobseeker` for everybody else, so the parameter
+   cannot widen what an employer can see.
+
+Blocked and soft-deleted accounts are left out of both the list and the detail
+route.
+
+### The profile
+
+`User.jobSeekerProfile` (sub-document, no `_id`): `position`, `industry`,
+`yearsExperience` (0–60), `openToWork`, `employmentTypes[]`, `location`,
+`about`. It lives on the user rather than on a CV because it describes the
+person, not a document: someone with five tailored CVs still has one current
+position and one answer to "are you looking?".
+
+`industry` and `employmentTypes` come from a fixed list
+(`server/src/data/industries.js`, mirrored for the dropdowns in
+`client/src/constants/industries.js`; the server validates). Free text would
+give "IT", "I.T." and "Tech" as three industries no filter could reunite.
+
+Index: `{ accountType, isDeleted, status, 'jobSeekerProfile.industry' }` — the
+directory filters on exactly those fields.
+
+### API
+
+| Route | Who | Notes |
+| ----- | --- | ----- |
+| `GET /api/talent` | approved employer, admin | `page`, `search` (name or position), `industry`, `employmentType`, `openToWork`, `accountType` (admin only). Open-to-work candidates sort first. |
+| `GET /api/talent/:id` | approved employer, admin | The person, plus `primaryCv` (`isPrimary: true`) or `null`. |
+| `GET /api/talent/filters` | approved employer, admin | The industry and employment-type lists. |
+| `PUT /api/users/me` | the owner | Now also takes `jobSeekerProfile`. `name` became optional, because the profile form posts only its own fields. Writing the profile is refused for an account that is not a job seeker. |
+
+The primary CV is shown rather than the newest: a candidate may be part way
+through a better draft, and showing a half-finished one would misrepresent
+them. If none is marked, nothing is shown rather than a guess.
+
+### Client
+
+- `pages/talent/TalentPage.jsx` — filters and the card grid.
+- `pages/talent/TalentDetailPage.jsx` — profile, open-to-work banner, and the
+  primary CV through the same `CVPreview` the builder uses.
+- `components/company/ApprovalNotice.jsx` — what an employer sees instead of
+  any page their company is not approved for: the candidate directory and My
+  posts both use it, so an employer who meets the wall twice reads one
+  explanation rather than a full page in one place and a grey line in another.
+  A page, not a red error bar: they have done nothing wrong, the admin simply
+  has not checked them yet. The reason comes from the server where the server
+  knows it, and from `utils/approvalMessage.js → approvalMessageFor(company)` — worded identically —
+  where the client already has the status.
+- `components/talent/OpenToWorkBadge.jsx`, `components/talent/Avatar.jsx`.
+- `pages/user/ProfilePage.jsx` — the "Candidate profile" form, job seekers only.
+- `pages/admin/AdminUsersPage.jsx` — account type and position columns, and a
+  View button into the same detail page (not offered for admin rows).
+- Sidebar: "Find candidates" for employers, "People directory" for admins. The
+  employer link is shown even while unapproved, because the page explains the
+  wait and a missing link explains nothing.
+- `components/ui/Button.jsx` gained an optional `as` prop, so a link can carry
+  the button styling instead of a `<button>` being nested inside an `<a>`.
+
+### Role follows the account type
+
+`User.role` is no longer just `user` or `admin`. Its enum is
+`user | jobseeker | employer | admin`, and a `syncRole` pre-save hook sets it
+from `accountType` for every non-admin, so the database says plainly what each
+account is instead of leaving every row as `user`. Admins are never rewritten:
+they have no account type, and losing the role would shut them out of the
+panel.
+
+Permissions are unchanged — `requireAdmin` and `requireAccountType` still
+decide everything, so the role is a label rather than a second source of
+truth. Code that used to mean "not an admin" by testing `role === 'user'` now
+tests `role !== 'admin'`.
+
+Writes that bypass Mongoose middleware set the role by hand: `updateOne` in
+`seedQaDemo.js` and `seedLoadTestUsers.js`, the bulk insert in
+`seedLoadTestUsers.js`, and step 3 of `npm run migrate:accounts`, which brings
+an existing database into line.
