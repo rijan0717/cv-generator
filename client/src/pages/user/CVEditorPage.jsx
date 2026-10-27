@@ -237,8 +237,11 @@ export default function CVEditorPage() {
           )}
         </div>
 
-        {/* Right: live preview, kept in view while the form scrolls */}
-        <div className="min-w-0 lg:sticky lg:top-20 lg:self-start">
+        {/* Right: live preview, kept in view while the form scrolls.
+            `top-6`, not `top-20`: the content pane is the scroll
+            container now and the top bar sits outside it, so there is
+            no header height to clear. */}
+        <div className="min-w-0 lg:sticky lg:top-6 lg:self-start">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
             <span className="text-xs text-slate-500 dark:text-slate-400">
