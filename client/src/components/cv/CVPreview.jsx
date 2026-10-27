@@ -48,6 +48,13 @@ export default function CVPreview({ cv, className = '' }) {
 
     measure();
 
+    // Where ResizeObserver does not exist (an old browser, or the test
+    // environment) fall back to window resizes rather than crashing the page.
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', measure);
+      return () => window.removeEventListener('resize', measure);
+    }
+
     // The panel can be resized by the window or by the layout changing, so
     // observe the container rather than only listening for window resizes.
     const observer = new ResizeObserver(measure);
