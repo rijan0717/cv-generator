@@ -282,17 +282,22 @@ export default function TalentPage() {
                 )}
               </dl>
 
-              {/* Pushed to the bottom so every card's button lines up,
+              {/* The wrapper carries the spacing, not the button: padding
+                  on the button itself would make the button taller rather
+                  than move it away from the details above. `mt-auto`
+                  pushes it to the bottom so every card's button lines up,
                   however much detail the person has filled in. */}
-              <Button
-                as={Link}
-                to={`/talent/${person.id}`}
-                size="sm"
-                variant="secondary"
-                className="mt-auto w-full"
-              >
-                View details
-              </Button>
+              <div className="mt-auto pt-4">
+                <Button
+                  as={Link}
+                  to={`/talent/${person.id}`}
+                  size="sm"
+                  variant="secondary"
+                  className="w-full"
+                >
+                  View details
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

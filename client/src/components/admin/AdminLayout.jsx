@@ -2,8 +2,9 @@ import { Outlet } from 'react-router-dom';
 
 /**
  * Shared frame for the admin area: a heading, with each page rendered
- * below. The sections (Overview, Users, Companies, All CVs, Activity) are
- * chosen in the sidebar, so they are not repeated here as tabs.
+ * below. The sections (Overview, Users, Companies, All CVs, Reports,
+ * Activity) are chosen in the sidebar, so they are not repeated here as
+ * tabs.
  */
 export default function AdminLayout() {
   return (

@@ -15,6 +15,7 @@ import { CV } from '../models/CV.js';
 import { Company } from '../models/Company.js';
 import { Job } from '../models/Job.js';
 import { ActivityLog } from '../models/ActivityLog.js';
+import { JobMatch } from '../models/JobMatch.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -32,8 +33,60 @@ function escapeRegex(value) {
 }
 
 /**
+ * The months a trend chart covers. Twelve is a year at a glance, which is
+ * the span a chart of monthly counts is actually read over.
+ */
+const TREND_MONTHS = 12;
+
+/**
+ * The first instant of the month `count` months before this one.
+ * @param {number} count - How many months back.
+ * @returns {Date}
+ */
+function monthsAgo(count) {
+  const date = new Date();
+  date.setUTCDate(1);
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCMonth(date.getUTCMonth() - count);
+  return date;
+}
+
+/**
+ * Fills in the months a `$group` produced nothing for.
+ *
+ * Without this, a quiet month is missing from the series rather than
+ * shown as zero, and a line chart joins the months either side of it —
+ * drawing a straight line through a gap and making the trend look
+ * smoother than it was.
+ *
+ * @param {Array<{_id: string, count: number}>} rows - Grouped by `YYYY-MM`.
+ * @param {number} months - How many months the series covers.
+ * @returns {Array<{month: string, count: number}>} Oldest first.
+ */
+function fillMonths(rows, months) {
+  const counts = new Map(rows.map((row) => [row._id, row.count]));
+  const series = [];
+
+  for (let back = months - 1; back >= 0; back -= 1) {
+    const date = monthsAgo(back);
+    const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+    series.push({ month: key, count: counts.get(key) ?? 0 });
+  }
+
+  return series;
+}
+
+/** Group documents into `YYYY-MM` buckets since a given date. */
+function monthlyPipeline(since) {
+  return [
+    { $match: { isDeleted: false, createdAt: { $gte: since } } },
+    { $group: { _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } }, count: { $sum: 1 } } },
+  ];
+}
+
+/**
  * GET /api/admin/stats
- * The headline numbers for the admin dashboard.
+ * The headline numbers and the series behind the dashboard's charts.
  */
 export async function getStats(req, res) {
   // Run independent counts concurrently rather than one after another.
@@ -55,13 +108,81 @@ export async function getStats(req, res) {
       ]),
     ]);
 
+  // The chart series. Separated from the counts above only for
+  // readability: they run in the same single round of parallel queries.
+  const since = monthsAgo(TREND_MONTHS - 1);
+
+  const [registrations, cvsCreated, scoreBuckets, averageScore, topSkills, topGaps] =
+    await Promise.all([
+      User.aggregate(monthlyPipeline(since)),
+      CV.aggregate(monthlyPipeline(since)),
+
+      // Strength scores in bands of twenty. `$bucket` needs the upper
+      // boundary to be above the highest value, hence 101.
+      CV.aggregate([
+        { $match: { isDeleted: false } },
+        {
+          $bucket: {
+            groupBy: '$strengthScore',
+            boundaries: [0, 21, 41, 61, 81, 101],
+            default: 'other',
+            output: { count: { $sum: 1 } },
+          },
+        },
+      ]),
+
+      CV.aggregate([
+        { $match: { isDeleted: false } },
+        { $group: { _id: null, average: { $avg: '$strengthScore' } } },
+      ]),
+
+      // The skills people actually list. Lower-cased before grouping, or
+      // "React" and "react" would be two different skills.
+      CV.aggregate([
+        { $match: { isDeleted: false } },
+        { $unwind: '$skills' },
+        { $group: { _id: { $toLower: '$skills.name' }, count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+      ]),
+
+      // The gap: what adverts ask for that CVs do not say. Grouped by the
+      // keyword itself, because an entry is `{ keyword, weight }`.
+      JobMatch.aggregate([
+        { $unwind: '$missingKeywords' },
+        { $group: { _id: '$missingKeywords.keyword', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+      ]),
+    ]);
+
+  /** Band labels, in the order `$bucket` returns them. */
+  const BAND_LABELS = { 0: '0-20', 21: '21-40', 41: '41-60', 61: '61-80', 81: '81-100' };
+
   sendSuccess(
     res,
     {
       users: { total: totalUsers, active: activeUsers, blocked: blockedUsers },
-      cvs: { total: totalCVs, deleted: deletedCVs },
+      cvs: {
+        total: totalCVs,
+        deleted: deletedCVs,
+        averageScore: Math.round(averageScore[0]?.average ?? 0),
+      },
       downloads: Object.fromEntries(downloads.map((row) => [row._id, row.count])),
       templateUsage: templateUsage.map((row) => ({ templateKey: row._id, count: row.count })),
+
+      registrationsByMonth: fillMonths(registrations, TREND_MONTHS),
+      cvsByMonth: fillMonths(cvsCreated, TREND_MONTHS),
+
+      // Every band is listed, including the empty ones: a distribution
+      // with bands missing is not a distribution.
+      scoreDistribution: Object.entries(BAND_LABELS).map(([boundary, band]) => ({
+        band,
+        count: scoreBuckets.find((bucket) => String(bucket._id) === boundary)?.count ?? 0,
+      })),
+
+      topSkills: topSkills.map((row) => ({ skill: row._id, count: row.count })),
+      topMissingKeywords: topGaps.map((row) => ({ keyword: row._id, count: row.count })),
     },
     'Dashboard statistics',
   );

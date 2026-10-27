@@ -1,4 +1,5 @@
 import api from './axios.js';
+import { saveBlobResponse } from '../utils/saveBlob.js';
 
 /**
  * Loads the dashboard statistics.
@@ -115,4 +116,35 @@ export async function listCompanies(params = {}) {
 export async function reviewCompany(id, status, reason = '') {
   const { data } = await api.patch(`/api/admin/companies/${id}/status`, { status, reason });
   return data.data.company;
+}
+
+/**
+ * Builds one report and returns it for display.
+ *
+ * The same endpoint serves the download, so what is shown on screen and
+ * what is exported can never disagree.
+ *
+ * @param {string} type - users | cvs | downloads | templates | job-matches
+ * @param {{from?: string, to?: string}} params - The date range.
+ * @returns {Promise<object>} The report: title, columns, rows and summary.
+ */
+export async function getReport(type, params = {}) {
+  const { data } = await api.get(`/api/admin/reports/${type}`, { params });
+  return data.data.report;
+}
+
+/**
+ * Downloads a report as a file and saves it.
+ *
+ * @param {string} type - The report type.
+ * @param {{from?: string, to?: string, format: 'xlsx'|'pdf'}} params
+ * @returns {Promise<void>}
+ */
+export async function downloadReport(type, params) {
+  const response = await api.get(`/api/admin/reports/${type}`, {
+    params,
+    responseType: 'blob',
+  });
+
+  saveBlobResponse(response, `${type}-report.${params.format}`);
 }

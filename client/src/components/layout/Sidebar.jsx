@@ -28,6 +28,7 @@ const ICONS = {
   users:
     'M9 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M2 20a7 7 0 0 1 14 0 M17 11a3 3 0 1 0 0-6 M18 20a6 6 0 0 0-1-3',
   activity: 'M3 12h4l3-8 4 16 3-8h4',
+  reports: 'M6 2h9l4 4v16H6z M8 12h8M8 16h5M8 8h4',
   companies: 'M3 21h18 M5 21V7l7-4 7 4v14 M10 12h4M10 16h4',
 };
 
@@ -133,11 +134,6 @@ export default function Sidebar({ onNavigate }) {
         </Group>
       )}
 
-      <Group title="Account">
-        <Item to="/profile" icon="profile" label="Profile" onNavigate={onNavigate} />
-        <Item to="/settings" icon="settings" label="Settings" onNavigate={onNavigate} />
-      </Group>
-
       {isAdmin && (
         <Group title="Administration">
           <Item to="/admin" icon="overview" label="Overview" end onNavigate={onNavigate} />
@@ -145,9 +141,19 @@ export default function Sidebar({ onNavigate }) {
           <Item to="/talent" icon="profile" label="People directory" onNavigate={onNavigate} />
           <Item to="/admin/companies" icon="companies" label="Companies" onNavigate={onNavigate} />
           <Item to="/admin/cvs" icon="cvs" label="All CVs" onNavigate={onNavigate} />
+          <Item to="/admin/reports" icon="reports" label="Reports" onNavigate={onNavigate} />
           <Item to="/admin/activity" icon="activity" label="Activity" onNavigate={onNavigate} />
         </Group>
       )}
+
+      {/* Account sits last for every kind of account. The work a person
+          came to do belongs at the top; their own settings are the thing
+          they reach for least, and keeping them in the same place for
+          everybody means they are never hunted for. */}
+      <Group title="Account">
+        <Item to="/profile" icon="profile" label="Profile" onNavigate={onNavigate} />
+        <Item to="/settings" icon="settings" label="Settings" onNavigate={onNavigate} />
+      </Group>
     </nav>
   );
 }
