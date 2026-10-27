@@ -3,7 +3,7 @@ import { useAuth } from '../context/useAuth.js';
 import Button from '../components/ui/Button.jsx';
 import Reveal from '../components/ui/Reveal.jsx';
 import ReviewSlider from '../components/home/ReviewSlider.jsx';
-import CVPreview from '../components/cv/CVPreview.jsx';
+import ScrollingCV from '../components/home/ScrollingCV.jsx';
 import { homePathFor } from '../utils/homePath.js';
 
 /**
@@ -76,64 +76,89 @@ const STEPS = [
 ];
 
 /**
- * The example CV shown in the hero. Every detail is made up, and the
- * caption under the preview says so.
+ * The CV shown in the hero: the author's own CV, with permission, laid
+ * out in the Classic template. The phone number and email address are
+ * left out on purpose, because this page is public and anything on it
+ * can be scraped.
  */
 const EXAMPLE_CV = {
   templateKey: 'classic',
-  settings: { primaryColor: '#1e3a8a', fontFamily: 'Inter', fontSize: 'medium' },
+  settings: { primaryColor: '#1f3a6e', fontFamily: 'Inter', fontSize: 'medium' },
   personal: {
-    fullName: 'Asha Gurung',
-    headline: 'Frontend Developer',
-    email: 'asha.gurung@example.com',
-    phone: '+977 9800000000',
-    address: 'Lalitpur, Nepal',
-    linkedin: 'linkedin.com/in/ashagurung',
+    fullName: 'Rijan Pariyar',
+    headline: 'Quality Assurance Specialist',
+    address: 'Baneshwor, Kathmandu, Nepal',
+    linkedin: 'linkedin.com/in/rijan-pariyar',
+    github: 'github.com/rijan0717',
   },
   summary:
-    'Frontend developer with 3 years of experience building web apps in React. ' +
-    'Cut page load time by 40% on a booking site used by 20,000 people a month, ' +
-    'and enjoy turning rough designs into accessible, tested interfaces.',
+    "Quality Assurance Specialist with over 3 years' experience across fintech SaaS and " +
+    'e-commerce platforms, covering the full test cycle from test design to release sign-off. ' +
+    'Builds and maintains automated regression suites in Playwright (TypeScript, JavaScript, ' +
+    'Python) and Cypress, and tests REST APIs end to end from Swagger/OpenAPI and Scalar ' +
+    'specifications. Strong on defect documentation and traceability.',
   experience: [
     {
-      position: 'Frontend Developer',
-      company: 'Himal Tech',
-      location: 'Kathmandu',
-      startDate: '2023-04',
+      position: 'Quality Assurance Specialist (Mid-level)',
+      company: 'Sterling Wells',
+      location: 'Kathmandu, Nepal',
+      startDate: '2025-11',
       isCurrent: true,
       achievements: [
-        'Rebuilt the booking flow in React, cutting load time by 40%',
-        'Added automated tests that caught 25+ bugs before release',
-        'Mentored 2 junior developers through their first year',
+        'Test fintech SaaS products (RentalBux, TMS and CRM), running functional, regression, smoke and UAT cycles for every sprint release',
+        'Build and maintain automated regression and end-to-end suites in Playwright with TypeScript and Python',
+        'Test and validate REST APIs using Postman, Swagger/OpenAPI and Scalar, logging defects with reproducible request and response evidence',
+        'Act as the release gate: maintain test cases and traceability in Azure Boards and Jira, and run smoke and regression checks before each deployment',
       ],
     },
     {
-      position: 'Web Developer Intern',
-      company: 'Pixel Studio',
-      location: 'Lalitpur',
-      startDate: '2022-06',
-      endDate: '2023-03',
-      achievements: ['Built 12 landing pages for client campaigns'],
+      position: 'Associate QA Engineer',
+      company: 'Matat Nepal',
+      location: 'Kathmandu, Nepal',
+      startDate: '2023-08',
+      endDate: '2025-11',
+      achievements: [
+        'Led QA on WordPress and Shopify e-commerce builds, covering themes, plugins, checkout, forms and UI/UX',
+        'Built and maintained Cypress (JavaScript) automation for login, checkout and regression flows',
+        'Validated bulk product data imports, catching mapping, pricing and variant errors before go-live',
+      ],
+    },
+  ],
+  projects: [
+    {
+      name: 'Manual QA Bug Reports',
+      description:
+        '4 projects, 59 defects: Azure Boards reports with steps, expected and actual results, severity and priority.',
+    },
+    {
+      name: 'Amazon Playwright Automation',
+      description:
+        'Automated Amazon e-commerce flows in Playwright with TypeScript, using the Page Object Model.',
+      technologies: ['Playwright', 'TypeScript'],
     },
   ],
   education: [
     {
-      institution: 'Tribhuvan University',
-      degree: 'BCA',
-      fieldOfStudy: 'Computer Applications',
-      startDate: '2018-11',
-      endDate: '2022-10',
+      institution: 'G. P. Koirala Memorial College, Tribhuvan University',
+      degree: 'Bachelor of Computer Applications (BCA)',
     },
   ],
-  skills: ['React', 'JavaScript', 'TypeScript', 'Tailwind CSS', 'Testing'].map((name) => ({
-    name,
-    level: 'Advanced',
-  })),
-  projects: [],
+  skills: [
+    'Playwright',
+    'Cypress',
+    'Postman',
+    'REST API testing',
+    'Azure Boards',
+    'Jira',
+    'BrowserStack',
+    'TypeScript',
+    'JavaScript',
+    'Python',
+  ].map((name) => ({ name, level: 'Advanced' })),
   certifications: [],
   languages: [
+    { language: 'English', proficiency: 'Professional working' },
     { language: 'Nepali', proficiency: 'Native' },
-    { language: 'English', proficiency: 'Fluent' },
   ],
   references: [],
 };
@@ -191,18 +216,13 @@ export default function HomePage() {
         </Reveal>
 
         {/* The real template component, so the picture cannot drift from
-            what the builder produces. Only the top of the page is shown;
-            hidden on phones, where it would push everything else down. */}
+            what the builder produces. The box keeps its size and the CV
+            scrolls slowly inside it, so the whole page can be seen; hidden
+            on phones, where it would push everything else down. */}
         <figure className="hidden sm:block">
-          <div className="relative mx-auto max-h-[460px] max-w-md overflow-hidden rounded-md border border-slate-200 bg-white dark:border-slate-700">
-            <CVPreview cv={EXAMPLE_CV} />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-slate-950"
-            />
-          </div>
+          <ScrollingCV cv={EXAMPLE_CV} height={460} />
           <figcaption className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">
-            The Classic template, filled in with example details.
+            A real CV in the Classic template.
           </figcaption>
         </figure>
       </section>
