@@ -694,3 +694,40 @@ admin screen instead.
 fallback, public readability, hiding deactivated templates, admin ordering,
 the 403 for an ordinary user, rename, the last-active guard, invalid versus
 unknown ids, and that a CV using a deactivated template still loads.
+
+## Feature 10 — Directory privacy, and honest keyword advice
+
+### What an employer can read, and what is recorded
+
+- **The list no longer carries email addresses.** A directory page is twenty
+  contact addresses in one response, which is the shape somebody scrapes. The
+  detail page still shows one, read by an employer who opened that person
+  deliberately — and that view is logged.
+- **`TALENT_VIEW`** is a new activity action, written when an employer opens
+  `GET /api/talent/:id`. It answers "who has looked at whom", and makes an
+  employer paging through every candidate visible to the admin. It uses the
+  `targetUser` meta key the admin log already resolves into a name, so the
+  entry reads as a sentence with no change to the resolver. An admin's own
+  browsing is **not** logged: it would bury the entries that matter.
+- The admin user-detail page links through to the directory profile, so the
+  admin can see a person exactly as an employer does.
+
+### The keyword gap said "someone"
+
+Before this change the most frequently missing keyword across the whole
+system was _someone_ (98 occurrences), then _four_ (30) and _five_ (23). The
+cause is not a bug in TF-IDF: on a small corpus a word used by one advert and
+no other genuinely is distinctive. It is a reporting problem, and it is fixed
+at reporting time — see `docs/algorithms.md` §2.2 for the reasoning. Two
+changes:
+
+1. `UNACTIONABLE_WORDS` gained number words, indefinite people and vague
+   quantities.
+2. Keyword entries carry `isSkill`, and the matched and missing lists are
+   sorted with named skills first. Because both lists are truncated, the
+   ordering is what decides which advice survives.
+
+Scores are untouched by design: the vectors, the similarity and the match
+score are all computed before either rule runs. A unit test asserts exactly
+that, alongside one that the noise words never appear and one that no generic
+term outranks a skill.

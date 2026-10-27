@@ -25,6 +25,9 @@ export const ACTIVITY_ACTIONS = [
   'JOB_CREATE',
   'JOB_DELETE',
   'JOB_APPLY',
+  // An employer opened a candidate's profile in the directory. Personal
+  // data, so reading it is recorded like any other event.
+  'TALENT_VIEW',
   'ADMIN_ACTION',
 ];
 

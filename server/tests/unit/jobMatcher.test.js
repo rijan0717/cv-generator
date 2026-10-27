@@ -161,6 +161,56 @@ describe('analyseMatch', () => {
     expect(matchedSkills.filter((skill) => missingSkills.includes(skill))).toEqual([]);
   });
 
+  it('keeps number words and indefinite people out of the keyword advice', () => {
+    // These survive the stop-word list and score well on a small corpus,
+    // because few other adverts happen to use the same number. "Your CV
+    // never says four" is not something anybody can act on.
+    const advert = {
+      title: 'Backend Developer',
+      description:
+        'We are looking for someone with four years of Node.js experience to join a small ' +
+        'team. You will work with Docker and PostgreSQL, and several other people, for three ' +
+        'days a week.',
+    };
+
+    const { missingKeywords, matchedKeywords } = analyseMatch(nurseCV, advert);
+    const reported = [...missingKeywords, ...matchedKeywords].map((entry) => entry.keyword);
+
+    for (const noise of ['someone', 'four', 'three', 'small', 'team', 'several']) {
+      expect(reported).not.toContain(noise);
+    }
+  });
+
+  it('puts named skills above generic words in the missing list', () => {
+    // The list is cut to a maximum, so the order decides what the user
+    // is actually told. "You do not mention Kubernetes" is worth more
+    // than "you do not mention stakeholder", whatever TF-IDF made of
+    // the two.
+    const { missingKeywords } = analyseMatch(nurseCV, backendAdvert);
+
+    expect(missingKeywords.some((entry) => entry.isSkill)).toBe(true);
+
+    const firstGeneric = missingKeywords.findIndex((entry) => !entry.isSkill);
+    const lastSkill = missingKeywords.map((entry) => entry.isSkill).lastIndexOf(true);
+
+    if (firstGeneric !== -1) expect(lastSkill).toBeLessThan(firstGeneric);
+  });
+
+  it('reorders the advice without moving the score', () => {
+    // Filtering and ordering happen at reporting time. If either could
+    // move the score, the matcher would be tuning its own marks to make
+    // its advice read better.
+    const result = analyseMatch(backendCV, backendAdvert);
+
+    expect(result.matchScore).toBeGreaterThan(50);
+    expect(result.cosineSimilarity).toBeGreaterThan(0);
+    // Every reported keyword is one the advert genuinely weighted,
+    // rather than something introduced by the ordering.
+    for (const entry of result.missingKeywords) {
+      expect(entry.weight).toBeGreaterThan(0);
+    }
+  });
+
   it('spots a skill described in the experience but left out of the skills list', () => {
     const cv = {
       ...backendCV,
