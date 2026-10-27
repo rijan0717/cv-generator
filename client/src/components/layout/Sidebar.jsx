@@ -8,8 +8,9 @@ import { useAuth } from '../../context/useAuth.js';
  * saved jobs, applications, settings and the admin sections do not fit
  * across the top, and a sidebar can show which area you are in at a glance.
  *
- * @param {{onNavigate?: () => void}} props - Called after a link is
- *   followed, so the mobile drawer can close itself.
+ * @param {{onNavigate?: () => void, isCollapsed?: boolean}} props -
+ *   `onNavigate` is called after a link is followed, so the mobile
+ *   drawer can close itself; `isCollapsed` draws the icon-only rail.
  */
 
 /** Small inline icons, so no icon library is needed. */
@@ -35,21 +36,30 @@ const ICONS = {
 
 /**
  * One navigation entry.
+ *
+ * Collapsed, it is the icon alone, centred, with the label moved to
+ * `title` and `aria-label` — so the hover tooltip and the screen reader
+ * both still name it. Hiding the text without doing that would leave a
+ * row of unlabelled squares.
+ *
  * @param {{to: string, icon: string, label: string, end?: boolean,
- *          onNavigate?: () => void}} props
+ *          isCollapsed?: boolean, onNavigate?: () => void}} props
  */
-function Item({ to, icon, label, end, onNavigate }) {
+function Item({ to, icon, label, end, isCollapsed, onNavigate }) {
   return (
     <NavLink
       to={to}
       end={end}
       onClick={onNavigate}
+      title={isCollapsed ? label : undefined}
+      aria-label={isCollapsed ? label : undefined}
       className={({ isActive }) =>
         [
           // The current page is marked with a tint and a bar on the left,
           // rather than a solid black block that shouts louder than the
           // page content itself.
-          'relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition',
+          'relative flex items-center rounded-md py-2 text-sm font-medium transition',
+          isCollapsed ? 'justify-center px-0' : 'gap-3 px-3',
           isActive
             ? 'bg-blue-50 text-blue-800 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-600 dark:bg-blue-950/50 dark:text-blue-200 dark:before:bg-blue-400'
             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
@@ -68,27 +78,42 @@ function Item({ to, icon, label, end, onNavigate }) {
       >
         <path d={ICONS[icon]} />
       </svg>
-      {label}
+      {/* Removed from the tree rather than hidden with CSS, so the label
+          cannot wrap or widen the rail mid-animation. */}
+      {!isCollapsed && <span className="truncate">{label}</span>}
     </NavLink>
   );
 }
 
 /**
  * A labelled group of links.
- * @param {{title: string, children: React.ReactNode}} props
+ *
+ * Collapsed, the heading becomes a rule: the grouping is still worth
+ * showing, but a word like "Administration" cannot be read in a 64px
+ * rail and truncating it to "Adm…" says nothing.
+ *
+ * @param {{title: string, isCollapsed?: boolean, children: React.ReactNode}} props
  */
-function Group({ title, children }) {
+function Group({ title, isCollapsed, children }) {
   return (
     <div className="mt-6 first:mt-0">
-      <h2 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-        {title}
-      </h2>
+      {isCollapsed ? (
+        <div
+          role="separator"
+          aria-label={title}
+          className="mx-3 border-t border-slate-200 dark:border-slate-700"
+        />
+      ) : (
+        <h2 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          {title}
+        </h2>
+      )}
       <div className="mt-2 space-y-1">{children}</div>
     </div>
   );
 }
 
-export default function Sidebar({ onNavigate }) {
+export default function Sidebar({ onNavigate, isCollapsed = false }) {
   const { user, isAdmin } = useAuth();
 
   // What each account sees:
@@ -100,20 +125,61 @@ export default function Sidebar({ onNavigate }) {
   const isEmployer = !isAdmin && user?.accountType === 'employer';
 
   return (
-    <nav aria-label="Sections" className="p-4">
+    // Tighter padding when collapsed, or a 64px rail spends half its
+    // width on margin and the icons stop looking centred.
+    <nav aria-label="Sections" className={isCollapsed ? 'px-2 py-4' : 'p-4'}>
       {isJobSeeker && (
-        <Group title="My work">
-          <Item to="/dashboard" icon="overview" label="Dashboard" end onNavigate={onNavigate} />
-          <Item to="/cvs" icon="cvs" label="My CVs" end onNavigate={onNavigate} />
-          <Item to="/rewrite" icon="rewrite" label="Rewrite with JD" onNavigate={onNavigate} />
-          <Item to="/match-cv" icon="match" label="Match my CV" onNavigate={onNavigate} />
-          <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
-          <Item to="/saved-jobs" icon="saved" label="Saved jobs" onNavigate={onNavigate} />
+        <Group title="My work" isCollapsed={isCollapsed}>
+          <Item
+            to="/dashboard"
+            icon="overview"
+            label="Dashboard"
+            end
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/cvs"
+            icon="cvs"
+            label="My CVs"
+            end
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/rewrite"
+            icon="rewrite"
+            label="Rewrite with JD"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/match-cv"
+            icon="match"
+            label="Match my CV"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/jobs"
+            icon="jobs"
+            label="Browse jobs"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/saved-jobs"
+            icon="saved"
+            label="Saved jobs"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
           <Item
             to="/applications"
             icon="applications"
             label="My applications"
             onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
           />
         </Group>
       )}
@@ -122,33 +188,108 @@ export default function Sidebar({ onNavigate }) {
           setting: it has sections beneath it, and a post belongs to the
           company that made it. */}
       {isEmployer && (
-        <Group title="My company">
-          <Item to="/company" icon="overview" label="Dashboard" end onNavigate={onNavigate} />
+        <Group title="My company" isCollapsed={isCollapsed}>
+          <Item
+            to="/company"
+            icon="overview"
+            label="Dashboard"
+            end
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
           <Item
             to="/company/profile"
             icon="companies"
             label="Company profile"
             onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
           />
-          <Item to="/company/posts" icon="jobs" label="My posts" onNavigate={onNavigate} />
+          <Item
+            to="/company/posts"
+            icon="jobs"
+            label="My posts"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
           {/* Shown even while the company is waiting for approval. The
               page explains the wait, which is more use to the employer
               than a link that is simply missing with no reason given. */}
-          <Item to="/talent" icon="users" label="Find candidates" onNavigate={onNavigate} />
-          <Item to="/jobs" icon="jobs" label="Browse jobs" onNavigate={onNavigate} />
+          <Item
+            to="/talent"
+            icon="users"
+            label="Find candidates"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/jobs"
+            icon="jobs"
+            label="Browse jobs"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
         </Group>
       )}
 
       {isAdmin && (
-        <Group title="Administration">
-          <Item to="/admin" icon="overview" label="Overview" end onNavigate={onNavigate} />
-          <Item to="/admin/users" icon="users" label="Users" onNavigate={onNavigate} />
-          <Item to="/talent" icon="profile" label="People directory" onNavigate={onNavigate} />
-          <Item to="/admin/companies" icon="companies" label="Companies" onNavigate={onNavigate} />
-          <Item to="/admin/cvs" icon="cvs" label="All CVs" onNavigate={onNavigate} />
-          <Item to="/admin/templates" icon="templates" label="Templates" onNavigate={onNavigate} />
-          <Item to="/admin/reports" icon="reports" label="Reports" onNavigate={onNavigate} />
-          <Item to="/admin/activity" icon="activity" label="Activity" onNavigate={onNavigate} />
+        <Group title="Administration" isCollapsed={isCollapsed}>
+          <Item
+            to="/admin"
+            icon="overview"
+            label="Overview"
+            end
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/admin/users"
+            icon="users"
+            label="Users"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/talent"
+            icon="profile"
+            label="People directory"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/admin/companies"
+            icon="companies"
+            label="Companies"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/admin/cvs"
+            icon="cvs"
+            label="All CVs"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/admin/templates"
+            icon="templates"
+            label="Templates"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/admin/reports"
+            icon="reports"
+            label="Reports"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/admin/activity"
+            icon="activity"
+            label="Activity"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
         </Group>
       )}
 
@@ -156,9 +297,21 @@ export default function Sidebar({ onNavigate }) {
           came to do belongs at the top; their own settings are the thing
           they reach for least, and keeping them in the same place for
           everybody means they are never hunted for. */}
-      <Group title="Account">
-        <Item to="/profile" icon="profile" label="Profile" onNavigate={onNavigate} />
-        <Item to="/settings" icon="settings" label="Settings" onNavigate={onNavigate} />
+      <Group title="Account" isCollapsed={isCollapsed}>
+        <Item
+          to="/profile"
+          icon="profile"
+          label="Profile"
+          onNavigate={onNavigate}
+          isCollapsed={isCollapsed}
+        />
+        <Item
+          to="/settings"
+          icon="settings"
+          label="Settings"
+          onNavigate={onNavigate}
+          isCollapsed={isCollapsed}
+        />
       </Group>
     </nav>
   );

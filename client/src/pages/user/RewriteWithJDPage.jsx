@@ -123,7 +123,7 @@ export default function RewriteWithJDPage() {
   }
 
   return (
-    <div className={`mx-auto px-4 py-10 ${result && !saved ? 'max-w-6xl' : 'max-w-3xl'}`}>
+    <div className={`mx-auto px-4 py-10 ${result && !saved ? 'max-w-[1600px]' : 'max-w-3xl'}`}>
       <header>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
           Rewrite with JD
