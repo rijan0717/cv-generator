@@ -26,6 +26,7 @@ import {
   COMPANY_STATUSES,
 } from '../controllers/adminCompany.controller.js';
 import { getReport, REPORT_TYPES } from '../controllers/adminReport.controller.js';
+import { listAllTemplates, updateTemplate } from '../controllers/template.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/role.js';
 import { validate } from '../middleware/validate.js';
@@ -118,6 +119,31 @@ router.patch(
   ],
   validate,
   asyncHandler(reviewCompany),
+);
+
+// --- Templates -------------------------------------------------------------
+
+router.get('/templates', asyncHandler(listAllTemplates));
+
+router.patch(
+  '/templates/:id',
+  [
+    validId,
+    body('isActive').optional().isBoolean().withMessage('Active must be yes or no'),
+    body('name')
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 60 })
+      .withMessage('Name must be between 2 and 60 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 300 })
+      .withMessage('Description must be at most 300 characters'),
+    body('sortOrder').optional().isInt({ min: 0, max: 99 }).withMessage('Order must be 0 to 99'),
+  ],
+  validate,
+  asyncHandler(updateTemplate),
 );
 
 // --- Reports ---------------------------------------------------------------

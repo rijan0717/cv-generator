@@ -138,23 +138,29 @@ The user pastes a job description and selects one of their CVs; the system measu
 
 ## 6. Data model (Mongoose)
 
-- **User:** name, email (unique, lowercase), passwordHash, role (`user` | `admin`), avatarUrl, status (`active` | `blocked`), lastLoginAt, isDeleted, timestamps.
+- **User:** name, email (unique, lowercase), passwordHash, role (`user` | `jobseeker` | `employer` | `admin` — kept in step with `accountType` by a pre-save hook for everyone but the admin, so the database says what each account is), accountType (`jobseeker` | `employer`, null until chosen), avatarUrl, jobSeekerProfile { position, industry, yearsExperience, openToWork, employmentTypes[], location, about }, status (`active` | `blocked`), lastLoginAt, isDeleted, timestamps.
 - **CV:** user (ref), title, templateKey, settings { primaryColor, backgroundColor, textColor, fontFamily, fontSize, themePreset, spacing, sectionOrder[], hiddenSections[] }, personal { … }, summary, education[], experience[], skills[], projects[], certifications[], languages[], references[], referencesOnRequest, strengthScore, strengthBreakdown, isDeleted, timestamps. Indexes on `user` and `updatedAt`.
-- **Template:** key (unique), name, description, thumbnailUrl, isActive, defaultSettings, timestamps.
+- **Template:** key (unique, one of the keys the client can render), name, description, isActive, sortOrder, usesPhoto, timestamps. The markup stays in the client component; the database holds only the catalogue entry beside it — the name shown in the picker and whether the template is offered at all.
 - **JobMatch:** user (ref), cv (ref), jobTitle (optional), jobDescription, matchScore, cosineSimilarity, skillCoverage, matchedKeywords[], missingKeywords[], timestamps.
-- **ActivityLog:** user (ref), action (`REGISTER`, `LOGIN`, `CV_CREATE`, `CV_UPDATE`, `CV_DELETE`, `DOWNLOAD_PDF`, `DOWNLOAD_EXCEL`, `JOB_MATCH`, `ADMIN_ACTION`), cv (ref, optional), meta (object), ip, timestamps.
+- **Application:** job (ref), applicant (ref), cv (a frozen snapshot, not a reference — editing the CV afterwards must not change what the employer received), coverLetter, status (`submitted` | `reviewed` | `shortlisted` | `rejected` | `withdrawn`), employerNote, timestamps.
+- **ActivityLog:** user (ref), action (`REGISTER`, `LOGIN`, `CV_CREATE`, `CV_UPDATE`, `CV_DELETE`, `DOWNLOAD_PDF`, `DOWNLOAD_DOCX`, `DOWNLOAD_EXCEL`, `CV_IMPORT`, `CV_TAILOR`, `JOB_MATCH`, `COMPANY_CREATE`, `JOB_CREATE`, `JOB_DELETE`, `JOB_APPLY`, `ADMIN_ACTION`), cv (ref, optional), meta (object), ip, timestamps.
 
 ## 7. REST API
 
 All routes are prefixed with `/api`. JSON responses use the shape `{ success, data, message }`. Errors go through one central error-handling middleware.
 
 - **Auth:** `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`
-- **Profile:** `PUT /users/me`, `PUT /users/me/password`, `POST /users/me/avatar`, `PATCH /users/me/account-type` (body: accountType `jobseeker` | `employer`; set once)
+- **Profile:** `PUT /users/me` (name, and `jobSeekerProfile` for a job seeker), `PUT /users/me/password`, `POST /users/me/avatar`, `PATCH /users/me/account-type` (body: accountType `jobseeker` | `employer`; set once)
 - **Companies (employer accounts only):** `GET /companies/mine`, `POST /companies` (name, location, registrationNumber, phone, email required; starts `pending`), `PUT /companies/mine` (refused once approved; resubmits a rejected company), `POST /companies/mine/logo`, `DELETE /companies/mine/logo`, `POST /companies/mine/document` (registration document, PDF/JPG/PNG ≤ 5 MB, private), `GET /companies/:id/document` (owner or admin only), `GET /companies/:id` (public profile, approved companies only)
-- **CVs (owner only):** `GET /cvs`, `POST /cvs`, `GET /cvs/:id`, `PUT /cvs/:id`, `DELETE /cvs/:id`, `POST /cvs/:id/duplicate`, `POST /cvs/:id/photo`, `GET /cvs/:id/score`, `GET /cvs/:id/export/pdf`, `GET /cvs/:id/export/excel`, `GET /cvs/:id/print-data` (print token only)
-- **Job match:** `POST /job-match` (body: cvId, jobDescription, jobTitle), `GET /job-match` (own history, paginated), `GET /job-match/:id`, `POST /job-match/scores` (badges for a page of the board), `POST /job-match/from-upload` (multipart: a dropped CV file, ranked against every open job; nothing is stored)
-- **Templates:** `GET /templates` (active only)
-- **Admin (admin role only):** `GET /admin/stats`, `GET /admin/users`, `GET /admin/users/:id`, `PATCH /admin/users/:id/status`, `DELETE /admin/users/:id`, `GET /admin/cvs`, `GET /admin/cvs/:id`, `DELETE /admin/cvs/:id`, `GET /admin/companies?status=pending|approved|rejected&search=&page=`, `GET /admin/companies/:id`, `PATCH /admin/companies/:id/status` (body: status `approved` | `rejected`, reason required to reject; approval needs a document), `GET /admin/templates`, `PATCH /admin/templates/:id`, `GET /admin/reports/:type?from=&to=&format=xlsx|pdf`, `GET /admin/activity`
+- **CVs (owner only):** `GET /cvs`, `POST /cvs`, `GET /cvs/:id`, `PUT /cvs/:id`, `DELETE /cvs/:id`, `POST /cvs/:id/duplicate`, `POST /cvs/:id/photo`, `GET /cvs/:id/score`, `PATCH /cvs/:id/primary`, `DELETE /cvs/:id/primary`, `POST /cvs/:id/import` (read an uploaded CV file into the builder), `GET /cvs/:id/export/pdf`, `GET /cvs/:id/export/docx`, `GET /cvs/:id/export/excel`, `GET /cvs/:id/print-data` (print token only)
+- **Job-tailored rewrite (owner only):** `POST /cvs/:id/tailor` (preview a rewrite against one advert), `POST /cvs/:id/tailor/save` (store it as a new CV), `POST /cvs/primary/tailor` (the same against the primary CV and a pasted description)
+- **Jobs:** `GET /jobs` (public board, approved companies only), `GET /jobs/:id`, `POST /jobs`, `PUT /jobs/:id`, `DELETE /jobs/:id` (employer, approved company), `GET /jobs/mine/posted`, `GET /jobs/mine/saved`, `POST /jobs/:id/save`, `DELETE /jobs/:id/save`, `POST /jobs/:id/apply`, `GET /jobs/:id/applications` (the post's owner)
+- **Applications:** `GET /applications/mine`, `GET /applications/:id`, `PATCH /applications/:id/status` (the employer moves it; the applicant may only withdraw), `GET /applications/:id/download/:format` (`pdf` | `docx`, the CV exactly as submitted)
+- **Job match:** `POST /job-match` (body: cvId, jobDescription, jobTitle), `GET /job-match` (own history, paginated), `GET /job-match/:id`, `DELETE /job-match/:id`, `POST /job-match/scores` (badges for a page of the board), `POST /job-match/from-upload` (multipart: a dropped CV file, ranked against every open job; nothing is stored)
+- **Candidate directory (approved employers and the admin):** `GET /talent?industry=&employmentType=&openToWork=&search=&page=` (job seekers only; an admin may add `accountType=employer`), `GET /talent/:id` (the person and their primary CV), `GET /talent/filters` (the industry and employment-type lists)
+- **Reviews:** `GET /reviews` (public), `GET /reviews/mine`, `POST /reviews`
+- **Templates:** `GET /templates` (active only; returns the whole catalogue when it has never been seeded, so the builder is never left with nothing to choose)
+- **Admin (admin role only):** `GET /admin/stats`, `GET /admin/users`, `GET /admin/users/:id`, `PATCH /admin/users/:id/status`, `DELETE /admin/users/:id`, `GET /admin/cvs`, `GET /admin/cvs/:id`, `DELETE /admin/cvs/:id`, `GET /admin/companies?status=pending|approved|rejected&search=&page=`, `GET /admin/companies/:id`, `PATCH /admin/companies/:id/status` (body: status `approved` | `rejected`, reason required to reject; approval needs a document), `GET /admin/templates` (including deactivated), `PATCH /admin/templates/:id` (isActive, name, description, sortOrder; the last active template cannot be switched off), `GET /admin/reports/:type?from=&to=&format=xlsx|pdf` (type: `users` | `cvs` | `downloads` | `templates` | `job-matches`; without `format` it returns JSON for the on-screen preview), `GET /admin/activity`
 
 ## 8. Folder structure
 
@@ -232,8 +238,9 @@ The report follows the **Object-Oriented approach** from the TU guideline.
 - `npm run setup:chrome` — install the system libraries headless Chromium needs for PDF
   export (Debian/Ubuntu/WSL, needs sudo; run once per machine)
 - `npm run seed:admin` — create the admin account from `.env`
-- `npm run seed:templates` — insert the five templates
+- `npm run seed:templates` — fill the template catalogue (safe to re-run; it never undoes an admin's rename or deactivation)
 - `npm run seed:jobs` — insert the ten sample job adverts
+- `npm run seed:talent` — demo data for the candidate directory: two employers (one approved, one left pending), eight job seekers across six industries with a primary CV each, and four adverts
 - `npm run migrate:accounts` — one-off upgrade for a database created before account types: existing companies become approved, company owners become employers, everyone else chooses on next login (safe to re-run)
 - `npm run seed:loadtest` — bulk test data for load and performance testing: ~100 users with
   CVs, 150 jobs across 8 companies, 24 reviews, job matches and activity
