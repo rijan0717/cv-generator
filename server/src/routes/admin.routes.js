@@ -25,6 +25,7 @@ import {
   reviewCompany,
   COMPANY_STATUSES,
 } from '../controllers/adminCompany.controller.js';
+import { getReport, REPORT_TYPES } from '../controllers/adminReport.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/role.js';
 import { validate } from '../middleware/validate.js';
@@ -117,6 +118,25 @@ router.patch(
   ],
   validate,
   asyncHandler(reviewCompany),
+);
+
+// --- Reports ---------------------------------------------------------------
+
+/**
+ * One route for every report and both formats. Without `format` it
+ * returns JSON for the on-screen preview; with one it sends the file, so
+ * what is previewed and what is downloaded are the same figures.
+ */
+router.get(
+  '/reports/:type',
+  [
+    param('type').isIn(REPORT_TYPES).withMessage('Unknown report'),
+    query('from').optional().isISO8601().withMessage('From must be a date'),
+    query('to').optional().isISO8601().withMessage('To must be a date'),
+    query('format').optional().isIn(['xlsx', 'pdf']).withMessage('Format must be xlsx or pdf'),
+  ],
+  validate,
+  asyncHandler(getReport),
 );
 
 // --- Activity log ----------------------------------------------------------

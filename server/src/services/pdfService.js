@@ -122,6 +122,57 @@ export async function closeBrowser() {
 }
 
 /**
+ * Renders a self-contained HTML string as a PDF.
+ *
+ * Used by the admin reports, which are plain tables: there is nothing for
+ * the React application to contribute to one, so they are printed
+ * directly rather than through a client route. That also means a report
+ * can still be exported when the client is not running.
+ *
+ * It shares the same browser instance as the CV export, so a report does
+ * not pay the cost of launching Chromium again.
+ *
+ * @param {string} html - A complete document, with its styles inline.
+ * @param {{landscape?: boolean}} [options] - Page orientation.
+ * @returns {Promise<Buffer>} The PDF.
+ */
+export async function renderHtmlToPdf(html, { landscape = false } = {}) {
+  let browser;
+  try {
+    browser = await getBrowser();
+  } catch (error) {
+    console.error('[pdfService] could not start Chromium:', error.message);
+    throw new ApiError(503, describeLaunchFailure(error));
+  }
+
+  const page = await browser.newPage();
+
+  try {
+    // `domcontentloaded` rather than `networkidle0`: the markup carries its
+    // own styles and loads nothing, so waiting for network silence would
+    // only add a timeout's worth of delay.
+    await page.setContent(html, { waitUntil: 'domcontentloaded' });
+
+    const pdf = await page.pdf({
+      format: 'A4',
+      landscape,
+      printBackground: true,
+      // The size and margins come from the document's own @page rule.
+      preferCSSPageSize: true,
+    });
+
+    // page.pdf() resolves to a Uint8Array; Express only treats a real
+    // Buffer as binary.
+    return Buffer.from(pdf);
+  } catch (error) {
+    console.error('[pdfService] report render failed:', error.message);
+    throw new ApiError(500, 'The report could not be rendered as a PDF. Please try again.');
+  } finally {
+    await page.close().catch(() => {});
+  }
+}
+
+/**
  * Signs a short-lived token that authorises printing exactly one CV.
  *
  * It is scoped to a single CV id and lives about two minutes, so even if the
