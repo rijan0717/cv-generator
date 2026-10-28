@@ -15,8 +15,10 @@ import morgan from 'morgan';
 
 import { env, isProduction, isTest } from './config/env.js';
 import apiRoutes from './routes/index.js';
+import { getSitemap, getRobots } from './controllers/sitemap.controller.js';
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { asyncHandler } from './utils/asyncHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -58,6 +60,12 @@ export function createApp() {
   // Uploaded avatars and CV photos are stored on local disk (no third-party
   // storage) and served read-only from /uploads.
   app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
+
+  // --- Crawlers ------------------------------------------------------------
+  // Outside /api on purpose: a search engine looks for these two files
+  // at the root of the site and nowhere else.
+  app.get('/sitemap.xml', asyncHandler(getSitemap));
+  app.get('/robots.txt', getRobots);
 
   // --- API routes ----------------------------------------------------------
   app.use('/api', apiRoutes);

@@ -190,6 +190,21 @@ const contentRules = (isCreate) => [
   body('showInFooter').optional().isBoolean().withMessage('Footer must be yes or no'),
   body('navLabel').optional().trim().isLength({ max: 40 }).withMessage('Link text is too long'),
   body('sortOrder').optional().isInt({ min: 0, max: 99 }).withMessage('Order must be 0 to 99'),
+
+  // Lengths are checked rather than trusted: these end up in meta tags
+  // and a 500-character description helps nobody. The controller
+  // trims, de-duplicates and caps the keywords themselves.
+  body('seo.metaTitle')
+    .optional()
+    .trim()
+    .isLength({ max: 70 })
+    .withMessage('Search title must be at most 70 characters'),
+  body('seo.metaDescription')
+    .optional()
+    .trim()
+    .isLength({ max: 160 })
+    .withMessage('Search description must be at most 160 characters'),
+  body('seo.keywords').optional().isArray({ max: 30 }).withMessage('Too many keywords'),
 ];
 
 router.get(

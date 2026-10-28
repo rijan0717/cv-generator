@@ -4,6 +4,7 @@ import * as contentApi from '../../api/content.js';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import Pagination from '../../components/ui/Pagination.jsx';
+import { useDocumentMeta } from '../../utils/useDocumentMeta.js';
 
 /** A date as the rest of the application writes it. */
 const asDate = (value) => (value ? new Date(value).toLocaleDateString('en-GB') : '');
@@ -43,6 +44,14 @@ export default function BlogListPage() {
       cancelled = true;
     };
   }, [page]);
+
+  useDocumentMeta({
+    title: 'Blogs',
+    description:
+      'Advice on writing a CV, reading a job advert and getting past screening software, from the team behind Smart CV Generator.',
+    keywords: ['cv advice', 'cv tips', 'ats', 'job applications', 'cv writing'],
+    canonicalPath: '/blog',
+  });
 
   return (
     // Wider than an article page: four cards across needs the room,

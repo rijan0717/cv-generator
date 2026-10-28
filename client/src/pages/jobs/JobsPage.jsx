@@ -8,6 +8,7 @@ import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import { useDocumentMeta } from '../../utils/useDocumentMeta.js';
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Temporary'];
 const WORK_MODES = ['On-site', 'Hybrid', 'Remote'];
@@ -93,6 +94,14 @@ function passesMatchFilter(match, filter) {
  */
 export default function JobsPage() {
   const { user, isAuthenticated, isAdmin } = useAuth();
+
+  useDocumentMeta({
+    title: 'Jobs',
+    description:
+      'Browse open vacancies from approved employers, see how well each one matches your CV, and apply with the CV you choose.',
+    keywords: ['jobs', 'vacancies', 'job board', 'apply for jobs'],
+    canonicalPath: '/jobs',
+  });
 
   // Match scores, the match filter and saving are job-seeker features; an
   // employer's view of the board is read-only, and only an employer posts.

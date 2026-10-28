@@ -5,6 +5,7 @@ import Reveal from '../components/ui/Reveal.jsx';
 import ReviewSlider from '../components/home/ReviewSlider.jsx';
 import ScrollingCV from '../components/home/ScrollingCV.jsx';
 import { homePathFor } from '../utils/homePath.js';
+import { useDocumentMeta } from '../utils/useDocumentMeta.js';
 
 /**
  * The landing page.
@@ -168,6 +169,31 @@ const CONTAINER = 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8';
 
 export default function HomePage() {
   const { user, isAuthenticated, isLoading } = useAuth();
+
+  useDocumentMeta({
+    // No title passed: the hook appends the site name on its own, and
+    // "Smart CV Generator | Smart CV Generator" is how a home page
+    // announces that nobody checked.
+    description:
+      'Build a professional CV, score its strength and check how well it matches a job advert before you apply. ATS-friendly templates, a strength score and a job board.',
+    keywords: [
+      'cv builder',
+      'resume builder',
+      'ats friendly cv',
+      'cv checker',
+      'job matching',
+      'cv templates',
+    ],
+    canonicalPath: '/',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Smart CV Generator',
+      applicationCategory: 'BusinessApplication',
+      description: 'A CV builder that scores your CV and matches it against job adverts.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'NPR' },
+    },
+  });
 
   return (
     <>

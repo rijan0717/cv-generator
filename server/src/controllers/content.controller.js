@@ -37,7 +37,58 @@ function toPublicJSON(doc) {
     author: doc.author?.name ?? null,
     publishedAt: doc.publishedAt,
     updatedAt: doc.updatedAt,
+    seo: seoFor(doc),
   };
+}
+
+/**
+ * What the page tells a search engine, with the fallbacks applied.
+ *
+ * Resolved here rather than in the browser so that every reader of the
+ * API — the page, the sitemap, anything added later — gets the same
+ * answer. A page with no SEO written for it still describes itself:
+ * its title, its summary, and no keywords, which is better than an
+ * empty description.
+ *
+ * @param {object} doc - A Content document or lean object.
+ * @returns {{metaTitle: string, metaDescription: string, keywords: string[]}}
+ */
+function seoFor(doc) {
+  const seo = doc.seo ?? {};
+
+  return {
+    metaTitle: seo.metaTitle || doc.title || '',
+    metaDescription: describe(doc, seo),
+    keywords: seo.keywords ?? [],
+  };
+}
+
+/**
+ * The sentence shown under the link in a search result.
+ *
+ * A description the admin wrote is used exactly as written. Only the
+ * fallback — built from the summary, or the opening words of the body
+ * — gets the keywords appended, because that is the case where the
+ * description was never aimed at anything in particular and the
+ * keywords are the only statement of what the page is about.
+ *
+ * Capped at 160 characters, roughly where a search result stops
+ * showing it. The sentence keeps priority: the topics are added only
+ * if they fit whole, since half a list reads worse than none.
+ *
+ * @param {object} doc - A Content document or lean object.
+ * @param {object} seo - Its `seo` sub-document.
+ * @returns {string}
+ */
+function describe(doc, seo) {
+  if (seo.metaDescription) return seo.metaDescription.slice(0, 160);
+
+  const base = doc.excerpt || htmlToText(doc.bodyHtml ?? '', 160) || '';
+  const keywords = seo.keywords ?? [];
+  if (keywords.length === 0) return base.slice(0, 160);
+
+  const topics = `Topics: ${keywords.join(', ')}.`;
+  return (base.length + topics.length + 1 <= 160 ? `${base} ${topics}`.trim() : base).slice(0, 160);
 }
 
 /**
@@ -225,6 +276,7 @@ const EDITABLE = [
   'showInFooter',
   'navLabel',
   'sortOrder',
+  'seo',
 ];
 
 /**
@@ -240,6 +292,39 @@ const EDITABLE = [
  * @returns {string} Clean HTML, safe to store.
  * @throws {ApiError} When the body is empty once the markup is removed.
  */
+/**
+ * Normalises the SEO fields an admin typed.
+ *
+ * Keywords arrive as whatever the form produced — a comma-separated
+ * line, with stray spaces, blanks and repeats. They are stored as a
+ * tidy list because they end up in a meta tag and on the page, and
+ * "cv, CV , cv" printed three times is the kind of thing nobody
+ * notices until it is live.
+ *
+ * @param {unknown} seo - Whatever arrived in the request body.
+ * @returns {{metaTitle: string, metaDescription: string, keywords: string[]}}
+ */
+function cleanSeo(seo) {
+  const input = seo ?? {};
+
+  const keywords = Array.isArray(input.keywords) ? input.keywords : [];
+
+  const tidy = [
+    ...new Set(
+      keywords
+        .map((word) => String(word).trim().toLowerCase())
+        .filter(Boolean)
+        .map((word) => word.slice(0, 40)),
+    ),
+  ].slice(0, 15);
+
+  return {
+    metaTitle: String(input.metaTitle ?? '').trim().slice(0, 70),
+    metaDescription: String(input.metaDescription ?? '').trim().slice(0, 160),
+    keywords: tidy,
+  };
+}
+
 function cleanBody(html) {
   const clean = sanitiseHtml(html);
 
@@ -266,6 +351,7 @@ export async function createContent(req, res) {
   const item = await Content.create({
     ...fields,
     bodyHtml: cleanBody(req.body.bodyHtml),
+    seo: cleanSeo(req.body.seo),
     slug: await uniqueSlug(req.body.slug || req.body.title),
     author: req.user._id,
   });
@@ -299,6 +385,8 @@ export async function updateContent(req, res) {
   // Cleaned only when the editor actually sent a body: publishing from
   // the list sends `{ status }` alone and must not have to resend the
   // whole document to pass validation.
+  if (req.body.seo !== undefined) item.seo = cleanSeo(req.body.seo);
+
   if (req.body.bodyHtml !== undefined) {
     item.bodyHtml = cleanBody(req.body.bodyHtml);
     // The old block body is dropped once the page has been rewritten

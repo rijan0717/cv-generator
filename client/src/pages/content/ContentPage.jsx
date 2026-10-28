@@ -4,6 +4,7 @@ import * as contentApi from '../../api/content.js';
 import ContentBody from '../../components/content/ContentBody.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import { useDocumentMeta } from '../../utils/useDocumentMeta.js';
 
 /** A date as the rest of the application writes it. */
 const asDate = (value) => (value ? new Date(value).toLocaleDateString('en-GB') : '');
@@ -47,6 +48,33 @@ export default function ContentPage({ kind = 'page' }) {
     };
   }, [slug]);
 
+  const isPostType = content?.type === 'post';
+
+  // Called before the early returns below, because a hook cannot run
+  // conditionally. With nothing loaded it simply sets the site name.
+  useDocumentMeta({
+    title: content?.seo?.metaTitle || content?.title,
+    description: content?.seo?.metaDescription,
+    keywords: content?.seo?.keywords,
+    image: content?.coverImageUrl,
+    type: isPostType ? 'article' : 'website',
+    canonicalPath: content ? `${isPostType ? '/blog' : '/p'}/${content.slug}` : undefined,
+    // Structured data, so a search engine can show the date and author
+    // rather than guessing them out of the text.
+    jsonLd: content
+      ? {
+          '@context': 'https://schema.org',
+          '@type': isPostType ? 'BlogPosting' : 'WebPage',
+          headline: content.title,
+          description: content.seo?.metaDescription ?? content.excerpt ?? '',
+          datePublished: content.publishedAt ?? undefined,
+          dateModified: content.updatedAt ?? undefined,
+          author: content.author ? { '@type': 'Person', name: content.author } : undefined,
+          publisher: { '@type': 'Organization', name: 'Smart CV Generator' },
+        }
+      : undefined,
+  });
+
   if (isLoading) {
     return (
       <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
@@ -71,7 +99,7 @@ export default function ContentPage({ kind = 'page' }) {
     );
   }
 
-  const isPost = content.type === 'post';
+  const isPost = isPostType;
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
@@ -114,6 +142,28 @@ export default function ContentPage({ kind = 'page' }) {
       <div className="mt-8">
         <ContentBody html={content.bodyHtml} blocks={content.blocks} />
       </div>
+
+      {/* The keywords, shown as topics rather than hidden in a meta
+          tag. Search engines have largely stopped reading the keywords
+          tag, but a reader scanning for "ATS" or "interview" has not,
+          and a word worth targeting is a word worth printing. */}
+      {content.seo?.keywords?.length > 0 && (
+        <footer className="mt-10 border-t border-slate-200 pt-6 dark:border-slate-700">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Topics
+          </h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {content.seo.keywords.map((keyword) => (
+              <li
+                key={keyword}
+                className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              >
+                {keyword}
+              </li>
+            ))}
+          </ul>
+        </footer>
+      )}
     </article>
   );
 }

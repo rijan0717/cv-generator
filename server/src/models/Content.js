@@ -187,6 +187,28 @@ const contentSchema = new mongoose.Schema(
     /** Position among the other links. Lower comes first. */
     sortOrder: { type: Number, default: 0 },
 
+    // --- Search engines ----------------------------------------------------
+
+    /**
+     * What a search engine is told about this page.
+     *
+     * Separate from the title and summary on purpose. A headline is
+     * written to make somebody read on; a meta title is written to fit
+     * roughly sixty characters of a search result and contain the words
+     * people actually search for. They are often different sentences,
+     * and forcing one to do both jobs makes it bad at each.
+     *
+     * Every field falls back to the page's own content when it is left
+     * empty, so a page nobody has written SEO for is still described
+     * sensibly rather than blankly.
+     */
+    seo: {
+      metaTitle: { type: String, trim: true, maxlength: 70, default: '' },
+      metaDescription: { type: String, trim: true, maxlength: 160, default: '' },
+      /** The terms this page is meant to be found by. */
+      keywords: { type: [String], default: [] },
+    },
+
     // --- Bookkeeping -------------------------------------------------------
 
     author: {
