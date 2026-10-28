@@ -27,6 +27,16 @@ import {
 } from '../controllers/adminCompany.controller.js';
 import { getReport, REPORT_TYPES } from '../controllers/adminReport.controller.js';
 import { listAllTemplates, updateTemplate } from '../controllers/template.controller.js';
+import {
+  listAllContent,
+  getContent,
+  createContent,
+  updateContent,
+  deleteContent,
+  uploadContentImage,
+} from '../controllers/content.controller.js';
+import { uploadImage, handleUploadErrors } from '../middleware/upload.js';
+import { CONTENT_TYPES, CONTENT_STATUSES } from '../models/Content.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/role.js';
 import { validate } from '../middleware/validate.js';
@@ -145,6 +155,67 @@ router.patch(
   validate,
   asyncHandler(updateTemplate),
 );
+
+// --- Pages and blog posts --------------------------------------------------
+
+/** Shared body rules. Required on create, optional on edit. */
+const contentRules = (isCreate) => [
+  body('type').optional().isIn(CONTENT_TYPES).withMessage('Choose a page or a post'),
+  body('title')
+    [isCreate ? 'exists' : 'optional']()
+    .bail()
+    .trim()
+    .isLength({ min: 2, max: 160 })
+    .withMessage('Title must be between 2 and 160 characters'),
+  // The body is a list of blocks whose rules depend on each block's
+  // type, so it is checked in the controller rather than here.
+  body('bodyHtml')
+    [isCreate ? 'exists' : 'optional']()
+    .bail()
+    .isString()
+    .withMessage('The body must be text'),
+  body('coverImageUrl')
+    .optional()
+    .trim()
+    .matches(/^(\/uploads\/[\w.-]+)?$/)
+    .withMessage('The cover must be an uploaded image'),
+  body('excerpt').optional().trim().isLength({ max: 300 }).withMessage('Summary is too long'),
+  body('slug')
+    .optional()
+    .trim()
+    .isLength({ max: 80 })
+    .withMessage('Address must be at most 80 characters'),
+  body('status').optional().isIn(CONTENT_STATUSES).withMessage('Unknown status'),
+  body('showInHeader').optional().isBoolean().withMessage('Header must be yes or no'),
+  body('showInFooter').optional().isBoolean().withMessage('Footer must be yes or no'),
+  body('navLabel').optional().trim().isLength({ max: 40 }).withMessage('Link text is too long'),
+  body('sortOrder').optional().isInt({ min: 0, max: 99 }).withMessage('Order must be 0 to 99'),
+];
+
+router.get(
+  '/content',
+  [
+    ...paginationRules,
+    query('type').optional().isIn(CONTENT_TYPES).withMessage('Unknown type'),
+    query('status').optional().isIn(CONTENT_STATUSES).withMessage('Unknown status'),
+    query('search').optional().trim().isLength({ max: 100 }).withMessage('Search term is too long'),
+  ],
+  validate,
+  asyncHandler(listAllContent),
+);
+
+// Declared before `/content/:id`, or "images" is read as an id.
+router.post(
+  '/content/images',
+  uploadImage.single('image'),
+  handleUploadErrors,
+  asyncHandler(uploadContentImage),
+);
+
+router.get('/content/:id', [validId], validate, asyncHandler(getContent));
+router.post('/content', contentRules(true), validate, asyncHandler(createContent));
+router.patch('/content/:id', [validId, ...contentRules(false)], validate, asyncHandler(updateContent));
+router.delete('/content/:id', [validId], validate, asyncHandler(deleteContent));
 
 // --- Reports ---------------------------------------------------------------
 

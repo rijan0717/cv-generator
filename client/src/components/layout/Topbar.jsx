@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
+import { useNavigation } from '../../context/useNavigation.js';
 import Button from '../ui/Button.jsx';
 import ThemeToggle from '../ui/ThemeToggle.jsx';
 import { homePathFor } from '../../utils/homePath.js';
@@ -16,6 +17,7 @@ import { homePathFor } from '../../utils/homePath.js';
  */
 export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer }) {
   const { isAuthenticated, user, logout } = useAuth();
+  const navigation = useNavigation();
   const navigate = useNavigate();
 
   /**
@@ -75,6 +77,24 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
         </div>
 
         <div className="flex items-center gap-2">
+          {/* The pages the admin has put in the header. Hidden below
+              `md`, where the bar has no room for them: they are in the
+              footer as well, and the account buttons matter more on a
+              phone. */}
+          {navigation.header.length > 0 && (
+            <nav aria-label="Pages" className="mr-1 hidden items-center gap-1 md:flex">
+              {navigation.header.map((link) => (
+                <Link
+                  key={link.id}
+                  to={link.to}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
+
           <ThemeToggle />
 
           {isAuthenticated ? (

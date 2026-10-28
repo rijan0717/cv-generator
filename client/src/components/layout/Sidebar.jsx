@@ -31,6 +31,7 @@ const ICONS = {
   activity: 'M3 12h4l3-8 4 16 3-8h4',
   reports: 'M6 2h9l4 4v16H6z M8 12h8M8 16h5M8 8h4',
   templates: 'M4 4h7v16H4z M13 4h7v7h-7z M13 13h7v7h-7z',
+  pages: 'M5 3h9l5 5v13H5z M14 3v5h5 M9 13h6M9 17h4',
   companies: 'M3 21h18 M5 21V7l7-4 7 4v14 M10 12h4M10 16h4',
 };
 
@@ -116,9 +117,13 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
   // What each account sees:
   //   job seeker - CVs, matching, the board, saved jobs, applications
   //   employer   - their company and posts, plus the board (read-only)
-  //   admin      - everything a job seeker sees, plus administration,
-  //                where companies are reviewed instead of created
-  const isJobSeeker = isAdmin || user?.accountType === 'jobseeker';
+  //   admin      - the admin's own work, then the management screens
+  //
+  // The admin no longer gets the job seeker's tools. An administrator
+  // does not build a CV or rewrite one against an advert, and eight
+  // entries they will never use pushed the eight they live in down the
+  // page. They can still reach any of it by URL.
+  const isJobSeeker = !isAdmin && user?.accountType === 'jobseeker';
   const isEmployer = !isAdmin && user?.accountType === 'employer';
 
   return (
@@ -229,65 +234,88 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
       )}
 
       {isAdmin && (
-        <Group title="Administration" isCollapsed={isCollapsed}>
-          <Item
-            to="/admin"
-            icon="overview"
-            label="Overview"
-            end
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/admin/users"
-            icon="users"
-            label="Users"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/talent"
-            icon="profile"
-            label="People directory"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/admin/companies"
-            icon="companies"
-            label="Companies"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/admin/cvs"
-            icon="cvs"
-            label="All CVs"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/admin/templates"
-            icon="templates"
-            label="Templates"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/admin/reports"
-            icon="reports"
-            label="Reports"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/admin/activity"
-            icon="activity"
-            label="Activity"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-        </Group>
+        <>
+          {/* What the admin opens daily: where things stand, what has
+              been happening, and the figures to export. Separated from
+              the management screens below, which are visited when
+              something needs changing rather than every day. */}
+          <Group title="My work" isCollapsed={isCollapsed}>
+            <Item
+              to="/admin"
+              icon="overview"
+              label="Dashboard"
+              end
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/activity"
+              icon="activity"
+              label="Activity log"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/reports"
+              icon="reports"
+              label="Reports"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+          </Group>
+
+          <Group title="Manage" isCollapsed={isCollapsed}>
+            <Item
+              to="/admin/users"
+              icon="users"
+              label="Users"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/talent"
+              icon="profile"
+              label="People directory"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/companies"
+              icon="companies"
+              label="Companies"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/cvs"
+              icon="cvs"
+              label="All CVs"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/templates"
+              icon="templates"
+              label="Templates"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/blog"
+              icon="rewrite"
+              label="Blog"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/pages"
+              icon="pages"
+              label="Pages"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+          </Group>
+        </>
       )}
 
       {/* Account sits last for every kind of account. The work a person

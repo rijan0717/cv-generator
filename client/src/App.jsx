@@ -15,10 +15,13 @@ import AdminCVDetailPage from './pages/admin/AdminCVDetailPage.jsx';
 import AdminActivityPage from './pages/admin/AdminActivityPage.jsx';
 import AdminReportsPage from './pages/admin/AdminReportsPage.jsx';
 import AdminTemplatesPage from './pages/admin/AdminTemplatesPage.jsx';
+import AdminContentPage from './pages/admin/AdminContentPage.jsx';
 import AdminCompaniesPage from './pages/admin/AdminCompaniesPage.jsx';
 
 import HomePage from './pages/HomePage.jsx';
 import HealthPage from './pages/HealthPage.jsx';
+import BlogListPage from './pages/content/BlogListPage.jsx';
+import ContentPage from './pages/content/ContentPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
@@ -71,6 +74,13 @@ export default function App() {
             on offer before deciding to create an account. */}
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
+
+        {/* The blog and the admin's pages, public for the same reason
+            the board is. Pages sit under /p/ so an admin's slug can
+            never collide with a route the application already owns. */}
+        <Route path="/blog" element={<BlogListPage />} />
+        <Route path="/blog/:slug" element={<ContentPage kind="post" />} />
+        <Route path="/p/:slug" element={<ContentPage kind="page" />} />
 
         {/* Requires a logged-in user */}
         <Route element={<ProtectedRoute />}>
@@ -138,6 +148,8 @@ export default function App() {
             <Route path="cvs/:id" element={<AdminCVDetailPage />} />
             <Route path="activity" element={<AdminActivityPage />} />
             <Route path="templates" element={<AdminTemplatesPage />} />
+            <Route path="blog" element={<AdminContentPage type="post" />} />
+            <Route path="pages" element={<AdminContentPage type="page" />} />
             <Route path="reports" element={<AdminReportsPage />} />
           </Route>
         </Route>
