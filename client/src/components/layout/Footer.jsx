@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
+import { useNavigation } from '../../context/useNavigation.js';
 
 /**
  * Page footer: a short description on the left, link columns in the middle
  * and contact details on the right. Stacks into one column on phones.
+ *
+ * The second column is whatever the admin has published and marked for
+ * the footer. It used to be three hard-coded links to pages that did
+ * not exist — /about and /privacy both 404'd — which is exactly the
+ * hole the content feature fills.
  */
 
 /** Contact details shown in the "Contact us" column. Replace with real ones. */
@@ -11,29 +17,22 @@ const CONTACT = {
   location: 'Kathmandu, Nepal',
 };
 
-/** The link columns, in display order. */
-const LINK_GROUPS = [
-  {
-    heading: 'Explore',
-    links: [
-      { label: 'Home', to: '/' },
-      { label: 'Jobs', to: '/jobs' },
-      { label: 'Match my CV', to: '/match-cv' },
-    ],
-  },
-  {
-    heading: 'Company',
-    links: [
-      { label: 'About us', to: '/about' },
-      { label: 'Blogs', to: '/blog' },
-      { label: 'Privacy policy', to: '/privacy' },
-    ],
-  },
+/**
+ * The fixed column: parts of the application itself, so they are
+ * written here rather than being links an admin could delete and leave
+ * the footer half empty.
+ */
+const EXPLORE = [
+  { label: 'Home', to: '/' },
+  { label: 'Jobs', to: '/jobs' },
+  { label: 'Blog', to: '/blog' },
 ];
 
 const linkClass = 'hover:text-slate-900 dark:hover:text-slate-100';
 
 export default function Footer() {
+  const { footer: pages } = useNavigation();
+
   return (
     <footer className="border-t border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
       <div className="grid gap-8 px-4 py-12 sm:px-8 lg:px-20 text-sm text-slate-600 sm:grid-cols-2 lg:grid-cols-4 dark:text-slate-400">
@@ -45,13 +44,29 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Link columns */}
-        {LINK_GROUPS.map((group) => (
-          <nav key={group.heading} aria-label={group.heading}>
-            <p className="font-semibold text-slate-900 dark:text-slate-100">{group.heading}</p>
+        {/* The application's own pages */}
+        <nav aria-label="Explore">
+          <p className="font-semibold text-slate-900 dark:text-slate-100">Explore</p>
+          <ul className="mt-3 space-y-2">
+            {EXPLORE.map((link) => (
+              <li key={link.to}>
+                <Link to={link.to} className={linkClass}>
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Whatever the admin has published for the footer. The column
+            is left out entirely when there is nothing in it, rather
+            than printing a heading above a gap. */}
+        {pages.length > 0 && (
+          <nav aria-label="More">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">More</p>
             <ul className="mt-3 space-y-2">
-              {group.links.map((link) => (
-                <li key={link.to}>
+              {pages.map((link) => (
+                <li key={link.id}>
                   <Link to={link.to} className={linkClass}>
                     {link.label}
                   </Link>
@@ -59,7 +74,7 @@ export default function Footer() {
               ))}
             </ul>
           </nav>
-        ))}
+        )}
 
         {/* Contact, on the right from large screens up */}
         <div className="lg:text-right">

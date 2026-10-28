@@ -121,3 +121,83 @@ html.dark body {
 html.dark {
   scrollbar-color: theme('colors.slate.600') theme('colors.slate.900');
 }
+
+/*
+ * The written body, in the editor and on the page it produces.
+ *
+ * One set of rules for both, so what an admin sees while writing is
+ * what a reader gets. Written here rather than with utility classes
+ * because the markup comes from the database: there is no JSX to hang
+ * a className on.
+ */
+.content-body,
+.prose-editor {
+  @apply text-slate-700 dark:text-slate-300;
+}
+
+.content-body > * + *,
+.prose-editor > * + * {
+  @apply mt-4;
+}
+
+.content-body h2,
+.prose-editor h2 {
+  @apply mt-8 text-xl font-semibold text-slate-900 dark:text-slate-100;
+}
+
+.content-body h3,
+.prose-editor h3 {
+  @apply mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100;
+}
+
+.content-body p,
+.prose-editor p {
+  @apply leading-relaxed;
+}
+
+.content-body a,
+.prose-editor a {
+  @apply font-medium text-slate-900 underline dark:text-slate-100;
+}
+
+.content-body ul,
+.prose-editor ul {
+  @apply list-disc space-y-1 pl-6;
+}
+
+.content-body ol,
+.prose-editor ol {
+  @apply list-decimal space-y-1 pl-6;
+}
+
+.content-body blockquote,
+.prose-editor blockquote {
+  @apply border-l-4 border-slate-300 pl-4 italic text-slate-600 dark:border-slate-600 dark:text-slate-400;
+}
+
+/* An image obeys the alignment set on it: `margin: auto` on one side
+   or both is what moves it, because a block element cannot be moved by
+   text-align alone. */
+.content-body img,
+.prose-editor img {
+  @apply my-6 h-auto max-w-full rounded-xl;
+}
+
+.content-body img[style*='center'],
+.prose-editor img[style*='center'],
+.content-body [style*='text-align: center'] img,
+.prose-editor [style*='text-align: center'] img {
+  @apply mx-auto;
+}
+
+/* The editor's placeholder, shown when the document is empty. */
+.prose-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-slate-400;
+}
+
+/* ProseMirror draws its own focus ring; the wrapper already has one. */
+.prose-editor:focus,
+.prose-editor:focus-visible {
+  @apply outline-none;
+}
