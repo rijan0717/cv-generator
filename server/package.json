@@ -16,6 +16,7 @@
     "seed:jobs": "node scripts/seedJobs.js",
     "seed:qa-demo": "node scripts/seedQaDemo.js",
     "seed:talent": "node scripts/seedTalentDemo.js",
+    "seed:content": "node scripts/seedContent.js",
     "seed:loadtest": "node scripts/seedLoadTestUsers.js",
     "migrate:accounts": "node scripts/migrateAccountTypes.js"
   },

@@ -25,7 +25,7 @@ const CONTACT = {
 const EXPLORE = [
   { label: 'Home', to: '/' },
   { label: 'Jobs', to: '/jobs' },
-  { label: 'Blog', to: '/blog' },
+  { label: 'Blogs', to: '/blog' },
 ];
 
 const linkClass = 'hover:text-slate-900 dark:hover:text-slate-100';

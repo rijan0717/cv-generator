@@ -33,6 +33,7 @@
     "seed:jobs": "npm run seed:jobs --prefix server",
     "seed:qa-demo": "npm run seed:qa-demo --prefix server",
     "seed:talent": "npm run seed:talent --prefix server",
+    "seed:content": "npm run seed:content --prefix server",
     "seed:loadtest": "npm run seed:loadtest --prefix server --",
     "migrate:accounts": "npm run migrate:accounts --prefix server",
     "lint": "eslint .",
