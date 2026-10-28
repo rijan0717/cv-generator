@@ -306,7 +306,7 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             <Item
               to="/admin/blog"
               icon="rewrite"
-              label="Blog"
+              label="Blogs"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />

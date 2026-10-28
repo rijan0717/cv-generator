@@ -72,9 +72,19 @@ export default function Layout() {
     });
   }
 
-  // The footer belongs to the public landing page only: a visitor on the
-  // home route sees it, a signed-in user never does.
-  const showFooter = pathname === '/' && !isAuthenticated;
+  /**
+   * The footer belongs to the public face of the site — the landing
+   * page, the board, the blog and the admin's pages — and not to the
+   * working screens behind a login, where it would sit under a CV
+   * editor saying nothing useful.
+   *
+   * It used to appear only on the home page for signed-out visitors,
+   * which made Privacy and Terms unreachable from anywhere a visitor
+   * actually was.
+   */
+  const PUBLIC_PREFIXES = ['/jobs', '/blog', '/p/', '/login', '/register'];
+  const showFooter =
+    pathname === '/' || PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
   const closeDrawer = () => setIsDrawerOpen(false);
 
