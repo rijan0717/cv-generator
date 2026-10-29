@@ -85,7 +85,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               <img
                 src={cv.personal.photoUrl}
                 alt=""
-                className="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+                className="h-16 w-16 shrink-0 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700"
               />
             )}
             <input
@@ -93,7 +93,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => e.target.files?.[0] && onPhotoChange(e.target.files[0])}
-              className="text-sm text-slate-600 dark:text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200"
+              className="min-w-0 flex-1 text-sm text-slate-600 dark:text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200"
             />
           </div>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">

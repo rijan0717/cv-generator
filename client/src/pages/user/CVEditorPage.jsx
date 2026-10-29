@@ -138,7 +138,11 @@ export default function CVEditorPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 py-6">
+    // From large screens up the editor is a workspace exactly the height
+    // of the content pane: the header stays put and the form and the
+    // preview each scroll on their own, side by side. Letting the whole
+    // pane scroll as well put one scrollbar inside another.
+    <div className="mx-auto max-w-[1600px] px-4 py-6 lg:flex lg:h-full lg:flex-col">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
@@ -202,9 +206,14 @@ export default function CVEditorPage() {
         </Alert>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        {/* Left: content or customisation */}
-        <div className="min-w-0">
+      {/* `minmax(0,1fr)` rows let the panes shrink to the space left and
+          scroll, instead of growing to their content. The minimum height
+          keeps them usable when an open import dialog takes the room
+          above — the pane as a whole scrolls in that case. */}
+      <div className="mt-6 grid gap-6 lg:min-h-[24rem] lg:flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
+        {/* Left: content or customisation. The tabs stay in view; only
+            the form below them scrolls. */}
+        <div className="min-w-0 lg:flex lg:flex-col">
           <div className="mb-4 flex gap-2" role="tablist">
             {[
               { key: 'content', label: 'Content' },
@@ -228,20 +237,24 @@ export default function CVEditorPage() {
             ))}
           </div>
 
-          {tab === 'content' ? (
-            <CVContentForm cv={cv} onChange={handleChange} onPhotoChange={handlePhotoChange} />
-          ) : (
-            <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-              <CustomisePanel cv={cv} onChange={handleChange} />
-            </div>
-          )}
+          {/* `relative` for the same reason as on the content pane: it keeps
+              the `sr-only` button labels inside this scroller. `pr-2`
+              keeps the cards' edge off the scrollbar. */}
+          <div className="relative lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
+            {tab === 'content' ? (
+              <CVContentForm cv={cv} onChange={handleChange} onPhotoChange={handlePhotoChange} />
+            ) : (
+              <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+                <CustomisePanel cv={cv} onChange={handleChange} />
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Right: live preview, kept in view while the form scrolls.
-            `top-6`, not `top-20`: the content pane is the scroll
-            container now and the top bar sits outside it, so there is
-            no header height to clear. */}
-        <div className="min-w-0 lg:sticky lg:top-6 lg:self-start">
+        {/* Right: live preview. It no longer needs to be sticky — its
+            pane does not move when the form scrolls, and a multi-page CV
+            scrolls within its own grey box. */}
+        <div className="min-w-0 lg:flex lg:flex-col">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
             <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -249,7 +262,7 @@ export default function CVEditorPage() {
             </span>
           </div>
 
-          <div className="rounded-xl lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto bg-slate-200/60 dark:bg-slate-800/60 p-4">
+          <div className="rounded-xl lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain bg-slate-200/60 dark:bg-slate-800/60 p-4">
             <CVPreview cv={cv} />
           </div>
         </div>

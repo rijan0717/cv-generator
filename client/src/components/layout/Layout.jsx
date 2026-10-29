@@ -175,7 +175,12 @@ export default function Layout() {
           </>
         )}
 
-        <main id="main" ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
+        {/* `relative` makes the pane the containing block for anything
+            absolutely positioned inside it — the `sr-only` labels on icon
+            buttons above all. Without it they are placed against the
+            whole page, escape this pane's clipping, and stretch the
+            document into a second, window-level scrollbar. */}
+        <main id="main" ref={mainRef} className="relative min-w-0 flex-1 overflow-y-auto">
           <Outlet />
           {showFooter && <Footer />}
         </main>
