@@ -90,6 +90,28 @@ block of `server/tests/unit/cvTailor.test.js` (7 cases).
 
 ---
 
+### 1.3 Template gallery
+
+`client/src/templates/templates.test.jsx` (registry, heading font and sample CV cases) and
+`client/src/components/templates/TemplateGallery.test.jsx` (8 cases).
+
+| Test ID | Module          | Description                              | Input / Steps                                                     | Expected Result                                          | Actual Result | Status |
+| ------- | --------------- | ---------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------- | ------------- | ------ |
+| U-TG-01 | Registry        | Every template has a known category      | Each entry in `TEMPLATES`                                         | `category` is one of `CATEGORIES`; `isTwoColumn` boolean | As expected   | Pass   |
+| U-TG-02 | Registry        | Client and server lists agree            | Keys of `TEMPLATES` vs `TEMPLATE_CATALOGUE`                       | Identical, in the same order                             | As expected   | Pass   |
+| U-TG-03 | templateUtils   | Heading font falls back to the body font | `buildTemplateVariables({ fontFamily: 'Lora', headingFont: '' })` | `--cv-heading-font` is the Lora stack                    | As expected   | Pass   |
+| U-TG-04 | templateUtils   | Heading font can differ from the body    | `fontFamily: 'Inter', headingFont: 'Oswald'`                      | Heading Oswald, body Inter                               | As expected   | Pass   |
+| U-TG-05 | sampleCV        | Sample fills every section               | `visibleSections(SAMPLE_CV)`                                      | All eight sections                                       | As expected   | Pass   |
+| U-TG-06 | sampleCV        | Borrows styling, never hidden sections   | `sampleFor('modern', { primaryColor, hiddenSections: [...] })`    | Colour carried over; skills and projects still visible   | As expected   | Pass   |
+| U-TG-07 | TemplateGallery | One card per template                    | Render with all templates                                         | 11 cards                                                 | As expected   | Pass   |
+| U-TG-08 | TemplateGallery | Marks the current template               | `selectedKey="modern"`                                            | "Modern template (current)", `aria-pressed="true"`       | As expected   | Pass   |
+| U-TG-09 | TemplateGallery | Click hands the template to the caller   | Click the Executive card                                          | `onChoose` called with `key: 'executive'`                | As expected   | Pass   |
+| U-TG-10 | TemplateGallery | Category filter                          | Click "ATS-friendly"                                              | Only the ATS-Friendly card                               | As expected   | Pass   |
+| U-TG-11 | TemplateGallery | Search covers descriptions               | Type "sidebar"                                                    | Modern shown, Classic hidden                             | As expected   | Pass   |
+| U-TG-12 | TemplateGallery | Photo filter                             | Tick "With photo"                                                 | Only templates with `usesPhoto`                          | As expected   | Pass   |
+| U-TG-13 | TemplateGallery | Empty state with a way out               | Search for nothing that exists, then "Clear filters"              | Message shown; then all 11 cards back                    | As expected   | Pass   |
+| U-TG-14 | TemplateGallery | "Preview with my CV" needs a CV          | Render without, then with `userCV`                                | Toggle absent, then present                              | As expected   | Pass   |
+
 ## 2. System test cases
 
 ### 2.1 Infrastructure

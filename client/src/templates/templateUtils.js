@@ -54,7 +54,16 @@ export function pageBreakOffsets(contentHeightPx) {
   return offsets;
 }
 
-/** Font stacks offered in the customisation panel. */
+/**
+ * Font stacks offered in the customisation panel.
+ *
+ * A curated list rather than an open one: every family here is loaded by
+ * the Google Fonts link in `index.html`, which the print page shares, so
+ * whatever the preview shows the PDF can render. A name typed in from
+ * outside the list would fall back to a system font in one place and not
+ * the other. The second six were added with the heading font, so there
+ * are enough serif, sans and display faces to pair a heading with a body.
+ */
 export const FONT_STACKS = {
   Inter: "'Inter', system-ui, sans-serif",
   Lato: "'Lato', system-ui, sans-serif",
@@ -62,6 +71,12 @@ export const FONT_STACKS = {
   'Playfair Display': "'Playfair Display', Georgia, serif",
   'Roboto Slab': "'Roboto Slab', Georgia, serif",
   'Source Sans 3': "'Source Sans 3', system-ui, sans-serif",
+  Poppins: "'Poppins', system-ui, sans-serif",
+  Montserrat: "'Montserrat', system-ui, sans-serif",
+  Raleway: "'Raleway', system-ui, sans-serif",
+  Lora: "'Lora', Georgia, serif",
+  'EB Garamond': "'EB Garamond', Georgia, serif",
+  Oswald: "'Oswald', 'Arial Narrow', sans-serif",
 };
 
 /** Base body size in millimetres of the rendered page, per size setting. */
@@ -97,6 +112,10 @@ export function buildTemplateVariables(settings = {}) {
     '--cv-rule': 'color-mix(in srgb, var(--cv-text) 18%, transparent)',
     '--cv-tint': 'color-mix(in srgb, var(--cv-primary) 8%, transparent)',
     '--cv-font': FONT_STACKS[settings.fontFamily] ?? FONT_STACKS.Inter,
+    // The name and section headings. Empty means "the same as the body",
+    // which is how every CV made before this setting existed still looks.
+    '--cv-heading-font':
+      FONT_STACKS[settings.headingFont] ?? FONT_STACKS[settings.fontFamily] ?? FONT_STACKS.Inter,
     '--cv-font-size': FONT_SIZES[settings.fontSize] ?? FONT_SIZES.medium,
     '--cv-section-gap': spacing.section,
     '--cv-item-gap': spacing.item,

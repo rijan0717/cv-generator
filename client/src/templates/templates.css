@@ -29,6 +29,9 @@
 /* --- Typography ---------------------------------------------------------- */
 
 .cv-name {
+  /* The heading font falls back to the body font, so a CV that never set
+     one looks exactly as it always did. */
+  font-family: var(--cv-heading-font);
   font-size: 2em;
   font-weight: 700;
   line-height: 1.15;
@@ -49,6 +52,7 @@
 }
 
 .cv-section-title {
+  font-family: var(--cv-heading-font);
   font-size: 0.95em;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -319,6 +323,9 @@
 .cv-ats .cv-name,
 .cv-ats .cv-section-title {
   color: #000;
+  /* The page's Arial, not a display heading font: the point of this
+     template is that nothing about it is decorative. */
+  font-family: inherit;
 }
 
 .cv-ats .cv-name {

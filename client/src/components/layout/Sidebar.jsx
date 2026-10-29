@@ -152,6 +152,13 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             isCollapsed={isCollapsed}
           />
           <Item
+            to="/templates"
+            icon="templates"
+            label="Templates"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
             to="/rewrite"
             icon="rewrite"
             label="Rewrite with JD"

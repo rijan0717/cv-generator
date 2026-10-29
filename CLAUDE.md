@@ -85,9 +85,10 @@ Do not add any other dependency without asking me first and explaining why.
   4. **Creative** — bold header band, icons for contact details
   5. **ATS-Friendly** — single column, no graphics or tables, plain headings
 - All templates receive the same props (`cv`, `settings`) and read styling from CSS variables, so customisation works identically in every template.
-- Customisation settings (saved per CV): primary colour, background colour, text colour, font family (curated list of 6 Google Fonts), font size (small / medium / large), theme preset (a few ready-made palettes plus light/dark), spacing (compact / normal), section visibility and section order.
+- Customisation settings (saved per CV): primary colour, background colour, text colour, body font and heading font (curated list of 12 Google Fonts; the heading font defaults to the body font), font size (small / medium / large), theme preset (a few ready-made palettes plus light/dark), spacing (compact / normal), section visibility and section order.
 - Live A4 preview (210 × 297 mm) that updates while the user edits, with correct page breaks for multi-page CVs.
 - Users only see templates the admin has marked as active.
+- Templates are chosen from a grid gallery of live thumbnails (sample CV, filter by category, photo and layout), on the `/templates` page and in the editor's Design tab. Plan for growing to 50+ templates: `docs/plans/template-gallery/PLAN.md`.
 
 ### 5.4 Export
 

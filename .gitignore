@@ -37,3 +37,7 @@ Thumbs.db
 
 # private uploads (company registration documents)
 server/private-uploads/
+
+# Third-party reference material kept for local planning only: large, and
+# not ours to republish (see docs/plans/template-gallery/PLAN.md).
+docs/plans/*/reference/

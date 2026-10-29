@@ -108,6 +108,9 @@ const settingsSchema = new mongoose.Schema(
     backgroundColor: { type: String, default: '#ffffff' },
     textColor: { type: String, default: '#1e293b' },
     fontFamily: { type: String, default: 'Inter' },
+    // The name and section headings. Empty means "the same as the body
+    // font", so every CV saved before this field existed looks unchanged.
+    headingFont: { type: String, default: '' },
     fontSize: { type: String, enum: ['small', 'medium', 'large'], default: 'medium' },
     themePreset: { type: String, default: 'slate' },
     spacing: { type: String, enum: ['compact', 'normal'], default: 'normal' },
