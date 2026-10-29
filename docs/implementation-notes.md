@@ -731,3 +731,40 @@ Scores are untouched by design: the vectors, the similarity and the match
 score are all computed before either rule runs. A unit test asserts exactly
 that, alongside one that the noise words never appear and one that no generic
 term outranks a skill.
+
+## Feature 11 — Template gallery
+
+Templates are chosen from a grid of live thumbnails instead of a list of names, on a
+**Templates** page (`/templates`, to start a new CV) and in the editor's Design tab (to
+switch the current one).
+
+### Pieces
+
+| File                                                        | Responsibility                                                                                |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `client/src/templates/index.js`                             | Registry; each template now has a `category` and `isTwoColumn`. `CATEGORIES` lists the chips. |
+| `client/src/templates/sampleCV.js`                          | `SAMPLE_CV`, an invented CV with every section filled; `sampleFor(key, settings)`.            |
+| `client/src/components/templates/TemplateThumbnail.jsx`     | The real template at A4 size, shrunk with `transform: scale()`; drawn only near the viewport. |
+| `client/src/components/templates/TemplateGallery.jsx`       | Search, category chips, photo / two-column / "my CV" toggles, and the grid.                   |
+| `client/src/components/templates/TemplatePreviewDialog.jsx` | Native `<dialog>` with a large preview and "Use this template".                               |
+| `client/src/components/templates/useOfferedTemplates.js`    | The registry filtered to what the admin has left active (shared by both screens).             |
+| `client/src/pages/user/TemplatesPage.jsx`                   | The gallery page; "Use this template" creates a CV in it and opens the editor.                |
+
+### Decisions
+
+- **Thumbnails are renders, not images.** The same component draws the thumbnail, the
+  editor preview and the PDF, so a thumbnail cannot go out of date.
+- **A sample CV, not the user's.** A half-written CV would make every template look empty.
+  In the editor the sample borrows the CV's colours and fonts, and "Preview with my CV"
+  switches to the real content.
+- **What a click does belongs to the caller.** The page opens a preview dialog first; the
+  Design tab applies the template at once, because the editor's live preview is already
+  the large view.
+- **Lazy drawing.** Each thumbnail waits for an `IntersectionObserver` before laying out a
+  whole CV, so a long gallery does not lay out every template on load.
+- **Heading font.** `settings.headingFont` (empty means the same as the body) drives the
+  `--cv-heading-font` variable used by `.cv-name` and `.cv-section-title`; the ATS
+  template keeps Arial throughout.
+
+The plan for growing the catalogue to 50+ templates with a template engine is in
+`docs/plans/template-gallery/PLAN.md`.

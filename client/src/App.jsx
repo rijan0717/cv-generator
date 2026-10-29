@@ -30,6 +30,7 @@ import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
 import SettingsPage from './pages/user/SettingsPage.jsx';
 import CVEditorPage from './pages/user/CVEditorPage.jsx';
+import TemplatesPage from './pages/user/TemplatesPage.jsx';
 import TailorCVPage from './pages/user/TailorCVPage.jsx';
 import RewriteWithJDPage from './pages/user/RewriteWithJDPage.jsx';
 import PrintPage from './pages/print/PrintPage.jsx';
@@ -98,6 +99,8 @@ export default function App() {
             <Route path="/dashboard" element={<SeekerDashboardPage />} />
             <Route path="/cvs" element={<DashboardPage />} />
             <Route path="/cvs/:id" element={<CVEditorPage />} />
+            {/* The gallery, to start a new CV from a template. */}
+            <Route path="/templates" element={<TemplatesPage />} />
             {/* Tailoring reads one CV and one advert and writes a new CV;
                 it never changes the CV it was started from. */}
             <Route path="/cvs/:id/tailor" element={<TailorCVPage />} />

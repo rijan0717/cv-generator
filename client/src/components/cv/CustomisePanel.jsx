@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
-import { TEMPLATES } from '../../templates/index.js';
 import { FONT_STACKS, SECTION_LABELS } from '../../templates/templateUtils.js';
-import * as templateApi from '../../api/templates.js';
+import TemplateGallery from '../templates/TemplateGallery.jsx';
+import useOfferedTemplates from '../templates/useOfferedTemplates.js';
 
 /**
  * The customisation panel.
  *
  * Because every template reads the same CSS variables, one panel drives all
- * five. Nothing here knows which template is selected, apart from the picker
- * itself.
+ * of them. Nothing here knows which template is selected, apart from the
+ * gallery at the top.
  */
 
 /** Ready-made palettes, so a user does not have to choose colours by hand. */
@@ -77,42 +76,9 @@ export default function CustomisePanel({ cv, onChange }) {
   const order = settings.sectionOrder?.length ? settings.sectionOrder : ALL_SECTIONS;
   const hidden = new Set(settings.hiddenSections ?? []);
 
-  /**
-   * The keys the admin is currently offering.
-   *
-   * `null` until the answer arrives, and `null` again if the request
-   * fails: every template is listed in that case rather than none. A
-   * network blip must not leave somebody unable to change their
-   * template, and the server decides nothing here — the list only
-   * filters what the picker shows.
-   */
-  const [activeKeys, setActiveKeys] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    templateApi
-      .listTemplates()
-      .then((data) => {
-        if (!cancelled) setActiveKeys(data.templates.map((template) => template.key));
-      })
-      .catch(() => {
-        if (!cancelled) setActiveKeys(null);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // The CV's own template is always shown, even if it has since been
-  // deactivated: the picker would otherwise have no option selected and
-  // look as though the CV had lost its template.
-  const offered = activeKeys
-    ? TEMPLATES.filter(
-        (template) => activeKeys.includes(template.key) || template.key === cv.templateKey,
-      )
-    : TEMPLATES;
+  // The admin's active templates, plus this CV's own even if it has since
+  // been switched off.
+  const { templates: offered } = useOfferedTemplates(cv.templateKey);
 
   /**
    * Applies a change to one or more settings fields.
@@ -149,38 +115,23 @@ export default function CustomisePanel({ cv, onChange }) {
 
   return (
     <div className="space-y-6">
-      {/* Template */}
+      {/* Template. Choosing one applies it straight away: the live
+          preview beside this panel is the large view, so a second
+          "are you sure?" preview would only be in the way. */}
       <section>
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Template</h3>
-        <div className="mt-3 space-y-2">
-          {offered.map((template) => (
-            <label
-              key={template.key}
-              className={[
-                'flex cursor-pointer gap-3 rounded-lg border p-3 text-sm transition',
-                cv.templateKey === template.key
-                  ? 'border-slate-900 bg-slate-50 dark:bg-slate-950'
-                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500',
-              ].join(' ')}
-            >
-              <input
-                type="radio"
-                name="templateKey"
-                value={template.key}
-                checked={cv.templateKey === template.key}
-                onChange={() => onChange({ templateKey: template.key })}
-                className="mt-1"
-              />
-              <span>
-                <span className="font-medium text-slate-900 dark:text-slate-100">
-                  {template.name}
-                </span>
-                <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
-                  {template.description}
-                </span>
-              </span>
-            </label>
-          ))}
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          Your content stays the same in every template. Thumbnails use sample content in your
+          colours and fonts.
+        </p>
+        <div className="mt-3">
+          <TemplateGallery
+            templates={offered}
+            selectedKey={cv.templateKey}
+            onChoose={(template) => onChange({ templateKey: template.key })}
+            userCV={cv}
+            density="compact"
+          />
         </div>
       </section>
 
@@ -250,7 +201,7 @@ export default function CustomisePanel({ cv, onChange }) {
           className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
           htmlFor="fontFamily"
         >
-          Font
+          Body font
         </label>
         <select
           id="fontFamily"
@@ -258,6 +209,29 @@ export default function CustomisePanel({ cv, onChange }) {
           onChange={(event) => updateSettings({ fontFamily: event.target.value })}
           className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
         >
+          {Object.keys(FONT_STACKS).map((font) => (
+            <option key={font} value={font}>
+              {font}
+            </option>
+          ))}
+        </select>
+
+        {/* The name and section headings. "Same as body" is stored as an
+            empty string, which is what every CV made before this setting
+            existed already has. */}
+        <label
+          className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+          htmlFor="headingFont"
+        >
+          Heading font
+        </label>
+        <select
+          id="headingFont"
+          value={settings.headingFont ?? ''}
+          onChange={(event) => updateSettings({ headingFont: event.target.value })}
+          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+        >
+          <option value="">Same as body</option>
           {Object.keys(FONT_STACKS).map((font) => (
             <option key={font} value={font}>
               {font}

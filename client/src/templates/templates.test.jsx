@@ -1,7 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { TEMPLATES, getTemplate } from './index.js';
-import { formatDateRange, visibleSections, toHref } from './templateUtils.js';
+import { TEMPLATES, CATEGORIES, getTemplate } from './index.js';
+import {
+  formatDateRange,
+  visibleSections,
+  toHref,
+  buildTemplateVariables,
+  FONT_STACKS,
+} from './templateUtils.js';
+import { SAMPLE_CV, sampleFor } from './sampleCV.js';
+// The server's copy of the catalogue, which seeds the admin's template list.
+// It has no imports of its own, so the client tests can read it directly.
+import { TEMPLATE_CATALOGUE } from '../../../server/src/data/templateCatalogue.js';
 
 /** A CV with something in every section, used to exercise all five templates. */
 const sampleCV = {
@@ -100,6 +110,55 @@ describe('template registry', () => {
 
   it('falls back to Classic for an unknown key', () => {
     expect(getTemplate('does-not-exist').key).toBe('classic');
+  });
+
+  it('puts every template in a known gallery category', () => {
+    // A template with a misspelt category would appear under "All" and
+    // under no chip, and nobody filtering would ever find it.
+    const categories = new Set(CATEGORIES.map((c) => c.key));
+    for (const template of TEMPLATES) {
+      expect(categories.has(template.category), template.key).toBe(true);
+      expect(typeof template.isTwoColumn).toBe('boolean');
+    }
+  });
+
+  it('matches the server catalogue key for key', () => {
+    // The two lists are kept by hand in two packages. A key on the client
+    // only can never be switched off by the admin; a key on the server
+    // only is an option that renders as Classic.
+    expect(TEMPLATES.map((t) => t.key)).toEqual(TEMPLATE_CATALOGUE.map((t) => t.key));
+  });
+});
+
+describe('heading font', () => {
+  it('falls back to the body font when none is chosen', () => {
+    const vars = buildTemplateVariables({ fontFamily: 'Lora', headingFont: '' });
+    expect(vars['--cv-heading-font']).toBe(FONT_STACKS.Lora);
+  });
+
+  it('uses its own font when one is chosen', () => {
+    const vars = buildTemplateVariables({ fontFamily: 'Inter', headingFont: 'Oswald' });
+    expect(vars['--cv-heading-font']).toBe(FONT_STACKS.Oswald);
+    expect(vars['--cv-font']).toBe(FONT_STACKS.Inter);
+  });
+});
+
+describe('the gallery sample CV', () => {
+  it('has content in every section, so no thumbnail looks empty', () => {
+    expect(visibleSections(SAMPLE_CV)).toEqual(SAMPLE_CV.settings.sectionOrder);
+  });
+
+  it("borrows a CV's styling but never its hidden sections", () => {
+    const cv = sampleFor('modern', {
+      primaryColor: '#881337',
+      hiddenSections: ['skills', 'projects'],
+      sectionOrder: ['summary'],
+    });
+
+    expect(cv.templateKey).toBe('modern');
+    expect(cv.settings.primaryColor).toBe('#881337');
+    expect(visibleSections(cv)).toContain('skills');
+    expect(visibleSections(cv)).toContain('projects');
   });
 });
 

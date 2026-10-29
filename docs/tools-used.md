@@ -52,6 +52,13 @@ dependencies are added in later phases.
 | tailwindcss      | Utility-first styling                               |
 | recharts         | Charts on the admin business-intelligence dashboard |
 
+### Fonts
+
+Twelve Google Fonts, loaded by one stylesheet link in `client/index.html` so the print
+page that Puppeteer turns into a PDF has exactly the fonts the preview has: Inter, Lato,
+Merriweather, Playfair Display, Roboto Slab, Source Sans 3, Poppins, Montserrat, Raleway,
+Lora, EB Garamond and Oswald. A CV has a body font and an optional heading font.
+
 ## Testing tools
 
 | Tool                  | Purpose                                             |
