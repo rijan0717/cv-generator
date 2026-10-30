@@ -302,13 +302,6 @@
   border-radius: 2px;
 }
 
-.cv-creative .cv-icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.12em;
-  margin-right: 4px;
-}
-
 /* --- 5. ATS-friendly: no graphics, no columns, plain headings ------------ */
 
 .cv-ats {
@@ -344,6 +337,101 @@
 .cv-ats .cv-entry-date,
 .cv-ats .cv-entry-sub {
   color: #000;
+}
+
+/* --- Shared: contact icons ----------------------------------------------- */
+
+/*
+ * Sized in `em` so an icon always matches the text beside it, whatever the
+ * user has set the font size to. `ContactItem` aligns the icon with its
+ * label itself, using an inline-flex wrapper, so that stacking the contact
+ * details in a sidebar cannot drop the label below its icon.
+ */
+.cv-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* --- Shared: text for screen readers only -------------------------------- */
+
+/*
+ * Used by the bar and dot skill variants to keep the level readable aloud
+ * when it is otherwise only drawn as a shape.
+ *
+ * Absolutely positioned text needs a positioned ancestor, or it can escape
+ * into a scrolling pane and drag it sideways (see commit a78fef4), so the
+ * page itself is made the containing block.
+ */
+.cv-page {
+  position: relative;
+}
+
+.cv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Shared: skills shown as a bar or a row of dots ---------------------- */
+
+/*
+ * Both meters take their colours from these two variables, so a dark
+ * sidebar restyles them by setting the variables once rather than by
+ * overriding every rule below.
+ */
+.cv-skill-meters {
+  display: grid;
+  gap: 5px;
+  margin-top: 4px;
+  --cv-meter-track: var(--cv-rule);
+  --cv-meter-fill: var(--cv-primary);
+}
+
+.cv-skill-meter {
+  display: grid;
+  gap: 2px;
+}
+
+.cv-meter-name {
+  font-size: 0.95em;
+}
+
+.cv-meter-track {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--cv-meter-track);
+  overflow: hidden;
+}
+
+.cv-meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--cv-meter-fill);
+}
+
+.cv-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.cv-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cv-meter-track);
+}
+
+.cv-dot-on {
+  background: var(--cv-meter-fill);
 }
 
 /* --- Shared: a skill list flowed into columns ---------------------------- */

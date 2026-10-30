@@ -16,6 +16,8 @@ import MonogramTemplate from './MonogramTemplate.jsx';
 import FormalTemplate from './FormalTemplate.jsx';
 import EditorialTemplate from './EditorialTemplate.jsx';
 import CompactTemplate from './CompactTemplate.jsx';
+import { DESIGNS } from './engine/designs.js';
+import { makeDesignedTemplate } from './engine/DesignedTemplate.jsx';
 import './templates.css';
 
 /**
@@ -26,8 +28,25 @@ import './templates.css';
  * @property {string} category - One of the CATEGORIES keys, for the gallery filter.
  * @property {boolean} isTwoColumn - Whether the body is split into two columns.
  * @property {boolean} usesPhoto - Whether this template renders the photo.
+ * @property {object} [defaults] - Palette and fonts applied when it is chosen.
  * @property {React.ComponentType<{cv: object}>} Component - The renderer.
  */
+
+/**
+ * The palette and fonts the first eleven templates were designed against.
+ *
+ * They had no `defaults` of their own because they were written before the
+ * engine, and every design now carries a palette. Without this, switching
+ * from a designed template back to Classic would leave Classic wearing the
+ * other one's colours, which reads as a bug rather than as a choice.
+ */
+const ORIGINAL_DEFAULTS = {
+  primaryColor: '#0f172a',
+  backgroundColor: '#ffffff',
+  textColor: '#1e293b',
+  fontFamily: 'Inter',
+  headingFont: 'Inter',
+};
 
 /**
  * The groups the template gallery filters by, in the order its chips are
@@ -51,8 +70,16 @@ export const CATEGORIES = [
   { key: 'ats', label: 'ATS-friendly', hint: 'Plain text that screening software reads reliably.' },
 ];
 
-/** @type {TemplateDefinition[]} */
-export const TEMPLATES = [
+/**
+ * The hand-written templates: the original eleven, each its own component.
+ *
+ * They are deliberately not rewritten onto the engine (PLAN.md §2). They
+ * already export correctly, and redrawing them would change the PDF of
+ * every CV that has been downloaded in one of them.
+ *
+ * @type {TemplateDefinition[]}
+ */
+const HAND_WRITTEN = [
   {
     key: 'classic',
     category: 'professional',
@@ -158,7 +185,30 @@ export const TEMPLATES = [
     usesPhoto: false,
     Component: CompactTemplate,
   },
-];
+].map((template) => ({ defaults: ORIGINAL_DEFAULTS, ...template }));
+
+/**
+ * The designed templates, turned from data into registry entries.
+ *
+ * The design object already says everything the gallery needs — its name,
+ * category, whether it has a sidebar — so the entry is built from it
+ * rather than written out a second time and left to drift.
+ *
+ * @type {TemplateDefinition[]}
+ */
+const DESIGNED = DESIGNS.map((design) => ({
+  key: design.key,
+  name: design.name,
+  description: design.description,
+  category: design.category,
+  isTwoColumn: design.isTwoColumn,
+  usesPhoto: design.usesPhoto,
+  defaults: design.defaults,
+  Component: makeDesignedTemplate(design),
+}));
+
+/** @type {TemplateDefinition[]} */
+export const TEMPLATES = [...HAND_WRITTEN, ...DESIGNED];
 
 /** Quick lookup by key. */
 const BY_KEY = new Map(TEMPLATES.map((template) => [template.key, template]));

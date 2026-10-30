@@ -6,7 +6,68 @@
  * written once here. Anything visual is driven by the CSS variables set in
  * `buildTemplateVariables`, never hard-coded.
  */
-import { formatDateRange, toHref } from './templateUtils.js';
+import { formatDateRange, toHref, skillLevelStep } from './templateUtils.js';
+
+/**
+ * Inline SVG icons for the contact details.
+ *
+ * They are drawn inline rather than loaded from an icon library, both because
+ * the project rules keep dependencies to a minimum and because Puppeteer must
+ * be able to render them without waiting for an external font or sprite to
+ * load.
+ */
+export const CONTACT_ICONS = {
+  email: 'M2 4h12v8H2z M2 4l6 5 6-5',
+  phone:
+    'M3 3h3l1.5 4-2 1a9 9 0 0 0 4.5 4.5l1-2 4 1.5v3a1 1 0 0 1-1 1A13 13 0 0 1 2 4a1 1 0 0 1 1-1z',
+  address:
+    'M8 1a5 5 0 0 1 5 5c0 3.5-5 9-5 9S3 9.5 3 6a5 5 0 0 1 5-5z M8 4.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',
+  website: 'M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1z M1 8h14 M8 1a11 11 0 0 1 0 14 M8 1a11 11 0 0 0 0 14',
+  linkedin: 'M3 6h2v7H3z M3 3h2v2H3z M7 6h2v1a2 2 0 0 1 4 1.5V13h-2V9a1 1 0 0 0-2 0v4H7z',
+  github:
+    'M8 1a7 7 0 0 0-2.2 13.6c.35.06.48-.15.48-.34v-1.2c-1.95.42-2.36-.94-2.36-.94-.32-.8-.78-1.02-.78-1.02-.64-.44.05-.43.05-.43.7.05 1.07.72 1.07.72.63 1.07 1.65.76 2.05.58.06-.45.25-.76.45-.94-1.56-.18-3.2-.78-3.2-3.47 0-.77.28-1.4.73-1.89-.07-.18-.32-.9.07-1.87 0 0 .6-.19 1.95.72a6.8 6.8 0 0 1 3.55 0c1.35-.91 1.94-.72 1.94-.72.4.97.15 1.69.08 1.87.46.49.73 1.12.73 1.89 0 2.7-1.65 3.29-3.22 3.46.26.22.48.65.48 1.3v1.93c0 .19.13.41.49.34A7 7 0 0 0 8 1z',
+};
+
+/**
+ * One contact detail with its icon.
+ *
+ * The wrapper is `inline-flex`, set here rather than in a stylesheet, so the
+ * icon stays on the same line as its text wherever the item is used. A
+ * sidebar stacks its contact details by making the list a column, and a
+ * plain `display: block` wrapper inside that column would drop the label
+ * below the icon instead of beside it.
+ *
+ * @param {{item: {key: string, label: string, href: string|null}}} props
+ */
+export function ContactItem({ item }) {
+  const content = (
+    <>
+      <svg
+        className="cv-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d={CONTACT_ICONS[item.key]} />
+      </svg>
+      <span>{item.label}</span>
+    </>
+  );
+
+  const style = { display: 'inline-flex', alignItems: 'center', gap: '5px' };
+
+  return item.href ? (
+    <a href={item.href} className="cv-link" style={style}>
+      {content}
+    </a>
+  ) : (
+    <span style={style}>{content}</span>
+  );
+}
 
 /**
  * One entry in the Experience section.
@@ -134,7 +195,13 @@ export function CertificationEntry({ entry }) {
  * The ATS template must use plain text: a screening system reads the text
  * layer of the PDF, and decorative pills add noise around each skill.
  *
- * @param {{skills: Array<object>, variant?: 'pills'|'plain'|'levelled'|'columns'}} props
+ * The 'bars' and 'dots' variants show the level as a shape rather than a
+ * word. Both keep the level as text for a screen reader, because a meter
+ * drawn in CSS says nothing out loud, and a CV that reads as a bare list of
+ * skills with no proficiency would lose information the user entered.
+ *
+ * @param {{skills: Array<object>,
+ *          variant?: 'pills'|'plain'|'levelled'|'columns'|'bars'|'dots'}} props
  */
 export function SkillList({ skills, variant = 'pills' }) {
   const named = skills.filter((skill) => skill.name?.trim());
@@ -150,6 +217,39 @@ export function SkillList({ skills, variant = 'pills' }) {
           <li key={skill._id ?? skill.name}>{skill.name}</li>
         ))}
       </ul>
+    );
+  }
+
+  if (variant === 'bars' || variant === 'dots') {
+    return (
+      <div className="cv-skill-meters">
+        {named.map((skill) => {
+          const step = skillLevelStep(skill.level);
+
+          return (
+            <div key={skill._id ?? skill.name} className="cv-skill-meter">
+              <span className="cv-meter-name">{skill.name}</span>
+
+              {variant === 'bars' ? (
+                <span className="cv-meter-track">
+                  <span className="cv-meter-fill" style={{ width: `${step * 25}%` }} />
+                </span>
+              ) : (
+                <span className="cv-dots">
+                  {[1, 2, 3, 4].map((position) => (
+                    <span
+                      key={position}
+                      className={position <= step ? 'cv-dot cv-dot-on' : 'cv-dot'}
+                    />
+                  ))}
+                </span>
+              )}
+
+              {skill.level && <span className="cv-sr-only">{skill.level}</span>}
+            </div>
+          );
+        })}
+      </div>
     );
   }
 

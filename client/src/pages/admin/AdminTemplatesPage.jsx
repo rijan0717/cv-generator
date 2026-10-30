@@ -1,27 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import * as templateApi from '../../api/templates.js';
-import Button from '../../components/ui/Button.jsx';
+import { TEMPLATES } from '../../templates/index.js';
+import TemplateGallery from '../../components/templates/TemplateGallery.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import AdminTemplateDialog from './AdminTemplateDialog.jsx';
 
 /**
  * Template management: which templates users are offered, and what they
  * are called in the picker.
  *
- * What is editable here is deliberately narrow. The look of a template
- * is its React component and cannot be changed from a database row; the
- * name and description are what a user reads when choosing, and
- * `isActive` is whether they are offered it at all. Deactivating hides a
- * template from the picker and leaves every CV already using it exactly
- * as it is.
+ * Shown as the same gallery of live previews the user sees, rather than a
+ * list of names. An admin deciding whether to offer a template is making a
+ * judgement about how it looks, and a row of text cannot support that —
+ * the only honest way to answer "should we offer this?" is to look at the
+ * page. Clicking a card opens it large, with the controls beside it.
+ *
+ * What is editable here is deliberately narrow. The look of a template is
+ * its React component and cannot be changed from a database row; the name
+ * and description are what a user reads when choosing, and `isActive` is
+ * whether they are offered it at all. Deactivating hides a template from
+ * the picker and leaves every CV already using it exactly as it is.
  */
 export default function AdminTemplatesPage() {
-  const [templates, setTemplates] = useState([]);
+  const [rows, setRows] = useState([]);
   const [seeded, setSeeded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [busyId, setBusyId] = useState(null);
-  const [editing, setEditing] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [openKey, setOpenKey] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,7 +37,7 @@ export default function AdminTemplatesPage() {
       .listAllTemplates()
       .then((data) => {
         if (cancelled) return;
-        setTemplates(data.templates);
+        setRows(data.templates);
         setSeeded(data.seeded);
       })
       .catch((err) => {
@@ -46,22 +53,50 @@ export default function AdminTemplatesPage() {
   }, []);
 
   /**
-   * Saves a change to one template and replaces that row.
-   * @param {object} template - The row being changed.
+   * The gallery's templates: the admin's catalogue rows joined to the
+   * client's registry by key.
+   *
+   * Both halves are needed. The row carries what the admin controls — the
+   * id, the wording and whether it is offered — while the registry carries
+   * what the gallery draws and filters by: the component, its category and
+   * whether it has a sidebar. A row whose key this build cannot render is
+   * dropped rather than drawn as something else, because showing one
+   * template's picture above another's name would be worse than silence.
+   */
+  const templates = useMemo(() => {
+    const byKey = new Map(TEMPLATES.map((template) => [template.key, template]));
+
+    return rows
+      .filter((row) => byKey.has(row.key))
+      .map((row) => ({ ...byKey.get(row.key), ...row }));
+  }, [rows]);
+
+  /** Templates this build can render that have no catalogue row yet. */
+  const unseededCount = useMemo(() => {
+    const keys = new Set(rows.map((row) => row.key));
+    return TEMPLATES.filter((template) => !keys.has(template.key)).length;
+  }, [rows]);
+
+  const activeCount = templates.filter((template) => template.isActive).length;
+  const open = templates.find((template) => template.key === openKey) ?? null;
+
+  /**
+   * Saves a change to the open template and replaces its row.
    * @param {object} payload - The fields to change.
    */
-  async function save(template, payload) {
-    setBusyId(template.id);
+  async function save(payload) {
+    if (!open) return;
+
+    setIsSaving(true);
     setError('');
 
     try {
-      const updated = await templateApi.updateTemplate(template.id, payload);
-      setTemplates((current) => current.map((row) => (row.id === updated.id ? updated : row)));
-      setEditing(null);
+      const updated = await templateApi.updateTemplate(open.id, payload);
+      setRows((current) => current.map((row) => (row.id === updated.id ? updated : row)));
     } catch (err) {
       setError(err.message);
     } finally {
-      setBusyId(null);
+      setIsSaving(false);
     }
   }
 
@@ -73,8 +108,6 @@ export default function AdminTemplatesPage() {
     );
   }
 
-  const activeCount = templates.filter((template) => template.isActive).length;
-
   return (
     <div>
       <header className="flex flex-wrap items-baseline justify-between gap-2">
@@ -82,7 +115,7 @@ export default function AdminTemplatesPage() {
           Templates <span className="text-slate-500">({activeCount} active)</span>
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Deactivating hides a template from the picker. CVs already using it keep working.
+          Click a template to preview it and change whether users are offered it.
         </p>
       </header>
 
@@ -98,141 +131,50 @@ export default function AdminTemplatesPage() {
             The catalogue has not been set up yet
           </h3>
           <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
-            Run <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">npm run seed:templates</code>{' '}
+            Run{' '}
+            <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">
+              npm run seed:templates
+            </code>{' '}
             to fill it. Until then every template is offered to users.
           </p>
         </div>
       ) : (
-        <ul className="mt-4 space-y-3">
-          {templates.map((template) => (
-            <li
-              key={template.id}
-              className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
-            >
-              {editing === template.id ? (
-                <EditForm
-                  template={template}
-                  isSaving={busyId === template.id}
-                  onCancel={() => setEditing(null)}
-                  onSave={(payload) => save(template, payload)}
-                />
-              ) : (
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-medium text-slate-900 dark:text-slate-100">
-                        {template.name}
-                      </h3>
-                      <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                        {template.key}
-                      </code>
-                      {template.usesPhoto && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          uses photo
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
-                      {template.description}
-                    </p>
-                  </div>
+        <>
+          {unseededCount > 0 && (
+            <Alert variant="info" className="mt-4">
+              {unseededCount} template{unseededCount === 1 ? '' : 's'} in this build{' '}
+              {unseededCount === 1 ? 'has' : 'have'} no catalogue entry yet. Run{' '}
+              <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">
+                npm run seed:templates
+              </code>{' '}
+              to manage {unseededCount === 1 ? 'it' : 'them'} here.
+            </Alert>
+          )}
 
-                  <span
-                    className={
-                      template.isActive
-                        ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                        : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                    }
-                  >
-                    {template.isActive ? 'Active' : 'Hidden'}
+          <div className="mt-5">
+            <TemplateGallery
+              templates={templates}
+              onChoose={(template) => setOpenKey(template.key)}
+              badgeFor={(template) =>
+                template.isActive ? null : (
+                  <span className="absolute right-2 top-2 rounded-full bg-slate-900/80 px-2 py-0.5 text-[11px] font-semibold text-white">
+                    Hidden
                   </span>
-
-                  <div className="flex gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => setEditing(template.id)}>
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      isLoading={busyId === template.id}
-                      onClick={() => save(template, { isActive: !template.isActive })}
-                    >
-                      {template.isActive ? 'Deactivate' : 'Activate'}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+                )
+              }
+            />
+          </div>
+        </>
       )}
+
+      <AdminTemplateDialog
+        template={open}
+        isSaving={isSaving}
+        error={error}
+        isLastActive={activeCount <= 1}
+        onClose={() => setOpenKey(null)}
+        onSave={save}
+      />
     </div>
-  );
-}
-
-/**
- * The inline editor for one template's name and description.
- *
- * Inline rather than a modal: it edits two text fields on a row that is
- * already on screen, and a dialog for that is more ceremony than the
- * change deserves.
- *
- * @param {{template: object, isSaving: boolean,
- *          onCancel: () => void, onSave: (payload: object) => void}} props
- */
-function EditForm({ template, isSaving, onCancel, onSave }) {
-  const [name, setName] = useState(template.name);
-  const [description, setDescription] = useState(template.description);
-
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        onSave({ name: name.trim(), description: description.trim() });
-      }}
-      className="space-y-3"
-    >
-      <div>
-        <label
-          htmlFor={`name-${template.id}`}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
-        >
-          Name in the picker
-        </label>
-        <input
-          id={`name-${template.id}`}
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          maxLength={60}
-          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor={`description-${template.id}`}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
-        >
-          Description
-        </label>
-        <textarea
-          id={`description-${template.id}`}
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          rows={2}
-          maxLength={300}
-          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
-        />
-      </div>
-
-      <div className="flex gap-2">
-        <Button type="submit" size="sm" isLoading={isSaving}>
-          Save
-        </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-    </form>
   );
 }

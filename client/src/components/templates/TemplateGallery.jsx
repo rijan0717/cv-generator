@@ -26,10 +26,14 @@ const CATEGORY_LABELS = Object.fromEntries(CATEGORIES.map((c) => [c.key, c.label
  *   onChoose: (template: object) => void,
  *   userCV?: object,
  *   density?: 'wide'|'compact',
+ *   badgeFor?: (template: object) => React.ReactNode,
  * }} props
  *   `templates` is what the admin offers; `selectedKey` marks the current
  *   one; `userCV` enables "Preview with my CV" and carries the CV's colours
  *   and fonts onto the sample; `density` picks the column count.
+ *   `badgeFor` lets a caller mark cards in the corner where "Current"
+ *   otherwise sits — the admin page uses it to show which templates are
+ *   hidden from users, which only it needs to say.
  */
 export default function TemplateGallery({
   templates,
@@ -37,6 +41,7 @@ export default function TemplateGallery({
   onChoose,
   userCV,
   density = 'wide',
+  badgeFor,
 }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
@@ -161,6 +166,7 @@ export default function TemplateGallery({
                 template={template}
                 cv={cvFor(template)}
                 isSelected={template.key === selectedKey}
+                badge={badgeFor?.(template)}
                 onChoose={() => onChoose(template)}
               />
             </li>
@@ -178,9 +184,10 @@ export default function TemplateGallery({
  * accessible name, rather than a picture with a small link somewhere
  * inside it.
  *
- * @param {{template: object, cv: object, isSelected: boolean, onChoose: () => void}} props
+ * @param {{template: object, cv: object, isSelected: boolean,
+ *          badge?: React.ReactNode, onChoose: () => void}} props
  */
-function TemplateCard({ template, cv, isSelected, onChoose }) {
+function TemplateCard({ template, cv, isSelected, badge, onChoose }) {
   return (
     <button
       type="button"
@@ -198,11 +205,14 @@ function TemplateCard({ template, cv, isSelected, onChoose }) {
     >
       <div className="relative border-b border-slate-200 dark:border-slate-700">
         <TemplateThumbnail cv={cv} />
-        {isSelected && (
-          <span className="absolute right-2 top-2 rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-semibold text-white">
-            Current
-          </span>
-        )}
+        {/* A caller's badge wins the corner: the admin needs to see "Hidden"
+            more than it needs to see which row it clicked last. */}
+        {badge ??
+          (isSelected && (
+            <span className="absolute right-2 top-2 rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-semibold text-white">
+              Current
+            </span>
+          ))}
       </div>
 
       <div className="px-3 py-2.5">
