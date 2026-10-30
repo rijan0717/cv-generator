@@ -5,6 +5,7 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
+import { ConfirmProvider } from './context/ConfirmContext.jsx';
 import * as authApi from './api/auth.js';
 import * as cvApi from './api/cvs.js';
 import * as reviewApi from './api/reviews.js';
@@ -34,9 +35,11 @@ function renderAt(route) {
     <ThemeProvider>
       <MemoryRouter initialEntries={[route]}>
         <ToastProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+          <ConfirmProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ConfirmProvider>
         </ToastProvider>
       </MemoryRouter>
     </ThemeProvider>,

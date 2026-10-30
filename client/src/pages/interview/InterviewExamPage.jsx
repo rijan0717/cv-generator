@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as interviewApi from '../../api/interview.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -18,6 +19,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  */
 export default function InterviewExamPage() {
   const toast = useToast();
+  const confirm = useConfirm();
   const { id } = useParams();
 
   const [attempt, setAttempt] = useState(null);
@@ -221,12 +223,19 @@ export default function InterviewExamPage() {
         {isLast ? (
           <Button
             isLoading={isSubmitting}
-            onClick={() => {
+            onClick={async () => {
               const blank = answers.filter((answer) => answer === null).length;
               const message = blank
                 ? `${blank} question${blank === 1 ? ' is' : 's are'} unanswered and will score nothing. Submit anyway?`
-                : 'Submit your answers?';
-              if (window.confirm(message)) submit();
+                : '';
+              if (
+                await confirm({
+                  title: 'Submit your answers?',
+                  message: blank ? message : 'You cannot change them afterwards.',
+                  confirmLabel: 'Submit',
+                })
+              )
+                submit();
             }}
           >
             Submit

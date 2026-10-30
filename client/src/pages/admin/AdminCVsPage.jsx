@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import { TEMPLATES, getTemplate } from '../../templates/index.js';
 import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -11,6 +12,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
 /** Every CV in the system, with its owner, filterable by title and template. */
 export default function AdminCVsPage() {
   const toast = useToast();
+  const confirm = useConfirm();
   const [cvs, setCvs] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
@@ -48,7 +50,15 @@ export default function AdminCVsPage() {
    * @param {object} cv - The CV to remove.
    */
   async function remove(cv) {
-    if (!window.confirm(`Delete "${cv.title}"? The owner will no longer see it.`)) return;
+    if (
+      !(await confirm({
+        title: `Delete "${cv.title}"?`,
+        message: 'The owner will no longer see it.',
+        confirmLabel: 'Delete',
+        danger: true,
+      }))
+    )
+      return;
 
     setBusyId(cv._id);
 

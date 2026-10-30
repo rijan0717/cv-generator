@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as applicationApi from '../../api/applications.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -20,6 +21,7 @@ export default function ApplicationsPage() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
+  const confirm = useConfirm();
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
 
@@ -51,7 +53,14 @@ export default function ApplicationsPage() {
    * @param {object} application - The application to withdraw.
    */
   async function withdraw(application) {
-    if (!window.confirm('Withdraw this application? The employer will see it as withdrawn.')) {
+    if (
+      !(await confirm({
+        title: 'Withdraw this application?',
+        message: 'The employer will see it as withdrawn. This cannot be undone.',
+        confirmLabel: 'Withdraw',
+        danger: true,
+      }))
+    ) {
       return;
     }
 

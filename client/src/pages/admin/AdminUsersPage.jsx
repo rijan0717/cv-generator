@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -13,6 +14,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  */
 export default function AdminUsersPage() {
   const toast = useToast();
+  const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
@@ -74,7 +76,14 @@ export default function AdminUsersPage() {
    * @param {object} user - The user being removed.
    */
   async function remove(user) {
-    if (!window.confirm(`Delete ${user.email}? Their CVs stay in the database for reporting.`)) {
+    if (
+      !(await confirm({
+        title: `Delete ${user.email}?`,
+        message: 'Their CVs stay in the database for reporting.',
+        confirmLabel: 'Delete',
+        danger: true,
+      }))
+    ) {
       return;
     }
 

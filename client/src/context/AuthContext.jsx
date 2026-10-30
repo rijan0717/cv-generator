@@ -55,6 +55,12 @@ export function AuthProvider({ children }) {
     return created;
   }, []);
 
+  const loginWithGoogle = useCallback(async (credential) => {
+    const result = await authApi.googleLogin(credential);
+    setUser(result.user);
+    return result;
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -73,10 +79,11 @@ export function AuthProvider({ children }) {
       isAdmin: user?.role === 'admin',
       login,
       register,
+      loginWithGoogle,
       logout,
       setUser,
     }),
-    [user, isLoading, login, register, logout],
+    [user, isLoading, login, register, loginWithGoogle, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

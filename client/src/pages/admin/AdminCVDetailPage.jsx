@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import CVPreview from '../../components/cv/CVPreview.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -17,6 +18,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  */
 export default function AdminCVDetailPage() {
   const toast = useToast();
+  const confirm = useConfirm();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -47,7 +49,15 @@ export default function AdminCVDetailPage() {
 
   /** Removes the CV and returns to the list. */
   async function remove() {
-    if (!window.confirm(`Delete "${cv.title}"? The owner will no longer see it.`)) return;
+    if (
+      !(await confirm({
+        title: `Delete "${cv.title}"?`,
+        message: 'The owner will no longer see it.',
+        confirmLabel: 'Delete',
+        danger: true,
+      }))
+    )
+      return;
 
     setIsDeleting(true);
     try {

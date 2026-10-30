@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import * as contentApi from '../../api/content.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import RichTextEditor from '../../components/content/RichTextEditor.jsx';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
@@ -49,6 +50,7 @@ export default function AdminContentPage({ type }) {
   const copy = COPY[type];
 
   const toast = useToast();
+  const confirm = useConfirm();
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
@@ -150,7 +152,15 @@ export default function AdminContentPage({ type }) {
    * @param {object} item - The row being removed.
    */
   async function remove(item) {
-    if (!window.confirm(`Delete "${item.title}"? Any link to it will be removed.`)) return;
+    if (
+      !(await confirm({
+        title: `Delete "${item.title}"?`,
+        message: 'Any link to it will be removed.',
+        confirmLabel: 'Delete',
+        danger: true,
+      }))
+    )
+      return;
 
     setBusyId(item.id);
 

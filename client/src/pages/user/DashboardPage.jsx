@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
 import { getTemplate } from '../../templates/index.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
@@ -22,6 +23,7 @@ import Pagination from '../../components/ui/Pagination.jsx';
 export default function DashboardPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const confirm = useConfirm();
 
   const [cvs, setCvs] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -141,7 +143,15 @@ export default function DashboardPage() {
    * @param {string} title - Shown in the confirmation.
    */
   async function handleDelete(id, title) {
-    if (!window.confirm(`Delete "${title}"? You will not be able to open it again.`)) return;
+    if (
+      !(await confirm({
+        title: `Delete "${title}"?`,
+        message: 'You will not be able to open it again.',
+        confirmLabel: 'Delete',
+        danger: true,
+      }))
+    )
+      return;
 
     setBusyId(id);
     try {
