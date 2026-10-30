@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
 import { useToast } from '../../context/useToast.js';
@@ -42,6 +42,7 @@ export default function CVEditorPage() {
   const toast = useToast();
 
   const [cv, setCv] = useState(null);
+  const titleRef = useRef(null);
   const [loadError, setLoadError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [tab, setTab] = useState('content');
@@ -160,12 +161,28 @@ export default function CVEditorPage() {
           >
             &larr; My CVs
           </Link>
-          <input
-            value={cv.title}
-            onChange={(e) => handleChange({ title: e.target.value })}
-            aria-label="CV title"
-            className="mt-1 block w-full truncate rounded-lg border-0 bg-transparent px-0 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-0"
-          />
+          {/* The title is edited in place. The pencil says so, since an input
+              without a border otherwise reads as a plain heading. */}
+          <div className="group mt-1 flex min-w-0 items-center gap-2">
+            <input
+              ref={titleRef}
+              value={cv.title}
+              onChange={(e) => handleChange({ title: e.target.value })}
+              aria-label="CV title"
+              className="block w-full min-w-0 truncate rounded-lg border-0 border-b-2 border-transparent bg-transparent px-0 text-2xl font-bold tracking-tight text-slate-900 hover:border-slate-200 focus:border-slate-400 focus:outline-none focus:ring-0 dark:text-slate-100 dark:hover:border-slate-700"
+            />
+            <button
+              type="button"
+              onClick={() => titleRef.current?.select()}
+              aria-label="Edit CV title"
+              title="Edit CV title"
+              className="shrink-0 rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+                <path d="M13.6 2.6a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8l-9.3 9.3-4.1 1.1a.6.6 0 0 1-.7-.7l1.1-4.1 9.2-9.4Zm-8 10.3-.6 2.1 2.1-.6 7.6-7.6-1.5-1.5-7.6 7.6Z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">

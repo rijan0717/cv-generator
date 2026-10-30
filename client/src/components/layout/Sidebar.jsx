@@ -19,8 +19,17 @@ const ICONS = {
   create: 'M12 5v14M5 12h14',
   jobs: 'M3 7h18v13H3z M8 7V4h8v3',
   saved: 'M6 3h12v18l-6-4-6 4z',
-  match: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M21 21l-5-5 M8 11l2 2 4-4',
-  rewrite: 'M4 20h4L19 9l-4-4L4 16z M13 7l4 4',
+  // One distinct shape per tool, so no two entries look alike at a glance.
+  // The same sparkles as the Rewrite CV button, so the tool is recognised in both places.
+  tailor:
+    'M12 2.5l1.9 4.6 4.6 1.9-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9L12 2.5ZM18.5 14l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1Z',
+  match:
+    'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
+  // A microphone: practising answers out loud, as in an interview.
+  practice:
+    'M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v3 M8 22h8',
+  questions: 'M3 6l2 2 3-3 M3 13l2 2 3-3 M11 7h10 M11 14h10 M11 20h10 M4 20h2',
+  blog: 'M4 4h13v16H6a2 2 0 0 1-2-2z M17 8h3v10a2 2 0 0 1-2 2 M8 8h5 M8 12h5 M8 16h5',
   applications: 'M4 4h16v16H4z M8 9h8M8 13h8M8 17h4',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
   settings:
@@ -154,28 +163,28 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
           <Item
             to="/templates"
             icon="templates"
-            label="Templates"
+            label="CV templates"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
           <Item
             to="/rewrite"
-            icon="rewrite"
-            label="Rewrite with JD"
+            icon="tailor"
+            label="Tailor to a job"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
           <Item
             to="/match-cv"
             icon="match"
-            label="Match my CV"
+            label="Job match"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
           <Item
             to="/jobs"
             icon="jobs"
-            label="Browse jobs"
+            label="Find jobs"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
@@ -188,15 +197,15 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
           />
           <Item
             to="/interview"
-            icon="rewrite"
-            label="Interview prep"
+            icon="practice"
+            label="Interview practice"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
           <Item
             to="/applications"
             icon="applications"
-            label="My applications"
+            label="Applications"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
@@ -243,7 +252,7 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
           <Item
             to="/jobs"
             icon="jobs"
-            label="Browse jobs"
+            label="Find jobs"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
@@ -256,7 +265,7 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
               been happening, and the figures to export. Separated from
               the management screens below, which are visited when
               something needs changing rather than every day. */}
-          <Group title="My work" isCollapsed={isCollapsed}>
+          <Group title="Overview" isCollapsed={isCollapsed}>
             <Item
               to="/admin"
               icon="overview"
@@ -285,14 +294,14 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             <Item
               to="/admin/users"
               icon="users"
-              label="Users"
+              label="Accounts"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />
             <Item
               to="/talent"
               icon="profile"
-              label="People directory"
+              label="Candidates"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />
@@ -313,28 +322,28 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             <Item
               to="/admin/templates"
               icon="templates"
-              label="Templates"
+              label="CV templates"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />
             <Item
               to="/admin/interview"
-              icon="match"
-              label="Interview prep"
+              icon="questions"
+              label="Interview questions"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />
             <Item
               to="/admin/blog"
-              icon="rewrite"
-              label="Blogs"
+              icon="blog"
+              label="Blog posts"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />
             <Item
               to="/admin/pages"
               icon="pages"
-              label="Pages"
+              label="Site pages"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />

@@ -103,7 +103,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
             >
               CV
             </span>
-            <span className="hidden sm:inline">Smart CV Generator</span>
+            <span className="hidden sm:inline">Smart CV</span>
           </Link>
         </div>
 

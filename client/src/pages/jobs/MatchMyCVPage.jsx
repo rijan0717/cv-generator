@@ -240,7 +240,7 @@ function Results({ result }) {
           {cv.experience?.length ?? 0} roles found
         </p>
 
-        <KeepDroppedCV cv={cv} bestJobId={results[0]?.job?._id} />
+        <KeepDroppedCV cv={cv} />
 
         <div className="mt-3 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
           <CVPreview cv={cv} />
@@ -314,16 +314,15 @@ function buildDroppedTitle(userName, cv) {
 
 /**
  * Buttons to keep the dropped CV: save it to My CVs, make it the primary
- * CV, and then rewrite it for a job.
+ * CV, and open it in the editor.
  *
  * Saving is two existing requests — create a CV, then fill it with what
  * was read from the file — so no new server route is needed. "Save & set
  * as primary" saves first if that has not happened yet, so it is one press.
  *
- * @param {{cv: object, bestJobId?: string}} props - The parsed CV, and the
- *   best-matching job so the rewrite can open on it.
+ * @param {{cv: object}} props - The CV read from the dropped file.
  */
-function KeepDroppedCV({ cv, bestJobId }) {
+function KeepDroppedCV({ cv }) {
   const toast = useToast();
   const { user } = useAuth();
   const title = buildDroppedTitle(user?.name, cv);
@@ -398,11 +397,6 @@ function KeepDroppedCV({ cv, bestJobId }) {
 
         {saved && (
           <>
-            <Link to={`/cvs/${saved._id}/tailor${bestJobId ? `?job=${bestJobId}` : ''}`}>
-              <Button size="sm" variant="secondary">
-                Rewrite this CV
-              </Button>
-            </Link>
             <Link to={`/cvs/${saved._id}`}>
               <Button size="sm" variant="ghost">
                 Open in editor
