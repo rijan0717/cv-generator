@@ -13,7 +13,7 @@ import { InterviewQuestion } from '../models/InterviewQuestion.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
-import { countsFor } from '../services/questionPool.js';
+import { countsFor, poolFilter, GENERAL_CATEGORY } from '../services/questionPool.js';
 
 /**
  * Shapes a position for the admin screens.
@@ -345,11 +345,15 @@ export async function listQuestions(req, res) {
   }).lean();
   if (!position) throw ApiError.notFound('Position not found');
 
-  // Both halves of the pool, not just the position's own questions.
-  // Showing only the latter is why a position reading "120 questions"
-  // could open to an empty editor — the 120 belong to its category.
+  // The whole pool, not just the position's own questions: its own, its
+  // category's, and the general competency bank every position draws on.
+  // The filter comes from the shared pool service so this list can never
+  // disagree with the counts or the exam — listing less is why a position
+  // offered to users could open to an empty editor. The `isActive` clause
+  // is dropped because the admin edits the switched-off questions too.
+  const { isActive: _ignored, ...pool } = poolFilter(position);
   const questions = await InterviewQuestion.find({
-    $or: [{ position: position._id }, { category: position.category, position: null }],
+    ...pool,
     isDeleted: false,
   })
     .sort({ level: 1, createdAt: 1 })
@@ -363,7 +367,13 @@ export async function listQuestions(req, res) {
       // shared question changes it for every position in the category,
       // which an admin should know before they click.
       isShared: !question.position,
-      sharedWith: question.position ? '' : question.category,
+      // The general bank's category is punctuation rather than a name,
+      // so it is spelled out here instead of showing "__general__".
+      sharedWith: question.position
+        ? ''
+        : question.category === GENERAL_CATEGORY
+          ? 'every position'
+          : question.category,
     });
   }
 
