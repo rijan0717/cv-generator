@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
 import * as authApi from '../../api/auth.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 import { homePathFor, needsAccountType } from '../../utils/homePath.js';
 
 /** The two kinds of account, as the cards describe them. */
@@ -12,13 +12,21 @@ const OPTIONS = [
     value: 'jobseeker',
     title: "I'm a job seeker",
     description: 'Build CVs, check their strength, match them to jobs and apply.',
-    points: ['CV builder and templates', 'CV strength score and job matching', 'Apply to jobs and track applications'],
+    points: [
+      'CV builder and templates',
+      'CV strength score and job matching',
+      'Apply to jobs and track applications',
+    ],
   },
   {
     value: 'employer',
     title: "I'm an employer",
     description: 'Register your company, post jobs and review the CVs people send.',
-    points: ['Company profile, approved by an admin', 'Post and manage jobs', 'View submitted CVs as sent'],
+    points: [
+      'Company profile, approved by an admin',
+      'Post and manage jobs',
+      'View submitted CVs as sent',
+    ],
   },
 ];
 
@@ -31,11 +39,11 @@ const OPTIONS = [
  */
 export default function WelcomePage() {
   const { user, setUser } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [choice, setChoice] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
 
   // Already chosen (or an admin): nothing to do here.
   if (!needsAccountType(user)) return <Navigate to={homePathFor(user)} replace />;
@@ -43,14 +51,18 @@ export default function WelcomePage() {
   /** Saves the choice and goes to that account type's home page. */
   async function confirm() {
     setIsSaving(true);
-    setError('');
 
     try {
       const updated = await authApi.setAccountType(choice);
       setUser(updated);
+      toast.success(
+        updated.accountType === 'employer'
+          ? 'Your account is set up for hiring. Register your company next.'
+          : 'Your account is set up. Your first CV can start now.',
+      );
       navigate(homePathFor(updated), { replace: true });
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
       setIsSaving(false);
     }
   }
@@ -63,12 +75,6 @@ export default function WelcomePage() {
       <p className="mt-2 text-center text-slate-600 dark:text-slate-400">
         Choose one. This sets up your account.
       </p>
-
-      {error && (
-        <Alert variant="error" className="mt-6">
-          {error}
-        </Alert>
-      )}
 
       <div role="radiogroup" aria-label="Account type" className="mt-8 grid gap-4 sm:grid-cols-2">
         {OPTIONS.map((option) => {
@@ -90,7 +96,9 @@ export default function WelcomePage() {
               <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {option.title}
               </span>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{option.description}</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                {option.description}
+              </p>
               <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">
                 {option.points.map((point) => (
                   <li key={point}>{point}</li>

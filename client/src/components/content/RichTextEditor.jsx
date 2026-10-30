@@ -6,7 +6,7 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import * as contentApi from '../../api/content.js';
-import Alert from '../ui/Alert.jsx';
+import { useToast } from '../../context/useToast.js';
 
 /**
  * The body editor: one flowing document with a toolbar, where an image
@@ -23,7 +23,7 @@ import Alert from '../ui/Alert.jsx';
  * @param {{value: string, onChange: (html: string) => void}} props
  */
 export default function RichTextEditor({ value, onChange }) {
-  const [error, setError] = useState('');
+  const toast = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -71,14 +71,13 @@ export default function RichTextEditor({ value, onChange }) {
    * @param {File} file
    */
   async function insertImage(file) {
-    setError('');
     setIsUploading(true);
 
     try {
       const url = await contentApi.uploadImage(file);
       editor?.chain().focus().setImage({ src: url, alt: file.name }).run();
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsUploading(false);
     }
@@ -124,12 +123,6 @@ export default function RichTextEditor({ value, onChange }) {
       />
 
       <EditorContent editor={editor} />
-
-      {error && (
-        <div className="p-3">
-          <Alert variant="error">{error}</Alert>
-        </div>
-      )}
 
       <p className="border-t border-slate-200 px-4 py-2 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
         Paste or drag a picture straight into the text to place it there.

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import api from '../../api/axios.js';
 import Button from '../ui/Button.jsx';
 import { readBlobError } from '../../utils/blobError.js';
+import { useToast } from '../../context/useToast.js';
 
 /**
  * The three download formats.
@@ -31,8 +32,8 @@ const FORMATS = [
  * @param {{cvId: string, onDownloaded?: (format: string) => void}} props
  */
 export default function ExportMenu({ cvId, onDownloaded }) {
+  const toast = useToast();
   const [busyFormat, setBusyFormat] = useState(null);
-  const [error, setError] = useState('');
 
   /**
    * Downloads one format.
@@ -40,7 +41,6 @@ export default function ExportMenu({ cvId, onDownloaded }) {
    */
   async function download(format) {
     setBusyFormat(format);
-    setError('');
 
     try {
       const response = await api.get(`/api/cvs/${cvId}/export/${format}`, {
@@ -65,9 +65,10 @@ export default function ExportMenu({ cvId, onDownloaded }) {
       URL.revokeObjectURL(url);
 
       // Only now, after the file has actually been handed to the browser.
+      toast.success(`${filename} has been downloaded.`);
       onDownloaded?.(format);
     } catch (err) {
-      setError(await readBlobError(err));
+      toast.error(await readBlobError(err));
     } finally {
       setBusyFormat(null);
     }
@@ -90,12 +91,6 @@ export default function ExportMenu({ cvId, onDownloaded }) {
           </Button>
         ))}
       </div>
-
-      {error && (
-        <p className="mt-2 text-xs text-red-600 dark:text-red-400" role="alert">
-          {error}
-        </p>
-      )}
     </div>
   );
 }

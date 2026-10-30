@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
 import * as authApi from './api/auth.js';
 import * as cvApi from './api/cvs.js';
 import * as reviewApi from './api/reviews.js';
@@ -20,16 +21,23 @@ vi.mock('./api/applications.js');
 vi.mock('./api/jobs.js');
 
 /**
- * Renders the app at a given route inside the auth provider.
+ * Renders the app at a given route inside the providers it needs.
+ *
+ * The toast provider is one of them: anything that reports an outcome —
+ * logging out, saving, a refused form — reads it, so the tree cannot
+ * mount without it, exactly as in main.jsx.
+ *
  * @param {string} route - The initial URL.
  */
 function renderAt(route) {
   return render(
     <ThemeProvider>
       <MemoryRouter initialEntries={[route]}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ToastProvider>
       </MemoryRouter>
     </ThemeProvider>,
   );
@@ -50,7 +58,10 @@ describe('App routing', () => {
       renderAt('/');
 
       expect(
-        await screen.findByRole('heading', { level: 1, name: /build a cv that gets you shortlisted/i }),
+        await screen.findByRole('heading', {
+          level: 1,
+          name: /build a cv that gets you shortlisted/i,
+        }),
       ).toBeInTheDocument();
     });
 

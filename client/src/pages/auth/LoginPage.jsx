@@ -1,24 +1,26 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 import { homePathFor } from '../../utils/homePath.js';
 
 /**
  * Login page.
  *
  * Validation is intentionally light here — the server is the authority on
- * whether the credentials are right, and its message is what gets shown.
+ * whether the credentials are right, and its message is what gets shown,
+ * as a toast: the page navigates away the moment the login succeeds, so
+ * there is often no page left to draw a message on.
  */
 export default function LoginPage() {
   const { user, login, isAuthenticated, isLoading } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Where the user was heading before the guard redirected them here.
@@ -39,14 +41,16 @@ export default function LoginPage() {
   /** Submits the credentials and navigates on success. */
   async function handleSubmit(event) {
     event.preventDefault();
-    setError('');
     setIsSubmitting(true);
 
     try {
       const signedIn = await login(form);
+      // Said before navigating, so the greeting arrives on the page the
+      // user actually lands on.
+      toast.success(`Welcome back, ${signedIn.name.split(' ')[0]}.`);
       navigate(redirectFor(signedIn), { replace: true });
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -63,8 +67,6 @@ export default function LoginPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
-          <Alert variant="error">{error}</Alert>
-
           <TextField
             label="Email address"
             type="email"

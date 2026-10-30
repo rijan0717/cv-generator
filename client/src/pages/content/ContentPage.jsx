@@ -132,11 +132,7 @@ export default function ContentPage({ kind = 'page' }) {
       </header>
 
       {content.coverImageUrl && (
-        <img
-          src={content.coverImageUrl}
-          alt=""
-          className="mt-6 w-full rounded-xl object-cover"
-        />
+        <img src={content.coverImageUrl} alt="" className="mt-6 w-full rounded-xl object-cover" />
       )}
 
       <div className="mt-8">

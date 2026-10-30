@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as interviewApi from '../../api/interview.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -30,12 +31,12 @@ const EMPTY_QUESTION = {
  */
 export default function AdminInterviewPositionPage() {
   const { id } = useParams();
+  const toast = useToast();
 
   const [position, setPosition] = useState(null);
   const [questions, setQuestions] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [level, setLevel] = useState('junior');
 
@@ -76,15 +77,13 @@ export default function AdminInterviewPositionPage() {
    */
   async function savePosition(payload) {
     setIsSaving(true);
-    setError('');
-    setNotice('');
 
     try {
       await interviewApi.updatePosition(id, payload);
       await load();
-      setNotice('Saved.');
+      toast.success('Saved.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -96,9 +95,6 @@ export default function AdminInterviewPositionPage() {
    * @param {object} draft - The question being added.
    */
   async function addQuestion(draft) {
-    setError('');
-    setNotice('');
-
     await interviewApi.createQuestion({
       position: id,
       level,
@@ -110,6 +106,7 @@ export default function AdminInterviewPositionPage() {
     });
 
     await load();
+    toast.success('Question added.');
   }
 
   /**
@@ -122,22 +119,23 @@ export default function AdminInterviewPositionPage() {
    * @param {object} question - The question to remove.
    */
   async function removeQuestion(question) {
-    setError('');
-    setNotice('');
-
     try {
       const wasActive = position.isActive;
       await interviewApi.deleteQuestion(question.id);
       await load();
+      toast.success('Question deleted.');
 
       const stillActive = (await interviewApi.getPosition(id)).isActive;
       if (wasActive && !stillActive) {
-        setNotice(
+        // A consequence the admin did not ask for, so it is given longer
+        // than an ordinary confirmation before it goes.
+        toast.info(
           'That left too few questions for an exam, so the position has been withdrawn from users.',
+          { duration: 10000 },
         );
       }
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -179,17 +177,6 @@ export default function AdminInterviewPositionPage() {
         </span>
       </header>
 
-      {error && (
-        <Alert variant="error" className="mt-4">
-          {error}
-        </Alert>
-      )}
-      {notice && (
-        <Alert variant="info" className="mt-4">
-          {notice}
-        </Alert>
-      )}
-
       <ExamSettings position={position} isSaving={isSaving} onSave={savePosition} />
 
       {/* Levels */}
@@ -226,7 +213,7 @@ export default function AdminInterviewPositionPage() {
         </Alert>
       )}
 
-      <QuestionForm key={level} onAdd={addQuestion} onError={setError} />
+      <QuestionForm key={level} onAdd={addQuestion} onError={toast.error} />
 
       <ul className="mt-4 space-y-3">
         {levelQuestions.map((question, index) => (

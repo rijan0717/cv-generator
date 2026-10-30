@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import * as companyApi from '../../api/companies.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 
 /** Matches the server's rules for the registration document. */
 const DOCUMENT_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -37,7 +37,7 @@ export default function CompanyForm({ company, onSaved }) {
     email: company?.email ?? '',
   });
   const [documentFile, setDocumentFile] = useState(null);
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   /**
@@ -80,11 +80,10 @@ export default function CompanyForm({ company, onSaved }) {
    */
   async function handleSubmit(event) {
     event.preventDefault();
-    setStatus({ error: '', success: '' });
 
     const problem = validate();
     if (problem) {
-      setStatus({ error: problem, success: '' });
+      toast.error(problem);
       return;
     }
 
@@ -103,21 +102,19 @@ export default function CompanyForm({ company, onSaved }) {
           // saved company (so a retry edits it rather than creating a
           // second one) and say what still needs doing.
           onSaved(saved);
-          setStatus({
-            error: `Your details were saved, but the document did not upload: ${uploadError.message} Please attach it again.`,
-            success: '',
-          });
+          toast.error(
+            `Your details were saved, but the document did not upload: ${uploadError.message} Please attach it again.`,
+          );
           return;
         }
       }
 
       onSaved(saved);
-      setStatus({
-        error: '',
-        success: saved.status === 'pending' ? 'Saved and sent to the admin for approval.' : 'Saved',
-      });
+      toast.success(
+        saved.status === 'pending' ? 'Saved and sent to the admin for approval.' : 'Saved',
+      );
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -129,9 +126,6 @@ export default function CompanyForm({ company, onSaved }) {
       noValidate
       className="mt-4 space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
     >
-      <Alert variant="error">{status.error}</Alert>
-      <Alert variant="success">{status.success}</Alert>
-
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
           label="Company name *"

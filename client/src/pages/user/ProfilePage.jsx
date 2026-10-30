@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../context/useAuth.js';
+import { useToast } from '../../context/useToast.js';
 import * as authApi from '../../api/auth.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 import OpenToWorkBadge from '../../components/talent/OpenToWorkBadge.jsx';
 import { INDUSTRIES, EMPLOYMENT_TYPES } from '../../constants/industries.js';
 
@@ -45,7 +45,7 @@ export default function ProfilePage() {
  */
 function AvatarSection({ user, setUser }) {
   const inputRef = useRef(null);
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isUploading, setIsUploading] = useState(false);
 
   const MAX_BYTES = 2 * 1024 * 1024;
@@ -55,14 +55,12 @@ function AvatarSection({ user, setUser }) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setStatus({ error: '', success: '' });
-
     if (!ALLOWED.includes(file.type)) {
-      setStatus({ error: 'Please choose a JPG, PNG or WEBP image', success: '' });
+      toast.error('Please choose a JPG, PNG or WEBP image');
       return;
     }
     if (file.size > MAX_BYTES) {
-      setStatus({ error: 'The image must be smaller than 2 MB', success: '' });
+      toast.error('The image must be smaller than 2 MB');
       return;
     }
 
@@ -70,9 +68,9 @@ function AvatarSection({ user, setUser }) {
     try {
       const updated = await authApi.uploadAvatar(file);
       setUser(updated);
-      setStatus({ error: '', success: 'Your photo has been updated' });
+      toast.success('Your photo has been updated');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsUploading(false);
       // Reset the input so choosing the same file again still fires onChange.
@@ -122,11 +120,6 @@ function AvatarSection({ user, setUser }) {
           </p>
         </div>
       </div>
-
-      <div className="mt-4 space-y-2">
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-      </div>
     </section>
   );
 }
@@ -134,15 +127,14 @@ function AvatarSection({ user, setUser }) {
 /** Display name. The email address is shown but cannot be changed. */
 function DetailsSection({ user, setUser }) {
   const [name, setName] = useState(user.name);
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setStatus({ error: '', success: '' });
 
     if (name.trim().length < 2) {
-      setStatus({ error: 'Name must be at least 2 characters', success: '' });
+      toast.error('Name must be at least 2 characters');
       return;
     }
 
@@ -150,9 +142,9 @@ function DetailsSection({ user, setUser }) {
     try {
       const updated = await authApi.updateProfile({ name: name.trim() });
       setUser(updated);
-      setStatus({ error: '', success: 'Your profile has been updated' });
+      toast.success('Your profile has been updated');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -163,9 +155,6 @@ function DetailsSection({ user, setUser }) {
       <h2 className="font-semibold text-slate-900 dark:text-slate-100">Your details</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-
         <TextField
           label="Full name"
           value={name}
@@ -209,7 +198,7 @@ function JobSeekerProfileSection({ user, setUser }) {
     location: saved.location ?? '',
     about: saved.about ?? '',
   });
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   /**
@@ -229,11 +218,10 @@ function JobSeekerProfileSection({ user, setUser }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setStatus({ error: '', success: '' });
 
     const years = Number(form.yearsExperience);
     if (!Number.isInteger(years) || years < 0 || years > 60) {
-      setStatus({ error: 'Years of experience must be a whole number from 0 to 60', success: '' });
+      toast.error('Years of experience must be a whole number from 0 to 60');
       return;
     }
 
@@ -251,9 +239,9 @@ function JobSeekerProfileSection({ user, setUser }) {
         },
       });
       setUser(updated);
-      setStatus({ error: '', success: 'Your candidate profile has been updated' });
+      toast.success('Your candidate profile has been updated');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -271,9 +259,6 @@ function JobSeekerProfileSection({ user, setUser }) {
       </p>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-
         <TextField
           label="Current or desired position"
           value={form.position}
@@ -372,7 +357,9 @@ function JobSeekerProfileSection({ user, setUser }) {
             className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-600"
           />
           <span className="text-sm text-slate-700 dark:text-slate-300">
-            <span className="font-medium text-slate-900 dark:text-slate-100">I am open to work</span>
+            <span className="font-medium text-slate-900 dark:text-slate-100">
+              I am open to work
+            </span>
             <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
               Shows an &ldquo;Open to work&rdquo; banner on your profile and puts you at the top of
               the employer&rsquo;s list. Turn it off at any time.
@@ -395,7 +382,7 @@ function PasswordSection() {
     newPassword: '',
     confirmPassword: '',
   });
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   function handleChange(event) {
@@ -405,22 +392,18 @@ function PasswordSection() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setStatus({ error: '', success: '' });
 
     if (
       form.newPassword.length < 8 ||
       !/[A-Za-z]/.test(form.newPassword) ||
       !/[0-9]/.test(form.newPassword)
     ) {
-      setStatus({
-        error: 'New password must be at least 8 characters and contain a letter and a number',
-        success: '',
-      });
+      toast.error('New password must be at least 8 characters and contain a letter and a number');
       return;
     }
 
     if (form.newPassword !== form.confirmPassword) {
-      setStatus({ error: 'The new passwords do not match', success: '' });
+      toast.error('The new passwords do not match');
       return;
     }
 
@@ -431,9 +414,9 @@ function PasswordSection() {
         newPassword: form.newPassword,
       });
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setStatus({ error: '', success: 'Your password has been changed' });
+      toast.success('Your password has been changed');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -444,9 +427,6 @@ function PasswordSection() {
       <h2 className="font-semibold text-slate-900 dark:text-slate-100">Change password</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-
         <TextField
           label="Current password"
           type="password"

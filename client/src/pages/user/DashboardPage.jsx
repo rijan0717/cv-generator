@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { useToast } from '../../context/useToast.js';
 import { getTemplate } from '../../templates/index.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
@@ -20,6 +21,7 @@ import Pagination from '../../components/ui/Pagination.jsx';
  */
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [cvs, setCvs] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -66,14 +68,14 @@ export default function DashboardPage() {
   /** Creates a CV and goes straight into the editor. */
   async function handleCreate(event) {
     event.preventDefault();
-    setError('');
     setIsCreating(true);
 
     try {
       const created = await cvApi.createCV({ title: newTitle.trim() || 'Untitled CV' });
+      toast.success(`"${created.title}" created.`);
       navigate(`/cvs/${created._id}`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
       setIsCreating(false);
     }
   }
@@ -84,16 +86,16 @@ export default function DashboardPage() {
    */
   async function handleDuplicate(id) {
     setBusyId(id);
-    setError('');
     try {
       await cvApi.duplicateCV(id);
+      toast.success('A copy has been added to the top of your list.');
       // The copy is the most recently updated CV, so it belongs at the top
       // of page 1. Going there is both correct and what the user expects:
       // the copy they just made should be the one they can see.
       if (page === 1) await load(1);
       else setPage(1);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }
@@ -122,9 +124,14 @@ export default function DashboardPage() {
     try {
       if (makingPrimary) await cvApi.setPrimaryCV(cv._id);
       else await cvApi.clearPrimaryCV(cv._id);
+      toast.success(
+        makingPrimary
+          ? `"${cv.title}" is now the CV employers see.`
+          : `"${cv.title}" is no longer your primary CV.`,
+      );
     } catch (err) {
       setCvs(previous);
-      setError(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -137,9 +144,9 @@ export default function DashboardPage() {
     if (!window.confirm(`Delete "${title}"? You will not be able to open it again.`)) return;
 
     setBusyId(id);
-    setError('');
     try {
       await cvApi.deleteCV(id);
+      toast.success(`"${title}" has been deleted.`);
 
       // Deleting the only row on the last page would leave the user
       // looking at an empty page that no longer exists, so step back one.
@@ -147,7 +154,7 @@ export default function DashboardPage() {
       if (onlyRowOnPage) setPage(page - 1);
       else await load(page);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }

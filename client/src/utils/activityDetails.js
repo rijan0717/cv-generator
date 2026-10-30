@@ -40,9 +40,10 @@ export function describeActivity(entry) {
 
   switch (entry.action) {
     case 'CV_CREATE':
-      return [cv && `Created ${cv}`, template && `${template} template`]
-        .filter(Boolean)
-        .join(' · ') || '—';
+      return (
+        [cv && `Created ${cv}`, template && `${template} template`].filter(Boolean).join(' · ') ||
+        '—'
+      );
 
     case 'CV_UPDATE':
       return cv ? `Updated ${cv}` : '—';
@@ -77,7 +78,9 @@ export function describeActivity(entry) {
       return `Deleted ${jobLabel(entry)}`;
 
     case 'COMPANY_CREATE':
-      return refs.company ? `Created company "${refs.company.name}"` : 'Created a company that was later deleted';
+      return refs.company
+        ? `Created company "${refs.company.name}"`
+        : 'Created a company that was later deleted';
 
     case 'TALENT_VIEW':
       // Names the candidate whose profile was opened. Without the name

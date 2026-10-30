@@ -1,11 +1,11 @@
 import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as jobMatchApi from '../../api/jobMatch.js';
+import { useToast } from '../../context/useToast.js';
 import * as cvApi from '../../api/cvs.js';
 import CVPreview from '../../components/cv/CVPreview.jsx';
 import JobCard from '../../components/jobs/JobCard.jsx';
 import Button from '../../components/ui/Button.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { useAuth } from '../../context/useAuth.js';
 
@@ -69,13 +69,13 @@ function isAcceptedFile(file) {
  * similarity and skill coverage — not a third-party service.
  */
 export default function MatchMyCVPage() {
+  const toast = useToast();
   const inputRef = useRef(null);
 
   const [result, setResult] = useState(null);
   const [fileName, setFileName] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   /**
    * Validates a chosen file and sends it for analysis.
@@ -86,35 +86,37 @@ export default function MatchMyCVPage() {
    *
    * @param {File} file - The dropped or chosen file.
    */
-  const analyse = useCallback(async (file) => {
-    if (!file) return;
+  const analyse = useCallback(
+    async (file) => {
+      if (!file) return;
 
-    if (!isAcceptedFile(file)) {
-      setError(
-        'Please upload a PDF, a Word (.docx) file or a plain text file. ' +
-          'An old .doc file needs saving as .docx first.',
-      );
-      return;
-    }
+      if (!isAcceptedFile(file)) {
+        toast.error(
+          'Please upload a PDF, a Word (.docx) file or a plain text file. ' +
+            'An old .doc file needs saving as .docx first.',
+        );
+        return;
+      }
 
-    if (file.size > MAX_FILE_BYTES) {
-      setError('That file is larger than 10 MB. Please upload a smaller one.');
-      return;
-    }
+      if (file.size > MAX_FILE_BYTES) {
+        toast.error('That file is larger than 10 MB. Please upload a smaller one.');
+        return;
+      }
 
-    setError('');
-    setFileName(file.name);
-    setIsLoading(true);
+      setFileName(file.name);
+      setIsLoading(true);
 
-    try {
-      setResult(await jobMatchApi.matchUploadedCV(file));
-    } catch (err) {
-      setError(err.message);
-      setResult(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        setResult(await jobMatchApi.matchUploadedCV(file));
+      } catch (err) {
+        toast.error(err.message);
+        setResult(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toast],
+  );
 
   /**
    * Handles a file dropped onto the zone.
@@ -195,12 +197,6 @@ export default function MatchMyCVPage() {
         className="sr-only"
         onChange={(event) => analyse(event.target.files?.[0])}
       />
-
-      {error && (
-        <Alert variant="error" className="mt-4">
-          {error}
-        </Alert>
-      )}
 
       {isLoading && (
         <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
@@ -328,13 +324,13 @@ function buildDroppedTitle(userName, cv) {
  *   best-matching job so the rewrite can open on it.
  */
 function KeepDroppedCV({ cv, bestJobId }) {
+  const toast = useToast();
   const { user } = useAuth();
   const title = buildDroppedTitle(user?.name, cv);
 
   const [saved, setSaved] = useState(null);
   const [isPrimary, setIsPrimary] = useState(false);
   const [busy, setBusy] = useState('');
-  const [error, setError] = useState('');
 
   /**
    * Saves the dropped CV once and returns it; later calls reuse it.
@@ -357,7 +353,6 @@ function KeepDroppedCV({ cv, bestJobId }) {
    */
   async function keep(action) {
     setBusy(action);
-    setError('');
 
     try {
       const savedCv = await ensureSaved();
@@ -365,8 +360,13 @@ function KeepDroppedCV({ cv, bestJobId }) {
         await cvApi.setPrimaryCV(savedCv._id);
         setIsPrimary(true);
       }
+      toast.success(
+        action === 'primary'
+          ? `"${savedCv.title}" saved and set as your primary CV.`
+          : `"${savedCv.title}" has been saved to My CVs.`,
+      );
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusy('');
     }
@@ -374,12 +374,6 @@ function KeepDroppedCV({ cv, bestJobId }) {
 
   return (
     <div className="mt-3">
-      {error && (
-        <Alert variant="error" className="mb-2">
-          {error}
-        </Alert>
-      )}
-
       <div className="flex flex-wrap items-center gap-2">
         {!saved && (
           <Button

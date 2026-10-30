@@ -768,3 +768,58 @@ switch the current one).
 
 The plan for growing the catalogue to 50+ templates with a template engine is in
 `docs/plans/template-gallery/PLAN.md`.
+
+---
+
+## Feature 12 — Toast messages
+
+Every passing message — a login that worked, a form the server refused, a
+CV deleted, a download finished, a logout — now appears as a toast in the
+bottom-right corner instead of a coloured box somewhere in the page.
+
+### Pieces
+
+- `client/src/context/toastContext.js` — the context object, kept apart from
+  the provider for React Fast Refresh, as `authContext.js` is.
+- `client/src/context/ToastContext.jsx` — the queue and the `show`,
+  `success`, `error`, `info`, `dismiss` and `dismissAll` functions. It
+  renders the viewport itself, so the queue never reaches a consumer and a
+  new message redraws nothing but the corner.
+- `client/src/context/useToast.js` — the hook, which throws outside a
+  provider rather than failing quietly.
+- `client/src/components/ui/Toast.jsx` — the fixed corner and one message.
+- `client/src/index.css` — the `cvg-toast-in` entry animation, dropped under
+  `prefers-reduced-motion: reduce`.
+- `ToastProvider` wraps the session in `main.jsx`, because logging in and
+  out are themselves events the user is told about.
+
+### Decisions
+
+- **Colour carries the outcome.** Green text for a success, red for a
+  failure, on a pale tint of the same hue, so the result is readable before
+  the words are.
+- **An error stays longer than a success** (7 seconds against 4). A
+  confirmation repeats what the user just did; an error has to be read.
+  Hovering or focusing a toast stops its clock entirely, and the close
+  button dismisses it from the keyboard.
+- **An error is `role="alert"`, anything else `role="status"`** — the same
+  split `<Alert>` makes, so a screen reader interrupts for a failure and
+  waits for a confirmation.
+- **The same message twice is one message.** A double-clicked button
+  replaces its own toast and restarts the clock rather than stacking a
+  second copy; at most four are ever on screen.
+- **An empty message is ignored**, so a caller can pass a possibly-empty
+  error string without checking it first.
+- **What is *not* a toast.** Two things stay in the page:
+  1. **A page or panel that failed to load.** Its `<Alert>` is the only
+     content there is; a notice that faded would leave an empty page with
+     no explanation.
+  2. **Field-level validation** (`TextField`'s own message, and the skills
+     box in `TailorReview`). Those say *which* control is wrong, which a
+     corner of the screen cannot. The registration form does both: each
+     field keeps its marker, and a toast says the form was not accepted.
+- **Autosave is the one success that says nothing.** The status beside the
+  CV title already reads "Saving…" / "Saved", and a toast every time typing
+  pauses would be unbearable; a failed autosave still raises one.
+- `print:hidden` on the viewport, so a toast can never appear in a printed
+  page or in a PDF rendered through the print route.

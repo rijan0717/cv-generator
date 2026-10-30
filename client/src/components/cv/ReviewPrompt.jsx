@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import * as reviewApi from '../../api/reviews.js';
+import { useToast } from '../../context/useToast.js';
 import StarRating from '../ui/StarRating.jsx';
 import Button from '../ui/Button.jsx';
-import Alert from '../ui/Alert.jsx';
 import Spinner from '../ui/Spinner.jsx';
 
 /**
@@ -20,12 +20,12 @@ import Spinner from '../ui/Spinner.jsx';
  * @param {{context?: string, onClose: () => void}} props
  */
 export default function ReviewPrompt({ context = '', onClose }) {
+  const toast = useToast();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasExisting, setHasExisting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
   const [result, setResult] = useState(null);
 
   useEffect(() => {
@@ -57,18 +57,18 @@ export default function ReviewPrompt({ context = '', onClose }) {
     event.preventDefault();
 
     if (rating === 0) {
-      setError('Please choose a rating first');
+      toast.error('Please choose a rating first');
       return;
     }
 
     setIsSaving(true);
-    setError('');
 
     try {
       const saved = await reviewApi.saveReview({ rating, comment: comment.trim(), context });
       setResult(saved);
+      toast.success('Thank you — your rating has been saved.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -118,8 +118,6 @@ export default function ReviewPrompt({ context = '', onClose }) {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="mt-4">
-          <Alert variant="error">{error}</Alert>
-
           <div className="mt-2">
             <StarRating value={rating} onChange={setRating} size="lg" label="Your rating" />
           </div>

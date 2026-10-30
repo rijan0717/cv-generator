@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as jobApi from '../../api/jobs.js';
+import { useToast } from '../../context/useToast.js';
 import JobCard from '../../components/jobs/JobCard.jsx';
 import { useJobMatchScores } from '../../utils/useJobMatchScores.js';
 import Button from '../../components/ui/Button.jsx';
@@ -17,6 +18,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
 export default function SavedJobsPage() {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
   const [error, setError] = useState('');
   const [removingId, setRemovingId] = useState(null);
 
@@ -50,7 +52,6 @@ export default function SavedJobsPage() {
    */
   async function remove(job) {
     setRemovingId(job._id);
-    setError('');
 
     try {
       await jobApi.unsaveJob(job._id);
@@ -59,8 +60,9 @@ export default function SavedJobsPage() {
           .map((row) => (row._id === job._id ? { ...row, isSaved: false } : row))
           .filter((row) => row.isSaved || row.application),
       );
+      toast.success(`"${job.title}" has been removed from your saved jobs.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setRemovingId(null);
     }

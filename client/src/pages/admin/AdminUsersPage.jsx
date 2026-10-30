@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
+import { useToast } from '../../context/useToast.js';
 import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -11,6 +12,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  * and delete actions.
  */
 export default function AdminUsersPage() {
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
@@ -45,18 +47,23 @@ export default function AdminUsersPage() {
 
   /**
    * Blocks or unblocks an account, then refreshes the row.
+   *
+   * The outcome of an action is a toast; `error` above stays for the list
+   * itself failing to load, which is not a passing message — there would
+   * be nothing on the page once it faded.
+   *
    * @param {object} user - The user being changed.
    */
   async function toggleStatus(user) {
     setBusyId(user.id);
-    setError('');
 
     try {
       const next = user.status === 'blocked' ? 'active' : 'blocked';
       const updated = await adminApi.setUserStatus(user.id, next);
       setUsers((current) => current.map((u) => (u.id === user.id ? { ...u, ...updated } : u)));
+      toast.success(`${user.email} has been ${next === 'blocked' ? 'blocked' : 'unblocked'}.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }
@@ -72,13 +79,13 @@ export default function AdminUsersPage() {
     }
 
     setBusyId(user.id);
-    setError('');
 
     try {
       await adminApi.deleteUser(user.id);
       setUsers((current) => current.filter((u) => u.id !== user.id));
+      toast.success(`${user.email} has been deleted.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }

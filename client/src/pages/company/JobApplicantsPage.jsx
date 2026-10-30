@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as jobApi from '../../api/jobs.js';
 import * as applicationApi from '../../api/applications.js';
+import { useToast } from '../../context/useToast.js';
 import CVPreview from '../../components/cv/CVPreview.jsx';
 import StatusBadge from '../../components/jobs/StatusBadge.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -173,6 +174,7 @@ export default function JobApplicantsPage() {
  * @param {{applicationId: string, onStatusChange: (status: string) => void}} props
  */
 function ApplicationDetail({ applicationId, onStatusChange }) {
+  const toast = useToast();
   const [application, setApplication] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -208,7 +210,6 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
    */
   async function setStatus(status) {
     setIsSaving(true);
-    setError('');
 
     try {
       await applicationApi.updateApplicationStatus(applicationId, {
@@ -217,8 +218,9 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
       });
       onStatusChange(status);
       setApplication((current) => ({ ...current, status }));
+      toast.success(`Marked as ${status}.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -230,12 +232,12 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
    */
   async function download(format) {
     setDownloading(format);
-    setError('');
 
     try {
       await applicationApi.downloadApplicationCV(applicationId, format);
+      toast.success(`The CV has been downloaded as ${format.toUpperCase()}.`);
     } catch (err) {
-      setError(await readBlobError(err));
+      toast.error(await readBlobError(err));
     } finally {
       setDownloading(null);
     }
@@ -259,8 +261,6 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
 
   return (
     <div className="space-y-4 border-t border-slate-200 p-4 dark:border-slate-700">
-      {error && <Alert variant="error">{error}</Alert>}
-
       {application.coverLetter && (
         <section>
           <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Cover letter</h3>

@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import * as companyApi from '../../api/companies.js';
+import { useToast } from '../../context/useToast.js';
 import CompanyLogo from '../../components/company/CompanyLogo.jsx';
 import CompanyForm from './CompanyForm.jsx';
 import Button from '../../components/ui/Button.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 
 /** Matches the server's upload rules, so a bad file is caught before it is sent. */
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -21,7 +21,7 @@ export default function CompanyProfilePage() {
   const { company, setCompany } = useOutletContext();
   const fileInputRef = useRef(null);
 
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isUploading, setIsUploading] = useState(false);
 
   /**
@@ -35,23 +35,21 @@ export default function CompanyProfilePage() {
     event.target.value = '';
     if (!file) return;
 
-    setStatus({ error: '', success: '' });
-
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setStatus({ error: 'Please choose a JPG, PNG or WEBP image', success: '' });
+      toast.error('Please choose a JPG, PNG or WEBP image');
       return;
     }
     if (file.size > MAX_BYTES) {
-      setStatus({ error: 'That image is larger than 2 MB', success: '' });
+      toast.error('That image is larger than 2 MB');
       return;
     }
 
     setIsUploading(true);
     try {
       setCompany(await companyApi.uploadLogo(file));
-      setStatus({ error: '', success: 'Logo updated' });
+      toast.success('Logo updated');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsUploading(false);
     }
@@ -59,14 +57,13 @@ export default function CompanyProfilePage() {
 
   /** Removes the logo, falling back to the lettered badge. */
   async function handleRemove() {
-    setStatus({ error: '', success: '' });
     setIsUploading(true);
 
     try {
       setCompany(await companyApi.removeLogo());
-      setStatus({ error: '', success: 'Logo removed' });
+      toast.success('Logo removed');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsUploading(false);
     }
@@ -79,13 +76,6 @@ export default function CompanyProfilePage() {
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Shown beside every job you post. JPG, PNG or WEBP, up to 2 MB.
         </p>
-
-        <Alert variant="error" className="mt-3">
-          {status.error}
-        </Alert>
-        <Alert variant="success" className="mt-3">
-          {status.success}
-        </Alert>
 
         <div className="mt-4 flex flex-wrap items-center gap-5">
           <CompanyLogo company={company} size="lg" />

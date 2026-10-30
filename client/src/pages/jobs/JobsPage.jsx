@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as jobApi from '../../api/jobs.js';
+import { useToast } from '../../context/useToast.js';
 import { useAuth } from '../../context/useAuth.js';
 import { useJobMatchScores } from '../../utils/useJobMatchScores.js';
 import JobCard from '../../components/jobs/JobCard.jsx';
@@ -118,6 +119,7 @@ export default function JobsPage() {
     workMode: '',
   });
   const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState(null);
 
@@ -227,12 +229,13 @@ export default function JobsPage() {
     try {
       if (wasSaved) await jobApi.unsaveJob(job._id);
       else await jobApi.saveJob(job._id);
+      toast.success(wasSaved ? 'Removed from your saved jobs.' : 'Saved to your jobs.');
     } catch (err) {
       // Put it back if the server disagreed.
       setJobs((current) =>
         current.map((row) => (row._id === job._id ? { ...row, isSaved: wasSaved } : row)),
       );
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setSavingId(null);
     }

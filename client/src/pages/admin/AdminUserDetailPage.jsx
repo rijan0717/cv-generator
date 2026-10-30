@@ -208,11 +208,7 @@ export default function AdminUserDetailPage() {
         )}
 
         {recentActivity.length > 0 && (
-          <Pagination
-            pagination={activityPagination}
-            onChange={setActivityPage}
-            label="entries"
-          />
+          <Pagination pagination={activityPagination} onChange={setActivityPage} label="entries" />
         )}
       </section>
     </div>

@@ -240,9 +240,7 @@ export default function TalentPage() {
                     {person.name}
                   </h2>
                   <p className="truncate text-sm text-slate-600 dark:text-slate-400">
-                    {person.company?.name ||
-                      person.profile.position ||
-                      'No position given'}
+                    {person.company?.name || person.profile.position || 'No position given'}
                   </p>
                   {person.profile.openToWork && <OpenToWorkBadge className="mt-2" />}
                 </div>

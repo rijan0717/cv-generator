@@ -66,7 +66,16 @@ export function useDocumentMeta(meta) {
 
   // Serialised, so the effect re-runs when the values change rather
   // than on every render of the page that calls it.
-  const key = JSON.stringify([title, description, keywords, image, type, canonicalPath, jsonLd, noIndex]);
+  const key = JSON.stringify([
+    title,
+    description,
+    keywords,
+    image,
+    type,
+    canonicalPath,
+    jsonLd,
+    noIndex,
+  ]);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -94,11 +103,7 @@ export function useDocumentMeta(meta) {
     // Open Graph, which LinkedIn, Facebook and WhatsApp read, and
     // Twitter's own set, which it prefers over Open Graph.
     setTag('meta[property="og:title"]', { property: 'og:title' }, title ?? SITE_NAME);
-    setTag(
-      'meta[property="og:description"]',
-      { property: 'og:description' },
-      description ?? '',
-    );
+    setTag('meta[property="og:description"]', { property: 'og:description' }, description ?? '');
     setTag('meta[property="og:type"]', { property: 'og:type' }, type);
     setTag('meta[property="og:url"]', { property: 'og:url' }, url);
     setTag('meta[property="og:site_name"]', { property: 'og:site_name' }, SITE_NAME);
@@ -108,11 +113,7 @@ export function useDocumentMeta(meta) {
       absoluteImage ? 'summary_large_image' : 'summary',
     );
     setTag('meta[name="twitter:title"]', { name: 'twitter:title' }, title ?? SITE_NAME);
-    setTag(
-      'meta[name="twitter:description"]',
-      { name: 'twitter:description' },
-      description ?? '',
-    );
+    setTag('meta[name="twitter:description"]', { name: 'twitter:description' }, description ?? '');
 
     if (absoluteImage) {
       setTag('meta[property="og:image"]', { property: 'og:image' }, absoluteImage);

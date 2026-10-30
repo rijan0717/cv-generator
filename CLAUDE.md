@@ -229,6 +229,7 @@ The report follows the **Object-Oriented approach** from the TU guideline.
 - Responsive on mobile, tablet and desktop; accessible (form labels, keyboard navigation, sufficient colour contrast).
 - PDF generation completes in under about 5 seconds for a typical 2-page CV.
 - Clear loading, empty and error states on every page.
+- Outcomes the user should be told about in passing — a login, a save, a refused form, a download, a logout — appear as a toast in the bottom-right corner (`client/src/components/ui/Toast.jsx`), red for a failure and green for a success, timed out but dismissible. A page that failed to load, and a message that marks one particular field, stay in the page.
 - Consistent validation messages on client and server.
 - Pagination on all admin lists.
 
