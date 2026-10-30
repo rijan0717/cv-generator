@@ -16,6 +16,7 @@ import jobMatchRoutes from './jobMatch.routes.js';
 import talentRoutes from './talent.routes.js';
 import templateRoutes from './template.routes.js';
 import contentRoutes from './content.routes.js';
+import interviewRoutes from './interview.routes.js';
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.use('/job-match', jobMatchRoutes);
 router.use('/talent', talentRoutes);
 router.use('/templates', templateRoutes);
 router.use('/content', contentRoutes);
+router.use('/interview', interviewRoutes);
 router.use('/admin', adminRoutes);
 
 export default router;

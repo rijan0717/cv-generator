@@ -187,6 +187,13 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             isCollapsed={isCollapsed}
           />
           <Item
+            to="/interview"
+            icon="rewrite"
+            label="Interview prep"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
             to="/applications"
             icon="applications"
             label="My applications"
@@ -307,6 +314,13 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
               to="/admin/templates"
               icon="templates"
               label="Templates"
+              onNavigate={onNavigate}
+              isCollapsed={isCollapsed}
+            />
+            <Item
+              to="/admin/interview"
+              icon="match"
+              label="Interview prep"
               onNavigate={onNavigate}
               isCollapsed={isCollapsed}
             />
