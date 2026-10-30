@@ -38,7 +38,14 @@ describe('TemplateGallery', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /^ATS-friendly/ }));
 
-    expect(cardNames()).toEqual(['ATS-Friendly template']);
+    // Read from the registry rather than written out, so that adding a
+    // template to a category does not fail a test about filtering.
+    const expected = TEMPLATES.filter((template) => template.category === 'ats').map(
+      (template) => `${template.name} template`,
+    );
+
+    expect(expected.length).toBeGreaterThan(0);
+    expect(cardNames().sort()).toEqual(expected.sort());
   });
 
   it('searches names and descriptions', async () => {

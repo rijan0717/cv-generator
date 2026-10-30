@@ -1,0 +1,610 @@
+/*
+ * Styles for the template engine.
+ *
+ * `DesignedTemplate` writes every choice a design makes onto the page as a
+ * `data-` attribute, and this file has one block of rules per choice. So
+ * the answer to "what does heading: 'chip' actually do?" is a single rule
+ * below, and a new design needs no new CSS at all.
+ *
+ * Like templates.css this sits outside Tailwind, because the same markup is
+ * rendered in the preview and in the Puppeteer print page, and reads its
+ * colours and fonts from the variables buildTemplateVariables() produces.
+ */
+
+.cv-designed {
+  /* The side column's width. Each `data-width` resets it, and the print
+     block below reuses it to paint the stripe on later sheets, so the
+     measurement is written down exactly once. */
+  --cvd-side: 62mm;
+  /* What fills the side column. Overridden per tone. */
+  --cvd-side-fill: transparent;
+}
+
+/* --- Layout -------------------------------------------------------------- */
+
+.cv-designed .cvd-body {
+  display: flex;
+  align-items: stretch;
+}
+
+.cv-designed .cvd-main {
+  flex: 1;
+  /* A flex item will not shrink below its content without this, which a
+     long unbroken URL in the contact details is enough to trigger. */
+  min-width: 0;
+  padding: 14mm 13mm;
+}
+
+.cv-designed[data-layout='single'] .cvd-main,
+.cv-designed[data-layout='timeline'] .cvd-main {
+  padding: 16mm 16mm;
+}
+
+/* A band header supplies its own top padding, so the column below it
+   must not add a second gap. */
+.cv-designed[data-header='band'] .cvd-main {
+  padding-top: 10mm;
+}
+
+.cv-designed .cvd-side {
+  width: var(--cvd-side);
+  flex-shrink: 0;
+  padding: 14mm 10mm;
+  background: var(--cvd-side-fill);
+}
+
+.cv-designed[data-layout='sidebar-left'],
+.cv-designed[data-layout='sidebar-right'] {
+  /* Holds the side column's colour open to a full sheet on screen. */
+  min-height: 297mm;
+}
+
+.cv-designed[data-layout='sidebar-left'] .cvd-body,
+.cv-designed[data-layout='sidebar-right'] .cvd-body {
+  min-height: 297mm;
+}
+
+.cv-designed[data-width='narrow'] {
+  --cvd-side: 62mm;
+}
+
+.cv-designed[data-width='wide'] {
+  --cvd-side: 80mm;
+}
+
+/* --- Side column tone ---------------------------------------------------- */
+
+.cv-designed[data-tone='solid'] {
+  --cvd-side-fill: var(--cv-primary);
+}
+
+.cv-designed[data-tone='tint'] {
+  --cvd-side-fill: var(--cv-tint);
+}
+
+/*
+ * A solid column is dark, so everything inside it that was coloured for a
+ * white page needs a light counterpart — headings, dates, links, pills and
+ * both meter colours. Setting the two meter variables here is why the bar
+ * and dot variants need no rules of their own in this file.
+ */
+.cv-designed[data-tone='solid'] .cvd-side {
+  color: #fff;
+}
+
+.cv-designed[data-tone='solid'] .cvd-side .cv-name,
+.cv-designed[data-tone='solid'] .cvd-side .cv-section-title,
+.cv-designed[data-tone='solid'] .cvd-side .cv-entry-title,
+.cv-designed[data-tone='solid'] .cvd-side .cv-link {
+  color: #fff;
+}
+
+.cv-designed[data-tone='solid'] .cvd-side .cv-headline,
+.cv-designed[data-tone='solid'] .cvd-side .cv-entry-date,
+.cv-designed[data-tone='solid'] .cvd-side .cv-entry-sub,
+.cv-designed[data-tone='solid'] .cvd-side .cv-text,
+.cv-designed[data-tone='solid'] .cvd-side .cv-contact {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.cv-designed[data-tone='solid'] .cvd-side .cv-pill {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.cv-designed[data-tone='solid'] .cvd-side .cv-skill-meters {
+  --cv-meter-track: rgba(255, 255, 255, 0.28);
+  --cv-meter-fill: #fff;
+}
+
+/* The heading decorations are drawn in the primary colour, which is the
+   side column's own background there, so they would vanish. */
+.cv-designed[data-tone='solid'] .cvd-side .cv-section-title::before,
+.cv-designed[data-tone='solid'] .cvd-side .cv-section-title::after {
+  background: rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+
+.cv-designed[data-tone='solid'][data-heading='chip'] .cvd-side .cv-section-title {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.cv-designed[data-tone='solid'][data-heading='band'] .cvd-side .cv-section-title {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* A plain column has no fill, so a rule is what separates it. */
+.cv-designed[data-tone='plain'][data-layout='sidebar-left'] .cvd-side {
+  border-right: 1px solid var(--cv-rule);
+}
+
+.cv-designed[data-tone='plain'][data-layout='sidebar-right'] .cvd-side {
+  border-left: 1px solid var(--cv-rule);
+}
+
+/* --- The identity block -------------------------------------------------- */
+
+.cv-designed .cvd-header {
+  margin-bottom: var(--cv-section-gap);
+}
+
+.cv-designed .cv-name {
+  font-family: var(--cv-heading-font);
+  line-height: 1.1;
+}
+
+.cv-designed[data-name-size='md'] .cv-name {
+  font-size: 1.9em;
+}
+
+.cv-designed[data-name-size='lg'] .cv-name {
+  font-size: 2.3em;
+}
+
+.cv-designed[data-name-size='xl'] .cv-name {
+  font-size: 2.9em;
+}
+
+.cv-designed[data-name-case='upper'] .cv-name {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* The name in a side panel competes with the main column for room, so it
+   is always the smallest of the three sizes there. */
+.cv-designed .cvd-side .cv-name {
+  font-size: 1.5em;
+}
+
+/* --- Header placement ---------------------------------------------------- */
+
+.cv-designed[data-header='centered'] .cvd-main > .cvd-header {
+  text-align: center;
+}
+
+.cv-designed[data-header='centered'] .cvd-contact {
+  justify-content: center;
+}
+
+/*
+ * `split` puts the name on the left and the contact details on the right.
+ * They are each given a column rather than floated so that a long name and
+ * a long list of links cannot overlap.
+ */
+.cv-designed[data-header='split'] .cvd-main > .cvd-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10mm;
+}
+
+.cv-designed[data-header='split'] .cvd-main > .cvd-header .cvd-contact {
+  margin-top: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 2px;
+}
+
+/*
+ * A band is the one header allowed to run the full width of the sheet, and
+ * it may only do so because it paints its own opaque background — nothing
+ * of a side column can show behind it. `DesignedTemplate` refuses to put
+ * any other header above a sidebar layout for exactly this reason.
+ */
+.cv-designed[data-header='band'] > .cvd-header {
+  background: var(--cv-primary);
+  color: #fff;
+  padding: 12mm 16mm;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8mm;
+}
+
+.cv-designed[data-header='band'] > .cvd-header .cv-name,
+.cv-designed[data-header='band'] > .cvd-header .cv-headline,
+.cv-designed[data-header='band'] > .cvd-header .cv-contact,
+.cv-designed[data-header='band'] > .cvd-header .cv-link {
+  color: #fff;
+}
+
+.cv-designed[data-header='band'] > .cvd-header .cv-headline,
+.cv-designed[data-header='band'] > .cvd-header .cv-contact {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* A panel header sits at the top of the side column, so it is centred on
+   the narrow measure rather than aligned to a long line. */
+.cv-designed .cvd-side > .cvd-header {
+  text-align: center;
+}
+
+.cv-designed .cvd-side > .cvd-header .cvd-contact {
+  justify-content: center;
+}
+
+/* --- The photo ----------------------------------------------------------- */
+
+.cv-designed .cvd-photo {
+  width: 32mm;
+  height: 32mm;
+  margin-bottom: 8px;
+}
+
+.cv-designed[data-photo='circle'] .cvd-photo {
+  border-radius: 50%;
+}
+
+.cv-designed[data-photo='rounded'] .cvd-photo {
+  border-radius: 6px;
+}
+
+.cv-designed[data-photo='square'] .cvd-photo {
+  border-radius: 0;
+}
+
+/* Centred in a panel or a centred header, beside the name otherwise. */
+.cv-designed .cvd-side > .cvd-header .cvd-photo,
+.cv-designed[data-header='centered'] .cvd-photo {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cv-designed[data-header='band'] > .cvd-header .cvd-photo {
+  margin-bottom: 0;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+/* --- Contact details ----------------------------------------------------- */
+
+.cv-designed .cvd-sep {
+  margin: 0 6px;
+  opacity: 0.6;
+}
+
+.cv-designed[data-contact='stacked'] .cvd-contact,
+.cv-designed[data-contact='stacked-icons'] .cvd-contact {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.cv-designed .cvd-side .cvd-contact {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.cv-designed .cvd-side > .cvd-header .cvd-contact {
+  align-items: center;
+}
+
+/* --- Section headings ---------------------------------------------------- */
+
+.cv-designed .cv-section-title {
+  font-family: var(--cv-heading-font);
+  color: var(--cv-primary);
+  margin-bottom: 5px;
+}
+
+.cv-designed[data-heading='rule'] .cv-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.92em;
+  border-bottom: 1px solid var(--cv-rule);
+  padding-bottom: 3px;
+}
+
+.cv-designed[data-heading='underline'] .cv-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.92em;
+  position: relative;
+  padding-bottom: 6px;
+}
+
+.cv-designed[data-heading='underline'] .cv-section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 12mm;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--cv-primary);
+}
+
+.cv-designed[data-heading='bar'] .cv-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.92em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cv-designed[data-heading='bar'] .cv-section-title::before {
+  content: '';
+  width: 4px;
+  height: 1em;
+  border-radius: 2px;
+  background: var(--cv-primary);
+  flex-shrink: 0;
+}
+
+.cv-designed[data-heading='chip'] .cv-section-title {
+  display: inline-block;
+  background: var(--cv-primary);
+  color: #fff;
+  border-radius: 4px;
+  padding: 2px 9px;
+  font-size: 0.88em;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.cv-designed[data-heading='spaced'] .cv-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.cv-designed[data-heading='ornament'] .cv-section-title {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.88em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cv-designed[data-heading='ornament'] .cv-section-title::before,
+.cv-designed[data-heading='ornament'] .cv-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cv-rule);
+}
+
+.cv-designed[data-heading='band'] .cv-section-title {
+  background: var(--cv-tint);
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.88em;
+}
+
+.cv-designed[data-heading='dot'] .cv-section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.9em;
+}
+
+.cv-designed[data-heading='dot'] .cv-section-title::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cv-primary);
+  flex-shrink: 0;
+}
+
+/* --- Timeline ------------------------------------------------------------ */
+
+/*
+ * A line down the left of the main column with a marker against each entry.
+ *
+ * The dates stay in the entry head where every other layout puts them,
+ * rather than moving into the gutter: the gutter is only about 6mm wide at
+ * the narrowest body size, which is not enough for "Sep 2021 – Mar 2024"
+ * without wrapping it to three lines.
+ */
+.cv-designed[data-layout='timeline'] .cv-section {
+  padding-left: 9mm;
+  position: relative;
+}
+
+.cv-designed[data-layout='timeline'] .cv-section .cv-entry {
+  position: relative;
+}
+
+.cv-designed[data-layout='timeline'] .cv-section .cv-entry::before {
+  content: '';
+  position: absolute;
+  left: -9mm;
+  top: 0.45em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cv-primary);
+}
+
+.cv-designed[data-layout='timeline'] .cv-section .cv-entry::after {
+  content: '';
+  position: absolute;
+  left: calc(-9mm + 3px);
+  top: 0.45em;
+  bottom: calc(-1 * var(--cv-item-gap));
+  width: 1px;
+  background: var(--cv-rule);
+}
+
+/* The line must stop at the last entry rather than run on into the next
+   heading. */
+.cv-designed[data-layout='timeline'] .cv-section .cv-entry:last-child::after {
+  display: none;
+}
+
+.cv-designed[data-layout='timeline'] .cvd-header {
+  padding-left: 0;
+}
+
+/* --- Accents ------------------------------------------------------------- */
+
+/*
+ * Decoration only: absolutely positioned, carrying no text, and hidden
+ * from screen readers by the markup. `.cv-page` is already a containing
+ * block (templates.css), so these position against the sheet.
+ */
+.cv-designed .cvd-accent {
+  position: absolute;
+  pointer-events: none;
+}
+
+.cv-designed[data-accent='top-stripe'] .cvd-accent {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5mm;
+  background: var(--cv-primary);
+}
+
+.cv-designed[data-accent='top-stripe'] .cvd-main {
+  padding-top: 18mm;
+}
+
+.cv-designed[data-accent='side-stripe'] .cvd-accent {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4mm;
+  background: var(--cv-primary);
+}
+
+.cv-designed[data-accent='side-stripe'] .cvd-main {
+  padding-left: 20mm;
+}
+
+/* The triangle sits over the top right corner, which is exactly where a
+   split header puts the contact details, so the header is held clear of
+   it. */
+.cv-designed[data-accent='corner'] .cvd-main > .cvd-header {
+  padding-right: 16mm;
+}
+
+.cv-designed[data-accent='corner'] .cvd-accent {
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  /* A triangle drawn with borders: no image, and it scales with the page. */
+  border-top: 22mm solid var(--cv-primary);
+  border-left: 22mm solid transparent;
+}
+
+/* --- Print --------------------------------------------------------------- */
+
+@media print {
+  /*
+   * A flex column paints only its own height, so on a second sheet a side
+   * column would simply stop. The stripe is painted by the page's own
+   * background instead, which every sheet repeats, and the column itself
+   * becomes transparent. The width comes from the same --cvd-side variable
+   * the screen rules use, so the two can never drift apart.
+   */
+  .cv-designed[data-layout='sidebar-left'],
+  .cv-designed[data-layout='sidebar-right'] {
+    min-height: 0;
+  }
+
+  .cv-designed[data-layout='sidebar-left'] .cvd-body,
+  .cv-designed[data-layout='sidebar-right'] .cvd-body {
+    min-height: 0;
+  }
+
+  .cv-designed[data-layout='sidebar-left'][data-tone='solid'],
+  .cv-designed[data-layout='sidebar-left'][data-tone='tint'] {
+    background: linear-gradient(
+      to right,
+      var(--cvd-side-fill) 0 var(--cvd-side),
+      var(--cv-background) var(--cvd-side) 100%
+    );
+  }
+
+  .cv-designed[data-layout='sidebar-right'][data-tone='solid'],
+  .cv-designed[data-layout='sidebar-right'][data-tone='tint'] {
+    background: linear-gradient(
+      to left,
+      var(--cvd-side-fill) 0 var(--cvd-side),
+      var(--cv-background) var(--cvd-side) 100%
+    );
+  }
+
+  /* A plain column is divided by a rule, which is a flex item's border and
+     so stops at the same place the fill would. It is redrawn here as a hard
+     stop in the page's own background. */
+  .cv-designed[data-layout='sidebar-left'][data-tone='plain'] {
+    background: linear-gradient(
+      to right,
+      var(--cv-background) 0 var(--cvd-side),
+      var(--cv-rule) var(--cvd-side) calc(var(--cvd-side) + 1px),
+      var(--cv-background) calc(var(--cvd-side) + 1px) 100%
+    );
+  }
+
+  .cv-designed[data-layout='sidebar-right'][data-tone='plain'] {
+    background: linear-gradient(
+      to left,
+      var(--cv-background) 0 var(--cvd-side),
+      var(--cv-rule) var(--cvd-side) calc(var(--cvd-side) + 1px),
+      var(--cv-background) calc(var(--cvd-side) + 1px) 100%
+    );
+  }
+
+  .cv-designed[data-tone='plain'] .cvd-side {
+    border: 0;
+  }
+
+  .cv-designed .cvd-side {
+    background: transparent;
+  }
+
+  /*
+   * An accent is positioned against the page box, which in print is only
+   * the first sheet. A side stripe that claimed to run down every sheet
+   * would in fact stop at the first, so it is dropped rather than printed
+   * as a lie; the top stripe and corner belong to the first sheet anyway.
+   */
+  .cv-designed[data-accent='side-stripe'] .cvd-accent {
+    display: none;
+  }
+
+  .cv-designed[data-accent='side-stripe'] {
+    background: linear-gradient(to right, var(--cv-primary) 0 4mm, var(--cv-background) 4mm 100%);
+  }
+
+  /* Headers must never be split, and must never be the last thing on a
+     sheet. */
+  .cv-designed .cvd-header {
+    break-inside: avoid;
+    break-after: avoid;
+  }
+}

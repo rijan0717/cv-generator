@@ -84,4 +84,141 @@ export const TEMPLATE_CATALOGUE = [
     description: 'Tight spacing and small headings, for a long history that still has to fit.',
     usesPhoto: false,
   },
+
+  // --- Produced by the template engine (client/src/templates/engine) ------
+  // These mirror DESIGNS in designs.js rather than a component file, but
+  // the catalogue cannot tell the difference and does not need to.
+  {
+    key: 'civic',
+    name: 'Civic',
+    description:
+      'Plain single column in black on white, with ruled headings and no graphics. Built to be read by screening software.',
+    usesPhoto: false,
+  },
+  {
+    key: 'granite',
+    name: 'Granite',
+    description:
+      'A quiet side column divided by a rule, with widely spaced headings in a serif face. Sober and unhurried.',
+    usesPhoto: false,
+  },
+  {
+    key: 'ember',
+    name: 'Ember',
+    description:
+      'A warm full-width header band carrying your photo and contact details, over underlined headings.',
+    usesPhoto: true,
+  },
+  {
+    key: 'scholar',
+    name: 'Scholar',
+    description:
+      'Centred name and ruled headings in a classical serif, with skills in two columns. For academic and research posts.',
+    usesPhoto: false,
+  },
+  {
+    key: 'orbit',
+    name: 'Orbit',
+    description:
+      'A coloured header band over a timeline, with each role marked on a line down the page and skills shown as dots.',
+    usesPhoto: true,
+  },
+  {
+    key: 'paper',
+    name: 'Paper',
+    description:
+      'Warm grey on white with small, widely spaced headings and nothing else. Plain, roomy and quiet.',
+    usesPhoto: false,
+  },
+  {
+    key: 'vector',
+    name: 'Vector',
+    description:
+      'A solid colour side panel holding your photo, name and skill bars, with condensed headings beside it.',
+    usesPhoto: true,
+  },
+  {
+    key: 'beacon',
+    name: 'Beacon',
+    description:
+      'A centred plain-text layout in black on white, with no columns or graphics. A second ATS-safe option.',
+    usesPhoto: false,
+  },
+  {
+    key: 'cascade',
+    name: 'Cascade',
+    description:
+      'A wide, lightly tinted side column for your photo and skills, with each skill level written out in words.',
+    usesPhoto: true,
+  },
+  {
+    key: 'folio',
+    name: 'Folio',
+    description:
+      'Your name opposite your contact details, a coloured corner, and centred headings between rules.',
+    usesPhoto: true,
+  },
+  {
+    key: 'sterling',
+    name: 'Sterling',
+    description:
+      'Name opposite your contact details, with a ruled side column on the right for skills and languages.',
+    usesPhoto: false,
+  },
+  {
+    key: 'juniper',
+    name: 'Juniper',
+    description:
+      'A lightly tinted column on the right, with headings on a tinted strip and skills shown as dots.',
+    usesPhoto: false,
+  },
+  {
+    key: 'marquee',
+    name: 'Marquee',
+    description:
+      'A coloured stripe along the top edge, your photo beside the name, and headings set in filled blocks.',
+    usesPhoto: true,
+  },
+  {
+    key: 'linden',
+    name: 'Linden',
+    description:
+      'Centred and unhurried, with small spaced headings and skills as a single plain line.',
+    usesPhoto: false,
+  },
+  {
+    key: 'cobalt',
+    name: 'Cobalt',
+    description:
+      'A solid blue panel on the right carrying your photo, name and skill bars, with underlined headings beside it.',
+    usesPhoto: true,
+  },
+  {
+    key: 'chancery',
+    name: 'Chancery',
+    description:
+      'A formal centred layout with headings between rules and skills in two columns. For law, policy and the public sector.',
+    usesPhoto: false,
+  },
+  {
+    key: 'meadow',
+    name: 'Meadow',
+    description:
+      'A stripe down the edge of the page and a timeline through your history, with barred headings.',
+    usesPhoto: true,
+  },
+  {
+    key: 'prism',
+    name: 'Prism',
+    description:
+      'Your name opposite stacked contact details, over tinted heading strips and skill levels written in words.',
+    usesPhoto: false,
+  },
+  {
+    key: 'keystone',
+    name: 'Keystone',
+    description:
+      'A wide, undecorated side column divided by a rule, with ruled headings. Plain and roomy for a long history.',
+    usesPhoto: false,
+  },
 ];

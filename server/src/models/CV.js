@@ -27,6 +27,29 @@ export const TEMPLATE_KEYS = [
   'formal',
   'editorial',
   'compact',
+  // The first batch produced by the template engine (PLAN.md §5). On the
+  // client these are design objects rather than components, but a stored
+  // key is a stored key, so they are appended here like any other.
+  'civic',
+  'granite',
+  'ember',
+  'scholar',
+  'orbit',
+  'paper',
+  'vector',
+  'beacon',
+  'cascade',
+  'folio',
+  // The second engine batch.
+  'sterling',
+  'juniper',
+  'marquee',
+  'linden',
+  'cobalt',
+  'chancery',
+  'meadow',
+  'prism',
+  'keystone',
 ];
 
 /** Sections that may be hidden or reordered, in their default order. */

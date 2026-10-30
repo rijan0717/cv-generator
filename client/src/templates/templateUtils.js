@@ -260,6 +260,31 @@ export function toHref(value) {
 }
 
 /**
+ * The skill levels the builder offers, weakest first.
+ *
+ * The order is the meaning: a meter or a row of dots has to turn "Advanced"
+ * into a length, and the only thing that makes Advanced longer than
+ * Intermediate is where each sits in this list.
+ */
+export const SKILL_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+
+/**
+ * Turns a skill level into a step from 1 to 4, for the bar and dot variants.
+ *
+ * A skill with no level counts as 2 rather than 0. Levels are optional in
+ * the builder, and drawing an empty bar beside a skill somebody listed would
+ * read as "no ability at all" — which is worse than the mild guess of
+ * showing it as middling.
+ *
+ * @param {string} [level] - One of SKILL_LEVELS, or anything else.
+ * @returns {number} A step from 1 to 4.
+ */
+export function skillLevelStep(level) {
+  const index = SKILL_LEVELS.indexOf(level);
+  return index === -1 ? 2 : index + 1;
+}
+
+/**
  * Builds the initials shown in the Monogram template's badge.
  *
  * Takes the first letter of the first and last words, so "Patricia Roberts"
