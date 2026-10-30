@@ -77,7 +77,11 @@ router.put(
 router.put(
   '/me/password',
   [
-    body('currentPassword').notEmpty().withMessage('Please enter your current password'),
+    // Not asked of a Google-only account, which has no password yet.
+    body('currentPassword')
+      .if((_value, { req }) => req.user.hasPassword !== false)
+      .notEmpty()
+      .withMessage('Please enter your current password'),
     body('newPassword')
       .isString()
       .isLength({ min: 8 })

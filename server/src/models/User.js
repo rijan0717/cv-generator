@@ -79,10 +79,35 @@ const userSchema = new mongoose.Schema(
 
     // `select: false` keeps the hash out of every query result unless it is
     // asked for explicitly with .select('+passwordHash').
+    // Not required for an account made with Google sign-in, which has no
+    // password until its owner sets one on the profile page.
     passwordHash: {
       type: String,
-      required: true,
+      required() {
+        return !this.googleId;
+      },
       select: false,
+    },
+
+    /**
+     * Google's permanent id for the person, once they have signed in with
+     * Google. `sparse` lets every password-only account leave it empty
+     * while still keeping each Google id on one account only.
+     */
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+
+    /**
+     * Whether the account has a password. False only for an account made
+     * with Google; the profile page then asks for a new password without
+     * the current one. Stored because the hash itself is never loaded.
+     */
+    hasPassword: {
+      type: Boolean,
+      default: true,
     },
 
     /**
@@ -164,8 +189,9 @@ userSchema.index({ accountType: 1, isDeleted: 1, status: 1, 'jobSeekerProfile.in
  * existing hash and lock the user out.
  */
 userSchema.pre('save', async function hashPassword(next) {
-  if (!this.isModified('passwordHash')) return next();
+  if (!this.isModified('passwordHash') || !this.passwordHash) return next();
   this.passwordHash = await bcrypt.hash(this.passwordHash, BCRYPT_ROUNDS);
+  this.hasPassword = true;
   next();
 });
 
@@ -191,7 +217,9 @@ userSchema.pre('save', function syncRole(next) {
  * @param {string} plainPassword - The password as typed by the user.
  * @returns {Promise<boolean>} True when the password matches.
  */
-userSchema.methods.comparePassword = function comparePassword(plainPassword) {
+userSchema.methods.comparePassword = async function comparePassword(plainPassword) {
+  // A Google-only account has no hash, so no password can match it.
+  if (!this.passwordHash) return false;
   return bcrypt.compare(plainPassword, this.passwordHash);
 };
 
@@ -212,6 +240,7 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     accountType: this.accountType ?? null,
     avatarUrl: this.avatarUrl,
     status: this.status,
+    hasPassword: this.hasPassword !== false,
     // Sent to its owner so the profile form can show what is saved. The
     // directory builds its own shape rather than reusing this one.
     jobSeekerProfile: {

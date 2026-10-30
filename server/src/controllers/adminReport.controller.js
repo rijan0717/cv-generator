@@ -9,7 +9,12 @@
  * Reached only through the admin router, which applies `requireAuth` and
  * `requireAdmin` to everything beneath it.
  */
-import { buildReport, reportToExcel, reportToPdf, REPORT_TYPES } from '../services/reportService.js';
+import {
+  buildReport,
+  reportToExcel,
+  reportToPdf,
+  REPORT_TYPES,
+} from '../services/reportService.js';
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 

@@ -75,7 +75,9 @@ export async function changePassword(req, res) {
   // req.user was loaded without the hash, so re-read it with the hash included.
   const user = await req.user.constructor.findById(req.user._id).select('+passwordHash');
 
-  if (!(await user.comparePassword(currentPassword))) {
+  // An account made with Google sign-in has no password yet, so there is
+  // no current one to check; this request sets its first password.
+  if (user.hasPassword !== false && !(await user.comparePassword(currentPassword))) {
     throw ApiError.badRequest('Your current password is incorrect');
   }
 

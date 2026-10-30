@@ -76,6 +76,10 @@ export const env = {
 
   maxUploadSizeMb: Number(optional('MAX_UPLOAD_SIZE_MB', '2')),
 
+  // Google sign-in. Empty turns the feature off: the endpoint refuses and
+  // the client hides the button.
+  googleClientId: optional('GOOGLE_CLIENT_ID', ''),
+
   // --- Optional HTTPS ------------------------------------------------------
   // The developer decides whether the Express server speaks HTTP or HTTPS.
   // When HTTPS_ENABLED is off (the default) nothing changes, so a normal

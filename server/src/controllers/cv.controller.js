@@ -88,11 +88,7 @@ export async function listCVs(req, res) {
     if (item.baselineCvTitle) item.tailoredFor.baselineCvTitle = item.baselineCvTitle;
   }
 
-  sendSuccess(
-    res,
-    { cvs: rows, pagination: buildPagination({ page, limit }, total) },
-    'Your CVs',
-  );
+  sendSuccess(res, { cvs: rows, pagination: buildPagination({ page, limit }, total) }, 'Your CVs');
 }
 
 /**

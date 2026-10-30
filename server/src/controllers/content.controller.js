@@ -192,7 +192,11 @@ export async function listPosts(req, res) {
     {
       // The list does not carry bodies: a page of nine articles would
       // otherwise send every word of all nine to render nine summaries.
-      posts: posts.map((post) => ({ ...toPublicJSON(post), bodyHtml: undefined, blocks: undefined })),
+      posts: posts.map((post) => ({
+        ...toPublicJSON(post),
+        bodyHtml: undefined,
+        blocks: undefined,
+      })),
       pagination: buildPagination({ page, limit }, total),
     },
     'Posts',
@@ -230,7 +234,9 @@ export async function listAllContent(req, res) {
   if (status) filter.status = status;
   if (search?.trim()) {
     // Escaped, so a search for "a.*" cannot become a collection scan.
-    const safe = String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = String(search)
+      .trim()
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     filter.title = new RegExp(safe, 'i');
   }
 
@@ -247,7 +253,11 @@ export async function listAllContent(req, res) {
   sendSuccess(
     res,
     {
-      content: items.map((item) => ({ ...toAdminJSON(item), bodyHtml: undefined, blocks: undefined })),
+      content: items.map((item) => ({
+        ...toAdminJSON(item),
+        bodyHtml: undefined,
+        blocks: undefined,
+      })),
       pagination: buildPagination({ page, limit }, total),
     },
     'Content',
@@ -319,8 +329,12 @@ function cleanSeo(seo) {
   ].slice(0, 15);
 
   return {
-    metaTitle: String(input.metaTitle ?? '').trim().slice(0, 70),
-    metaDescription: String(input.metaDescription ?? '').trim().slice(0, 160),
+    metaTitle: String(input.metaTitle ?? '')
+      .trim()
+      .slice(0, 70),
+    metaDescription: String(input.metaDescription ?? '')
+      .trim()
+      .slice(0, 160),
     keywords: tidy,
   };
 }

@@ -375,8 +375,14 @@ function JobSeekerProfileSection({ user, setUser }) {
   );
 }
 
-/** Password change. The current password is required. */
+/**
+ * Password change. The current password is required, except for an account
+ * made with Google sign-in that has none yet: it sets its first password
+ * here, after which it can log in either way.
+ */
 function PasswordSection() {
+  const { user, setUser } = useAuth();
+  const hasPassword = user?.hasPassword !== false;
   const [form, setForm] = useState({
     currentPassword: '',
     newPassword: '',
@@ -414,7 +420,8 @@ function PasswordSection() {
         newPassword: form.newPassword,
       });
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      toast.success('Your password has been changed');
+      toast.success(hasPassword ? 'Your password has been changed' : 'Your password has been set');
+      if (!hasPassword) setUser({ ...user, hasPassword: true });
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -424,18 +431,27 @@ function PasswordSection() {
 
   return (
     <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Change password</h2>
+      <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        {hasPassword ? 'Change password' : 'Set a password'}
+      </h2>
+      {!hasPassword && (
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          You signed up with Google. Set a password to also log in with your email address.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
-        <TextField
-          label="Current password"
-          type="password"
-          name="currentPassword"
-          value={form.currentPassword}
-          onChange={handleChange}
-          autoComplete="current-password"
-          required
-        />
+        {hasPassword && (
+          <TextField
+            label="Current password"
+            type="password"
+            name="currentPassword"
+            value={form.currentPassword}
+            onChange={handleChange}
+            autoComplete="current-password"
+            required
+          />
+        )}
 
         <TextField
           label="New password"
@@ -459,7 +475,7 @@ function PasswordSection() {
         />
 
         <Button type="submit" isLoading={isSaving}>
-          {isSaving ? 'Changing' : 'Change password'}
+          {isSaving ? 'Saving' : hasPassword ? 'Change password' : 'Set password'}
         </Button>
       </form>
     </section>

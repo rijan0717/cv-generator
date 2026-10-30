@@ -4,6 +4,8 @@ import { useAuth } from '../../context/useAuth.js';
 import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton.jsx';
+import { homePathFor } from '../../utils/homePath.js';
 
 /**
  * Registration page.
@@ -50,7 +52,7 @@ function validate(form) {
 }
 
 export default function RegisterPage() {
-  const { register, isAuthenticated, isLoading } = useAuth();
+  const { register, loginWithGoogle, isAuthenticated, isLoading } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -107,6 +109,22 @@ export default function RegisterPage() {
       toast.error(err.message);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  /**
+   * Signs up with Google. If the Google address already has an account the
+   * server signs into that one instead, so it goes to its usual home page.
+   * @param {string} credential - The Google ID token.
+   */
+  async function handleGoogle(credential) {
+    try {
+      const { user: signedIn, isNew } = await loginWithGoogle(credential);
+      const first = signedIn.name.split(' ')[0];
+      toast.success(isNew ? `Account created. Welcome, ${first}.` : `Welcome back, ${first}.`);
+      navigate(isNew ? '/welcome' : homePathFor(signedIn), { replace: true });
+    } catch (err) {
+      toast.error(err.message);
     }
   }
 
@@ -169,6 +187,10 @@ export default function RegisterPage() {
             {isSubmitting ? 'Creating your account' : 'Create account'}
           </Button>
         </form>
+
+        <div className="mt-6">
+          <GoogleSignInButton onCredential={handleGoogle} text="signup_with" />
+        </div>
 
         <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           Already have an account?{' '}

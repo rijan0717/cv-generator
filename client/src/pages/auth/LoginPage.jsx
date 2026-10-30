@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth.js';
 import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton.jsx';
 import { homePathFor } from '../../utils/homePath.js';
 
 /**
@@ -15,7 +16,7 @@ import { homePathFor } from '../../utils/homePath.js';
  * there is often no page left to draw a message on.
  */
 export default function LoginPage() {
-  const { user, login, isAuthenticated, isLoading } = useAuth();
+  const { user, login, loginWithGoogle, isAuthenticated, isLoading } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,6 +57,26 @@ export default function LoginPage() {
     }
   }
 
+  /**
+   * Signs in with the token from Google. A first-time Google user has just
+   * been given an account, so they go to the welcome page to choose what it
+   * is for, as a new registration would.
+   * @param {string} credential - The Google ID token.
+   */
+  async function handleGoogle(credential) {
+    try {
+      const { user: signedIn, isNew } = await loginWithGoogle(credential);
+      toast.success(
+        isNew
+          ? `Account created. Welcome, ${signedIn.name.split(' ')[0]}.`
+          : `Welcome back, ${signedIn.name.split(' ')[0]}.`,
+      );
+      navigate(isNew ? '/welcome' : redirectFor(signedIn), { replace: true });
+    } catch (err) {
+      toast.error(err.message);
+    }
+  }
+
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
       <div className="rounded-xl bg-white dark:bg-slate-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
@@ -91,6 +112,10 @@ export default function LoginPage() {
             {isSubmitting ? 'Logging in' : 'Log in'}
           </Button>
         </form>
+
+        <div className="mt-6">
+          <GoogleSignInButton onCredential={handleGoogle} text="signin_with" />
+        </div>
 
         <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           Do not have an account?{' '}

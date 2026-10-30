@@ -58,9 +58,7 @@ router.post(
 router.post(
   '/scores',
   [
-    body('jobIds')
-      .isArray({ min: 1, max: 50 })
-      .withMessage('Send between 1 and 50 job ids'),
+    body('jobIds').isArray({ min: 1, max: 50 }).withMessage('Send between 1 and 50 job ids'),
     body('jobIds.*').isMongoId().withMessage('That job id is not valid'),
   ],
   validate,

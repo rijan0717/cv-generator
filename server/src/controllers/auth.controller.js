@@ -10,6 +10,8 @@ import { signAuthToken, setAuthCookie, clearAuthCookie } from '../services/token
 import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
+import { verifyGoogleCredential } from '../services/googleAuthService.js';
+import { env } from '../config/env.js';
 
 /**
  * POST /api/auth/register
@@ -81,6 +83,88 @@ export async function login(req, res) {
   await logActivity({ userId: user._id, action: 'LOGIN', ip: req.ip });
 
   sendSuccess(res, { user: user.toPublicJSON() }, 'You are now logged in');
+}
+
+/**
+ * POST /api/auth/google
+ * Signs in — or signs up — with Google, from the ID token the Google
+ * button gave the browser.
+ *
+ * Step by step:
+ *   1. Refuse when Google sign-in is not configured.
+ *   2. Verify the token with Google (googleAuthService) and insist the
+ *      email address is one Google has verified.
+ *   3. Find the account by Google id, or else by email. A matching email
+ *      account is linked to Google: Google has proved the person owns that
+ *      address, which is the same proof a password reset would rely on.
+ *   4. Apply the same rules as a password login — deleted and blocked
+ *      accounts are refused — and never sign an admin in this way, since
+ *      admin accounts come only from the seed script.
+ *   5. With no account at all, create one with no password. It chooses job
+ *      seeker or employer next, exactly like a new registration.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<void>}
+ */
+export async function googleLogin(req, res) {
+  // 1.
+  if (!env.googleClientId) {
+    throw ApiError.badRequest('Google sign-in is not set up on this server');
+  }
+
+  // 2.
+  const profile = await verifyGoogleCredential(req.body.credential);
+  if (!profile.emailVerified || !profile.email) {
+    throw ApiError.unauthorized('Your Google account has no verified email address');
+  }
+
+  // 3.
+  let user =
+    (await User.findOne({ googleId: profile.googleId })) ??
+    (await User.findOne({ email: profile.email }));
+
+  let isNew = false;
+
+  if (user) {
+    // 4.
+    if (user.isDeleted) {
+      throw ApiError.forbidden('This account has been deleted');
+    }
+    if (user.role === 'admin') {
+      throw ApiError.forbidden('Administrators sign in with their email and password');
+    }
+    if (user.status === 'blocked') {
+      throw ApiError.forbidden('Your account has been blocked. Please contact the administrator');
+    }
+    if (!user.googleId) user.googleId = profile.googleId;
+  } else {
+    // 5.
+    user = new User({
+      name: profile.name.slice(0, 80),
+      email: profile.email,
+      googleId: profile.googleId,
+      hasPassword: false,
+      role: 'user',
+    });
+    isNew = true;
+  }
+
+  user.lastLoginAt = new Date();
+  await user.save();
+
+  const token = signAuthToken(user);
+  setAuthCookie(res, token);
+
+  await logActivity({
+    userId: user._id,
+    action: isNew ? 'REGISTER' : 'LOGIN',
+    meta: { method: 'google' },
+    ip: req.ip,
+  });
+
+  const message = isNew ? 'Your account has been created' : 'You are now logged in';
+  sendSuccess(res, { user: user.toPublicJSON(), isNew }, message);
 }
 
 /**

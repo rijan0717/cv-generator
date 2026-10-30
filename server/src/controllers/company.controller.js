@@ -242,8 +242,7 @@ export async function uploadDocument(req, res) {
  */
 export async function downloadDocument(req, res) {
   const company = await Company.findOne({ _id: req.params.id, isDeleted: false });
-  const allowed =
-    company && (req.user.role === 'admin' || company.owner.equals(req.user._id));
+  const allowed = company && (req.user.role === 'admin' || company.owner.equals(req.user._id));
 
   if (!allowed || !company.documentFile) throw ApiError.notFound('Document not found');
 

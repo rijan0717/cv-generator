@@ -67,7 +67,6 @@ export const uploadImage = multer({
   },
 });
 
-
 /**
  * Multer instance for CV imports.
  *

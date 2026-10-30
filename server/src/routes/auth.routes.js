@@ -3,7 +3,13 @@
  */
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { register, login, logout, getCurrentUser } from '../controllers/auth.controller.js';
+import {
+  register,
+  login,
+  googleLogin,
+  logout,
+  getCurrentUser,
+} from '../controllers/auth.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimit.js';
@@ -55,6 +61,16 @@ router.post(
   ],
   validate,
   asyncHandler(login),
+);
+
+// Sign in or sign up with Google. Shares the login limit: it is the same
+// door, reached another way.
+router.post(
+  '/google',
+  loginLimiter,
+  [body('credential').isString().notEmpty().withMessage('Google sign-in did not return a token')],
+  validate,
+  asyncHandler(googleLogin),
 );
 
 router.post('/logout', logout);

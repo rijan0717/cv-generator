@@ -459,12 +459,7 @@ export const INTERVIEW_SEED = [
         },
         {
           text: 'Which of these is an asset?',
-          options: [
-            'Trade creditors',
-            'Trade debtors',
-            'Share capital',
-            'A bank loan',
-          ],
+          options: ['Trade creditors', 'Trade debtors', 'Share capital', 'A bank loan'],
           correctIndex: 1,
           explanation:
             'Trade debtors are amounts owed *to* the business, so they are an asset. Creditors and a loan are amounts owed *by* it, and share capital is part of equity.',

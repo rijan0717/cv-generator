@@ -229,7 +229,10 @@ export async function getUser(req, res) {
 
   // `readPagination` reads `page`, so each list is given a request-shaped
   // object carrying its own parameter under that name.
-  const cvPaging = readPagination({ query: { page: req.query.cvPage, limit: req.query.cvLimit } }, 10);
+  const cvPaging = readPagination(
+    { query: { page: req.query.cvPage, limit: req.query.cvLimit } },
+    10,
+  );
   const activityPaging = readPagination(
     { query: { page: req.query.activityPage, limit: req.query.activityLimit } },
     20,
@@ -354,11 +357,7 @@ export async function listAllCVs(req, res) {
     CV.countDocuments(filter),
   ]);
 
-  sendSuccess(
-    res,
-    { cvs, pagination: buildPagination({ page, limit }, total) },
-    'All CVs',
-  );
+  sendSuccess(res, { cvs, pagination: buildPagination({ page, limit }, total) }, 'All CVs');
 }
 
 /**
@@ -450,9 +449,15 @@ async function attachMetaNames(entries) {
   }
 
   const [users, companies, jobs] = await Promise.all([
-    User.find({ _id: { $in: [...ids.targetUser] } }).select('name email').lean(),
-    Company.find({ _id: { $in: [...ids.company] } }).select('name').lean(),
-    Job.find({ _id: { $in: [...ids.job] } }).select('title').lean(),
+    User.find({ _id: { $in: [...ids.targetUser] } })
+      .select('name email')
+      .lean(),
+    Company.find({ _id: { $in: [...ids.company] } })
+      .select('name')
+      .lean(),
+    Job.find({ _id: { $in: [...ids.job] } })
+      .select('title')
+      .lean(),
   ]);
 
   const byId = (docs) => new Map(docs.map((doc) => [String(doc._id), doc]));

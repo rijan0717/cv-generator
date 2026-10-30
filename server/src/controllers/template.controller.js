@@ -103,9 +103,7 @@ export async function updateTemplate(req, res) {
   if (isActive === false && template.isActive) {
     const activeCount = await Template.countDocuments({ isActive: true });
     if (activeCount <= 1) {
-      throw ApiError.badRequest(
-        'At least one template must stay active, or nobody can build a CV',
-      );
+      throw ApiError.badRequest('At least one template must stay active, or nobody can build a CV');
     }
   }
 

@@ -55,7 +55,9 @@ export async function applyPrimaryBaselines(userId, items) {
   const jobIds = [...new Set(pending.map((item) => String(item.jobId)))];
 
   const [jobs, history] = await Promise.all([
-    Job.find({ _id: { $in: jobIds } }).select('title description skills').lean(),
+    Job.find({ _id: { $in: jobIds } })
+      .select('title description skills')
+      .lean(),
     JobMatch.find({})
       .select('jobDescription')
       .sort({ createdAt: -1 })

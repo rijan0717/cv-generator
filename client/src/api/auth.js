@@ -21,6 +21,17 @@ export async function login(payload) {
 }
 
 /**
+ * Signs in, or creates an account, with the ID token from Google's button.
+ * @param {string} credential - The Google ID token.
+ * @returns {Promise<{user: object, isNew: boolean}>} The user, and whether
+ *   the account was created just now.
+ */
+export async function googleLogin(credential) {
+  const { data } = await api.post('/api/auth/google', { credential });
+  return data.data;
+}
+
+/**
  * Ends the session by asking the server to clear the cookie.
  * @returns {Promise<void>}
  */

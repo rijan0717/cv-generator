@@ -103,7 +103,9 @@ async function usersReport(range) {
       status: user.status,
       cvs: cvCount.get(user._id.toString()) ?? 0,
       registered: new Date(user.createdAt).toLocaleDateString('en-GB'),
-      lastLogin: user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString('en-GB') : 'Never',
+      lastLogin: user.lastLoginAt
+        ? new Date(user.lastLoginAt).toLocaleDateString('en-GB')
+        : 'Never',
     })),
     summary: [
       { label: 'Accounts', value: users.length },
@@ -309,7 +311,9 @@ async function jobMatchesReport(range) {
   ]);
 
   const average = matches.length
-    ? Math.round(matches.reduce((total, match) => total + (match.matchScore ?? 0), 0) / matches.length)
+    ? Math.round(
+        matches.reduce((total, match) => total + (match.matchScore ?? 0), 0) / matches.length,
+      )
     : 0;
 
   return {
