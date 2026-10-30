@@ -1,0 +1,3502 @@
+[
+ {
+  "title": "Software Engineer",
+  "slug": "software-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Frontend Developer",
+  "slug": "frontend-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Backend Developer",
+  "slug": "backend-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Full Stack Developer",
+  "slug": "full-stack-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "MERN Stack Developer",
+  "slug": "mern-stack-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "MEAN Stack Developer",
+  "slug": "mean-stack-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "React Developer",
+  "slug": "react-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Angular Developer",
+  "slug": "angular-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Vue.js Developer",
+  "slug": "vuejs-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Node.js Developer",
+  "slug": "nodejs-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Java Developer",
+  "slug": "java-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Python Developer",
+  "slug": "python-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": ".NET Developer",
+  "slug": "dotnet-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "C++ Developer",
+  "slug": "cplusplus-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Go Developer",
+  "slug": "go-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Rust Developer",
+  "slug": "rust-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "PHP Developer",
+  "slug": "php-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Laravel Developer",
+  "slug": "laravel-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Ruby on Rails Developer",
+  "slug": "ruby-on-rails-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Django Developer",
+  "slug": "django-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Spring Boot Developer",
+  "slug": "spring-boot-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Android Developer",
+  "slug": "android-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "iOS Developer",
+  "slug": "ios-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Flutter Developer",
+  "slug": "flutter-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "React Native Developer",
+  "slug": "react-native-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Mobile App Developer",
+  "slug": "mobile-app-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Game Developer",
+  "slug": "game-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Unity Developer",
+  "slug": "unity-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Unreal Engine Developer",
+  "slug": "unreal-engine-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Embedded Software Engineer",
+  "slug": "embedded-software-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Firmware Engineer",
+  "slug": "firmware-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Blockchain Developer",
+  "slug": "blockchain-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Smart Contract Developer",
+  "slug": "smart-contract-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Web3 Developer",
+  "slug": "web3-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "WordPress Developer",
+  "slug": "wordpress-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Shopify Developer",
+  "slug": "shopify-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Salesforce Developer",
+  "slug": "salesforce-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "SAP Developer",
+  "slug": "sap-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "ABAP Developer",
+  "slug": "abap-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Software Architect",
+  "slug": "software-architect",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Solutions Architect",
+  "slug": "solutions-architect",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Technical Lead",
+  "slug": "technical-lead",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Engineering Manager",
+  "slug": "engineering-manager",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "QA Engineer",
+  "slug": "qa-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Test Automation Engineer",
+  "slug": "test-automation-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "SDET",
+  "slug": "sdet",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Performance Test Engineer",
+  "slug": "performance-test-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "API Developer",
+  "slug": "api-developer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Platform Engineer",
+  "slug": "platform-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Site Reliability Engineer",
+  "slug": "site-reliability-engineer",
+  "category": "Software Engineering"
+ },
+ {
+  "title": "Data Analyst",
+  "slug": "data-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Scientist",
+  "slug": "data-scientist",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Engineer",
+  "slug": "data-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Machine Learning Engineer",
+  "slug": "machine-learning-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "AI Engineer",
+  "slug": "ai-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Deep Learning Engineer",
+  "slug": "deep-learning-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "NLP Engineer",
+  "slug": "nlp-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Computer Vision Engineer",
+  "slug": "computer-vision-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Generative AI Engineer",
+  "slug": "generative-ai-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Prompt Engineer",
+  "slug": "prompt-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "MLOps Engineer",
+  "slug": "mlops-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "AI Research Scientist",
+  "slug": "ai-research-scientist",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Applied Scientist",
+  "slug": "applied-scientist",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Business Intelligence Analyst",
+  "slug": "business-intelligence-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "BI Developer",
+  "slug": "bi-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Power BI Developer",
+  "slug": "power-bi-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Tableau Developer",
+  "slug": "tableau-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Analytics Engineer",
+  "slug": "analytics-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Big Data Engineer",
+  "slug": "big-data-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Hadoop Developer",
+  "slug": "hadoop-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Spark Developer",
+  "slug": "spark-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "ETL Developer",
+  "slug": "etl-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Warehouse Engineer",
+  "slug": "data-warehouse-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Database Administrator",
+  "slug": "database-administrator",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "SQL Developer",
+  "slug": "sql-developer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Architect",
+  "slug": "data-architect",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Governance Analyst",
+  "slug": "data-governance-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Steward",
+  "slug": "data-steward",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Quantitative Analyst",
+  "slug": "quantitative-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Quantitative Researcher",
+  "slug": "quantitative-researcher",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Statistician",
+  "slug": "statistician",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Biostatistician",
+  "slug": "biostatistician",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Operations Research Analyst",
+  "slug": "operations-research-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Product Analyst",
+  "slug": "product-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Marketing Analyst",
+  "slug": "marketing-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Financial Data Analyst",
+  "slug": "financial-data-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Business Analyst",
+  "slug": "business-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Systems Analyst",
+  "slug": "systems-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Reporting Analyst",
+  "slug": "reporting-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Annotator",
+  "slug": "data-annotator",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "AI Product Manager",
+  "slug": "ai-product-manager",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Chief Data Officer",
+  "slug": "chief-data-officer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Head of Data",
+  "slug": "head-of-data",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Data Quality Analyst",
+  "slug": "data-quality-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Research Analyst",
+  "slug": "research-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Market Research Analyst",
+  "slug": "market-research-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Geospatial Analyst",
+  "slug": "geospatial-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "GIS Analyst",
+  "slug": "gis-analyst",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Bioinformatics Scientist",
+  "slug": "bioinformatics-scientist",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "Robotics Engineer",
+  "slug": "robotics-engineer",
+  "category": "Data, AI & Analytics"
+ },
+ {
+  "title": "DevOps Engineer",
+  "slug": "devops-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Cloud Engineer",
+  "slug": "cloud-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Cloud Architect",
+  "slug": "cloud-architect",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "AWS Solutions Architect",
+  "slug": "aws-solutions-architect",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Azure Administrator",
+  "slug": "azure-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Google Cloud Engineer",
+  "slug": "google-cloud-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Kubernetes Administrator",
+  "slug": "kubernetes-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Systems Administrator",
+  "slug": "systems-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Linux Administrator",
+  "slug": "linux-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Windows Administrator",
+  "slug": "windows-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Network Engineer",
+  "slug": "network-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Network Administrator",
+  "slug": "network-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Network Security Engineer",
+  "slug": "network-security-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Cybersecurity Analyst",
+  "slug": "cybersecurity-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Security Engineer",
+  "slug": "security-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "SOC Analyst",
+  "slug": "soc-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Penetration Tester",
+  "slug": "penetration-tester",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Ethical Hacker",
+  "slug": "ethical-hacker",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Red Team Operator",
+  "slug": "red-team-operator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Threat Intelligence Analyst",
+  "slug": "threat-intelligence-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Incident Responder",
+  "slug": "incident-responder",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Digital Forensics Analyst",
+  "slug": "digital-forensics-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Application Security Engineer",
+  "slug": "application-security-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Cloud Security Engineer",
+  "slug": "cloud-security-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Information Security Manager",
+  "slug": "information-security-manager",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "CISO",
+  "slug": "ciso",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "GRC Analyst",
+  "slug": "grc-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "IT Compliance Analyst",
+  "slug": "it-compliance-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "IT Auditor",
+  "slug": "it-auditor",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Identity and Access Management Engineer",
+  "slug": "identity-and-access-management-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Security Architect",
+  "slug": "security-architect",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Malware Analyst",
+  "slug": "malware-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Vulnerability Analyst",
+  "slug": "vulnerability-analyst",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "IT Support Specialist",
+  "slug": "it-support-specialist",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Help Desk Technician",
+  "slug": "help-desk-technician",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Desktop Support Engineer",
+  "slug": "desktop-support-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Technical Support Engineer",
+  "slug": "technical-support-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "IT Manager",
+  "slug": "it-manager",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "IT Project Manager",
+  "slug": "it-project-manager",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "IT Director",
+  "slug": "it-director",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "CTO",
+  "slug": "cto",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Infrastructure Engineer",
+  "slug": "infrastructure-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Storage Engineer",
+  "slug": "storage-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Virtualization Engineer",
+  "slug": "virtualization-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "VMware Administrator",
+  "slug": "vmware-administrator",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Release Engineer",
+  "slug": "release-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Build Engineer",
+  "slug": "build-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Telecom Engineer",
+  "slug": "telecom-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Wireless Network Engineer",
+  "slug": "wireless-network-engineer",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "ERP Consultant",
+  "slug": "erp-consultant",
+  "category": "Cloud, DevOps & Cybersecurity"
+ },
+ {
+  "title": "Product Manager",
+  "slug": "product-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Associate Product Manager",
+  "slug": "associate-product-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Senior Product Manager",
+  "slug": "senior-product-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Technical Product Manager",
+  "slug": "technical-product-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Product Owner",
+  "slug": "product-owner",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Scrum Master",
+  "slug": "scrum-master",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Agile Coach",
+  "slug": "agile-coach",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Program Manager",
+  "slug": "program-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Project Manager",
+  "slug": "project-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Technical Program Manager",
+  "slug": "technical-program-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Delivery Manager",
+  "slug": "delivery-manager",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Chief Product Officer",
+  "slug": "chief-product-officer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "UX Designer",
+  "slug": "ux-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "UI Designer",
+  "slug": "ui-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "UX Researcher",
+  "slug": "ux-researcher",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Product Designer",
+  "slug": "product-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Interaction Designer",
+  "slug": "interaction-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Visual Designer",
+  "slug": "visual-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Graphic Designer",
+  "slug": "graphic-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Brand Designer",
+  "slug": "brand-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Motion Graphics Designer",
+  "slug": "motion-graphics-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Video Editor",
+  "slug": "video-editor",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Animator",
+  "slug": "animator",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "3D Artist",
+  "slug": "3d-artist",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "3D Modeler",
+  "slug": "3d-modeler",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Game Designer",
+  "slug": "game-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Level Designer",
+  "slug": "level-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Concept Artist",
+  "slug": "concept-artist",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Illustrator",
+  "slug": "illustrator",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Art Director",
+  "slug": "art-director",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Creative Director",
+  "slug": "creative-director",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Photographer",
+  "slug": "photographer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Videographer",
+  "slug": "videographer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Fashion Designer",
+  "slug": "fashion-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Interior Designer",
+  "slug": "interior-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Industrial Designer",
+  "slug": "industrial-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Packaging Designer",
+  "slug": "packaging-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Web Designer",
+  "slug": "web-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Design System Engineer",
+  "slug": "design-system-engineer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Content Designer",
+  "slug": "content-designer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "UX Writer",
+  "slug": "ux-writer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Technical Writer",
+  "slug": "technical-writer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Copywriter",
+  "slug": "copywriter",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Content Writer",
+  "slug": "content-writer",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Content Strategist",
+  "slug": "content-strategist",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Editor",
+  "slug": "editor",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Proofreader",
+  "slug": "proofreader",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Translator",
+  "slug": "translator",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Interpreter",
+  "slug": "interpreter",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Localization Specialist",
+  "slug": "localization-specialist",
+  "category": "Product, Design & Creative"
+ },
+ {
+  "title": "Digital Marketing Manager",
+  "slug": "digital-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "SEO Specialist",
+  "slug": "seo-specialist",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "SEM Specialist",
+  "slug": "sem-specialist",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "PPC Specialist",
+  "slug": "ppc-specialist",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Social Media Manager",
+  "slug": "social-media-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Social Media Marketer",
+  "slug": "social-media-marketer",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Content Marketing Manager",
+  "slug": "content-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Email Marketing Specialist",
+  "slug": "email-marketing-specialist",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Marketing Automation Specialist",
+  "slug": "marketing-automation-specialist",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Growth Marketer",
+  "slug": "growth-marketer",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Performance Marketing Manager",
+  "slug": "performance-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Brand Manager",
+  "slug": "brand-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Product Marketing Manager",
+  "slug": "product-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Marketing Manager",
+  "slug": "marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Marketing Director",
+  "slug": "marketing-director",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "CMO",
+  "slug": "cmo",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Influencer Marketing Manager",
+  "slug": "influencer-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Community Manager",
+  "slug": "community-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Public Relations Manager",
+  "slug": "public-relations-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Communications Manager",
+  "slug": "communications-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Event Marketing Manager",
+  "slug": "event-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Affiliate Marketing Manager",
+  "slug": "affiliate-marketing-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "E-commerce Manager",
+  "slug": "e-commerce-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Amazon Seller Specialist",
+  "slug": "amazon-seller-specialist",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Sales Representative",
+  "slug": "sales-representative",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Sales Executive",
+  "slug": "sales-executive",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Inside Sales Representative",
+  "slug": "inside-sales-representative",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Outside Sales Representative",
+  "slug": "outside-sales-representative",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Business Development Executive",
+  "slug": "business-development-executive",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Business Development Manager",
+  "slug": "business-development-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Account Executive",
+  "slug": "account-executive",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Account Manager",
+  "slug": "account-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Key Account Manager",
+  "slug": "key-account-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Sales Manager",
+  "slug": "sales-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Regional Sales Manager",
+  "slug": "regional-sales-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Sales Director",
+  "slug": "sales-director",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "VP of Sales",
+  "slug": "vp-of-sales",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Sales Development Representative",
+  "slug": "sales-development-representative",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Business Development Representative",
+  "slug": "business-development-representative",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Sales Engineer",
+  "slug": "sales-engineer",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Pre-Sales Consultant",
+  "slug": "pre-sales-consultant",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Territory Manager",
+  "slug": "territory-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Retail Sales Associate",
+  "slug": "retail-sales-associate",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Telemarketer",
+  "slug": "telemarketer",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Customer Success Manager",
+  "slug": "customer-success-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Customer Support Representative",
+  "slug": "customer-support-representative",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Customer Service Manager",
+  "slug": "customer-service-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Call Center Agent",
+  "slug": "call-center-agent",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Technical Account Manager",
+  "slug": "technical-account-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Partnerships Manager",
+  "slug": "partnerships-manager",
+  "category": "Marketing, Sales & Customer Success"
+ },
+ {
+  "title": "Accountant",
+  "slug": "accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Senior Accountant",
+  "slug": "senior-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Staff Accountant",
+  "slug": "staff-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Chartered Accountant",
+  "slug": "chartered-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Certified Public Accountant",
+  "slug": "certified-public-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Accounts Payable Clerk",
+  "slug": "accounts-payable-clerk",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Accounts Receivable Specialist",
+  "slug": "accounts-receivable-specialist",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Bookkeeper",
+  "slug": "bookkeeper",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Payroll Specialist",
+  "slug": "payroll-specialist",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Payroll Manager",
+  "slug": "payroll-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Tax Accountant",
+  "slug": "tax-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Tax Consultant",
+  "slug": "tax-consultant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Tax Manager",
+  "slug": "tax-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Auditor",
+  "slug": "auditor",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Internal Auditor",
+  "slug": "internal-auditor",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "External Auditor",
+  "slug": "external-auditor",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Forensic Accountant",
+  "slug": "forensic-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Cost Accountant",
+  "slug": "cost-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Management Accountant",
+  "slug": "management-accountant",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Financial Controller",
+  "slug": "financial-controller",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Finance Manager",
+  "slug": "finance-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Finance Director",
+  "slug": "finance-director",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "CFO",
+  "slug": "cfo",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Financial Analyst",
+  "slug": "financial-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "FP&A Analyst",
+  "slug": "fp-a-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Investment Analyst",
+  "slug": "investment-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Equity Research Analyst",
+  "slug": "equity-research-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Credit Analyst",
+  "slug": "credit-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Risk Analyst",
+  "slug": "risk-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Risk Manager",
+  "slug": "risk-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Credit Risk Manager",
+  "slug": "credit-risk-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Market Risk Analyst",
+  "slug": "market-risk-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Compliance Officer",
+  "slug": "compliance-officer",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "AML Analyst",
+  "slug": "aml-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "KYC Analyst",
+  "slug": "kyc-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Investment Banker",
+  "slug": "investment-banker",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Investment Banking Analyst",
+  "slug": "investment-banking-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Private Equity Associate",
+  "slug": "private-equity-associate",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Venture Capital Analyst",
+  "slug": "venture-capital-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Portfolio Manager",
+  "slug": "portfolio-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Fund Manager",
+  "slug": "fund-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Wealth Manager",
+  "slug": "wealth-manager",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Financial Advisor",
+  "slug": "financial-advisor",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Financial Planner",
+  "slug": "financial-planner",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Stockbroker",
+  "slug": "stockbroker",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Trader",
+  "slug": "trader",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Treasury Analyst",
+  "slug": "treasury-analyst",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Actuary",
+  "slug": "actuary",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Insurance Underwriter",
+  "slug": "insurance-underwriter",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Insurance Claims Adjuster",
+  "slug": "insurance-claims-adjuster",
+  "category": "Finance, Accounting & Insurance"
+ },
+ {
+  "title": "Human Resources Manager",
+  "slug": "human-resources-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "HR Generalist",
+  "slug": "hr-generalist",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "HR Business Partner",
+  "slug": "hr-business-partner",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "HR Executive",
+  "slug": "hr-executive",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "HR Director",
+  "slug": "hr-director",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "CHRO",
+  "slug": "chro",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Recruiter",
+  "slug": "recruiter",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Technical Recruiter",
+  "slug": "technical-recruiter",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Talent Acquisition Specialist",
+  "slug": "talent-acquisition-specialist",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Talent Acquisition Manager",
+  "slug": "talent-acquisition-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Headhunter",
+  "slug": "headhunter",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Compensation and Benefits Analyst",
+  "slug": "compensation-and-benefits-analyst",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Learning and Development Manager",
+  "slug": "learning-and-development-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Training Specialist",
+  "slug": "training-specialist",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Employee Relations Specialist",
+  "slug": "employee-relations-specialist",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "People Operations Manager",
+  "slug": "people-operations-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "HR Analyst",
+  "slug": "hr-analyst",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Diversity and Inclusion Manager",
+  "slug": "diversity-and-inclusion-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Office Manager",
+  "slug": "office-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Administrative Assistant",
+  "slug": "administrative-assistant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Executive Assistant",
+  "slug": "executive-assistant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Personal Assistant",
+  "slug": "personal-assistant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Receptionist",
+  "slug": "receptionist",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Data Entry Operator",
+  "slug": "data-entry-operator",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Operations Manager",
+  "slug": "operations-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Operations Analyst",
+  "slug": "operations-analyst",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Business Operations Manager",
+  "slug": "business-operations-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Chief Operating Officer",
+  "slug": "chief-operating-officer",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "General Manager",
+  "slug": "general-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Chief Executive Officer",
+  "slug": "chief-executive-officer",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Management Consultant",
+  "slug": "management-consultant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Strategy Consultant",
+  "slug": "strategy-consultant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Business Consultant",
+  "slug": "business-consultant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Strategy Analyst",
+  "slug": "strategy-analyst",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Chief of Staff",
+  "slug": "chief-of-staff",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Corporate Lawyer",
+  "slug": "corporate-lawyer",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Litigation Lawyer",
+  "slug": "litigation-lawyer",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Paralegal",
+  "slug": "paralegal",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Legal Assistant",
+  "slug": "legal-assistant",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Legal Counsel",
+  "slug": "legal-counsel",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Contract Manager",
+  "slug": "contract-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Contracts Administrator",
+  "slug": "contracts-administrator",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Intellectual Property Lawyer",
+  "slug": "intellectual-property-lawyer",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Patent Attorney",
+  "slug": "patent-attorney",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Compliance Manager",
+  "slug": "compliance-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Corporate Secretary",
+  "slug": "corporate-secretary",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Procurement Manager",
+  "slug": "procurement-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Procurement Specialist",
+  "slug": "procurement-specialist",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Purchasing Officer",
+  "slug": "purchasing-officer",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "Vendor Manager",
+  "slug": "vendor-manager",
+  "category": "HR, Legal, Admin & Operations"
+ },
+ {
+  "title": "General Practitioner",
+  "slug": "general-practitioner",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Surgeon",
+  "slug": "surgeon",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Cardiologist",
+  "slug": "cardiologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Pediatrician",
+  "slug": "pediatrician",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Radiologist",
+  "slug": "radiologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Anesthesiologist",
+  "slug": "anesthesiologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Psychiatrist",
+  "slug": "psychiatrist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Dermatologist",
+  "slug": "dermatologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Gynecologist",
+  "slug": "gynecologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Orthopedic Surgeon",
+  "slug": "orthopedic-surgeon",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Neurologist",
+  "slug": "neurologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Oncologist",
+  "slug": "oncologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Emergency Physician",
+  "slug": "emergency-physician",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Registered Nurse",
+  "slug": "registered-nurse",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Staff Nurse",
+  "slug": "staff-nurse",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Nurse Practitioner",
+  "slug": "nurse-practitioner",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "ICU Nurse",
+  "slug": "icu-nurse",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Operating Room Nurse",
+  "slug": "operating-room-nurse",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Midwife",
+  "slug": "midwife",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Nursing Assistant",
+  "slug": "nursing-assistant",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Healthcare Assistant",
+  "slug": "healthcare-assistant",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Pharmacist",
+  "slug": "pharmacist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Pharmacy Technician",
+  "slug": "pharmacy-technician",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Clinical Pharmacist",
+  "slug": "clinical-pharmacist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Dentist",
+  "slug": "dentist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Dental Hygienist",
+  "slug": "dental-hygienist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Dental Assistant",
+  "slug": "dental-assistant",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Physiotherapist",
+  "slug": "physiotherapist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Occupational Therapist",
+  "slug": "occupational-therapist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Speech Therapist",
+  "slug": "speech-therapist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Radiographer",
+  "slug": "radiographer",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Medical Laboratory Technician",
+  "slug": "medical-laboratory-technician",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Lab Technologist",
+  "slug": "lab-technologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Phlebotomist",
+  "slug": "phlebotomist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Paramedic",
+  "slug": "paramedic",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Emergency Medical Technician",
+  "slug": "emergency-medical-technician",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Clinical Psychologist",
+  "slug": "clinical-psychologist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Counselor",
+  "slug": "counselor",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Psychotherapist",
+  "slug": "psychotherapist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Social Worker",
+  "slug": "social-worker",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Dietitian",
+  "slug": "dietitian",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Nutritionist",
+  "slug": "nutritionist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Optometrist",
+  "slug": "optometrist",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Veterinarian",
+  "slug": "veterinarian",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Veterinary Technician",
+  "slug": "veterinary-technician",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Medical Coder",
+  "slug": "medical-coder",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Medical Biller",
+  "slug": "medical-biller",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Medical Assistant",
+  "slug": "medical-assistant",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Hospital Administrator",
+  "slug": "hospital-administrator",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Health Information Manager",
+  "slug": "health-information-manager",
+  "category": "Healthcare & Medical"
+ },
+ {
+  "title": "Mechanical Engineer",
+  "slug": "mechanical-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Civil Engineer",
+  "slug": "civil-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Electrical Engineer",
+  "slug": "electrical-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Electronics Engineer",
+  "slug": "electronics-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Chemical Engineer",
+  "slug": "chemical-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Industrial Engineer",
+  "slug": "industrial-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Structural Engineer",
+  "slug": "structural-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Geotechnical Engineer",
+  "slug": "geotechnical-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Environmental Engineer",
+  "slug": "environmental-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Aerospace Engineer",
+  "slug": "aerospace-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Automotive Engineer",
+  "slug": "automotive-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Biomedical Engineer",
+  "slug": "biomedical-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Petroleum Engineer",
+  "slug": "petroleum-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Mining Engineer",
+  "slug": "mining-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Marine Engineer",
+  "slug": "marine-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Materials Engineer",
+  "slug": "materials-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Process Engineer",
+  "slug": "process-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Production Engineer",
+  "slug": "production-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Manufacturing Engineer",
+  "slug": "manufacturing-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Quality Engineer",
+  "slug": "quality-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Reliability Engineer",
+  "slug": "reliability-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Maintenance Engineer",
+  "slug": "maintenance-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "HVAC Engineer",
+  "slug": "hvac-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Piping Engineer",
+  "slug": "piping-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Instrumentation Engineer",
+  "slug": "instrumentation-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Control Systems Engineer",
+  "slug": "control-systems-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "PLC Programmer",
+  "slug": "plc-programmer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Automation Engineer",
+  "slug": "automation-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Mechatronics Engineer",
+  "slug": "mechatronics-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Power Systems Engineer",
+  "slug": "power-systems-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Renewable Energy Engineer",
+  "slug": "renewable-energy-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Solar Engineer",
+  "slug": "solar-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Wind Turbine Technician",
+  "slug": "wind-turbine-technician",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Hydraulic Engineer",
+  "slug": "hydraulic-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Water Resources Engineer",
+  "slug": "water-resources-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Transportation Engineer",
+  "slug": "transportation-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Site Engineer",
+  "slug": "site-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Project Engineer",
+  "slug": "project-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Design Engineer",
+  "slug": "design-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "CAD Designer",
+  "slug": "cad-designer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "CAD Draftsman",
+  "slug": "cad-draftsman",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Architect",
+  "slug": "architect",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Urban Planner",
+  "slug": "urban-planner",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Landscape Architect",
+  "slug": "landscape-architect",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Quantity Surveyor",
+  "slug": "quantity-surveyor",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Land Surveyor",
+  "slug": "land-surveyor",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Estimator",
+  "slug": "estimator",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "BIM Specialist",
+  "slug": "bim-specialist",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "RF Engineer",
+  "slug": "rf-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "VLSI Design Engineer",
+  "slug": "vlsi-design-engineer",
+  "category": "Engineering (Core Disciplines)"
+ },
+ {
+  "title": "Primary School Teacher",
+  "slug": "primary-school-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Secondary School Teacher",
+  "slug": "secondary-school-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "High School Teacher",
+  "slug": "high-school-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Math Teacher",
+  "slug": "math-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Science Teacher",
+  "slug": "science-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "English Teacher",
+  "slug": "english-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "ESL Teacher",
+  "slug": "esl-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Special Education Teacher",
+  "slug": "special-education-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Early Childhood Educator",
+  "slug": "early-childhood-educator",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Kindergarten Teacher",
+  "slug": "kindergarten-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Physical Education Teacher",
+  "slug": "physical-education-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Music Teacher",
+  "slug": "music-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Art Teacher",
+  "slug": "art-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Computer Science Teacher",
+  "slug": "computer-science-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Substitute Teacher",
+  "slug": "substitute-teacher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Teaching Assistant",
+  "slug": "teaching-assistant",
+  "category": "Education & Research"
+ },
+ {
+  "title": "School Principal",
+  "slug": "school-principal",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Vice Principal",
+  "slug": "vice-principal",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Academic Coordinator",
+  "slug": "academic-coordinator",
+  "category": "Education & Research"
+ },
+ {
+  "title": "School Counselor",
+  "slug": "school-counselor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Curriculum Developer",
+  "slug": "curriculum-developer",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Instructional Designer",
+  "slug": "instructional-designer",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Education Consultant",
+  "slug": "education-consultant",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Private Tutor",
+  "slug": "private-tutor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Online Tutor",
+  "slug": "online-tutor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Lecturer",
+  "slug": "lecturer",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Assistant Professor",
+  "slug": "assistant-professor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Associate Professor",
+  "slug": "associate-professor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Professor",
+  "slug": "professor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Postdoctoral Researcher",
+  "slug": "postdoctoral-researcher",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Research Assistant",
+  "slug": "research-assistant",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Research Scientist",
+  "slug": "research-scientist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Research Fellow",
+  "slug": "research-fellow",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Lab Manager",
+  "slug": "lab-manager",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Librarian",
+  "slug": "librarian",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Admissions Officer",
+  "slug": "admissions-officer",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Student Advisor",
+  "slug": "student-advisor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Career Counselor",
+  "slug": "career-counselor",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Training Manager",
+  "slug": "training-manager",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Corporate Trainer",
+  "slug": "corporate-trainer",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Education Technology Specialist",
+  "slug": "education-technology-specialist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Learning Experience Designer",
+  "slug": "learning-experience-designer",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Chemist",
+  "slug": "chemist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Physicist",
+  "slug": "physicist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Biologist",
+  "slug": "biologist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Microbiologist",
+  "slug": "microbiologist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Biochemist",
+  "slug": "biochemist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Geologist",
+  "slug": "geologist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Environmental Scientist",
+  "slug": "environmental-scientist",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Clinical Research Associate",
+  "slug": "clinical-research-associate",
+  "category": "Education & Research"
+ },
+ {
+  "title": "Hotel Manager",
+  "slug": "hotel-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Front Desk Agent",
+  "slug": "front-desk-agent",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Hotel Receptionist",
+  "slug": "hotel-receptionist",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Concierge",
+  "slug": "concierge",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Housekeeping Supervisor",
+  "slug": "housekeeping-supervisor",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Housekeeper",
+  "slug": "housekeeper",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Restaurant Manager",
+  "slug": "restaurant-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Chef",
+  "slug": "chef",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Executive Chef",
+  "slug": "executive-chef",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Sous Chef",
+  "slug": "sous-chef",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Pastry Chef",
+  "slug": "pastry-chef",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Line Cook",
+  "slug": "line-cook",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Baker",
+  "slug": "baker",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Barista",
+  "slug": "barista",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Bartender",
+  "slug": "bartender",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Restaurant Server",
+  "slug": "restaurant-server",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Restaurant Host",
+  "slug": "restaurant-host",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Food and Beverage Manager",
+  "slug": "food-and-beverage-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Catering Manager",
+  "slug": "catering-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Event Planner",
+  "slug": "event-planner",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Wedding Planner",
+  "slug": "wedding-planner",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Banquet Manager",
+  "slug": "banquet-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Travel Agent",
+  "slug": "travel-agent",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Tour Guide",
+  "slug": "tour-guide",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Tour Operator",
+  "slug": "tour-operator",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Flight Attendant",
+  "slug": "flight-attendant",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Cabin Crew",
+  "slug": "cabin-crew",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Pilot",
+  "slug": "pilot",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Air Traffic Controller",
+  "slug": "air-traffic-controller",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Airport Ground Staff",
+  "slug": "airport-ground-staff",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Ticketing Agent",
+  "slug": "ticketing-agent",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Cruise Ship Staff",
+  "slug": "cruise-ship-staff",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Resort Manager",
+  "slug": "resort-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Spa Therapist",
+  "slug": "spa-therapist",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Massage Therapist",
+  "slug": "massage-therapist",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Fitness Trainer",
+  "slug": "fitness-trainer",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Personal Trainer",
+  "slug": "personal-trainer",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Yoga Instructor",
+  "slug": "yoga-instructor",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Gym Manager",
+  "slug": "gym-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Sports Coach",
+  "slug": "sports-coach",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Retail Store Manager",
+  "slug": "retail-store-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Cashier",
+  "slug": "cashier",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Store Assistant",
+  "slug": "store-assistant",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Visual Merchandiser",
+  "slug": "visual-merchandiser",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Merchandiser",
+  "slug": "merchandiser",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Buyer",
+  "slug": "buyer",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Category Manager",
+  "slug": "category-manager",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Fashion Stylist",
+  "slug": "fashion-stylist",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Beautician",
+  "slug": "beautician",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Hair Stylist",
+  "slug": "hair-stylist",
+  "category": "Hospitality, Retail & Travel"
+ },
+ {
+  "title": "Supply Chain Manager",
+  "slug": "supply-chain-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Supply Chain Analyst",
+  "slug": "supply-chain-analyst",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Logistics Manager",
+  "slug": "logistics-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Logistics Coordinator",
+  "slug": "logistics-coordinator",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Warehouse Manager",
+  "slug": "warehouse-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Warehouse Associate",
+  "slug": "warehouse-associate",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Forklift Operator",
+  "slug": "forklift-operator",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Inventory Manager",
+  "slug": "inventory-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Inventory Controller",
+  "slug": "inventory-controller",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Demand Planner",
+  "slug": "demand-planner",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Production Planner",
+  "slug": "production-planner",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Production Manager",
+  "slug": "production-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Production Supervisor",
+  "slug": "production-supervisor",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Plant Manager",
+  "slug": "plant-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Operations Supervisor",
+  "slug": "operations-supervisor",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Quality Assurance Manager",
+  "slug": "quality-assurance-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Quality Control Inspector",
+  "slug": "quality-control-inspector",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Lean Six Sigma Black Belt",
+  "slug": "lean-six-sigma-black-belt",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Continuous Improvement Manager",
+  "slug": "continuous-improvement-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Health and Safety Officer",
+  "slug": "health-and-safety-officer",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "EHS Manager",
+  "slug": "ehs-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Fire Safety Officer",
+  "slug": "fire-safety-officer",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Assembly Line Worker",
+  "slug": "assembly-line-worker",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Machine Operator",
+  "slug": "machine-operator",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "CNC Machinist",
+  "slug": "cnc-machinist",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "CNC Programmer",
+  "slug": "cnc-programmer",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Welder",
+  "slug": "welder",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Fabricator",
+  "slug": "fabricator",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Tool and Die Maker",
+  "slug": "tool-and-die-maker",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Maintenance Technician",
+  "slug": "maintenance-technician",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Industrial Electrician",
+  "slug": "industrial-electrician",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Packaging Operator",
+  "slug": "packaging-operator",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Shipping Clerk",
+  "slug": "shipping-clerk",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Freight Forwarder",
+  "slug": "freight-forwarder",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Customs Broker",
+  "slug": "customs-broker",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Import Export Executive",
+  "slug": "import-export-executive",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Dispatcher",
+  "slug": "dispatcher",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Fleet Manager",
+  "slug": "fleet-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Truck Driver",
+  "slug": "truck-driver",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Delivery Driver",
+  "slug": "delivery-driver",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Courier",
+  "slug": "courier",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Last Mile Delivery Rider",
+  "slug": "last-mile-delivery-rider",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Procurement Analyst",
+  "slug": "procurement-analyst",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Sourcing Manager",
+  "slug": "sourcing-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Commodity Manager",
+  "slug": "commodity-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Materials Manager",
+  "slug": "materials-manager",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Textile Engineer",
+  "slug": "textile-engineer",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Garment Merchandiser",
+  "slug": "garment-merchandiser",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Sewing Machine Operator",
+  "slug": "sewing-machine-operator",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Food Technologist",
+  "slug": "food-technologist",
+  "category": "Manufacturing, Logistics & Supply Chain"
+ },
+ {
+  "title": "Electrician",
+  "slug": "electrician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Plumber",
+  "slug": "plumber",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Carpenter",
+  "slug": "carpenter",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Mason",
+  "slug": "mason",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Bricklayer",
+  "slug": "bricklayer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Painter",
+  "slug": "painter",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Plasterer",
+  "slug": "plasterer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Roofer",
+  "slug": "roofer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Tiler",
+  "slug": "tiler",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Glazier",
+  "slug": "glazier",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Steel Fixer",
+  "slug": "steel-fixer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Scaffolder",
+  "slug": "scaffolder",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Crane Operator",
+  "slug": "crane-operator",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Excavator Operator",
+  "slug": "excavator-operator",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Heavy Equipment Operator",
+  "slug": "heavy-equipment-operator",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Construction Manager",
+  "slug": "construction-manager",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Construction Project Manager",
+  "slug": "construction-project-manager",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Site Supervisor",
+  "slug": "site-supervisor",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Foreman",
+  "slug": "foreman",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Civil Contractor",
+  "slug": "civil-contractor",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Building Inspector",
+  "slug": "building-inspector",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "HVAC Technician",
+  "slug": "hvac-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Refrigeration Technician",
+  "slug": "refrigeration-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Elevator Technician",
+  "slug": "elevator-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Auto Mechanic",
+  "slug": "auto-mechanic",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Automotive Technician",
+  "slug": "automotive-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Diesel Mechanic",
+  "slug": "diesel-mechanic",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Motorcycle Mechanic",
+  "slug": "motorcycle-mechanic",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Aircraft Maintenance Engineer",
+  "slug": "aircraft-maintenance-engineer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Aircraft Mechanic",
+  "slug": "aircraft-mechanic",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Locksmith",
+  "slug": "locksmith",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Handyman",
+  "slug": "handyman",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Pest Control Technician",
+  "slug": "pest-control-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Solar Panel Installer",
+  "slug": "solar-panel-installer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Telecom Technician",
+  "slug": "telecom-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Fiber Optic Technician",
+  "slug": "fiber-optic-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Cable Installer",
+  "slug": "cable-installer",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Appliance Repair Technician",
+  "slug": "appliance-repair-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Mobile Phone Technician",
+  "slug": "mobile-phone-technician",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Facilities Manager",
+  "slug": "facilities-manager",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Property Manager",
+  "slug": "property-manager",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Real Estate Agent",
+  "slug": "real-estate-agent",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Real Estate Broker",
+  "slug": "real-estate-broker",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Mortgage Broker",
+  "slug": "mortgage-broker",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Security Guard",
+  "slug": "security-guard",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Security Supervisor",
+  "slug": "security-supervisor",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Cleaner",
+  "slug": "cleaner",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Janitor",
+  "slug": "janitor",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Gardener",
+  "slug": "gardener",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Farm Manager",
+  "slug": "farm-manager",
+  "category": "Skilled Trades, Construction & Property"
+ },
+ {
+  "title": "Agronomist",
+  "slug": "agronomist",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Agricultural Engineer",
+  "slug": "agricultural-engineer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Farmer",
+  "slug": "farmer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Horticulturist",
+  "slug": "horticulturist",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Fisheries Officer",
+  "slug": "fisheries-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Forestry Officer",
+  "slug": "forestry-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Food Safety Inspector",
+  "slug": "food-safety-inspector",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Journalist",
+  "slug": "journalist",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Reporter",
+  "slug": "reporter",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "News Anchor",
+  "slug": "news-anchor",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Radio Jockey",
+  "slug": "radio-jockey",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Podcast Producer",
+  "slug": "podcast-producer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Film Director",
+  "slug": "film-director",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Film Producer",
+  "slug": "film-producer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Screenwriter",
+  "slug": "screenwriter",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Cinematographer",
+  "slug": "cinematographer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Sound Engineer",
+  "slug": "sound-engineer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Music Producer",
+  "slug": "music-producer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Musician",
+  "slug": "musician",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Actor",
+  "slug": "actor",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Voice Over Artist",
+  "slug": "voice-over-artist",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Video Content Creator",
+  "slug": "video-content-creator",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Public Relations Officer",
+  "slug": "public-relations-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Government Officer",
+  "slug": "government-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Civil Servant",
+  "slug": "civil-servant",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Policy Analyst",
+  "slug": "policy-analyst",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Public Policy Researcher",
+  "slug": "public-policy-researcher",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Diplomat",
+  "slug": "diplomat",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Customs Officer",
+  "slug": "customs-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Immigration Officer",
+  "slug": "immigration-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Police Officer",
+  "slug": "police-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Firefighter",
+  "slug": "firefighter",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Military Officer",
+  "slug": "military-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Border Security Officer",
+  "slug": "border-security-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Urban Development Officer",
+  "slug": "urban-development-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Tax Inspector",
+  "slug": "tax-inspector",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Social Services Caseworker",
+  "slug": "social-services-caseworker",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "NGO Program Manager",
+  "slug": "ngo-program-manager",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Nonprofit Fundraiser",
+  "slug": "nonprofit-fundraiser",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Grant Writer",
+  "slug": "grant-writer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Humanitarian Aid Worker",
+  "slug": "humanitarian-aid-worker",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Monitoring and Evaluation Officer",
+  "slug": "monitoring-and-evaluation-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Community Development Officer",
+  "slug": "community-development-officer",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Sustainability Manager",
+  "slug": "sustainability-manager",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "ESG Analyst",
+  "slug": "esg-analyst",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Climate Analyst",
+  "slug": "climate-analyst",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Energy Analyst",
+  "slug": "energy-analyst",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Museum Curator",
+  "slug": "museum-curator",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Archivist",
+  "slug": "archivist",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ },
+ {
+  "title": "Event Coordinator",
+  "slug": "event-coordinator",
+  "category": "Media, Public Sector, Agriculture & Nonprofit"
+ }
+]

@@ -28,6 +28,8 @@ export const ACTIVITY_ACTIONS = [
   // An employer opened a candidate's profile in the directory. Personal
   // data, so reading it is recorded like any other event.
   'TALENT_VIEW',
+  // A candidate submitted an interview exam.
+  'EXAM_SUBMIT',
   'ADMIN_ACTION',
 ];
 

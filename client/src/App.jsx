@@ -15,6 +15,11 @@ import AdminCVDetailPage from './pages/admin/AdminCVDetailPage.jsx';
 import AdminActivityPage from './pages/admin/AdminActivityPage.jsx';
 import AdminReportsPage from './pages/admin/AdminReportsPage.jsx';
 import AdminTemplatesPage from './pages/admin/AdminTemplatesPage.jsx';
+import AdminInterviewPage from './pages/admin/AdminInterviewPage.jsx';
+import InterviewSearchPage from './pages/interview/InterviewSearchPage.jsx';
+import InterviewPositionPage from './pages/interview/InterviewPositionPage.jsx';
+import InterviewExamPage from './pages/interview/InterviewExamPage.jsx';
+import AdminInterviewPositionPage from './pages/admin/AdminInterviewPositionPage.jsx';
 import AdminContentPage from './pages/admin/AdminContentPage.jsx';
 import AdminCompaniesPage from './pages/admin/AdminCompaniesPage.jsx';
 
@@ -92,6 +97,13 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
 
+          {/* Interview preparation. Open to any signed-in account: an
+              employer preparing to *ask* these questions is as valid a
+              use as a candidate preparing to answer them. */}
+          <Route path="/interview" element={<InterviewSearchPage />} />
+          <Route path="/interview/exam/:id" element={<InterviewExamPage />} />
+          <Route path="/interview/:slug" element={<InterviewPositionPage />} />
+
           {/* Job seekers (and the admin) */}
           <Route element={<AccountTypeRoute allow={['jobseeker']} />}>
             {/* The landing page is a summary; the CV list is a page of
@@ -151,6 +163,8 @@ export default function App() {
             <Route path="cvs/:id" element={<AdminCVDetailPage />} />
             <Route path="activity" element={<AdminActivityPage />} />
             <Route path="templates" element={<AdminTemplatesPage />} />
+            <Route path="interview" element={<AdminInterviewPage />} />
+            <Route path="interview/:id" element={<AdminInterviewPositionPage />} />
             <Route path="blog" element={<AdminContentPage type="post" />} />
             <Route path="pages" element={<AdminContentPage type="page" />} />
             <Route path="reports" element={<AdminReportsPage />} />

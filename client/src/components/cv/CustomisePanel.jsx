@@ -280,44 +280,72 @@ export default function CustomisePanel({ cv, onChange }) {
         </p>
 
         <ul className="mt-3 space-y-1">
-          {order.map((key, index) => (
-            <li
-              key={key}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5"
-            >
-              <input
-                type="checkbox"
-                id={`section-${key}`}
-                checked={!hidden.has(key)}
-                onChange={() => toggleSection(key)}
-              />
-              <label
-                htmlFor={`section-${key}`}
-                className="flex-1 text-sm text-slate-700 dark:text-slate-300"
-              >
-                {SECTION_LABELS[key] ?? key}
-              </label>
+          {order.map((key, index) => {
+            const isHidden = hidden.has(key);
+            const label = SECTION_LABELS[key] ?? key;
 
-              <button
-                type="button"
-                onClick={() => moveSection(index, -1)}
-                disabled={index === 0}
-                className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
+            return (
+              <li
+                key={key}
+                className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5"
               >
-                <span className="sr-only">Move {SECTION_LABELS[key]} up</span>
-                <span aria-hidden="true">&uarr;</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => moveSection(index, 1)}
-                disabled={index === order.length - 1}
-                className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
-              >
-                <span className="sr-only">Move {SECTION_LABELS[key]} down</span>
-                <span aria-hidden="true">&darr;</span>
-              </button>
-            </li>
-          ))}
+                <input
+                  type="checkbox"
+                  id={`section-${key}`}
+                  checked={!isHidden}
+                  onChange={() => toggleSection(key)}
+                />
+                <label
+                  htmlFor={`section-${key}`}
+                  className={[
+                    'flex-1 text-sm',
+                    isHidden
+                      ? 'text-slate-400 line-through dark:text-slate-500'
+                      : 'text-slate-700 dark:text-slate-300',
+                  ].join(' ')}
+                >
+                  {label}
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => moveSection(index, -1)}
+                  disabled={index === 0}
+                  className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
+                >
+                  <span className="sr-only">Move {label} up</span>
+                  <span aria-hidden="true">&uarr;</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveSection(index, 1)}
+                  disabled={index === order.length - 1}
+                  className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
+                >
+                  <span className="sr-only">Move {label} down</span>
+                  <span aria-hidden="true">&darr;</span>
+                </button>
+
+                {/*
+                The same hiding the checkbox does, as a single obvious
+                click. It removes the section from the CV but never the
+                content behind it: the row stays in the list, struck
+                through, and this button puts it straight back. Nothing
+                a user does in this panel can lose what they typed.
+              */}
+                <button
+                  type="button"
+                  onClick={() => toggleSection(key)}
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                >
+                  <span className="sr-only">
+                    {isHidden ? `Add ${label} back to the CV` : `Remove ${label} from the CV`}
+                  </span>
+                  <span aria-hidden="true">{isHidden ? '↺' : '✕'}</span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

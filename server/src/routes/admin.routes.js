@@ -35,8 +35,21 @@ import {
   deleteContent,
   uploadContentImage,
 } from '../controllers/content.controller.js';
+import {
+  listPositions,
+  getPosition,
+  createPosition,
+  updatePosition,
+  deletePosition,
+  listQuestions,
+  createQuestion,
+  updateQuestion,
+  deleteQuestion,
+} from '../controllers/interviewAdmin.controller.js';
 import { uploadImage, handleUploadErrors } from '../middleware/upload.js';
 import { CONTENT_TYPES, CONTENT_STATUSES } from '../models/Content.js';
+import { INTERVIEW_LEVELS } from '../models/InterviewPosition.js';
+import { OPTIONS_PER_QUESTION } from '../models/InterviewQuestion.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/role.js';
 import { validate } from '../middleware/validate.js';
@@ -229,7 +242,12 @@ router.post(
 
 router.get('/content/:id', [validId], validate, asyncHandler(getContent));
 router.post('/content', contentRules(true), validate, asyncHandler(createContent));
-router.patch('/content/:id', [validId, ...contentRules(false)], validate, asyncHandler(updateContent));
+router.patch(
+  '/content/:id',
+  [validId, ...contentRules(false)],
+  validate,
+  asyncHandler(updateContent),
+);
 router.delete('/content/:id', [validId], validate, asyncHandler(deleteContent));
 
 // --- Reports ---------------------------------------------------------------
@@ -261,6 +279,123 @@ router.get(
   ],
   validate,
   asyncHandler(listActivity),
+);
+
+// --- Interview preparation -------------------------------------------------
+
+/**
+ * Validation for the fields a position accepts. Shared between create and
+ * update, with `optional()` applied by the caller, so the two can never
+ * drift apart and let an update save something a create would reject.
+ */
+const positionRules = (optional) => {
+  const maybe = (chain) => (optional ? chain.optional() : chain);
+
+  return [
+    maybe(body('title').trim().notEmpty().withMessage('Title is required'))
+      .isLength({ max: 120 })
+      .withMessage('Title must be at most 120 characters'),
+    body('description').optional().trim().isLength({ max: 1000 }),
+    body('industry').optional().trim().isLength({ max: 80 }),
+    body('tags').optional().isArray({ max: 20 }).withMessage('At most 20 tags'),
+    body('levels').optional().isArray({ min: 1 }).withMessage('Offer at least one level'),
+    body('levels.*').optional().isIn(INTERVIEW_LEVELS).withMessage('Unknown level'),
+    body('examSettings.questionCount').optional().isInt({ min: 1, max: 50 }),
+    body('examSettings.passMark').optional().isInt({ min: 1, max: 100 }),
+    body('examSettings.timeLimitMinutes').optional().isInt({ min: 0, max: 180 }),
+  ];
+};
+
+router.get(
+  '/interview/positions',
+  [query('search').optional().trim().isLength({ max: 120 })],
+  validate,
+  asyncHandler(listPositions),
+);
+
+router.post('/interview/positions', positionRules(false), validate, asyncHandler(createPosition));
+
+router.get(
+  '/interview/positions/:id',
+  [param('id').isMongoId().withMessage('Invalid position id')],
+  validate,
+  asyncHandler(getPosition),
+);
+
+router.patch(
+  '/interview/positions/:id',
+  [
+    param('id').isMongoId().withMessage('Invalid position id'),
+    ...positionRules(true),
+    body('isActive').optional().isBoolean().withMessage('isActive must be true or false'),
+  ],
+  validate,
+  asyncHandler(updatePosition),
+);
+
+router.delete(
+  '/interview/positions/:id',
+  [param('id').isMongoId().withMessage('Invalid position id')],
+  validate,
+  asyncHandler(deletePosition),
+);
+
+router.get(
+  '/interview/positions/:id/questions',
+  [param('id').isMongoId().withMessage('Invalid position id')],
+  validate,
+  asyncHandler(listQuestions),
+);
+
+/** The same shape for both, as above. */
+const questionRules = (optional) => {
+  const maybe = (chain) => (optional ? chain.optional() : chain);
+
+  return [
+    maybe(body('level').isIn(INTERVIEW_LEVELS).withMessage('Unknown level')),
+    maybe(body('text').trim().notEmpty().withMessage('Question text is required'))
+      .isLength({ max: 1000 })
+      .withMessage('A question must be at most 1000 characters'),
+    maybe(
+      body('options')
+        .isArray({ min: OPTIONS_PER_QUESTION, max: OPTIONS_PER_QUESTION })
+        .withMessage(`A question must have exactly ${OPTIONS_PER_QUESTION} options`),
+    ),
+    maybe(
+      body('correctIndex')
+        .isInt({ min: 0, max: OPTIONS_PER_QUESTION - 1 })
+        .withMessage('The correct answer must be one of the options'),
+    ),
+    maybe(body('explanation').trim().notEmpty().withMessage('An explanation is required'))
+      .isLength({ max: 1500 })
+      .withMessage('An explanation must be at most 1500 characters'),
+    body('topic').optional().trim().isLength({ max: 40 }),
+  ];
+};
+
+router.post(
+  '/interview/questions',
+  [body('position').isMongoId().withMessage('Invalid position id'), ...questionRules(false)],
+  validate,
+  asyncHandler(createQuestion),
+);
+
+router.patch(
+  '/interview/questions/:id',
+  [
+    param('id').isMongoId().withMessage('Invalid question id'),
+    ...questionRules(true),
+    body('isActive').optional().isBoolean().withMessage('isActive must be true or false'),
+  ],
+  validate,
+  asyncHandler(updateQuestion),
+);
+
+router.delete(
+  '/interview/questions/:id',
+  [param('id').isMongoId().withMessage('Invalid question id')],
+  validate,
+  asyncHandler(deleteQuestion),
 );
 
 export default router;
