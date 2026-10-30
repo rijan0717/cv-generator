@@ -95,22 +95,25 @@ block of `server/tests/unit/cvTailor.test.js` (7 cases).
 `client/src/templates/templates.test.jsx` (registry, heading font and sample CV cases) and
 `client/src/components/templates/TemplateGallery.test.jsx` (8 cases).
 
-| Test ID | Module          | Description                              | Input / Steps                                                     | Expected Result                                          | Actual Result | Status |
-| ------- | --------------- | ---------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------- | ------------- | ------ |
-| U-TG-01 | Registry        | Every template has a known category      | Each entry in `TEMPLATES`                                         | `category` is one of `CATEGORIES`; `isTwoColumn` boolean | As expected   | Pass   |
-| U-TG-02 | Registry        | Client and server lists agree            | Keys of `TEMPLATES` vs `TEMPLATE_CATALOGUE`                       | Identical, in the same order                             | As expected   | Pass   |
-| U-TG-03 | templateUtils   | Heading font falls back to the body font | `buildTemplateVariables({ fontFamily: 'Lora', headingFont: '' })` | `--cv-heading-font` is the Lora stack                    | As expected   | Pass   |
-| U-TG-04 | templateUtils   | Heading font can differ from the body    | `fontFamily: 'Inter', headingFont: 'Oswald'`                      | Heading Oswald, body Inter                               | As expected   | Pass   |
-| U-TG-05 | sampleCV        | Sample fills every section               | `visibleSections(SAMPLE_CV)`                                      | All eight sections                                       | As expected   | Pass   |
-| U-TG-06 | sampleCV        | Borrows styling, never hidden sections   | `sampleFor('modern', { primaryColor, hiddenSections: [...] })`    | Colour carried over; skills and projects still visible   | As expected   | Pass   |
-| U-TG-07 | TemplateGallery | One card per template                    | Render with all templates                                         | 11 cards                                                 | As expected   | Pass   |
-| U-TG-08 | TemplateGallery | Marks the current template               | `selectedKey="modern"`                                            | "Modern template (current)", `aria-pressed="true"`       | As expected   | Pass   |
-| U-TG-09 | TemplateGallery | Click hands the template to the caller   | Click the Executive card                                          | `onChoose` called with `key: 'executive'`                | As expected   | Pass   |
-| U-TG-10 | TemplateGallery | Category filter                          | Click "ATS-friendly"                                              | Only the ATS-Friendly card                               | As expected   | Pass   |
-| U-TG-11 | TemplateGallery | Search covers descriptions               | Type "sidebar"                                                    | Modern shown, Classic hidden                             | As expected   | Pass   |
-| U-TG-12 | TemplateGallery | Photo filter                             | Tick "With photo"                                                 | Only templates with `usesPhoto`                          | As expected   | Pass   |
-| U-TG-13 | TemplateGallery | Empty state with a way out               | Search for nothing that exists, then "Clear filters"              | Message shown; then all 11 cards back                    | As expected   | Pass   |
-| U-TG-14 | TemplateGallery | "Preview with my CV" needs a CV          | Render without, then with `userCV`                                | Toggle absent, then present                              | As expected   | Pass   |
+| Test ID | Module          | Description                                | Input / Steps                                                     | Expected Result                                          | Actual Result | Status |
+| ------- | --------------- | ------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------------- | ------------- | ------ |
+| U-TG-01 | Registry        | Every template has a known category        | Each entry in `TEMPLATES`                                         | `category` is one of `CATEGORIES`; `isTwoColumn` boolean | As expected   | Pass   |
+| U-TG-02 | Registry        | Client and server lists agree              | Keys of `TEMPLATES` vs `TEMPLATE_CATALOGUE`                       | Identical, in the same order                             | As expected   | Pass   |
+| U-TG-03 | templateUtils   | Heading font falls back to the body font   | `buildTemplateVariables({ fontFamily: 'Lora', headingFont: '' })` | `--cv-heading-font` is the Lora stack                    | As expected   | Pass   |
+| U-TG-04 | templateUtils   | Heading font can differ from the body      | `fontFamily: 'Inter', headingFont: 'Oswald'`                      | Heading Oswald, body Inter                               | As expected   | Pass   |
+| U-TG-05 | sampleCV        | Sample fills every section                 | `visibleSections(SAMPLE_CV)`                                      | All eight sections                                       | As expected   | Pass   |
+| U-TG-06 | sampleCV        | Borrows styling, never hidden sections     | `sampleFor('modern', { primaryColor, hiddenSections: [...] })`    | Colour carried over; skills and projects still visible   | As expected   | Pass   |
+| U-TG-07 | TemplateGallery | One card per template                      | Render with all templates                                         | 11 cards                                                 | As expected   | Pass   |
+| U-TG-08 | TemplateGallery | Marks the current template                 | `selectedKey="modern"`                                            | "Modern template (current)", `aria-pressed="true"`       | As expected   | Pass   |
+| U-TG-09 | TemplateGallery | Click hands the template to the caller     | Click the Executive card                                          | `onChoose` called with `key: 'executive'`                | As expected   | Pass   |
+| U-TG-10 | TemplateGallery | Category filter                            | Click "ATS-friendly"                                              | Only the ATS-Friendly card                               | As expected   | Pass   |
+| U-TG-11 | TemplateGallery | Search covers descriptions                 | Type "sidebar"                                                    | Modern shown, Classic hidden                             | As expected   | Pass   |
+| U-TG-12 | TemplateGallery | Photo filter                               | Tick "With photo"                                                 | Only templates with `usesPhoto`                          | As expected   | Pass   |
+| U-TG-13 | TemplateGallery | Empty state with a way out                 | Search for nothing that exists, then "Clear filters"              | Message shown; then all 11 cards back                    | As expected   | Pass   |
+| U-TG-14 | TemplateGallery | "Preview with my CV" needs a CV            | Render without, then with `userCV`                                | Toggle absent, then present                              | As expected   | Pass   |
+| U-TG-15 | sampleCV        | A different person in every template       | `sampleFor` for every registered template                         | 40 distinct names and 40 distinct headlines              | As expected   | Pass   |
+| U-TG-16 | sampleCV        | Every sample is full, with a drawn photo   | `sampleFor` for every template                                    | Photo is an SVG data URL; every section has content      | As expected   | Pass   |
+| U-TG-17 | sampleCV        | Thumbnails wear the template's own palette | `sampleFor('rosewood', { fontSize: 'large', … })`                 | Rosewood's primary colour; the CV's font size kept       | As expected   | Pass   |
 
 ## 2. System test cases
 
@@ -161,15 +164,20 @@ block of `server/tests/unit/cvTailor.test.js` (7 cases).
 
 ### 2.5 Client routing and guards
 
-| Test ID | Module     | Description                                | Input / Steps                                | Expected Result                           | Actual Result | Status |
-| ------- | ---------- | ------------------------------------------ | -------------------------------------------- | ----------------------------------------- | ------------- | ------ |
-| ST-040  | Routing    | Landing page renders for a visitor         | Render at `/` with no session                | The hero heading is shown                 | As expected   | Pass   |
-| ST-041  | Routing    | Landing page offers registration           | Render at `/` with no session                | A link pointing at `/register` is present | As expected   | Pass   |
-| ST-042  | Routing    | Login page renders                         | Render at `/login`                           | The "Log in" heading is shown             | As expected   | Pass   |
-| ST-043  | Guard      | Guarded route redirects a visitor          | Render at `/dashboard` with no session       | The login page is shown instead           | As expected   | Pass   |
-| ST-044  | Routing    | Unknown route shows a not-found page       | Render at `/no-such-page`                    | The "Page not found" heading is shown     | As expected   | Pass   |
-| ST-045  | Guard      | Guarded route renders for a logged-in user | Render at `/dashboard` with a mocked session | The "My CVs" heading is shown             | As expected   | Pass   |
-| ST-046  | Navigation | Navigation reflects the logged-in state    | Render at `/` with a mocked session          | A "Log out" button is present             | As expected   | Pass   |
+| Test ID | Module         | Description                                          | Input / Steps                                                     | Expected Result                             | Actual Result | Status |
+| ------- | -------------- | ---------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------- | ------------- | ------ |
+| ST-040  | Routing        | Landing page renders for a visitor                   | Render at `/` with no session                                     | The hero heading is shown                   | As expected   | Pass   |
+| ST-041  | Routing        | Landing page offers registration                     | Render at `/` with no session                                     | A link pointing at `/register` is present   | As expected   | Pass   |
+| ST-042  | Routing        | Login page renders                                   | Render at `/login`                                                | The "Log in" heading is shown               | As expected   | Pass   |
+| ST-043  | Guard          | Guarded route redirects a visitor                    | Render at `/dashboard` with no session                            | The login page is shown instead             | As expected   | Pass   |
+| ST-044  | Routing        | Unknown route shows a not-found page                 | Render at `/no-such-page`                                         | The "Page not found" heading is shown       | As expected   | Pass   |
+| ST-045  | Guard          | Guarded route renders for a logged-in user           | Render at `/dashboard` with a mocked session                      | The "My CVs" heading is shown               | As expected   | Pass   |
+| ST-046  | Navigation     | Navigation reflects the logged-in state              | Render at `/` with a mocked session                               | A "Log out" button is present               | As expected   | Pass   |
+| ST-047  | Google sign-in | First Google sign-in creates an account              | `POST /api/auth/google` with a token Google verifies (mocked)     | 200, `isNew: true`, no password, cookie set | As expected   | Pass   |
+| ST-048  | Google sign-in | Same email links to the existing account             | Register, then sign in with Google for that email                 | Same account, `googleId` stored             | As expected   | Pass   |
+| ST-049  | Google sign-in | Unverified email, blocked user and admin are refused | Sign in with each                                                 | 401, 403, 403                               | As expected   | Pass   |
+| ST-050  | Google sign-in | Google-only account sets its first password          | `PUT /api/users/me/password` with only `newPassword`, then log in | 200, then password login works              | As expected   | Pass   |
+| ST-051  | Confirm modal  | Delete asks in a centred modal                       | Click a confirm, then Confirm / Cancel                            | Resolves true / false; modal closes         | As expected   | Pass   |
 
 ---
 
@@ -272,11 +280,11 @@ involve the browser, the real database or an installed service.
 through `useToast`, as the application drives them, rather than by rendering
 the component with made-up props.
 
-| Test ID | Module | Description                                 | Input/Steps                                | Expected Result                               | Actual Result | Status |
-| ------- | ------ | ------------------------------------------- | ------------------------------------------ | --------------------------------------------- | ------------- | ------ |
-| U-TO-01 | Toast  | A success is announced as a status          | `toast.success('Your profile has been updated')` | One `role="status"` carrying the message  | As expected   | Pass   |
-| U-TO-02 | Toast  | A failure is announced at once              | `toast.error('That email address is already registered')` | One `role="alert"` carrying it   | As expected   | Pass   |
-| U-TO-03 | Toast  | It can be crossed off before its time is up | Raise an error, click "Dismiss message"    | No alert remains                               | As expected   | Pass   |
-| U-TO-04 | Toast  | It hides itself                             | Raise a success, advance the clock 4.1 s   | No status remains                              | As expected   | Pass   |
-| U-TO-05 | Toast  | The same message is not stacked twice       | Raise the identical error twice            | Exactly one alert                              | As expected   | Pass   |
-| U-TO-06 | Toast  | An empty message is ignored                 | `toast.error('')`                          | Nothing is shown                               | As expected   | Pass   |
+| Test ID | Module | Description                                 | Input/Steps                                               | Expected Result                          | Actual Result | Status |
+| ------- | ------ | ------------------------------------------- | --------------------------------------------------------- | ---------------------------------------- | ------------- | ------ |
+| U-TO-01 | Toast  | A success is announced as a status          | `toast.success('Your profile has been updated')`          | One `role="status"` carrying the message | As expected   | Pass   |
+| U-TO-02 | Toast  | A failure is announced at once              | `toast.error('That email address is already registered')` | One `role="alert"` carrying it           | As expected   | Pass   |
+| U-TO-03 | Toast  | It can be crossed off before its time is up | Raise an error, click "Dismiss message"                   | No alert remains                         | As expected   | Pass   |
+| U-TO-04 | Toast  | It hides itself                             | Raise a success, advance the clock 4.1 s                  | No status remains                        | As expected   | Pass   |
+| U-TO-05 | Toast  | The same message is not stacked twice       | Raise the identical error twice                           | Exactly one alert                        | As expected   | Pass   |
+| U-TO-06 | Toast  | An empty message is ignored                 | `toast.error('')`                                         | Nothing is shown                         | As expected   | Pass   |

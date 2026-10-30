@@ -28,20 +28,21 @@ dependencies are added in later phases.
 
 ### Server
 
-| Library            | Purpose                                                   |
-| ------------------ | --------------------------------------------------------- |
-| bcryptjs           | Hashing passwords before storage                          |
-| jsonwebtoken       | Signing and verifying login and print tokens              |
-| cookie-parser      | Reading the httpOnly authentication cookie                |
-| helmet             | Sets secure HTTP response headers                         |
-| cors               | Allows the client origin to call the API with credentials |
-| express-rate-limit | Limits repeated login and register attempts               |
-| express-validator  | Server-side validation of request bodies                  |
-| multer             | Handling multipart photo and avatar uploads               |
-| dotenv             | Loading configuration from `.env`                         |
-| morgan             | HTTP request logging during development                   |
-| puppeteer          | Rendering the print page to a PDF                         |
-| exceljs            | Writing the multi-sheet Excel export                      |
+| Library             | Purpose                                                   |
+| ------------------- | --------------------------------------------------------- |
+| bcryptjs            | Hashing passwords before storage                          |
+| jsonwebtoken        | Signing and verifying login and print tokens              |
+| google-auth-library | Verifying the ID token from "Continue with Google"        |
+| cookie-parser       | Reading the httpOnly authentication cookie                |
+| helmet              | Sets secure HTTP response headers                         |
+| cors                | Allows the client origin to call the API with credentials |
+| express-rate-limit  | Limits repeated login and register attempts               |
+| express-validator   | Server-side validation of request bodies                  |
+| multer              | Handling multipart photo and avatar uploads               |
+| dotenv              | Loading configuration from `.env`                         |
+| morgan              | HTTP request logging during development                   |
+| puppeteer           | Rendering the print page to a PDF                         |
+| exceljs             | Writing the multi-sheet Excel export                      |
 
 ### Client
 

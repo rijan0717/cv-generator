@@ -21,7 +21,7 @@
 | Frontend (`/client`)      | React (latest stable) + Vite, React Router, Tailwind CSS, Axios, Recharts (charts)                               |
 | Backend (`/server`)       | Node.js (LTS) + Express, ES modules                                                                              |
 | Database                  | MongoDB with Mongoose (local for development; MongoDB Atlas optional for deployment)                             |
-| Auth                      | bcryptjs, jsonwebtoken, cookie-parser (JWT in an httpOnly cookie)                                                |
+| Auth                      | bcryptjs, jsonwebtoken, cookie-parser (JWT in an httpOnly cookie), google-auth-library (Google sign-in)          |
 | Security / infrastructure | helmet, cors, express-rate-limit, express-validator, multer, dotenv, morgan                                      |
 | Export                    | puppeteer (PDF), exceljs (Excel)                                                                                 |
 | Testing                   | Vitest + Supertest + mongodb-memory-server (server); Vitest + React Testing Library (key client components only) |
@@ -52,6 +52,7 @@ Do not add any other dependency without asking me first and explaining why.
 ### 5.1 Authentication and profile
 
 - Register (name, email, password), login, logout, get current user.
+- "Continue with Google" on the login and register pages (shown only when `GOOGLE_CLIENT_ID` / `VITE_GOOGLE_CLIENT_ID` are set). A Google-only account can set a password later on the profile page.
 - Password rules: minimum 8 characters, at least one letter and one number.
 - Blocked users cannot log in and see a clear message.
 - Profile: update name and avatar image; change password (requires current password).
@@ -139,7 +140,7 @@ The user pastes a job description and selects one of their CVs; the system measu
 
 ## 6. Data model (Mongoose)
 
-- **User:** name, email (unique, lowercase), passwordHash, role (`user` | `jobseeker` | `employer` | `admin` — kept in step with `accountType` by a pre-save hook for everyone but the admin, so the database says what each account is), accountType (`jobseeker` | `employer`, null until chosen), avatarUrl, jobSeekerProfile { position, industry, yearsExperience, openToWork, employmentTypes[], location, about }, status (`active` | `blocked`), lastLoginAt, isDeleted, timestamps.
+- **User:** name, email (unique, lowercase), passwordHash (absent for a Google-only account), googleId (unique, sparse), hasPassword, role (`user` | `jobseeker` | `employer` | `admin` — kept in step with `accountType` by a pre-save hook for everyone but the admin, so the database says what each account is), accountType (`jobseeker` | `employer`, null until chosen), avatarUrl, jobSeekerProfile { position, industry, yearsExperience, openToWork, employmentTypes[], location, about }, status (`active` | `blocked`), lastLoginAt, isDeleted, timestamps.
 - **CV:** user (ref), title, templateKey, settings { primaryColor, backgroundColor, textColor, fontFamily, fontSize, themePreset, spacing, sectionOrder[], hiddenSections[] }, personal { … }, summary, education[], experience[], skills[], projects[], certifications[], languages[], references[], referencesOnRequest, strengthScore, strengthBreakdown, isDeleted, timestamps. Indexes on `user` and `updatedAt`.
 - **Template:** key (unique, one of the keys the client can render), name, description, isActive, sortOrder, usesPhoto, timestamps. The markup stays in the client component; the database holds only the catalogue entry beside it — the name shown in the picker and whether the template is offered at all.
 - **JobMatch:** user (ref), cv (ref), jobTitle (optional), jobDescription, matchScore, cosineSimilarity, skillCoverage, matchedKeywords[], missingKeywords[], timestamps.
@@ -150,7 +151,7 @@ The user pastes a job description and selects one of their CVs; the system measu
 
 All routes are prefixed with `/api`. JSON responses use the shape `{ success, data, message }`. Errors go through one central error-handling middleware.
 
-- **Auth:** `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`
+- **Auth:** `POST /auth/register`, `POST /auth/login`, `POST /auth/google` (body: credential — the Google ID token; signs in, links an existing account by verified email, or creates one with no password; never for the admin), `POST /auth/logout`, `GET /auth/me`
 - **Profile:** `PUT /users/me` (name, and `jobSeekerProfile` for a job seeker), `PUT /users/me/password`, `POST /users/me/avatar`, `PATCH /users/me/account-type` (body: accountType `jobseeker` | `employer`; set once)
 - **Companies (employer accounts only):** `GET /companies/mine`, `POST /companies` (name, location, registrationNumber, phone, email required; starts `pending`), `PUT /companies/mine` (refused once approved; resubmits a rejected company), `POST /companies/mine/logo`, `DELETE /companies/mine/logo`, `POST /companies/mine/document` (registration document, PDF/JPG/PNG ≤ 5 MB, private), `GET /companies/:id/document` (owner or admin only), `GET /companies/:id` (public profile, approved companies only)
 - **CVs (owner only):** `GET /cvs`, `POST /cvs`, `GET /cvs/:id`, `PUT /cvs/:id`, `DELETE /cvs/:id`, `POST /cvs/:id/duplicate`, `POST /cvs/:id/photo`, `GET /cvs/:id/score`, `PATCH /cvs/:id/primary`, `DELETE /cvs/:id/primary`, `POST /cvs/:id/import` (read an uploaded CV file into the builder), `GET /cvs/:id/export/pdf`, `GET /cvs/:id/export/docx`, `GET /cvs/:id/export/excel`, `GET /cvs/:id/print-data` (print token only)
@@ -239,6 +240,8 @@ The report follows the **Object-Oriented approach** from the TU guideline.
 - `npm run test` — run all tests
 - `npm run setup:chrome` — install the system libraries headless Chromium needs for PDF
   export (Debian/Ubuntu/WSL, needs sudo; run once per machine)
+- `npm run setup:google -- "<downloaded client_secret_….json>"` — write the Google OAuth client ID
+  into `server/.env` and `client/.env` for "Continue with Google" (the client secret is not copied)
 - `npm run seed:admin` — create the admin account from `.env`
 - `npm run seed:templates` — fill the template catalogue (safe to re-run; it never undoes an admin's rename or deactivation)
 - `npm run seed:jobs` — insert the ten sample job adverts
