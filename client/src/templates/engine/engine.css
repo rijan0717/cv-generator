@@ -235,6 +235,44 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
+/*
+ * A tinted band runs the full width like a band, but in a light wash of the
+ * primary colour with the name in the primary colour and the rest in the
+ * text colour. The wash is mixed with the page colour rather than made
+ * transparent, so it stays opaque wherever it sits.
+ */
+.cv-designed[data-header='tinted'] > .cvd-header {
+  background: color-mix(in srgb, var(--cv-primary) 13%, var(--cv-background));
+  padding: 12mm 16mm;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8mm;
+}
+
+/* The contact details take a row of their own under the name, so a long
+   line of links never squeezes the name into one word per line. */
+.cv-designed[data-header='tinted'] > .cvd-header {
+  flex-wrap: wrap;
+}
+
+.cv-designed[data-header='tinted'] > .cvd-header .cvd-contact {
+  flex-basis: 100%;
+}
+
+.cv-designed[data-header='tinted'] > .cvd-header .cv-name {
+  color: var(--cv-primary);
+}
+
+.cv-designed[data-header='tinted'] .cvd-main {
+  padding-top: 10mm;
+}
+
+.cv-designed[data-header='tinted'] > .cvd-header .cvd-photo {
+  margin-bottom: 0;
+  border: 3px solid var(--cv-background);
+}
+
 /* A panel header sits at the top of the side column, so it is centred on
    the narrow measure rather than aligned to a long line. */
 .cv-designed .cvd-side > .cvd-header {
@@ -417,6 +455,52 @@
   flex-shrink: 0;
 }
 
+.cv-designed[data-heading='pill'] .cv-section-title {
+  background: color-mix(in srgb, var(--cv-primary) 16%, transparent);
+  border-radius: 999px;
+  padding: 3px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.88em;
+}
+
+.cv-designed[data-heading='boxed'] .cv-section-title {
+  display: inline-block;
+  border: 1.5px solid var(--cv-primary);
+  padding: 2px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.85em;
+}
+
+/* Two rules drawn as one border and one shadow, so no extra markup. */
+.cv-designed[data-heading='double'] .cv-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.92em;
+  padding-bottom: 3px;
+  border-bottom: 2px solid var(--cv-primary);
+  box-shadow:
+    0 3px 0 -2px var(--cv-background),
+    0 4px 0 -2px var(--cv-rule);
+}
+
+/* On a solid side column the outline and pill would be primary on primary. */
+.cv-designed[data-tone='solid'][data-heading='boxed'] .cvd-side .cv-section-title {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.cv-designed[data-tone='solid'][data-heading='pill'] .cvd-side .cv-section-title {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.cv-designed[data-tone='solid'][data-heading='double'] .cvd-side .cv-section-title {
+  border-bottom-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 3px 0 -2px var(--cv-primary),
+    0 4px 0 -2px rgba(255, 255, 255, 0.35);
+}
+
 /* --- Timeline ------------------------------------------------------------ */
 
 /*
@@ -518,6 +602,30 @@
   /* A triangle drawn with borders: no image, and it scales with the page. */
   border-top: 22mm solid var(--cv-primary);
   border-left: 22mm solid transparent;
+}
+
+/*
+ * Two slanted shapes in the top right corner: a light band and a solid
+ * wedge beside it, both drawn by one angled gradient, so there is no
+ * image to load and no extra markup. The header is held clear of them,
+ * as for the corner.
+ */
+.cv-designed[data-accent='diagonal'] .cvd-main > .cvd-header {
+  padding-right: 34mm;
+}
+
+.cv-designed[data-accent='diagonal'] .cvd-accent {
+  top: 0;
+  right: 0;
+  width: 70mm;
+  height: 34mm;
+  background: linear-gradient(
+    115deg,
+    transparent 0 38%,
+    color-mix(in srgb, var(--cv-primary) 30%, transparent) 38% 50%,
+    transparent 50% 56%,
+    var(--cv-primary) 56% 100%
+  );
 }
 
 /* --- Print --------------------------------------------------------------- */

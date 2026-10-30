@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { settingsForTemplate } from '../../templates/index.js';
 import { useToast } from '../../context/useToast.js';
 import TemplateGallery from '../../components/templates/TemplateGallery.jsx';
 import TemplatePreviewDialog from '../../components/templates/TemplatePreviewDialog.jsx';
@@ -37,6 +38,11 @@ export default function TemplatesPage() {
         templateKey: template.key,
       });
       toast.success(`Started a CV in the ${template.name} template.`);
+      // The new CV starts in the template's own colours and fonts, as it
+      // looked in the gallery.
+      await cvApi.updateCV(created._id, {
+        settings: settingsForTemplate(created.settings, template),
+      });
       navigate(`/cvs/${created._id}`);
     } catch (err) {
       toast.error(err.message);

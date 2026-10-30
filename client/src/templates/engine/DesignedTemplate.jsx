@@ -42,6 +42,7 @@ export const DESIGN_OPTIONS = {
     centered: 'Name, headline and contact details centred.',
     split: 'Name on the left, contact details stacked on the right.',
     band: 'A full-width coloured band across the top of the page.',
+    tinted: 'A full-width band in a light wash of the primary colour, with dark text.',
     panel: 'Name and photo at the top of the side column (sidebar layouts only).',
   },
   /** How section headings are drawn. */
@@ -54,6 +55,9 @@ export const DESIGN_OPTIONS = {
     ornament: 'Centred, with a rule running out to either side.',
     band: 'A tinted strip the full width of the column.',
     dot: 'A filled circle before the heading.',
+    pill: 'A light, fully rounded strip behind the heading.',
+    boxed: 'Capitals inside a thin outlined box.',
+    double: 'Capitals over a thick rule with a thin one beneath it.',
   },
   /** The photo's shape. `none` means the design never draws one. */
   photo: {
@@ -86,6 +90,7 @@ export const DESIGN_OPTIONS = {
     'top-stripe': 'A thin coloured stripe along the top edge.',
     'side-stripe': 'A coloured stripe down the left edge of every sheet.',
     corner: 'A coloured triangle in the top right corner.',
+    diagonal: 'Two slanted coloured shapes across the top right corner.',
   },
   /** The name's size. */
   nameSize: { md: 'Standard.', lg: 'Large.', xl: 'Very large.' },
@@ -227,6 +232,9 @@ export default function DesignedTemplate({ cv, design: partial }) {
   //    side column, so without one it falls back to a plain left header.
   const header = design.header === 'panel' && !hasSidebar ? 'left' : design.header;
   const identityInSide = hasSidebar && header === 'panel';
+  // A band and a tinted band both run the full width of the sheet, above
+  // the columns, because each paints its own opaque background.
+  const fullWidth = header === 'band' || header === 'tinted';
   // Stacked contact details sit in the side column when there is one,
   // which is what the side column is for; otherwise in the header.
   const contactInSide = hasSidebar && design.contact.startsWith('stacked');
@@ -272,13 +280,13 @@ export default function DesignedTemplate({ cv, design: partial }) {
       {/* Decoration only: no text, and never read aloud. */}
       {design.accent !== 'none' && <span className="cvd-accent" aria-hidden="true" />}
 
-      {header === 'band' && identity}
+      {fullWidth && identity}
 
       <div className="cvd-body">
         {design.layout === 'sidebar-left' && sideColumn}
 
         <div className="cvd-main">
-          {header !== 'band' && !identityInSide && identity}
+          {!fullWidth && !identityInSide && identity}
           <Sections cv={cv} design={design} keys={main} />
         </div>
 

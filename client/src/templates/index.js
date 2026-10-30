@@ -214,6 +214,22 @@ export const TEMPLATES = [...HAND_WRITTEN, ...DESIGNED];
 const BY_KEY = new Map(TEMPLATES.map((template) => [template.key, template]));
 
 /**
+ * The settings a CV should have after switching to a template: everything
+ * the user chose, with the template's palette and fonts on top.
+ *
+ * A template's colours and fonts are part of its design, so choosing one
+ * applies them; font size, spacing and section order are the user's and
+ * are kept. Anything can still be changed afterwards in the Design tab.
+ *
+ * @param {object} settings - The CV's current settings.
+ * @param {TemplateDefinition} [template] - The template being switched to.
+ * @returns {object} The new settings.
+ */
+export function settingsForTemplate(settings, template) {
+  return { ...settings, ...(template?.defaults ?? {}) };
+}
+
+/**
  * Finds a template definition, falling back to Classic if the stored key is
  * one this build does not know about.
  * @param {string} key - The CV's `templateKey`.

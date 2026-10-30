@@ -66,20 +66,20 @@ has one block of rules per choice. `makeDesignedTemplate(design)` wraps a design
 ordinary template component, so the registry, preview, print page and PDF treat it like
 a hand-written one.
 
-| Option         | Values                                                                       |
-| -------------- | ---------------------------------------------------------------------------- |
-| `layout`       | `single`, `sidebar-left`, `sidebar-right`, `timeline`                        |
-| `header`       | `left`, `centered`, `split`, `band`, `panel` (name and photo in the sidebar) |
-| `heading`      | `rule`, `underline`, `bar`, `chip`, `spaced`, `ornament`, `band`, `dot`      |
-| `photo`        | `circle`, `rounded`, `square`, `none`                                        |
-| `sidebarTone`  | `solid`, `tint`, `plain`                                                     |
-| `sidebarWidth` | `narrow` (~62mm), `wide` (~80mm)                                             |
-| `contact`      | `inline`, `icons`, `stacked`, `stacked-icons`                                |
-| `accent`       | `none`, `top-stripe`, `side-stripe`, `corner`                                |
-| `nameSize`     | `md`, `lg`, `xl`                                                             |
-| `nameCase`     | `normal`, `upper`                                                            |
-| `skills`       | `pills`, `plain`, `levelled`, `columns`, `bars`, `dots`                      |
-| `labels`       | optional heading overrides, e.g. `{ summary: 'Profile' }`                    |
+| Option         | Values                                                                                             |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| `layout`       | `single`, `sidebar-left`, `sidebar-right`, `timeline`                                              |
+| `header`       | `left`, `centered`, `split`, `band`, `tinted`, `panel` (name and photo in the sidebar)             |
+| `heading`      | `rule`, `underline`, `bar`, `chip`, `spaced`, `ornament`, `band`, `dot`, `pill`, `boxed`, `double` |
+| `photo`        | `circle`, `rounded`, `square`, `none`                                                              |
+| `sidebarTone`  | `solid`, `tint`, `plain`                                                                           |
+| `sidebarWidth` | `narrow` (~62mm), `wide` (~80mm)                                                                   |
+| `contact`      | `inline`, `icons`, `stacked`, `stacked-icons`                                                      |
+| `accent`       | `none`, `top-stripe`, `side-stripe`, `corner`, `diagonal`                                          |
+| `nameSize`     | `md`, `lg`, `xl`                                                                                   |
+| `nameCase`     | `normal`, `upper`                                                                                  |
+| `skills`       | `pills`, `plain`, `levelled`, `columns`, `bars`, `dots`                                            |
+| `labels`       | optional heading overrides, e.g. `{ summary: 'Profile' }`                                          |
 
 A design also carries `defaults` — `primaryColor`, `backgroundColor`, `textColor`,
 `fontFamily`, `headingFont` — applied when the template is chosen, because a palette

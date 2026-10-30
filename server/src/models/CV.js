@@ -50,6 +50,16 @@ export const TEMPLATE_KEYS = [
   'meadow',
   'prism',
   'keystone',
+  'saffron',
+  'basalt',
+  'rosewood',
+  'tidewater',
+  'aurora',
+  'blush',
+  'monarch',
+  'verdant',
+  'atelier',
+  'clarity',
 ];
 
 /** Sections that may be hidden or reordered, in their default order. */

@@ -148,17 +148,34 @@ describe('the gallery sample CV', () => {
     expect(visibleSections(SAMPLE_CV)).toEqual(SAMPLE_CV.settings.sectionOrder);
   });
 
-  it("borrows a CV's styling but never its hidden sections", () => {
-    const cv = sampleFor('modern', {
-      primaryColor: '#881337',
+  it("keeps a CV's own size and spacing, in the template's colours, never hiding sections", () => {
+    const cv = sampleFor('rosewood', {
+      primaryColor: '#123456',
+      fontSize: 'large',
       hiddenSections: ['skills', 'projects'],
       sectionOrder: ['summary'],
     });
 
-    expect(cv.templateKey).toBe('modern');
-    expect(cv.settings.primaryColor).toBe('#881337');
+    expect(cv.templateKey).toBe('rosewood');
+    expect(cv.settings.fontSize).toBe('large');
+    expect(cv.settings.primaryColor).toBe(getTemplate('rosewood').defaults.primaryColor);
     expect(visibleSections(cv)).toContain('skills');
     expect(visibleSections(cv)).toContain('projects');
+  });
+
+  it('shows a different person, in a different job, in every template', () => {
+    const people = TEMPLATES.map((template) => sampleFor(template.key).personal);
+
+    expect(new Set(people.map((person) => person.fullName)).size).toBe(TEMPLATES.length);
+    expect(new Set(people.map((person) => person.headline)).size).toBe(TEMPLATES.length);
+  });
+
+  it('gives every sample person a drawn photo and content in every section', () => {
+    for (const template of TEMPLATES) {
+      const cv = sampleFor(template.key);
+      expect(cv.personal.photoUrl).toMatch(/^data:image\/svg\+xml/);
+      expect(visibleSections(cv)).toEqual(SAMPLE_CV.settings.sectionOrder);
+    }
   });
 });
 

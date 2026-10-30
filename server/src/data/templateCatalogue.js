@@ -221,4 +221,74 @@ export const TEMPLATE_CATALOGUE = [
       'A wide, undecorated side column divided by a rule, with ruled headings. Plain and roomy for a long history.',
     usesPhoto: false,
   },
+  {
+    key: 'saffron',
+    name: 'Saffron',
+    description:
+      'A soft peach header across the top with a round photo, over rounded pill headings. Warm and friendly.',
+    usesPhoto: true,
+  },
+  {
+    key: 'basalt',
+    name: 'Basalt',
+    description:
+      'A wide charcoal side panel with your photo, name and skill bars, beside headings over a double rule.',
+    usesPhoto: true,
+  },
+  {
+    key: 'rosewood',
+    name: 'Rosewood',
+    description:
+      'A deep wine side panel with a rounded photo and an elegant serif name, with skills shown as dots.',
+    usesPhoto: true,
+  },
+  {
+    key: 'tidewater',
+    name: 'Tidewater',
+    description:
+      'Outlined headings in teal, with a light teal column on the right for your contact details and skills.',
+    usesPhoto: false,
+  },
+  {
+    key: 'aurora',
+    name: 'Aurora',
+    description:
+      'A bold diagonal shape in the top corner, a round photo beside your name and barred headings below.',
+    usesPhoto: true,
+  },
+  {
+    key: 'blush',
+    name: 'Blush',
+    description:
+      'A widely spaced capital name, a soft pink column on the left and outlined headings. Light and polished.',
+    usesPhoto: false,
+  },
+  {
+    key: 'monarch',
+    name: 'Monarch',
+    description:
+      'A pale navy header strip with a capital name, then headings over a double rule and skills in two columns.',
+    usesPhoto: false,
+  },
+  {
+    key: 'verdant',
+    name: 'Verdant',
+    description:
+      'A centred header and soft green pill headings on plenty of white. Simple, fresh and easy to read.',
+    usesPhoto: false,
+  },
+  {
+    key: 'atelier',
+    name: 'Atelier',
+    description:
+      'A very large condensed name with a square photo, a dark diagonal in the corner and spaced headings.',
+    usesPhoto: true,
+  },
+  {
+    key: 'clarity',
+    name: 'Clarity',
+    description:
+      'One plain column in black with headings over a double rule. Easy for screening software and for people.',
+    usesPhoto: false,
+  },
 ];

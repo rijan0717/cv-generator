@@ -1,6 +1,7 @@
 import { FONT_STACKS, SECTION_LABELS } from '../../templates/templateUtils.js';
 import TemplateGallery from '../templates/TemplateGallery.jsx';
 import useOfferedTemplates from '../templates/useOfferedTemplates.js';
+import { settingsForTemplate } from '../../templates/index.js';
 
 /**
  * The customisation panel.
@@ -121,14 +122,19 @@ export default function CustomisePanel({ cv, onChange }) {
       <section>
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Template</h3>
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          Your content stays the same in every template. Thumbnails use sample content in your
-          colours and fonts.
+          Your content stays the same in every template. Choosing one applies its colours and fonts,
+          which you can still change below.
         </p>
         <div className="mt-3">
           <TemplateGallery
             templates={offered}
             selectedKey={cv.templateKey}
-            onChoose={(template) => onChange({ templateKey: template.key })}
+            onChoose={(template) =>
+              onChange({
+                templateKey: template.key,
+                settings: settingsForTemplate(settings, template),
+              })
+            }
             userCV={cv}
             density="compact"
           />
