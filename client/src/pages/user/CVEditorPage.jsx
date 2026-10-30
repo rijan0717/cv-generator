@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
 import { useToast } from '../../context/useToast.js';
+import { useConfirm } from '../../context/useConfirm.js';
+import { getTemplate } from '../../templates/index.js';
+import { sampleLeftovers, clearSampleContent, untouchedSample } from '../../templates/sampleCV.js';
 import { useAutosave } from '../../utils/useAutosave.js';
 import CVContentForm from '../../components/cv/CVContentForm.jsx';
 import CustomisePanel from '../../components/cv/CustomisePanel.jsx';
@@ -45,7 +48,12 @@ export default function CVEditorPage() {
   const titleRef = useRef(null);
   const [loadError, setLoadError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [tab, setTab] = useState('content');
+  // A new CV says where to start: "design" from My CVs (choose a look
+  // first), "content" from the Templates page (the look is already chosen).
+  // An existing CV opens on its content.
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState(searchParams.get('start') === 'design' ? 'design' : 'content');
+  const confirm = useConfirm();
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
@@ -127,6 +135,18 @@ export default function CVEditorPage() {
     }
   }
 
+  /** Removes every piece of sample text still in the CV, after asking. */
+  async function handleClearSample() {
+    const ok = await confirm({
+      title: 'Clear the sample text?',
+      message:
+        'Every section still holding the example content is emptied. Anything you have written yourself stays.',
+      confirmLabel: 'Clear sample text',
+      danger: true,
+    });
+    if (ok) handleChange(clearSampleContent(cv));
+  }
+
   if (isLoading) {
     return (
       <div className="grid min-h-[60vh] place-items-center text-slate-500 dark:text-slate-400">
@@ -145,6 +165,18 @@ export default function CVEditorPage() {
       </div>
     );
   }
+
+  const leftovers = sampleLeftovers(cv);
+
+  // While the CV is still the untouched sample and has no photo of its
+  // own, the preview shows the sample person's drawn avatar, so a photo
+  // template looks as it did in the gallery. Preview only: it is never
+  // saved, and the PDF shows the user's own photo or none.
+  const sample = untouchedSample(cv);
+  const previewCV =
+    sample && !cv.personal?.photoUrl && getTemplate(cv.templateKey).usesPhoto
+      ? { ...cv, personal: { ...cv.personal, photoUrl: sample.personal.photoUrl } }
+      : cv;
 
   return (
     // From large screens up the editor is a workspace exactly the height
@@ -229,9 +261,11 @@ export default function CVEditorPage() {
             the form below them scrolls. */}
         <div className="min-w-0 lg:flex lg:flex-col">
           <div className="mb-4 flex gap-2" role="tablist">
+            {/* Numbered, because that is the order a new CV goes in:
+                choose the look, then replace the sample with your own. */}
             {[
-              { key: 'content', label: 'Content' },
-              { key: 'design', label: 'Design' },
+              { key: 'design', label: '1. Design' },
+              { key: 'content', label: '2. Content' },
             ].map((item) => (
               <button
                 key={item.key}
@@ -256,11 +290,19 @@ export default function CVEditorPage() {
               keeps the cards' edge off the scrollbar. */}
           <div className="relative lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
             {tab === 'content' ? (
-              <CVContentForm cv={cv} onChange={handleChange} onPhotoChange={handlePhotoChange} />
+              <>
+                <SampleNotice leftovers={leftovers} onClear={handleClearSample} />
+                <CVContentForm cv={cv} onChange={handleChange} onPhotoChange={handlePhotoChange} />
+              </>
             ) : (
-              <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-                <CustomisePanel cv={cv} onChange={handleChange} />
-              </div>
+              <>
+                <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+                  <CustomisePanel cv={cv} onChange={handleChange} />
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <Button onClick={() => setTab('content')}>Next: add your content &rarr;</Button>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -277,7 +319,7 @@ export default function CVEditorPage() {
           </div>
 
           <div className="rounded-xl lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain bg-slate-200/60 dark:bg-slate-800/60 p-4">
-            <CVPreview cv={cv} />
+            <CVPreview cv={previewCV} />
           </div>
         </div>
       </div>
@@ -308,5 +350,33 @@ function SaveStatus({ status }) {
     <span className={`text-sm ${colours[status]}`} role="status">
       {labels[status]}
     </span>
+  );
+}
+
+/**
+ * Says which sections still hold the sample text a new CV starts with,
+ * so nothing invented goes out in a download by mistake. Disappears by
+ * itself once every section has been typed over.
+ *
+ * @param {{leftovers: Array<{key: string, label: string}>, onClear: () => void}} props
+ */
+function SampleNotice({ leftovers, onClear }) {
+  if (leftovers.length === 0) return null;
+
+  return (
+    <div className="mb-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-900">
+      <p className="font-medium">This CV still has example text in it.</p>
+      <p className="mt-1">
+        Replace it with your own, section by section:{' '}
+        {leftovers.map((item) => item.label).join(', ')}.
+      </p>
+      <button
+        type="button"
+        onClick={onClear}
+        className="mt-2 font-medium underline hover:no-underline"
+      >
+        Clear sample text
+      </button>
+    </div>
   );
 }

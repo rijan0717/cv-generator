@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { createStarterCV } from '../../utils/starterCV.js';
 import { useToast } from '../../context/useToast.js';
 import { useConfirm } from '../../context/useConfirm.js';
 import { getTemplate } from '../../templates/index.js';
@@ -73,9 +74,11 @@ export default function DashboardPage() {
     setIsCreating(true);
 
     try {
-      const created = await cvApi.createCV({ title: newTitle.trim() || 'Untitled CV' });
+      // Starts filled with sample content and opens on the Design tab, so
+      // the user picks a look first and then types over the sample.
+      const created = await createStarterCV({ title: newTitle.trim() || 'Untitled CV' });
       toast.success(`"${created.title}" created.`);
-      navigate(`/cvs/${created._id}`);
+      navigate(`/cvs/${created._id}?start=design`);
     } catch (err) {
       toast.error(err.message);
       setIsCreating(false);

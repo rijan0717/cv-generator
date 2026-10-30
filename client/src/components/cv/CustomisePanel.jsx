@@ -2,6 +2,7 @@ import { FONT_STACKS, SECTION_LABELS } from '../../templates/templateUtils.js';
 import TemplateGallery from '../templates/TemplateGallery.jsx';
 import useOfferedTemplates from '../templates/useOfferedTemplates.js';
 import { settingsForTemplate } from '../../templates/index.js';
+import { sampleSwapFor } from '../../templates/sampleCV.js';
 
 /**
  * The customisation panel.
@@ -133,6 +134,9 @@ export default function CustomisePanel({ cv, onChange }) {
               onChange({
                 templateKey: template.key,
                 settings: settingsForTemplate(settings, template),
+                // While the CV still holds untouched sample text, the
+                // sample follows the template, as it did in the gallery.
+                ...sampleSwapFor(cv, template.key),
               })
             }
             userCV={cv}

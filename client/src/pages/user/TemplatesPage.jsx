@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as cvApi from '../../api/cvs.js';
-import { settingsForTemplate } from '../../templates/index.js';
+import { createStarterCV } from '../../utils/starterCV.js';
 import { useToast } from '../../context/useToast.js';
 import TemplateGallery from '../../components/templates/TemplateGallery.jsx';
 import TemplatePreviewDialog from '../../components/templates/TemplatePreviewDialog.jsx';
@@ -33,17 +32,14 @@ export default function TemplatesPage() {
     setIsCreating(true);
 
     try {
-      const created = await cvApi.createCV({
+      // The template's look and its sample content, ready to type over:
+      // the design is already chosen, so the editor opens on Content.
+      const created = await createStarterCV({
         title: `${template.name} CV`,
         templateKey: template.key,
       });
       toast.success(`Started a CV in the ${template.name} template.`);
-      // The new CV starts in the template's own colours and fonts, as it
-      // looked in the gallery.
-      await cvApi.updateCV(created._id, {
-        settings: settingsForTemplate(created.settings, template),
-      });
-      navigate(`/cvs/${created._id}`);
+      navigate(`/cvs/${created._id}?start=content`);
     } catch (err) {
       toast.error(err.message);
       setIsCreating(false);

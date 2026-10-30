@@ -90,6 +90,7 @@ Do not add any other dependency without asking me first and explaining why.
 - Live A4 preview (210 × 297 mm) that updates while the user edits, with correct page breaks for multi-page CVs.
 - Users only see templates the admin has marked as active.
 - Templates are chosen from a grid gallery of live thumbnails (sample CV, filter by category, photo and layout), on the `/templates` page and in the editor's Design tab. Plan for growing to 50+ templates: `docs/plans/template-gallery/PLAN.md`.
+- A new CV starts pre-filled with the chosen template's sample content (the user's own name and email), for the user to type over: from My CVs it opens on the Design tab, from the Templates page on Content. While the content is still untouched sample, switching template swaps the sample too. An amber notice lists sections still holding sample text, with "Clear sample text".
 
 ### 5.4 Export
 
