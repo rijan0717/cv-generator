@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as applicationApi from '../../api/applications.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -18,6 +19,7 @@ export default function ApplicationsPage() {
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
 
@@ -54,15 +56,15 @@ export default function ApplicationsPage() {
     }
 
     setBusyId(application._id);
-    setError('');
 
     try {
       await applicationApi.updateApplicationStatus(application._id, { status: 'withdrawn' });
       setApplications((current) =>
         current.map((row) => (row._id === application._id ? { ...row, status: 'withdrawn' } : row)),
       );
+      toast.success('Your application has been withdrawn.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }
@@ -158,7 +160,6 @@ export default function ApplicationsPage() {
                   Withdraw
                 </Button>
               )}
-
             </li>
           ))}
         </ul>

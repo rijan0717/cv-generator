@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { useToast } from '../../context/useToast.js';
 import TemplateGallery from '../../components/templates/TemplateGallery.jsx';
 import TemplatePreviewDialog from '../../components/templates/TemplatePreviewDialog.jsx';
 import useOfferedTemplates from '../../components/templates/useOfferedTemplates.js';
@@ -17,11 +18,11 @@ import Spinner from '../../components/ui/Spinner.jsx';
  */
 export default function TemplatesPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const { templates, isLoading } = useOfferedTemplates();
 
   const [previewing, setPreviewing] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [error, setError] = useState('');
 
   /**
    * Creates a CV in the chosen template and opens it in the editor.
@@ -29,16 +30,16 @@ export default function TemplatesPage() {
    */
   async function handleUse(template) {
     setIsCreating(true);
-    setError('');
 
     try {
       const created = await cvApi.createCV({
         title: `${template.name} CV`,
         templateKey: template.key,
       });
+      toast.success(`Started a CV in the ${template.name} template.`);
       navigate(`/cvs/${created._id}`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
       setIsCreating(false);
     }
   }
@@ -61,13 +62,7 @@ export default function TemplatesPage() {
             <Spinner label="Loading templates" />
           </div>
         ) : (
-          <TemplateGallery
-            templates={templates}
-            onChoose={(template) => {
-              setError('');
-              setPreviewing(template);
-            }}
-          />
+          <TemplateGallery templates={templates} onChoose={setPreviewing} />
         )}
       </div>
 
@@ -76,7 +71,6 @@ export default function TemplatesPage() {
         onClose={() => setPreviewing(null)}
         onUse={handleUse}
         isBusy={isCreating}
-        error={error}
       />
     </div>
   );

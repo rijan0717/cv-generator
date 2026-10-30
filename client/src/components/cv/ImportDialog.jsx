@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import api from '../../api/axios.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../ui/Button.jsx';
 import Alert from '../ui/Alert.jsx';
 
@@ -27,11 +28,11 @@ const SECTION_SUMMARIES = {
  * @param {{onApply: (patch: object) => void, onClose: () => void, cvId: string}} props
  */
 export default function ImportDialog({ cvId, onApply, onClose }) {
+  const toast = useToast();
   const inputRef = useRef(null);
 
   const [parsed, setParsed] = useState(null);
   const [selected, setSelected] = useState(new Set());
-  const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [filename, setFilename] = useState('');
 
@@ -40,7 +41,6 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
    * @param {File} file - The chosen document.
    */
   async function handleFile(file) {
-    setError('');
     setParsed(null);
     setFilename(file.name);
     setIsUploading(true);
@@ -64,7 +64,7 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
         ),
       );
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsUploading(false);
       if (inputRef.current) inputRef.current.value = '';
@@ -148,12 +148,6 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
           <span className="ml-3 text-sm text-slate-600 dark:text-slate-400">{filename}</span>
         )}
       </div>
-
-      {error && (
-        <Alert variant="error" className="mt-4">
-          {error}
-        </Alert>
-      )}
 
       {parsed && (
         <div className="mt-5 border-t border-slate-200 dark:border-slate-700 pt-5">

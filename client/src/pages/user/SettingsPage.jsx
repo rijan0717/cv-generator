@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../context/useAuth.js';
+import { useToast } from '../../context/useToast.js';
 import { useTheme } from '../../context/useTheme.js';
 import * as authApi from '../../api/auth.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 
 /**
  * Settings: everything about the account itself, as opposed to the CVs.
@@ -106,7 +106,7 @@ function AppearanceSection() {
 function PhotoSection() {
   const { user, setUser } = useAuth();
   const inputRef = useRef(null);
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isUploading, setIsUploading] = useState(false);
 
   const MAX_BYTES = 2 * 1024 * 1024;
@@ -121,14 +121,12 @@ function PhotoSection() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setStatus({ error: '', success: '' });
-
     if (!ALLOWED.includes(file.type)) {
-      setStatus({ error: 'Please choose a JPG, PNG or WEBP image', success: '' });
+      toast.error('Please choose a JPG, PNG or WEBP image');
       return;
     }
     if (file.size > MAX_BYTES) {
-      setStatus({ error: 'The image must be smaller than 2 MB', success: '' });
+      toast.error('The image must be smaller than 2 MB');
       return;
     }
 
@@ -136,9 +134,9 @@ function PhotoSection() {
     try {
       const updated = await authApi.uploadAvatar(file);
       setUser(updated);
-      setStatus({ error: '', success: 'Your photo has been updated' });
+      toast.success('Your photo has been updated');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsUploading(false);
       // Reset so choosing the same file again still fires onChange.
@@ -186,11 +184,6 @@ function PhotoSection() {
           </p>
         </div>
       </div>
-
-      <div className="mt-4 space-y-2">
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-      </div>
     </Card>
   );
 }
@@ -199,15 +192,14 @@ function PhotoSection() {
 function DetailsSection() {
   const { user, setUser } = useAuth();
   const [name, setName] = useState(user.name);
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setStatus({ error: '', success: '' });
 
     if (name.trim().length < 2) {
-      setStatus({ error: 'Name must be at least 2 characters', success: '' });
+      toast.error('Name must be at least 2 characters');
       return;
     }
 
@@ -215,9 +207,9 @@ function DetailsSection() {
     try {
       const updated = await authApi.updateProfile({ name: name.trim() });
       setUser(updated);
-      setStatus({ error: '', success: 'Your details have been updated' });
+      toast.success('Your details have been updated');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -226,9 +218,6 @@ function DetailsSection() {
   return (
     <Card title="Your details">
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-
         <TextField
           label="Full name"
           value={name}
@@ -258,7 +247,7 @@ function PasswordSection() {
     newPassword: '',
     confirmPassword: '',
   });
-  const [status, setStatus] = useState({ error: '', success: '' });
+  const toast = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   function handleChange(event) {
@@ -268,20 +257,16 @@ function PasswordSection() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setStatus({ error: '', success: '' });
 
     const { newPassword, confirmPassword, currentPassword } = form;
 
     if (newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
-      setStatus({
-        error: 'New password must be at least 8 characters and contain a letter and a number',
-        success: '',
-      });
+      toast.error('New password must be at least 8 characters and contain a letter and a number');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setStatus({ error: 'The new passwords do not match', success: '' });
+      toast.error('The new passwords do not match');
       return;
     }
 
@@ -289,9 +274,9 @@ function PasswordSection() {
     try {
       await authApi.changePassword({ currentPassword, newPassword });
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setStatus({ error: '', success: 'Your password has been changed' });
+      toast.success('Your password has been changed');
     } catch (err) {
-      setStatus({ error: err.message, success: '' });
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -303,9 +288,6 @@ function PasswordSection() {
       description="Your current password is required, so nobody using an unattended browser can lock you out."
     >
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        <Alert variant="error">{status.error}</Alert>
-        <Alert variant="success">{status.success}</Alert>
-
         <TextField
           label="Current password"
           type="password"

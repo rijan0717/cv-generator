@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as adminApi from '../../api/admin.js';
+import { useToast } from '../../context/useToast.js';
 import { documentUrl } from '../../api/companies.js';
 import Pagination from '../../components/ui/Pagination.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -21,6 +22,7 @@ const TABS = [
  * the order it arrived.
  */
 export default function AdminCompaniesPage() {
+  const toast = useToast();
   const [status, setStatus] = useState('pending');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -30,7 +32,6 @@ export default function AdminCompaniesPage() {
   const [pagination, setPagination] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -64,10 +65,8 @@ export default function AdminCompaniesPage() {
    * @param {string} [reason]
    */
   async function decide(company, decision, reason) {
-    setError('');
-    setNotice('');
     await adminApi.reviewCompany(company._id, decision, reason);
-    setNotice(`${company.name} ${decision === 'approved' ? 'approved' : 'rejected'}.`);
+    toast.success(`${company.name} ${decision === 'approved' ? 'approved' : 'rejected'}.`);
     await load();
   }
 
@@ -126,11 +125,6 @@ export default function AdminCompaniesPage() {
           {error}
         </Alert>
       )}
-      {notice && (
-        <Alert variant="success" className="mt-4">
-          {notice}
-        </Alert>
-      )}
 
       {isLoading ? (
         <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
@@ -147,7 +141,7 @@ export default function AdminCompaniesPage() {
               key={company._id}
               company={company}
               onDecide={(decision, reason) =>
-                decide(company, decision, reason).catch((err) => setError(err.message))
+                decide(company, decision, reason).catch((err) => toast.error(err.message))
               }
             />
           ))}

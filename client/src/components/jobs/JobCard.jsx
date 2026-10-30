@@ -175,15 +175,15 @@ function MatchBadge({ match }) {
     return (
       <span
         className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${toneFor(tailored.matchScore)}`}
-        title={`Rewritten for this job as "${tailored.title}": ${tailored.matchScore}%, against ${tailored.baselineMatchScore}% for ${tailored.baselineCvTitle ? `your primary CV "${tailored.baselineCvTitle}"` : "the original CV"}`}
+        title={`Rewritten for this job as "${tailored.title}": ${tailored.matchScore}%, against ${tailored.baselineMatchScore}% for ${tailored.baselineCvTitle ? `your primary CV "${tailored.baselineCvTitle}"` : 'the original CV'}`}
       >
         <span className="font-normal opacity-70">{tailored.baselineMatchScore}%</span>
         <span aria-hidden="true">&rarr;</span>
         <span>{tailored.matchScore}%</span>
         {difference > 0 && <span className="font-normal opacity-70">(+{difference})</span>}
         <span className="sr-only">
-          after rewriting your CV for this job, against {tailored.baselineMatchScore} per cent
-          for your primary CV.
+          after rewriting your CV for this job, against {tailored.baselineMatchScore} per cent for
+          your primary CV.
         </span>
       </span>
     );

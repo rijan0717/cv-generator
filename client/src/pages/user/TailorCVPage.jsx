@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { useToast } from '../../context/useToast.js';
 import * as jobsApi from '../../api/jobs.js';
 import * as tailorApi from '../../api/tailor.js';
 import TailorReview from '../../components/cv/TailorReview.jsx';
@@ -42,6 +43,7 @@ export default function TailorCVPage() {
   const [selectedJobId, setSelectedJobId] = useState(searchParams.get('job') ?? '');
 
   const [pastedTitle, setPastedTitle] = useState('');
+  const toast = useToast();
   const [pastedDescription, setPastedDescription] = useState('');
 
   const [result, setResult] = useState(null);
@@ -79,11 +81,11 @@ export default function TailorCVPage() {
       const data = await jobsApi.listJobs({ search: search.trim(), limit: 20 });
       setJobs(data.jobs);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsLoadingJobs(false);
     }
-  }, [search]);
+  }, [search, toast]);
 
   useEffect(() => {
     if (source === 'board') loadJobs();
@@ -95,7 +97,6 @@ export default function TailorCVPage() {
   /** Runs the rewrite and moves to the review step. */
   async function handleGenerate(event) {
     event.preventDefault();
-    setError('');
     setIsGenerating(true);
 
     try {
@@ -109,8 +110,9 @@ export default function TailorCVPage() {
       setResult(preview);
       setDraft(preview.draft);
       setTitle(preview.suggestedTitle);
+      toast.success('Your CV has been rewritten for this advert. Review it before saving.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsGenerating(false);
     }
@@ -118,7 +120,6 @@ export default function TailorCVPage() {
 
   /** Saves the reviewed draft as a new CV and opens it in the builder. */
   async function handleSave() {
-    setError('');
     setIsSaving(true);
 
     try {
@@ -132,9 +133,10 @@ export default function TailorCVPage() {
         jobDescription: result.job ? undefined : pastedDescription.trim(),
         jobTitle: result.jobTitle,
       });
+      toast.success(`"${created.title}" has been saved to My CVs.`);
       navigate(`/cvs/${created._id}`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
       setIsSaving(false);
     }
   }
@@ -156,10 +158,7 @@ export default function TailorCVPage() {
     // the advert form from stretching into a line too long to read.
     <div className={`mx-auto px-4 py-10 ${result ? 'max-w-[1600px]' : 'max-w-3xl'}`}>
       <header>
-        <Link
-          to="/cvs"
-          className="text-sm text-slate-500 hover:underline dark:text-slate-400"
-        >
+        <Link to="/cvs" className="text-sm text-slate-500 hover:underline dark:text-slate-400">
           ← Back to My CVs
         </Link>
 

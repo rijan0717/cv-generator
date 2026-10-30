@@ -5,6 +5,7 @@ import Alert from '../ui/Alert.jsx';
 import Spinner from '../ui/Spinner.jsx';
 import CVPreview from '../cv/CVPreview.jsx';
 import { readBlobError } from '../../utils/blobError.js';
+import { useToast } from '../../context/useToast.js';
 
 /**
  * The CV exactly as it was submitted, with the downloads for it.
@@ -22,6 +23,7 @@ import { readBlobError } from '../../utils/blobError.js';
  * @param {{applicationId: string}} props
  */
 export default function SubmittedCV({ applicationId }) {
+  const toast = useToast();
   const [application, setApplication] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -54,12 +56,12 @@ export default function SubmittedCV({ applicationId }) {
    */
   async function download(format) {
     setDownloading(format);
-    setError('');
 
     try {
       await applicationApi.downloadApplicationCV(applicationId, format);
+      toast.success(`The CV has been downloaded as ${format.toUpperCase()}.`);
     } catch (err) {
-      setError(await readBlobError(err));
+      toast.error(await readBlobError(err));
     } finally {
       setDownloading(null);
     }
@@ -73,6 +75,8 @@ export default function SubmittedCV({ applicationId }) {
     );
   }
 
+  // Only the load failure is left on the page: without it there is no
+  // CV to show at all.
   if (error && !application) {
     return (
       <div className="mt-4 border-t border-slate-200 pt-4 dark:border-slate-700">
@@ -83,8 +87,6 @@ export default function SubmittedCV({ applicationId }) {
 
   return (
     <div className="mt-4 space-y-3 border-t border-slate-200 pt-4 dark:border-slate-700">
-      {error && <Alert variant="error">{error}</Alert>}
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">

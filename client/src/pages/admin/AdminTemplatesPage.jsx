@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import * as templateApi from '../../api/templates.js';
+import { useToast } from '../../context/useToast.js';
 import { TEMPLATES } from '../../templates/index.js';
 import TemplateGallery from '../../components/templates/TemplateGallery.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -23,6 +24,7 @@ import AdminTemplateDialog from './AdminTemplateDialog.jsx';
  * the picker and leaves every CV already using it exactly as it is.
  */
 export default function AdminTemplatesPage() {
+  const toast = useToast();
   const [rows, setRows] = useState([]);
   const [seeded, setSeeded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,13 +90,13 @@ export default function AdminTemplatesPage() {
     if (!open) return;
 
     setIsSaving(true);
-    setError('');
 
     try {
       const updated = await templateApi.updateTemplate(open.id, payload);
       setRows((current) => current.map((row) => (row.id === updated.id ? updated : row)));
+      toast.success(`"${updated.name}" saved.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }

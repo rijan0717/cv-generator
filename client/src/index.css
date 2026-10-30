@@ -201,3 +201,31 @@ html.dark {
 .prose-editor:focus-visible {
   @apply outline-none;
 }
+
+/*
+ * Toasts slide in from the right-hand edge they belong to, rather than
+ * appearing from nowhere: the movement is what tells the eye that
+ * something new has arrived in a corner it was not watching.
+ */
+@keyframes cvg-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cvg-toast {
+  animation: cvg-toast-in 180ms ease-out;
+}
+
+/* The message still appears, and still waits the same length of time; only
+   the movement is dropped. */
+@media (prefers-reduced-motion: reduce) {
+  .cvg-toast {
+    animation: none;
+  }
+}

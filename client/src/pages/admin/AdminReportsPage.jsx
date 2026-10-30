@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import * as adminApi from '../../api/admin.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -27,6 +28,7 @@ const PREVIEW_ROWS = 50;
  * lying, and it is avoided here by construction rather than by care.
  */
 export default function AdminReportsPage() {
+  const toast = useToast();
   const [type, setType] = useState('users');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -73,7 +75,6 @@ export default function AdminReportsPage() {
    */
   async function download(format) {
     setDownloading(format);
-    setError('');
 
     try {
       await adminApi.downloadReport(type, {
@@ -81,8 +82,9 @@ export default function AdminReportsPage() {
         to: to || undefined,
         format,
       });
+      toast.success(`The ${format === 'pdf' ? 'PDF' : 'Excel'} report has been downloaded.`);
     } catch (err) {
-      setError(await readBlobError(err));
+      toast.error(await readBlobError(err));
     } finally {
       setDownloading('');
     }

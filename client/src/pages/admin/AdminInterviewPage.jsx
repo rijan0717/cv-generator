@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as interviewApi from '../../api/interview.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -18,6 +19,7 @@ const LEVELS = ['junior', 'mid', 'senior'];
  * exam needs, so the gap is visible without opening anything.
  */
 export default function AdminInterviewPage() {
+  const toast = useToast();
   const [positions, setPositions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -57,7 +59,6 @@ export default function AdminInterviewPage() {
     if (!title.trim()) return;
 
     setIsCreating(true);
-    setError('');
 
     try {
       const position = await interviewApi.createPosition({ title: title.trim() });
@@ -65,8 +66,9 @@ export default function AdminInterviewPage() {
         [...current, position].sort((a, b) => a.title.localeCompare(b.title)),
       );
       setTitle('');
+      toast.success(`"${position.title}" created. Add its questions next.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsCreating(false);
     }
@@ -83,15 +85,19 @@ export default function AdminInterviewPage() {
    */
   async function toggle(position) {
     setBusyId(position.id);
-    setError('');
 
     try {
       const updated = await interviewApi.updatePosition(position.id, {
         isActive: !position.isActive,
       });
       setPositions((current) => current.map((row) => (row.id === updated.id ? updated : row)));
+      toast.success(
+        `"${updated.title}" is now ${updated.isActive ? 'offered to users' : 'hidden'}.`,
+      );
     } catch (err) {
-      setError(err.message);
+      // The server's refusal names the level and the shortfall, so it is
+      // passed on word for word.
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }

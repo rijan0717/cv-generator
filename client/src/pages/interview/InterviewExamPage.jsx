@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as interviewApi from '../../api/interview.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -16,6 +17,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  * appear once the paper has been submitted and marked by the server.
  */
 export default function InterviewExamPage() {
+  const toast = useToast();
   const { id } = useParams();
 
   const [attempt, setAttempt] = useState(null);
@@ -35,21 +37,25 @@ export default function InterviewExamPage() {
   const submit = useCallback(
     async (auto = false) => {
       setIsSubmitting(true);
-      setError('');
 
       try {
         const marked = await interviewApi.submitExam(id, answersRef.current);
         setResult(marked);
+        toast.success(
+          marked.passed
+            ? `Passed with ${marked.score}%.`
+            : `Submitted. You scored ${marked.score}%.`,
+        );
       } catch (err) {
         // An automatic submit that fails must not look like nothing
         // happened, so the message is shown either way.
-        setError(err.message);
+        toast.error(err.message);
       } finally {
         setIsSubmitting(false);
         if (auto) setSecondsLeft(0);
       }
     },
-    [id],
+    [id, toast],
   );
 
   useEffect(() => {
@@ -167,12 +173,6 @@ export default function InterviewExamPage() {
           />
         </div>
       </div>
-
-      {error && (
-        <Alert variant="error" className="mt-4">
-          {error}
-        </Alert>
-      )}
 
       <fieldset className="mt-5 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
         <legend className="sr-only">Question {current + 1}</legend>

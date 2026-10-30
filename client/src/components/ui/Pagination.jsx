@@ -47,8 +47,9 @@ export default function Pagination({
           `No ${label}`
         ) : (
           <>
-            Showing <span className="font-medium text-slate-700 dark:text-slate-200">{firstRow}</span>
-            –<span className="font-medium text-slate-700 dark:text-slate-200">{lastRow}</span> of{' '}
+            Showing{' '}
+            <span className="font-medium text-slate-700 dark:text-slate-200">{firstRow}</span>–
+            <span className="font-medium text-slate-700 dark:text-slate-200">{lastRow}</span> of{' '}
             <span className="font-medium text-slate-700 dark:text-slate-200">{total}</span> {label}
           </>
         )}
@@ -160,7 +161,9 @@ function buildPageList(page, pages) {
   if (page <= 3) [2, 3, 4].forEach((number) => wanted.add(number));
   if (page >= pages - 2) [pages - 3, pages - 2, pages - 1].forEach((number) => wanted.add(number));
 
-  const numbers = [...wanted].filter((number) => number >= 1 && number <= pages).sort((a, b) => a - b);
+  const numbers = [...wanted]
+    .filter((number) => number >= 1 && number <= pages)
+    .sort((a, b) => a - b);
 
   const withGaps = [];
   let previous = 0;

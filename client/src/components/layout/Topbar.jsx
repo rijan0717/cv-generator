@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
 import { useNavigation } from '../../context/useNavigation.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../ui/Button.jsx';
 import ThemeToggle from '../ui/ThemeToggle.jsx';
 import { homePathFor } from '../../utils/homePath.js';
@@ -45,6 +46,7 @@ function roleLabel(user) {
  */
 export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer }) {
   const { isAuthenticated, user, logout } = useAuth();
+  const toast = useToast();
   const navigation = useNavigation();
   const navigate = useNavigate();
 
@@ -59,6 +61,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
   async function handleLogout() {
     navigate('/', { replace: true });
     await logout();
+    toast.success('You have been logged out.');
   }
 
   return (

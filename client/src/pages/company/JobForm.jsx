@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import * as jobApi from '../../api/jobs.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 
 /** The job types a posting may use. */
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Temporary'];
@@ -15,6 +15,7 @@ const WORK_MODES = ['On-site', 'Hybrid', 'Remote'];
  * @param {{onPosted: (job: object) => void}} props
  */
 export default function JobForm({ onPosted }) {
+  const toast = useToast();
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -25,7 +26,6 @@ export default function JobForm({ onPosted }) {
     skills: '',
     closingDate: '',
   });
-  const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   function update(field, value) {
@@ -34,14 +34,13 @@ export default function JobForm({ onPosted }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError('');
 
     if (form.title.trim().length < 3) {
-      setError('Give the job a title of at least 3 characters');
+      toast.error('Give the job a title of at least 3 characters');
       return;
     }
     if (form.description.trim().length < 20) {
-      setError('Describe the job in at least 20 characters');
+      toast.error('Describe the job in at least 20 characters');
       return;
     }
 
@@ -55,9 +54,10 @@ export default function JobForm({ onPosted }) {
           .filter(Boolean),
         closingDate: form.closingDate || null,
       });
+      toast.success(`"${job.title}" has been posted.`);
       onPosted(job);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -68,8 +68,6 @@ export default function JobForm({ onPosted }) {
       onSubmit={handleSubmit}
       className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
     >
-      <Alert variant="error">{error}</Alert>
-
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
           label="Job title"

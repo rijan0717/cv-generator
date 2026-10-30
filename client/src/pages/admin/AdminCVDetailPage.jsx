@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import * as adminApi from '../../api/admin.js';
+import { useToast } from '../../context/useToast.js';
 import CVPreview from '../../components/cv/CVPreview.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -15,6 +16,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  * belongs to the person who wrote it.
  */
 export default function AdminCVDetailPage() {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -50,9 +52,10 @@ export default function AdminCVDetailPage() {
     setIsDeleting(true);
     try {
       await adminApi.deleteAnyCV(id);
+      toast.success(`"${cv.title}" has been deleted.`);
       navigate('/admin/cvs');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
       setIsDeleting(false);
     }
   }

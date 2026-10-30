@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import * as contentApi from '../../api/content.js';
+import { useToast } from '../../context/useToast.js';
 import RichTextEditor from '../../components/content/RichTextEditor.jsx';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
@@ -47,6 +48,7 @@ const COPY = {
 export default function AdminContentPage({ type }) {
   const copy = COPY[type];
 
+  const toast = useToast();
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
@@ -54,7 +56,6 @@ export default function AdminContentPage({ type }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
   // Which row is mid-request. Rows disable nothing while busy — the
   // actions are links, not buttons with spinners — but the editor
   // needs it to avoid opening twice on a double click.
@@ -88,7 +89,6 @@ export default function AdminContentPage({ type }) {
   // kind of thing otherwise.
   useEffect(() => {
     setEditing(null);
-    setNotice('');
     setPage(1);
   }, [type]);
 
@@ -99,12 +99,11 @@ export default function AdminContentPage({ type }) {
    */
   async function openEditor(item) {
     setBusyId(item.id);
-    setError('');
 
     try {
       setEditing(await contentApi.getContent(item.id));
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }
@@ -115,9 +114,6 @@ export default function AdminContentPage({ type }) {
    * @param {object} draft - The form's current values.
    */
   async function save(draft) {
-    setError('');
-    setNotice('');
-
     const payload = {
       type,
       title: draft.title.trim(),
@@ -141,7 +137,7 @@ export default function AdminContentPage({ type }) {
       : await contentApi.createContent(payload);
 
     setEditing(saved);
-    setNotice(
+    toast.success(
       saved.status === 'published'
         ? `Published. It is live at ${copy.path(saved.slug)}`
         : 'Saved as a draft. Nobody else can see it yet.',
@@ -157,15 +153,14 @@ export default function AdminContentPage({ type }) {
     if (!window.confirm(`Delete "${item.title}"? Any link to it will be removed.`)) return;
 
     setBusyId(item.id);
-    setError('');
 
     try {
       await contentApi.deleteContent(item.id);
       if (editing?.id === item.id) setEditing(null);
-      setNotice('Deleted.');
+      toast.success(`"${item.title}" has been deleted.`);
       await load();
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }
@@ -178,15 +173,18 @@ export default function AdminContentPage({ type }) {
    */
   async function togglePublished(item) {
     setBusyId(item.id);
-    setError('');
 
     try {
-      await contentApi.updateContent(item.id, {
-        status: item.status === 'published' ? 'draft' : 'published',
-      });
+      const next = item.status === 'published' ? 'draft' : 'published';
+      await contentApi.updateContent(item.id, { status: next });
       await load();
+      toast.success(
+        next === 'published'
+          ? `"${item.title}" is now live.`
+          : `"${item.title}" has been moved back to a draft.`,
+      );
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusyId(null);
     }
@@ -198,11 +196,7 @@ export default function AdminContentPage({ type }) {
         value={editing}
         type={type}
         copy={copy}
-        notice={notice}
-        onCancel={() => {
-          setEditing(null);
-          setNotice('');
-        }}
+        onCancel={() => setEditing(null)}
         onSave={save}
       />
     );
@@ -220,11 +214,6 @@ export default function AdminContentPage({ type }) {
         </Button>
       </header>
 
-      {notice && (
-        <Alert variant="success" className="mt-4">
-          {notice}
-        </Alert>
-      )}
       {error && (
         <Alert variant="error" className="mt-4">
           {error}
@@ -523,7 +512,11 @@ function SeoFields({ draft, set, copy }) {
 
     const base =
       draft.excerpt ||
-      draft.bodyHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+      draft.bodyHtml
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 160);
 
     if (seo.keywords.length === 0) return base.slice(0, 160);
 
@@ -662,15 +655,15 @@ function blankDraft(type) {
  * It keeps its own copy of the draft so typing does not re-render the
  * list behind it, and hands the whole thing back on save.
  *
- * @param {{value: object, type: string, copy: object, notice: string,
+ * @param {{value: object, type: string, copy: object,
  *          onCancel: () => void,
  *          onSave: (draft: object) => Promise<void>}} props
  */
-function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
+function ContentEditor({ value, type, copy, onCancel, onSave }) {
+  const toast = useToast();
   const [draft, setDraft] = useState(value);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
-  const [error, setError] = useState('');
   const coverInputRef = useRef(null);
 
   // The parent replaces `value` with what the server stored — the real
@@ -693,13 +686,13 @@ function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
     event.target.value = '';
     if (!file) return;
 
-    setError('');
     setIsUploadingCover(true);
 
     try {
       set('coverImageUrl', await contentApi.uploadImage(file));
+      toast.success('The cover picture has been uploaded.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsUploadingCover(false);
     }
@@ -707,10 +700,9 @@ function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError('');
 
     if (draft.title.trim().length < 2) {
-      setError('Give it a title of at least 2 characters');
+      toast.error('Give it a title of at least 2 characters');
       return;
     }
 
@@ -721,7 +713,7 @@ function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
     const hasImage = /<img\b/i.test(draft.bodyHtml);
 
     if (!hasWords && !hasImage) {
-      setError('Add some text or a picture to the body');
+      toast.error('Add some text or a picture to the body');
       return;
     }
 
@@ -729,7 +721,7 @@ function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
     try {
       await onSave(draft);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -745,9 +737,6 @@ function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
           Back to the list
         </Button>
       </header>
-
-      {notice && <Alert variant="success">{notice}</Alert>}
-      {error && <Alert variant="error">{error}</Alert>}
 
       <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
         <TextField
@@ -878,53 +867,53 @@ function ContentEditor({ value, type, copy, notice, onCancel, onSave }) {
             moment it is published, so asking a writer where to link it
             is a question with no useful answer. */}
         {type === 'page' && (
-        <div className="border-t border-slate-200 pt-4 dark:border-slate-700">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100">Where it is linked</h3>
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-            A draft is never linked, whatever is ticked here.
-          </p>
+          <div className="border-t border-slate-200 pt-4 dark:border-slate-700">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Where it is linked</h3>
+            <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+              A draft is never linked, whatever is ticked here.
+            </p>
 
-          <label className="mt-3 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-            <input
-              type="checkbox"
-              checked={draft.showInHeader}
-              onChange={(event) => set('showInHeader', event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-600"
-            />
-            Show in the header
-          </label>
+            <label className="mt-3 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={draft.showInHeader}
+                onChange={(event) => set('showInHeader', event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-600"
+              />
+              Show in the header
+            </label>
 
-          <label className="mt-2 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-            <input
-              type="checkbox"
-              checked={draft.showInFooter}
-              onChange={(event) => set('showInFooter', event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-600"
-            />
-            Show in the footer
-          </label>
+            <label className="mt-2 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={draft.showInFooter}
+                onChange={(event) => set('showInFooter', event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-600"
+              />
+              Show in the footer
+            </label>
 
-          <div className="mt-3 flex flex-wrap gap-4">
-            <TextField
-              label="Link text"
-              value={draft.navLabel}
-              onChange={(event) => set('navLabel', event.target.value)}
-              maxLength={40}
-              hint="Left blank, the title is used."
-              className="min-w-[220px] flex-1"
-            />
-            <TextField
-              label="Order"
-              type="number"
-              min="0"
-              max="99"
-              value={draft.sortOrder}
-              onChange={(event) => set('sortOrder', event.target.value)}
-              hint="Lower comes first."
-              className="w-28"
-            />
+            <div className="mt-3 flex flex-wrap gap-4">
+              <TextField
+                label="Link text"
+                value={draft.navLabel}
+                onChange={(event) => set('navLabel', event.target.value)}
+                maxLength={40}
+                hint="Left blank, the title is used."
+                className="min-w-[220px] flex-1"
+              />
+              <TextField
+                label="Order"
+                type="number"
+                min="0"
+                max="99"
+                value={draft.sortOrder}
+                onChange={(event) => set('sortOrder', event.target.value)}
+                hint="Lower comes first."
+                className="w-28"
+              />
+            </div>
           </div>
-        </div>
         )}
       </div>
 

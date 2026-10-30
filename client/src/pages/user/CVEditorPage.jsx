@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { useToast } from '../../context/useToast.js';
 import { useAutosave } from '../../utils/useAutosave.js';
 import CVContentForm from '../../components/cv/CVContentForm.jsx';
 import CustomisePanel from '../../components/cv/CustomisePanel.jsx';
@@ -38,12 +39,12 @@ const SAVED_FIELDS = [
  */
 export default function CVEditorPage() {
   const { id } = useParams();
+  const toast = useToast();
 
   const [cv, setCv] = useState(null);
   const [loadError, setLoadError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [tab, setTab] = useState('content');
-  const [photoError, setPhotoError] = useState('');
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
@@ -80,6 +81,13 @@ export default function CVEditorPage() {
 
   const { status, error: saveError, saveNow } = useAutosave(cv, save);
 
+  // A failed save is the one thing here the user must be told about. A
+  // successful one is not: the status beside the title already says
+  // "Saved", and a toast every time typing pauses would be unbearable.
+  useEffect(() => {
+    if (saveError) toast.error(`Could not save: ${saveError}`);
+  }, [saveError, toast]);
+
   /**
    * Opens the review section after a download.
    *
@@ -109,12 +117,12 @@ export default function CVEditorPage() {
    * @param {File} file - The chosen image.
    */
   async function handlePhotoChange(file) {
-    setPhotoError('');
     try {
       const updated = await cvApi.uploadCVPhoto(id, file);
       setCv((current) => ({ ...current, personal: updated.personal }));
+      toast.success('Your photo has been added to this CV.');
     } catch (err) {
-      setPhotoError(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -193,17 +201,6 @@ export default function CVEditorPage() {
             }}
           />
         </div>
-      )}
-
-      {saveError && (
-        <Alert variant="error" className="mt-3">
-          Could not save: {saveError}
-        </Alert>
-      )}
-      {photoError && (
-        <Alert variant="error" className="mt-3">
-          {photoError}
-        </Alert>
       )}
 
       {/* `minmax(0,1fr)` rows let the panes shrink to the space left and

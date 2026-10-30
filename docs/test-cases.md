@@ -265,3 +265,18 @@ involve the browser, the real database or an installed service.
 | S-AC-17 | Company      | Pending company can still be edited        | `PUT /companies/mine` while pending              | 200, new name                                  | As expected   | Pass   |
 | S-AC-18 | Document     | Private to owner and admin                 | Owner, admin, another employer read the document | 200, 200, 404                                  | As expected   | Pass   |
 | S-AC-19 | Document     | Only PDF / JPG / PNG                       | Upload a `.txt` file                             | 400                                            | As expected   | Pass   |
+
+### 1.4 Toast messages
+
+`client/src/components/ui/Toast.test.jsx` (6 cases). The toasts are driven
+through `useToast`, as the application drives them, rather than by rendering
+the component with made-up props.
+
+| Test ID | Module | Description                                 | Input/Steps                                | Expected Result                               | Actual Result | Status |
+| ------- | ------ | ------------------------------------------- | ------------------------------------------ | --------------------------------------------- | ------------- | ------ |
+| U-TO-01 | Toast  | A success is announced as a status          | `toast.success('Your profile has been updated')` | One `role="status"` carrying the message  | As expected   | Pass   |
+| U-TO-02 | Toast  | A failure is announced at once              | `toast.error('That email address is already registered')` | One `role="alert"` carrying it   | As expected   | Pass   |
+| U-TO-03 | Toast  | It can be crossed off before its time is up | Raise an error, click "Dismiss message"    | No alert remains                               | As expected   | Pass   |
+| U-TO-04 | Toast  | It hides itself                             | Raise a success, advance the clock 4.1 s   | No status remains                              | As expected   | Pass   |
+| U-TO-05 | Toast  | The same message is not stacked twice       | Raise the identical error twice            | Exactly one alert                              | As expected   | Pass   |
+| U-TO-06 | Toast  | An empty message is ignored                 | `toast.error('')`                          | Nothing is shown                               | As expected   | Pass   |

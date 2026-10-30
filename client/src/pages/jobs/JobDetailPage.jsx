@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import * as jobApi from '../../api/jobs.js';
+import { useToast } from '../../context/useToast.js';
 import * as cvApi from '../../api/cvs.js';
 import * as tailorApi from '../../api/tailor.js';
 import { useAuth } from '../../context/useAuth.js';
@@ -33,6 +34,7 @@ export default function JobDetailPage() {
 
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
   const [error, setError] = useState('');
   const [isApplyOpen, setIsApplyOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -96,8 +98,9 @@ export default function JobDetailPage() {
       if (data.isSaved) await jobApi.unsaveJob(id);
       else await jobApi.saveJob(id);
       setData((current) => ({ ...current, isSaved: !current.isSaved }));
+      toast.success(data.isSaved ? 'Removed from your saved jobs.' : 'Saved to your jobs.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSaving(false);
     }
@@ -117,7 +120,6 @@ export default function JobDetailPage() {
       return;
     }
 
-    setError('');
     setRewrite(null);
     setIsRewriting(true);
 
@@ -137,8 +139,9 @@ export default function JobDetailPage() {
       setRewrite(result);
       setDraft(result.draft);
       setDraftTitle(result.suggestedTitle);
+      toast.success('Your CV has been rewritten for this advert. Review it before saving.');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsRewriting(false);
     }
@@ -146,7 +149,6 @@ export default function JobDetailPage() {
 
   /** Keeps the reviewed draft as a new CV, and optionally applies with it. */
   async function saveDraft({ thenApply = false } = {}) {
-    setError('');
     setIsSavingDraft(true);
 
     try {
@@ -175,12 +177,14 @@ export default function JobDetailPage() {
       setRewrite(null);
       setDraft(null);
 
+      toast.success(`"${created.title}" has been saved to My CVs.`);
+
       if (thenApply) {
         setApplyWithCvId(created._id);
         setIsApplyOpen(true);
       }
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSavingDraft(false);
     }
@@ -287,12 +291,6 @@ export default function JobDetailPage() {
         </div>
       </header>
 
-      {error && (
-        <Alert variant="error" className="mt-4">
-          {error}
-        </Alert>
-      )}
-
       {isRewriting && <RewriteProgress cvTitle={rewrite?.sourceCv?.title} />}
 
       {rewrite && !isRewriting && (
@@ -387,6 +385,7 @@ export default function JobDetailPage() {
             onApplied={() => {
               setIsApplyOpen(false);
               setData((current) => ({ ...current, hasApplied: true }));
+              toast.success('Your application has been sent.');
             }}
           />
         </div>
@@ -560,12 +559,12 @@ function TailoredSummary({ cv, canApply, onApply }) {
  *          onApplied: () => void}} props
  */
 function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
+  const toast = useToast();
   const [cvs, setCvs] = useState([]);
   const [cvId, setCvId] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -592,7 +591,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
         else if (list.length > 0) setCvId(list[0]._id);
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) toast.error(err.message);
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -601,24 +600,23 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
     return () => {
       cancelled = true;
     };
-  }, [preselectCvId]);
+  }, [preselectCvId, toast]);
 
   async function handleSubmit(event) {
     event.preventDefault();
 
     if (!cvId) {
-      setError('Choose a CV to apply with');
+      toast.error('Choose a CV to apply with');
       return;
     }
 
     setIsSubmitting(true);
-    setError('');
 
     try {
       await jobApi.applyToJob(jobId, { cvId, coverLetter: coverLetter.trim() });
       onApplied();
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -653,8 +651,6 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          <Alert variant="error">{error}</Alert>
-
           <div>
             <label
               htmlFor="apply-cv"

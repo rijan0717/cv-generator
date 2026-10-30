@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
-import Alert from '../../components/ui/Alert.jsx';
 
 /**
  * Registration page.
@@ -11,6 +11,11 @@ import Alert from '../../components/ui/Alert.jsx';
  * The client repeats the server's password rules so the user gets immediate
  * feedback, but the server enforces them independently — client-side checks
  * are a convenience, never a security control.
+ *
+ * Each field keeps its own message underneath it, because that is what says
+ * *which* box is wrong; the toast is the announcement that the form was not
+ * accepted at all, which is easy to miss when the offending field has
+ * scrolled out of view.
  */
 
 /**
@@ -46,6 +51,7 @@ function validate(form) {
 
 export default function RegisterPage() {
   const { register, isAuthenticated, isLoading } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -55,7 +61,6 @@ export default function RegisterPage() {
     confirmPassword: '',
   });
   const [fieldErrors, setFieldErrors] = useState({});
-  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isLoading && isAuthenticated) {
@@ -73,25 +78,33 @@ export default function RegisterPage() {
   /** Validates, then registers and goes straight to the dashboard. */
   async function handleSubmit(event) {
     event.preventDefault();
-    setError('');
 
     const errors = validate(form);
-    if (Object.keys(errors).length > 0) {
+    const failed = Object.keys(errors);
+    if (failed.length > 0) {
       setFieldErrors(errors);
+      // One problem is worth repeating in full; several are not, or the
+      // toast becomes a second copy of the form.
+      toast.error(
+        failed.length === 1
+          ? errors[failed[0]]
+          : `Please correct the ${failed.length} highlighted fields.`,
+      );
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await register({
+      const created = await register({
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
       });
+      toast.success(`Account created. Welcome, ${created.name.split(' ')[0]}.`);
       // A new account always starts by choosing job seeker or employer.
       navigate('/welcome', { replace: true });
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -108,8 +121,6 @@ export default function RegisterPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
-          <Alert variant="error">{error}</Alert>
-
           <TextField
             label="Full name"
             name="name"

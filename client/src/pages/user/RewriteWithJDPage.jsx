@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as cvApi from '../../api/cvs.js';
+import { useToast } from '../../context/useToast.js';
 import * as tailorApi from '../../api/tailor.js';
 import TailorReview from '../../components/cv/TailorReview.jsx';
 import ExportMenu from '../../components/cv/ExportMenu.jsx';
@@ -32,6 +33,7 @@ export default function RewriteWithJDPage() {
   const [description, setDescription] = useState('');
 
   const [result, setResult] = useState(null);
+  const toast = useToast();
   const [draft, setDraft] = useState(null);
   const [title, setTitle] = useState('');
   const [saved, setSaved] = useState(null);
@@ -57,8 +59,13 @@ export default function RewriteWithJDPage() {
       setResult(preview);
       setDraft(preview.draft);
       setTitle(preview.suggestedTitle);
+      toast.success('Your CV has been rewritten for this advert. Review it before saving.');
     } catch (err) {
-      setError(err.message);
+      // Having no primary CV is a setup problem with something to do
+      // about it, so that one stays on the page with its link. Anything
+      // else is a passing failure and goes to a toast.
+      if (/primary cv/i.test(err.message)) setError(err.message);
+      else toast.error(err.message);
     } finally {
       setBusy('');
     }
@@ -69,7 +76,6 @@ export default function RewriteWithJDPage() {
    * @param {{makePrimary?: boolean}} [options]
    */
   async function handleSave({ makePrimary = false } = {}) {
-    setError('');
     setBusy(makePrimary ? 'primary' : 'save');
 
     try {
@@ -88,8 +94,13 @@ export default function RewriteWithJDPage() {
       }
 
       setSaved(created);
+      toast.success(
+        makePrimary
+          ? `"${created.title}" saved and set as your primary CV.`
+          : `"${created.title}" has been saved to My CVs.`,
+      );
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusy('');
     }
@@ -97,14 +108,14 @@ export default function RewriteWithJDPage() {
 
   /** Makes the already-saved CV the primary one. */
   async function handleSetPrimary() {
-    setError('');
     setBusy('primary');
 
     try {
       await cvApi.setPrimaryCV(saved._id);
       setIsPrimary(true);
+      toast.success(`"${saved.title}" is now the CV employers see.`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setBusy('');
     }

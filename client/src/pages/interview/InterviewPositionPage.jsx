@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import * as interviewApi from '../../api/interview.js';
+import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -14,6 +15,7 @@ import Spinner from '../../components/ui/Spinner.jsx';
  * once turns revision into reading.
  */
 export default function InterviewPositionPage() {
+  const toast = useToast();
   const { slug } = useParams();
   const navigate = useNavigate();
 
@@ -68,14 +70,14 @@ export default function InterviewPositionPage() {
   /** Starts a sitting and goes straight into it. */
   async function start() {
     setIsStarting(true);
-    setError('');
 
     try {
       // No level: the paper is drawn from all three together.
       const attempt = await interviewApi.startExam(position.id);
+      toast.info('Your exam has started. Good luck.');
       navigate(`/interview/exam/${attempt.id}`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
       setIsStarting(false);
     }
   }
