@@ -145,6 +145,18 @@ describe('App routing', () => {
       expect(screen.getByText(/have not saved any jobs/i)).toBeInTheDocument();
     });
 
+    it('sends a signed-in user from the landing page to their own dashboard', async () => {
+      // Coming back to the site days later, the session is still valid. The
+      // landing page is written for a visitor who has not signed up, so the
+      // user belongs on their dashboard instead.
+      renderAt('/');
+
+      expect(await screen.findByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: /build a cv that gets you shortlisted/i }),
+      ).not.toBeInTheDocument();
+    });
+
     it('shows the logged-in navigation', async () => {
       renderAt('/');
 

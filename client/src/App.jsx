@@ -6,6 +6,7 @@ import ProtectedRoute from './routes/ProtectedRoute.jsx';
 import AccountTypeRoute from './routes/AccountTypeRoute.jsx';
 import WelcomePage from './pages/user/WelcomePage.jsx';
 import AdminRoute from './routes/AdminRoute.jsx';
+import HomeRoute from './routes/HomeRoute.jsx';
 
 import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
@@ -23,7 +24,6 @@ import AdminInterviewPositionPage from './pages/admin/AdminInterviewPositionPage
 import AdminContentPage from './pages/admin/AdminContentPage.jsx';
 import AdminCompaniesPage from './pages/admin/AdminCompaniesPage.jsx';
 
-import HomePage from './pages/HomePage.jsx';
 import HealthPage from './pages/HealthPage.jsx';
 import BlogListPage from './pages/content/BlogListPage.jsx';
 import ContentPage from './pages/content/ContentPage.jsx';
@@ -71,7 +71,7 @@ export default function App() {
 
       <Route element={<Layout />}>
         {/* Public */}
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/health" element={<HealthPage />} />
