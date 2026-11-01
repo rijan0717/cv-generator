@@ -34,6 +34,11 @@ const COLUMNS = [
       { label: 'Build a CV', to: '/features/cv-builder' },
       { label: 'Templates', to: '/features/templates' },
       { label: 'Rewrite for a job', to: '/features/rewrite' },
+      // Scoring and interview practice sit here rather than under
+      // Explore: they are things a job seeker *does* on the way to an
+      // application, not things to go and read about.
+      { label: 'Score my CV', to: '/features/cv-score' },
+      { label: 'Interview prep', to: '/features/interview-prep' },
       { label: 'Browse jobs', to: '/jobs' },
     ],
   },
@@ -47,11 +52,7 @@ const COLUMNS = [
   },
   {
     heading: 'Explore',
-    links: [
-      { label: 'Score my CV', to: '/features/cv-score' },
-      { label: 'Interview prep', to: '/features/interview-prep' },
-      { label: 'Blog', to: '/blog' },
-    ],
+    links: [{ label: 'Blog', to: '/blog' }],
   },
 ];
 
@@ -91,20 +92,20 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[22rem_1fr]">
+      <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[20rem_1fr]">
           {/* --- Who we are --- */}
           <div>
             <Link to="/" aria-label="SmartCV, home" className="inline-block">
               <BrandMark size="md" />
             </Link>
 
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              SmartCV helps you write a CV worth reading, score it against the job you want, and
-              apply with the version that fits — free, and without a watermark.
+            <p className="mt-3 max-w-sm text-sm leading-snug text-slate-600 dark:text-slate-400">
+              Write a CV worth reading, score it against the job you want, and apply with the
+              version that fits. Free, and without a watermark.
             </p>
 
-            <ul className="mt-6 flex gap-4">
+            <ul className="mt-4 flex gap-4">
               {SOCIAL.map((account) => (
                 <li key={account.label}>
                   <a
@@ -138,7 +139,7 @@ export default function Footer() {
               <div key={column.heading}>
                 <p className="font-semibold text-slate-900 dark:text-slate-100">{column.heading}</p>
 
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-3 space-y-2">
                   {column.links.map((link) => (
                     <li key={link.to}>
                       <Link to={link.to} className={linkClass}>
@@ -164,7 +165,7 @@ export default function Footer() {
         </div>
 
         {/* --- The legal line --- */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+        <div className="mt-8 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
           <p className="text-sm text-slate-500 dark:text-slate-400">
             &copy; {new Date().getFullYear()} SmartCV &mdash;{' '}
             <a
