@@ -15,7 +15,7 @@ export default function AdminRoute() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[50vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[50vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Checking your permissions" />
       </div>
     );

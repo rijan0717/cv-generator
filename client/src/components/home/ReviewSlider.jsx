@@ -53,7 +53,7 @@ export default function ReviewSlider() {
   return (
     <div className="pb-8">
       {summary?.count > 0 && (
-        <p className="mb-3 flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mb-3 flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-100">
           <StarRating value={Math.round(summary.average)} size="sm" readOnly />
           <span>
             {summary.average} from {summary.count} review{summary.count === 1 ? '' : 's'}
@@ -73,12 +73,12 @@ export default function ReviewSlider() {
               <li
                 key={`${copy}-${position}`}
                 aria-hidden={copy === 1 || position >= reviews.length}
-                className="w-72 shrink-0 rounded-md border border-slate-200 bg-white px-4 py-3 text-left dark:border-slate-700 dark:bg-slate-900"
+                className="w-72 shrink-0 rounded-md border border-slate-200 bg-white px-4 py-3 text-left dark:border-navy-700 dark:bg-navy-900"
               >
-                <p className="line-clamp-2 text-sm text-slate-700 dark:text-slate-300">
+                <p className="line-clamp-2 text-sm text-slate-700 dark:text-slate-100">
                   &ldquo;{review.comment}&rdquo;
                 </p>
-                <p className="mt-1.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-1.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-100">
                   <StarRating value={review.rating} size="sm" readOnly />
                   <span className="truncate">— {review.author}</span>
                 </p>

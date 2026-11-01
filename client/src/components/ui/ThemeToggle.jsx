@@ -20,7 +20,7 @@ export default function ThemeToggle() {
       onClick={toggle}
       title={`Theme: ${current}`}
       aria-label={label}
-      className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:focus-visible:outline-slate-100"
+      className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:focus-visible:outline-slate-100"
     >
       {/* The icon shows what you will get, not what you have: a moon means
           "go dark". */}

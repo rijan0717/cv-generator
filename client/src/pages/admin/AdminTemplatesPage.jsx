@@ -104,7 +104,7 @@ export default function AdminTemplatesPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading templates" />
       </div>
     );
@@ -113,10 +113,10 @@ export default function AdminTemplatesPage() {
   return (
     <div>
       <header className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           Templates <span className="text-slate-500">({activeCount} active)</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-slate-500 dark:text-slate-100">
           Click a template to preview it and change whether users are offered it.
         </p>
       </header>
@@ -128,13 +128,13 @@ export default function AdminTemplatesPage() {
       )}
 
       {!seeded ? (
-        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h3 className="font-semibold text-slate-900 dark:text-slate-50">
             The catalogue has not been set up yet
           </h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             Run{' '}
-            <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">
+            <code className="rounded bg-slate-100 px-1 dark:bg-navy-800">
               npm run seed:templates
             </code>{' '}
             to fill it. Until then every template is offered to users.
@@ -146,7 +146,7 @@ export default function AdminTemplatesPage() {
             <Alert variant="info" className="mt-4">
               {unseededCount} template{unseededCount === 1 ? '' : 's'} in this build{' '}
               {unseededCount === 1 ? 'has' : 'have'} no catalogue entry yet. Run{' '}
-              <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">
+              <code className="rounded bg-slate-100 px-1 dark:bg-navy-800">
                 npm run seed:templates
               </code>{' '}
               to manage {unseededCount === 1 ? 'it' : 'them'} here.

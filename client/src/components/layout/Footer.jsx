@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useNavigation } from '../../context/useNavigation.js';
 import BrandMark from '../ui/BrandMark.jsx';
+import { Stagger } from '../ui/motion.jsx';
 
 /**
  * Page footer.
@@ -85,22 +86,25 @@ const SOCIAL = [
 ];
 
 const linkClass =
-  'text-sm text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white';
+  'text-sm text-slate-600 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white';
 
 export default function Footer() {
   const { footer: pages } = useNavigation();
 
   return (
-    <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <footer className="border-t border-slate-200 bg-white dark:border-navy-700 dark:bg-navy-900">
       <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[20rem_1fr]">
+        {/* The four blocks arrive in sequence as the footer scrolls into
+            view: the brand first, then each column. It is the last thing
+            on the page, so it is also the last thing to move. */}
+        <Stagger className="grid gap-8 lg:grid-cols-[20rem_1fr]">
           {/* --- Who we are --- */}
-          <div>
+          <Stagger.Item>
             <Link to="/" aria-label="SmartCV, home" className="inline-block">
               <BrandMark size="md" />
             </Link>
 
-            <p className="mt-3 max-w-sm text-sm leading-snug text-slate-600 dark:text-slate-400">
+            <p className="mt-3 max-w-sm text-sm leading-snug text-slate-600 dark:text-slate-100">
               Write a CV worth reading, score it against the job you want, and apply with the
               version that fits. Free, and without a watermark.
             </p>
@@ -112,7 +116,7 @@ export default function Footer() {
                     href={account.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="block text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                    className="block text-slate-500 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
                   >
                     <svg
                       className="h-5 w-5"
@@ -131,13 +135,13 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Stagger.Item>
 
           {/* --- Where to go --- */}
           <nav aria-label="Footer" className="grid gap-8 sm:grid-cols-3">
             {COLUMNS.map((column) => (
-              <div key={column.heading}>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">{column.heading}</p>
+              <Stagger.Item key={column.heading}>
+                <p className="font-semibold text-slate-900 dark:text-slate-50">{column.heading}</p>
 
                 <ul className="mt-3 space-y-2">
                   {column.links.map((link) => (
@@ -159,20 +163,20 @@ export default function Footer() {
                       </li>
                     ))}
                 </ul>
-              </div>
+              </Stagger.Item>
             ))}
           </nav>
-        </div>
+        </Stagger>
 
         {/* --- The legal line --- */}
-        <div className="mt-8 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="mt-8 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-navy-700">
+          <p className="text-sm text-slate-500 dark:text-slate-100">
             &copy; {new Date().getFullYear()} SmartCV &mdash;{' '}
             <a
               href="https://rijan-pariyar.com.np/"
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-slate-700 underline underline-offset-2 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              className="font-medium text-slate-700 underline underline-offset-2 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
             >
               Rijan Pariyar
             </a>
@@ -183,7 +187,7 @@ export default function Footer() {
               <li key={link.label}>
                 <Link
                   to={link.to}
-                  className="text-sm text-slate-500 underline-offset-2 transition hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-white"
+                  className="text-sm text-slate-500 underline-offset-2 transition hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
                 >
                   {link.label}
                 </Link>

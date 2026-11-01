@@ -71,10 +71,10 @@ export default function SavedJobsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Saved jobs
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Jobs you have bookmarked, and the jobs you have applied to.
         </p>
       </header>
@@ -86,13 +86,13 @@ export default function SavedJobsPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading saved jobs" />
         </div>
       ) : jobs.length === 0 ? (
-        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Nothing saved yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">Nothing saved yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             Use the bookmark on a job to keep it here.
           </p>
           <Link to="/jobs" className="mt-6 inline-block">

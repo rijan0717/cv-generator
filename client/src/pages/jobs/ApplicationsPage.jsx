@@ -82,10 +82,10 @@ export default function ApplicationsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           My applications
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Jobs you have applied for, and where each one stands.
         </p>
       </header>
@@ -97,12 +97,12 @@ export default function ApplicationsPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading applications" />
         </div>
       ) : applications.length === 0 ? (
-        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             You have not applied for anything yet
           </h2>
           <Link to="/jobs" className="mt-6 inline-block">
@@ -114,10 +114,10 @@ export default function ApplicationsPage() {
           {applications.map((application) => (
             <li
               key={application._id}
-              className="flex flex-wrap items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+              className="flex flex-wrap items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
             >
               <div className="min-w-0 flex-1">
-                <h2 className="font-medium text-slate-900 dark:text-slate-100">
+                <h2 className="font-medium text-slate-900 dark:text-slate-50">
                   {application.job?.isDeleted ? (
                     application.job.title
                   ) : (
@@ -126,7 +126,7 @@ export default function ApplicationsPage() {
                     </Link>
                   )}
                 </h2>
-                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
                   {application.job?.company?.name}
                   {' · applied '}
                   {new Date(application.createdAt).toLocaleDateString('en-GB')}

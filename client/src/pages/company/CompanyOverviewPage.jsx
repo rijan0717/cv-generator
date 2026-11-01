@@ -55,7 +55,7 @@ export default function CompanyOverviewPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading your dashboard" />
       </div>
     );
@@ -101,15 +101,15 @@ export default function CompanyOverviewPage() {
       />
 
       {!isApproved ? (
-        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Waiting for approval</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">Waiting for approval</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             Once an admin approves your company you can post jobs, read applicants and browse
             candidates. Nothing else is needed from you unless they ask for it.
           </p>
           <Link
             to="/company/profile"
-            className="mt-3 inline-block text-sm font-medium text-slate-900 underline dark:text-slate-100"
+            className="mt-3 inline-block text-sm font-medium text-slate-900 underline dark:text-slate-50"
           >
             Check your company details
           </Link>
@@ -142,14 +142,14 @@ export default function CompanyOverviewPage() {
             ]}
           >
             {jobs.length > 0 && totalApplicants === 0 && (
-              <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-navy-800 dark:text-slate-100">
                 Nobody has applied yet. Browsing candidates and approaching them directly often
                 works faster than waiting on a post.
               </p>
             )}
 
             {company?.updatedAt && (
-              <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-4 text-xs text-slate-500 dark:text-slate-100">
                 Company profile last updated {asDate(company.updatedAt)}.
               </p>
             )}

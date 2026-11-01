@@ -105,7 +105,7 @@ export default function AdminReportsPage() {
       <div
         role="tablist"
         aria-label="Report"
-        className="flex flex-wrap gap-2 rounded-xl bg-white p-2 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+        className="flex flex-wrap gap-2 rounded-xl bg-white p-2 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
       >
         {REPORTS.map((entry) => (
           <button
@@ -119,7 +119,7 @@ export default function AdminReportsPage() {
               'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
               type === entry.type
                 ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
+                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-navy-800',
             ].join(' ')}
           >
             {entry.label}
@@ -128,11 +128,11 @@ export default function AdminReportsPage() {
       </div>
 
       {/* Date range and exports */}
-      <div className="mt-4 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <div className="mt-4 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <div>
           <label
             htmlFor="report-from"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             From
           </label>
@@ -142,14 +142,14 @@ export default function AdminReportsPage() {
             value={from}
             max={to || undefined}
             onChange={(event) => setFrom(event.target.value)}
-            className="mt-1 rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </div>
 
         <div>
           <label
             htmlFor="report-to"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             To
           </label>
@@ -159,7 +159,7 @@ export default function AdminReportsPage() {
             value={to}
             min={from || undefined}
             onChange={(event) => setTo(event.target.value)}
-            className="mt-1 rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </div>
 
@@ -204,7 +204,7 @@ export default function AdminReportsPage() {
           figures are never mistaken for the new ones because the panel is
           visibly inactive while they are stale. */}
       {!report && isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Building the report" />
         </div>
       ) : report ? (
@@ -213,8 +213,8 @@ export default function AdminReportsPage() {
           className={`transition-opacity duration-150 ${isLoading ? 'pointer-events-none opacity-50' : 'opacity-100'}`}
         >
           <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100">{report.title}</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <h2 className="font-semibold text-slate-900 dark:text-slate-50">{report.title}</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-100">
               {report.range} &middot; {rows.length} row{rows.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -223,12 +223,12 @@ export default function AdminReportsPage() {
             {report.summary.map((item) => (
               <div
                 key={item.label}
-                className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+                className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
               >
-                <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
                   {item.label}
                 </dt>
-                <dd className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
+                <dd className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-50">
                   {item.value}
                 </dd>
               </div>
@@ -236,14 +236,14 @@ export default function AdminReportsPage() {
           </dl>
 
           {rows.length === 0 ? (
-            <p className="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
+            <p className="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-navy-900 dark:text-slate-100">
               No data in this date range.
             </p>
           ) : (
             <>
               <ReportTable columns={report.columns} rows={shown} />
               {rows.length > shown.length && (
-                <p className="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-2 text-center text-sm text-slate-500 dark:text-slate-100">
                   Showing the first {PREVIEW_ROWS} of {rows.length} rows. Export the report for all
                   of them.
                 </p>
@@ -253,7 +253,7 @@ export default function AdminReportsPage() {
 
           {report.extraTable && report.extraTable.rows.length > 0 && (
             <>
-              <h3 className="mt-6 font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="mt-6 font-semibold text-slate-900 dark:text-slate-50">
                 {report.extraTable.title}
               </h3>
               <ReportTable
@@ -279,10 +279,10 @@ export default function AdminReportsPage() {
 function ReportTable({ columns, rows, className = 'mt-4' }) {
   return (
     <div
-      className={`${className} overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700`}
+      className={`${className} overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700`}
     >
-      <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
-        <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950 dark:text-slate-400">
+      <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-navy-700">
+        <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-navy-950 dark:text-slate-100">
           <tr>
             {columns.map((column) => (
               <th key={column.key} scope="col" className="whitespace-nowrap px-4 py-3">
@@ -291,14 +291,14 @@ function ReportTable({ columns, rows, className = 'mt-4' }) {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody className="divide-y divide-slate-100 dark:divide-navy-700">
           {rows.map((row, index) => (
             // Report rows are a flat projection with no id of their own,
             // and the list is never reordered or edited in place, so the
             // index is a stable key here.
             <tr key={index}>
               {columns.map((column) => (
-                <td key={column.key} className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                <td key={column.key} className="px-4 py-3 text-slate-700 dark:text-slate-100">
                   {row[column.key]}
                 </td>
               ))}

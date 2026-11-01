@@ -146,7 +146,7 @@ export default function TailorCVPage() {
 
   if (isLoadingCV) {
     return (
-      <div className="grid place-items-center py-24 text-slate-500 dark:text-slate-400">
+      <div className="grid place-items-center py-24 text-slate-500 dark:text-slate-100">
         <Spinner label="Loading your CV" />
       </div>
     );
@@ -158,14 +158,14 @@ export default function TailorCVPage() {
     // the advert form from stretching into a line too long to read.
     <div className={`mx-auto px-4 py-10 ${result ? 'max-w-[1600px]' : 'max-w-3xl'}`}>
       <header>
-        <Link to="/cvs" className="text-sm text-slate-500 hover:underline dark:text-slate-400">
+        <Link to="/cvs" className="text-sm text-slate-500 hover:underline dark:text-slate-100">
           ← Back to My CVs
         </Link>
 
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Tailor “{cv?.title}” for a job
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Your content is re-ordered and re-worded against one advert. Nothing is invented, your
           original CV is not touched, and nothing is saved until you say so.
         </p>
@@ -182,7 +182,7 @@ export default function TailorCVPage() {
           <div
             role="tablist"
             aria-label="Where the job advert comes from"
-            className="flex gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800"
+            className="flex gap-1 rounded-lg bg-slate-100 p-1 dark:bg-navy-800"
           >
             <SourceTab
               id="board"
@@ -199,7 +199,7 @@ export default function TailorCVPage() {
           </div>
 
           {source === 'board' ? (
-            <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+            <section className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
               <div className="flex flex-wrap items-end gap-3">
                 <TextField
                   label="Search jobs"
@@ -214,18 +214,18 @@ export default function TailorCVPage() {
               </div>
 
               {isLoadingJobs ? (
-                <div className="mt-6 grid place-items-center text-slate-500 dark:text-slate-400">
+                <div className="mt-6 grid place-items-center text-slate-500 dark:text-slate-100">
                   <Spinner label="Loading jobs" />
                 </div>
               ) : jobs.length === 0 ? (
-                <p className="mt-6 text-sm text-slate-600 dark:text-slate-400">
+                <p className="mt-6 text-sm text-slate-600 dark:text-slate-100">
                   No open jobs matched that search. You can paste a description instead.
                 </p>
               ) : (
                 <ul className="mt-4 space-y-2">
                   {jobs.map((job) => (
                     <li key={job._id}>
-                      <label className="flex cursor-pointer items-start gap-3 rounded-lg p-3 ring-1 ring-slate-200 transition hover:bg-slate-50 dark:ring-slate-700 dark:hover:bg-slate-800">
+                      <label className="flex cursor-pointer items-start gap-3 rounded-lg p-3 ring-1 ring-slate-200 transition hover:bg-slate-50 dark:ring-navy-700 dark:hover:bg-navy-800">
                         <input
                           type="radio"
                           name="job"
@@ -235,10 +235,10 @@ export default function TailorCVPage() {
                           className="mt-1"
                         />
                         <span className="min-w-0">
-                          <span className="block font-medium text-slate-900 dark:text-slate-100">
+                          <span className="block font-medium text-slate-900 dark:text-slate-50">
                             {job.title}
                           </span>
-                          <span className="block text-xs text-slate-500 dark:text-slate-400">
+                          <span className="block text-xs text-slate-500 dark:text-slate-100">
                             {[job.company?.name, job.location, job.workMode]
                               .filter(Boolean)
                               .join(' · ')}
@@ -251,7 +251,7 @@ export default function TailorCVPage() {
               )}
             </section>
           ) : (
-            <section className="space-y-4 rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+            <section className="space-y-4 rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
               <TextField
                 label="Job title"
                 value={pastedTitle}
@@ -262,7 +262,7 @@ export default function TailorCVPage() {
               />
 
               <label className="block">
-                <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                <span className="block text-sm font-medium text-slate-700 dark:text-slate-100">
                   Job description
                 </span>
                 <textarea
@@ -271,9 +271,9 @@ export default function TailorCVPage() {
                   rows={10}
                   maxLength={8000}
                   placeholder="Paste the whole advert, including the requirements."
-                  className="mt-1 block w-full rounded-lg border-0 bg-white px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+                  className="mt-1 block w-full rounded-lg border-0 bg-white px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
                 />
-                <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
+                <span className="mt-1 block text-xs text-slate-500 dark:text-slate-100">
                   {pastedDescription.trim().length} characters. At least 50 are needed for the
                   weighting to mean anything.
                 </span>
@@ -335,8 +335,8 @@ function SourceTab({ id, current, label, onSelect }) {
       className={[
         'flex-1 rounded-md px-3 py-2 text-sm font-medium transition',
         isActive
-          ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-slate-100'
-          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100',
+          ? 'bg-white text-slate-900 shadow-sm dark:bg-navy-900 dark:text-slate-50'
+          : 'text-slate-600 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white',
       ].join(' ')}
     >
       {label}

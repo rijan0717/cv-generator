@@ -41,7 +41,7 @@ export default function TextField({
     <div className={className}>
       <label
         htmlFor={fieldId}
-        className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+        className="block text-sm font-medium text-slate-700 dark:text-slate-100"
       >
         {label}
       </label>
@@ -54,7 +54,7 @@ export default function TextField({
           aria-describedby={describedBy || undefined}
           className={[
             'block w-full rounded-lg px-3 py-2 text-sm shadow-sm ring-1',
-            'text-slate-900 dark:bg-slate-800 dark:text-slate-100',
+            'text-slate-900 dark:bg-navy-800 dark:text-slate-50',
             'placeholder:text-slate-400 focus:outline-none focus:ring-2',
             // Room for the button, so long text never runs underneath it.
             isPassword ? 'pr-10' : '',
@@ -77,7 +77,7 @@ export default function TextField({
             // between every password field and the next control would be
             // more annoying than helpful.
             tabIndex={-1}
-            className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
           >
             {isRevealed ? (
               // Crossed-out eye: clicking hides the password again.
@@ -116,7 +116,7 @@ export default function TextField({
       </div>
 
       {hint && !error && (
-        <p id={hintId} className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p id={hintId} className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           {hint}
         </p>
       )}

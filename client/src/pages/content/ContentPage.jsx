@@ -77,7 +77,7 @@ export default function ContentPage({ kind = 'page' }) {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading" />
       </div>
     );
@@ -86,10 +86,10 @@ export default function ContentPage({ kind = 'page' }) {
   if (error || !content) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Page not found
         </h1>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-100">
           {error || 'That address does not lead anywhere.'}
         </p>
         <Link to={kind === 'post' ? '/blog' : '/'} className="mt-6 inline-block">
@@ -106,14 +106,14 @@ export default function ContentPage({ kind = 'page' }) {
       {isPost && (
         <Link
           to="/blog"
-          className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+          className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
         >
           &larr; All posts
         </Link>
       )}
 
       <header className={isPost ? 'mt-3' : ''}>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           {content.title}
         </h1>
 
@@ -121,13 +121,13 @@ export default function ContentPage({ kind = 'page' }) {
             current the advice is. On a page like "Privacy policy" it
             would only make the page look stale. */}
         {isPost && (
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-100">
             {[asDate(content.publishedAt), content.author].filter(Boolean).join(' · ')}
           </p>
         )}
 
         {content.excerpt && (
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">{content.excerpt}</p>
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-100">{content.excerpt}</p>
         )}
       </header>
 
@@ -144,15 +144,15 @@ export default function ContentPage({ kind = 'page' }) {
           tag, but a reader scanning for "ATS" or "interview" has not,
           and a word worth targeting is a word worth printing. */}
       {content.seo?.keywords?.length > 0 && (
-        <footer className="mt-10 border-t border-slate-200 pt-6 dark:border-slate-700">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <footer className="mt-10 border-t border-slate-200 pt-6 dark:border-navy-700">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-100">
             Topics
           </h2>
           <ul className="mt-3 flex flex-wrap gap-2">
             {content.seo.keywords.map((keyword) => (
               <li
                 key={keyword}
-                className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-navy-800 dark:text-slate-100"
               >
                 {keyword}
               </li>

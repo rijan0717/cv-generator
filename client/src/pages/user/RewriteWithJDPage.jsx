@@ -186,11 +186,11 @@ export default function RewriteWithJDPage() {
           <Spark />
         </span>
 
-        <h1 className="mt-5 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
+        <h1 className="mt-5 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50">
           Rewrite your CV for <span className={BRAND_TEXT_GRADIENT}>one particular job</span>
         </h1>
 
-        <p className="mt-3 text-[0.95rem] leading-relaxed text-slate-600 dark:text-slate-400">
+        <p className="mt-3 text-[0.95rem] leading-relaxed text-slate-600 dark:text-slate-100">
           Paste the advert and your primary CV comes back speaking its language. Your original is
           not changed, and nothing is saved until you say so.
         </p>
@@ -212,7 +212,7 @@ export default function RewriteWithJDPage() {
         <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <form
             onSubmit={handleRewrite}
-            className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 dark:border-slate-700 dark:bg-slate-900"
+            className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 dark:border-navy-700 dark:bg-navy-900"
           >
             <TextField
               label="Job title"
@@ -223,7 +223,7 @@ export default function RewriteWithJDPage() {
             />
 
             <label className="block">
-              <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="block text-sm font-medium text-slate-700 dark:text-slate-100">
                 Job description
               </span>
               <textarea
@@ -232,7 +232,7 @@ export default function RewriteWithJDPage() {
                 rows={14}
                 maxLength={8000}
                 placeholder="Paste the whole advert, including the requirements. The more of it you paste, the better the rewrite."
-                className="mt-1.5 block w-full rounded-xl border-0 bg-white px-4 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-fuchsia dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-fuchsia-400"
+                className="mt-1.5 block w-full rounded-xl border-0 bg-white px-4 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-fuchsia dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-fuchsia-400"
               />
 
               {/* A bar rather than a sentence: "how much more do I need?"
@@ -251,7 +251,7 @@ export default function RewriteWithJDPage() {
                     style={{ width: `${Math.min(100, (typed / MIN_DESCRIPTION) * 100)}%` }}
                   />
                 </span>
-                <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
+                <span className="shrink-0 text-xs text-slate-500 dark:text-slate-100">
                   {canRewrite
                     ? `${typed} characters — ready`
                     : `${typed} of ${MIN_DESCRIPTION} characters`}
@@ -268,8 +268,8 @@ export default function RewriteWithJDPage() {
           </form>
 
           {/* What is about to happen. */}
-          <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-800/50">
-            <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-100">
+          <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-navy-700 dark:bg-navy-800/50">
+            <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-50">
               What happens next
             </h2>
 
@@ -281,7 +281,7 @@ export default function RewriteWithJDPage() {
                     className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-500/20"
                   >
                     <svg
-                      className="h-3 w-3 text-brand-pink dark:text-fuchsia-400"
+                      className="h-3 w-3 text-brand-pink dark:text-fuchsia-100"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -295,10 +295,10 @@ export default function RewriteWithJDPage() {
                   </span>
 
                   <span>
-                    <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    <span className="block text-sm font-semibold text-slate-900 dark:text-slate-50">
                       {promise.title}
                     </span>
-                    <span className="mt-0.5 block text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    <span className="mt-0.5 block text-xs leading-relaxed text-slate-600 dark:text-slate-100">
                       {promise.detail}
                     </span>
                   </span>
@@ -306,11 +306,11 @@ export default function RewriteWithJDPage() {
               ))}
             </ul>
 
-            <p className="mt-6 border-t border-slate-200 pt-5 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
+            <p className="mt-6 border-t border-slate-200 pt-5 text-xs text-slate-500 dark:border-navy-700 dark:text-slate-100">
               No primary CV yet?{' '}
               <Link
                 to="/cvs"
-                className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-400"
+                className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-100"
               >
                 Choose one in My CVs
               </Link>
@@ -323,9 +323,9 @@ export default function RewriteWithJDPage() {
       {/* --- Step 2: review --- */}
       {isReviewing && (
         <div className="mt-8 space-y-6">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-100">
             Rewritten from your primary CV,{' '}
-            <span className="font-medium text-slate-900 dark:text-slate-100">
+            <span className="font-medium text-slate-900 dark:text-slate-50">
               “{result.sourceCv.title}”
             </span>
             .
@@ -342,7 +342,7 @@ export default function RewriteWithJDPage() {
           {/* The actions stay reachable on a long review: a user who has
               scrolled through forty changes should not have to scroll back
               up to keep them. */}
-          <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6 dark:border-slate-700 dark:bg-slate-900/90">
+          <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6 dark:border-navy-700 dark:bg-navy-900/90">
             <Button onClick={() => handleSave()} isLoading={busy === 'save'} disabled={!!busy}>
               Save CV
             </Button>
@@ -363,14 +363,14 @@ export default function RewriteWithJDPage() {
 
       {/* --- Step 3: saved — set primary, download, open --- */}
       {saved && (
-        <section className="mt-10 max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <section className="mt-10 max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-700 dark:bg-navy-900">
           <div className="h-1.5 cvg-gradient-bg" aria-hidden="true" />
 
           <div className="p-6 sm:p-8">
-            <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">
               Your CV is saved
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-100">
               “{saved.title}” is in{' '}
               <Link to="/cvs" className="font-medium underline">
                 My CVs
@@ -382,12 +382,12 @@ export default function RewriteWithJDPage() {
                 It is the answer to "did that actually help?", so it gets
                 its own panel rather than a clause in a sentence. */}
             {Number.isFinite(saved.tailoredFor?.matchScore) && (
-              <div className="mt-5 flex items-center gap-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
+              <div className="mt-5 flex items-center gap-4 rounded-xl bg-slate-50 p-4 dark:bg-navy-800">
                 <span className="text-center">
-                  <span className="block text-2xl font-bold text-slate-400 dark:text-slate-500">
+                  <span className="block text-2xl font-bold text-slate-500 dark:text-slate-100">
                     {saved.tailoredFor.baselineMatchScore}%
                   </span>
-                  <span className="block text-xs text-slate-500 dark:text-slate-400">before</span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-100">before</span>
                 </span>
 
                 <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">
@@ -398,10 +398,10 @@ export default function RewriteWithJDPage() {
                   <span className={`block text-2xl font-bold ${BRAND_TEXT_GRADIENT}`}>
                     {saved.tailoredFor.matchScore}%
                   </span>
-                  <span className="block text-xs text-slate-500 dark:text-slate-400">after</span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-100">after</span>
                 </span>
 
-                <span className="ml-auto text-xs text-slate-500 dark:text-slate-400">
+                <span className="ml-auto text-xs text-slate-500 dark:text-slate-100">
                   Match with this job
                 </span>
               </div>
@@ -423,7 +423,7 @@ export default function RewriteWithJDPage() {
               </Button>
             </div>
 
-            <div className="mt-5 border-t border-slate-200 pt-5 dark:border-slate-700">
+            <div className="mt-5 border-t border-slate-200 pt-5 dark:border-navy-700">
               <ExportMenu cvId={saved._id} />
             </div>
           </div>

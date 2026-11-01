@@ -66,7 +66,7 @@ export default function JobForm({ onPosted }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+      className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
@@ -91,7 +91,7 @@ export default function JobForm({ onPosted }) {
         <div>
           <label
             htmlFor="new-job-type"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Type
           </label>
@@ -99,7 +99,7 @@ export default function JobForm({ onPosted }) {
             id="new-job-type"
             value={form.jobType}
             onChange={(e) => update('jobType', e.target.value)}
-            className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           >
             {JOB_TYPES.map((type) => (
               <option key={type} value={type}>
@@ -112,7 +112,7 @@ export default function JobForm({ onPosted }) {
         <div>
           <label
             htmlFor="new-work-mode"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Work mode
           </label>
@@ -120,7 +120,7 @@ export default function JobForm({ onPosted }) {
             id="new-work-mode"
             value={form.workMode}
             onChange={(e) => update('workMode', e.target.value)}
-            className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           >
             {WORK_MODES.map((mode) => (
               <option key={mode} value={mode}>
@@ -147,7 +147,7 @@ export default function JobForm({ onPosted }) {
       <div>
         <label
           htmlFor="new-job-description"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           Description
         </label>
@@ -158,7 +158,7 @@ export default function JobForm({ onPosted }) {
           rows={8}
           maxLength={8000}
           placeholder="What the role involves, what you are looking for, and how to succeed in it."
-          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         />
       </div>
 

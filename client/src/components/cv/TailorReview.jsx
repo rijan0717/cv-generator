@@ -59,7 +59,7 @@ export default function TailorReview({ result, draft, onChange, title, onTitleCh
 
         <PageFillPanel fill={result.pageFill} />
 
-        <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <section className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
           <TextField
             label="Title for the new CV"
             value={title}
@@ -80,25 +80,25 @@ export default function TailorReview({ result, draft, onChange, title, onTitleCh
           </Alert>
         )}
 
-        <section className="rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <section className="rounded-xl bg-white dark:bg-navy-900 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
           <button
             type="button"
             onClick={() => setShowChanges((open) => !open)}
             aria-expanded={showChanges}
             className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
           >
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
+            <span className="font-semibold text-slate-900 dark:text-slate-50">
               {result.changes.length} change{result.changes.length === 1 ? '' : 's'} made
             </span>
-            <span className="text-sm text-slate-500 dark:text-slate-400">
+            <span className="text-sm text-slate-500 dark:text-slate-100">
               {showChanges ? 'Hide' : 'Show'}
             </span>
           </button>
 
           {showChanges && (
-            <ul className="space-y-3 border-t border-slate-200 px-5 py-4 dark:border-slate-700">
+            <ul className="space-y-3 border-t border-slate-200 px-5 py-4 dark:border-navy-700">
               {result.changes.length === 0 && (
-                <li className="text-sm text-slate-600 dark:text-slate-400">
+                <li className="text-sm text-slate-600 dark:text-slate-100">
                   Your CV already reads well against this advert. Nothing needed changing.
                 </li>
               )}
@@ -157,7 +157,7 @@ export default function TailorReview({ result, draft, onChange, title, onTitleCh
             <div className="space-y-6">
               {draft.experience.map((role, index) => (
                 <div key={role._id ?? index} className="space-y-3">
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-50">
                     {role.position || 'Role'}
                     {role.company ? ` — ${role.company}` : ''}
                   </p>
@@ -195,7 +195,7 @@ export default function TailorReview({ result, draft, onChange, title, onTitleCh
             <div className="space-y-4">
               {draft.projects.map((project, index) => (
                 <div key={project._id ?? index} className="space-y-2">
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-50">
                     {project.name || `Project ${index + 1}`}
                   </p>
                   <TextArea
@@ -240,14 +240,14 @@ function PageFillPanel({ fill }) {
   const gained = started !== null ? percent - started : 0;
 
   return (
-    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-amber-200 dark:bg-slate-900 dark:ring-amber-900">
+    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-amber-200 dark:bg-navy-900 dark:ring-amber-900">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           This fills about {percent}% of a page
         </h2>
 
         {gained > 0 && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-100">
             up from {started}% before the rewrite
           </p>
         )}
@@ -255,7 +255,7 @@ function PageFillPanel({ fill }) {
 
       {/* The bar is decoration over the number, never instead of it. */}
       <div
-        className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+        className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-navy-800"
         role="img"
         aria-label={`${percent} per cent of an A4 page is filled`}
       >
@@ -265,7 +265,7 @@ function PageFillPanel({ fill }) {
         />
       </div>
 
-      <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
+      <p className="mt-3 text-sm text-slate-600 dark:text-slate-100">
         The rewrite has filled what it can from your own material — it lengthened the summary with
         facts already on your CV and set the type larger. It will not write experience you do not
         have, so the rest of the page is yours. Add it in the builder after saving, or in your
@@ -304,17 +304,17 @@ function DraftPreview({ draft }) {
     // than two screens that happen to show a CV.
     <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Preview</h2>
+        <span className="text-xs text-slate-500 dark:text-slate-100">
           A4 &middot; 210 &times; 297 mm
         </span>
       </div>
 
-      <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mb-3 text-xs text-slate-500 dark:text-slate-100">
         The tailored CV as it will be saved. It updates as you edit.
       </p>
 
-      <div className="rounded-xl bg-slate-200/60 p-4 dark:bg-slate-800/60 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto">
+      <div className="rounded-xl bg-slate-200/60 p-4 dark:bg-navy-800/60 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto">
         <CVPreview cv={draft} />
       </div>
     </aside>
@@ -387,15 +387,15 @@ function CarriedOverSections({ draft }) {
       <div className="space-y-5">
         {sections.map((section) => (
           <div key={section.key}>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
               {section.title}
             </h3>
             <ul className="mt-2 space-y-1.5">
               {section.entries.map((entry) => (
-                <li key={entry.key} className="text-sm text-slate-700 dark:text-slate-300">
+                <li key={entry.key} className="text-sm text-slate-700 dark:text-slate-100">
                   <span className="font-medium">{entry.heading || 'Untitled'}</span>
                   {entry.detail && (
-                    <span className="text-slate-500 dark:text-slate-400"> — {entry.detail}</span>
+                    <span className="text-slate-500 dark:text-slate-100"> — {entry.detail}</span>
                   )}
                 </li>
               ))}
@@ -404,7 +404,7 @@ function CarriedOverSections({ draft }) {
         ))}
 
         {draft.referencesOnRequest && (
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-100">
             References available on request.
           </p>
         )}
@@ -445,8 +445,8 @@ function ScoreComparison({ comparison }) {
   const difference = after.matchScore - before.matchScore;
 
   return (
-    <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Match against this job</h2>
+    <section className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">Match against this job</h2>
 
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <Figure label="Before" value={before.matchScore} band={before.band} />
@@ -462,14 +462,14 @@ function ScoreComparison({ comparison }) {
               ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
               : difference < 0
                 ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
           ].join(' ')}
         >
           {difference > 0 ? `+${difference}` : difference} points
         </p>
       </div>
 
-      <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
+      <p className="mt-3 text-sm text-slate-600 dark:text-slate-100">
         CV strength {before.strengthScore} → {after.strengthScore} out of 100.
       </p>
     </section>
@@ -483,9 +483,9 @@ function ScoreComparison({ comparison }) {
 function Figure({ label, value, band }) {
   return (
     <div>
-      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{value}</p>
-      <p className="text-xs text-slate-500 dark:text-slate-400">{band}</p>
+      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">{label}</p>
+      <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">{value}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-100">{band}</p>
     </div>
   );
 }
@@ -496,16 +496,16 @@ function Figure({ label, value, band }) {
  */
 function ChangeRow({ change }) {
   return (
-    <li className="rounded-lg bg-slate-50 p-3 text-sm dark:bg-slate-800">
-      <p className="font-medium text-slate-900 dark:text-slate-100">
+    <li className="rounded-lg bg-slate-50 p-3 text-sm dark:bg-navy-800">
+      <p className="font-medium text-slate-900 dark:text-slate-50">
         <span className="capitalize">{change.section}</span>
         {change.field ? ` · ${change.field}` : ''}
-        <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-normal capitalize text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+        <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-normal capitalize text-slate-700 dark:bg-slate-700 dark:text-slate-100">
           {change.kind}
         </span>
       </p>
 
-      <p className="mt-1 text-slate-600 dark:text-slate-400">{change.reason}</p>
+      <p className="mt-1 text-slate-600 dark:text-slate-100">{change.reason}</p>
 
       <ChangeText before={change.before} after={change.after} />
     </li>
@@ -528,7 +528,7 @@ function ChangeText({ before, after }) {
 
   if (runs && similarity(runs) >= 0.4) {
     return (
-      <p className="mt-2 leading-relaxed text-slate-800 dark:text-slate-200">
+      <p className="mt-2 leading-relaxed text-slate-800 dark:text-slate-50">
         {runs.map((run, index) =>
           run.type === 'same' ? (
             <span key={index}>{run.text}</span>
@@ -555,9 +555,9 @@ function ChangeText({ before, after }) {
   return (
     <>
       {before ? (
-        <p className="mt-2 text-slate-500 line-through dark:text-slate-500">{before}</p>
+        <p className="mt-2 text-slate-500 line-through dark:text-slate-100">{before}</p>
       ) : null}
-      {after ? <p className="mt-1 text-slate-800 dark:text-slate-200">{after}</p> : null}
+      {after ? <p className="mt-1 text-slate-800 dark:text-slate-50">{after}</p> : null}
     </>
   );
 }
@@ -588,18 +588,18 @@ function RewriteOverview({ changes }) {
 
   return (
     <section className="rounded-xl bg-gradient-to-r from-sky-50 to-fuchsia-50 p-5 ring-1 ring-fuchsia-200 dark:from-sky-950/40 dark:to-fuchsia-950/40 dark:ring-fuchsia-900">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">What the rewrite did</h2>
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">What the rewrite did</h2>
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) => (
           <li
             key={item}
-            className="rounded-full bg-white px-3 py-1 text-sm text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700"
+            className="rounded-full bg-white px-3 py-1 text-sm text-slate-700 ring-1 ring-slate-200 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700"
           >
             {item}
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">
+      <p className="mt-3 text-xs text-slate-600 dark:text-slate-100">
         Every change uses facts already on your CV — nothing about your experience was made up.
         Changed words are highlighted below.
       </p>
@@ -652,14 +652,14 @@ function SkillsEditor({ skills, suggested, assumed, onChange }) {
               'flex items-center gap-2 rounded-full py-1 pl-3 pr-1 text-sm',
               isAssumed.has(skill.name)
                 ? 'bg-violet-100 ring-1 ring-violet-300 dark:bg-violet-950 dark:ring-violet-800'
-                : 'bg-slate-100 dark:bg-slate-800',
+                : 'bg-slate-100 dark:bg-navy-800',
             ].join(' ')}
           >
             <span
               className={
                 isAssumed.has(skill.name)
                   ? 'text-violet-900 dark:text-violet-200'
-                  : 'text-slate-800 dark:text-slate-200'
+                  : 'text-slate-800 dark:text-slate-50'
               }
             >
               {skill.name}
@@ -673,7 +673,7 @@ function SkillsEditor({ skills, suggested, assumed, onChange }) {
             <button
               type="button"
               onClick={() => onChange(skills.filter((_, position) => position !== index))}
-              className="rounded-full px-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+              className="rounded-full px-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:hover:bg-slate-700 dark:hover:text-white"
             >
               <span aria-hidden="true">×</span>
               <span className="sr-only">Remove {skill.name}</span>
@@ -763,7 +763,7 @@ function AddSkill({ skills, onChange }) {
     <form onSubmit={submit} className="mt-4">
       <div className="flex flex-wrap items-end gap-2">
         <label className="min-w-[160px] flex-1">
-          <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          <span className="block text-sm font-medium text-slate-700 dark:text-slate-100">
             Add a skill
           </span>
           <input
@@ -774,18 +774,18 @@ function AddSkill({ skills, onChange }) {
             }}
             maxLength={60}
             placeholder="e.g. Kubernetes"
-            className="mt-1 block w-full rounded-lg border-0 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg border-0 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </label>
 
         <label>
-          <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          <span className="block text-sm font-medium text-slate-700 dark:text-slate-100">
             Level
           </span>
           <select
             value={level}
             onChange={(event) => setLevel(event.target.value)}
-            className="mt-1 rounded-lg border-0 py-2 pl-2 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 rounded-lg border-0 py-2 pl-2 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           >
             {SKILL_LEVELS.map((option) => (
               <option key={option} value={option}>
@@ -803,7 +803,7 @@ function AddSkill({ skills, onChange }) {
       {error ? (
         <p className="mt-1.5 text-sm text-amber-700 dark:text-amber-400">{error}</p>
       ) : (
-        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-100">
           Only add skills you actually have. The match score counts them, and so will the interview.
         </p>
       )}
@@ -827,9 +827,9 @@ function listOf(names) {
  */
 function EditableSection({ title, hint, children }) {
   return (
-    <section className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
-      {hint && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{hint}</p>}
+    <section className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">{title}</h2>
+      {hint && <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">{hint}</p>}
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -848,12 +848,12 @@ function EditableSection({ title, hint, children }) {
 function TextArea({ label, value, rows = 4, onChange }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
+      <span className="block text-sm font-medium text-slate-700 dark:text-slate-100">{label}</span>
       <textarea
         value={value}
         rows={rows}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 block w-full rounded-lg border-0 bg-white px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+        className="mt-1 block w-full rounded-lg border-0 bg-white px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
       />
     </label>
   );

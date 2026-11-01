@@ -42,27 +42,27 @@ export default function Pagination({
       className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
       aria-label="Pagination"
     >
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-slate-500 dark:text-slate-100">
         {total === 0 ? (
           `No ${label}`
         ) : (
           <>
             Showing{' '}
-            <span className="font-medium text-slate-700 dark:text-slate-200">{firstRow}</span>–
-            <span className="font-medium text-slate-700 dark:text-slate-200">{lastRow}</span> of{' '}
-            <span className="font-medium text-slate-700 dark:text-slate-200">{total}</span> {label}
+            <span className="font-medium text-slate-700 dark:text-slate-50">{firstRow}</span>–
+            <span className="font-medium text-slate-700 dark:text-slate-50">{lastRow}</span> of{' '}
+            <span className="font-medium text-slate-700 dark:text-slate-50">{total}</span> {label}
           </>
         )}
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
         {onLimitChange && (
-          <label className="mr-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <label className="mr-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-100">
             <span>Per page</span>
             <select
               value={limit}
               onChange={(event) => onLimitChange(Number(event.target.value))}
-              className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+              className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 dark:border-slate-600 dark:bg-navy-800 dark:text-slate-50"
             >
               {pageSizes.map((size) => (
                 <option key={size} value={size}>
@@ -92,7 +92,7 @@ export default function Pagination({
                 <span
                   key={`gap-${index}`}
                   aria-hidden="true"
-                  className="px-1 text-sm text-slate-400"
+                  className="px-1 text-sm text-slate-500 dark:text-slate-100"
                 >
                   &hellip;
                 </span>

@@ -124,7 +124,7 @@ export default function CompanyForm({ company, onSaved }) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="mt-4 space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+      className="mt-4 space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
@@ -170,7 +170,7 @@ export default function CompanyForm({ company, onSaved }) {
       <div>
         <label
           htmlFor="company-document"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           Registration document {company?.hasDocument ? '' : '*'}
         </label>
@@ -179,9 +179,9 @@ export default function CompanyForm({ company, onSaved }) {
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           onChange={(e) => setDocumentFile(e.target.files?.[0] ?? null)}
-          className="mt-1 block w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200 dark:text-slate-300 dark:file:bg-slate-800 dark:file:text-slate-200"
+          className="mt-1 block w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200 dark:text-slate-100 dark:file:bg-navy-800 dark:file:text-slate-200"
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           {company?.hasDocument ? (
             <>
               A document is on file (
@@ -204,7 +204,7 @@ export default function CompanyForm({ company, onSaved }) {
       <div>
         <label
           htmlFor="company-description"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           About the company
         </label>
@@ -214,11 +214,11 @@ export default function CompanyForm({ company, onSaved }) {
           onChange={(e) => update('description', e.target.value)}
           rows={4}
           maxLength={2000}
-          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         />
       </div>
 
-      <p className="text-xs text-slate-500 dark:text-slate-400">* Required</p>
+      <p className="text-xs text-slate-500 dark:text-slate-100">* Required</p>
 
       <Button type="submit" isLoading={isSaving}>
         {!company

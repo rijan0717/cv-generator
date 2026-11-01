@@ -101,7 +101,7 @@ export default function TemplateGallery({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search templates"
-            className="w-full rounded-lg border-0 bg-white py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="w-full rounded-lg border-0 bg-white py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </label>
 
@@ -117,7 +117,7 @@ export default function TemplateGallery({
                 'rounded-full px-3 py-1 text-xs font-medium transition',
                 category === chip.key
                   ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800',
+                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700 dark:hover:bg-navy-800',
               ].join(' ')}
             >
               {chip.label}
@@ -126,7 +126,7 @@ export default function TemplateGallery({
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-700 dark:text-slate-300">
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-700 dark:text-slate-100">
           <Toggle checked={photoOnly} onChange={setPhotoOnly}>
             With photo
           </Toggle>
@@ -143,11 +143,11 @@ export default function TemplateGallery({
 
       {/* Grid */}
       {visible.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <div className="mt-6 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-navy-700 dark:text-slate-100">
           No templates match these filters.{' '}
           <button
             type="button"
-            className="font-medium text-slate-900 underline dark:text-slate-100"
+            className="font-medium text-slate-900 underline dark:text-slate-50"
             onClick={() => {
               setQuery('');
               setCategory('all');
@@ -197,13 +197,13 @@ function TemplateCard({ template, cv, isSelected, badge, onChoose }) {
       className={[
         'group block w-full overflow-hidden rounded-xl bg-white text-left shadow-sm transition',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900',
-        'dark:bg-slate-900 dark:focus-visible:outline-slate-100',
+        'dark:bg-navy-900 dark:focus-visible:outline-slate-100',
         isSelected
           ? 'ring-2 ring-blue-600 dark:ring-blue-400'
-          : 'ring-1 ring-slate-200 hover:-translate-y-0.5 hover:shadow-md hover:ring-slate-300 dark:ring-slate-700 dark:hover:ring-slate-500',
+          : 'ring-1 ring-slate-200 hover:-translate-y-0.5 hover:shadow-md hover:ring-slate-300 dark:ring-navy-700 dark:hover:ring-slate-500',
       ].join(' ')}
     >
-      <div className="relative border-b border-slate-200 dark:border-slate-700">
+      <div className="relative border-b border-slate-200 dark:border-navy-700">
         <TemplateThumbnail cv={cv} />
         {/* A caller's badge wins the corner: the admin needs to see "Hidden"
             more than it needs to see which row it clicked last. */}
@@ -216,10 +216,10 @@ function TemplateCard({ template, cv, isSelected, badge, onChoose }) {
       </div>
 
       <div className="px-3 py-2.5">
-        <div className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+        <div className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50">
           {template.name}
         </div>
-        <div className="mt-0.5 flex flex-wrap gap-x-2 text-xs text-slate-500 dark:text-slate-400">
+        <div className="mt-0.5 flex flex-wrap gap-x-2 text-xs text-slate-500 dark:text-slate-100">
           <span>{CATEGORY_LABELS[template.category] ?? 'Other'}</span>
           {template.usesPhoto && <span>&middot; Photo</span>}
           {template.isTwoColumn && <span>&middot; Two columns</span>}

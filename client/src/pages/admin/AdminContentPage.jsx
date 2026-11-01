@@ -216,8 +216,8 @@ export default function AdminContentPage({ type }) {
     <div>
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">{copy.heading}</h2>
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{copy.sub}</p>
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">{copy.heading}</h2>
+          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-100">{copy.sub}</p>
         </div>
         <Button size="sm" onClick={() => setEditing(blankDraft(type))}>
           {copy.create}
@@ -230,11 +230,11 @@ export default function AdminContentPage({ type }) {
         </Alert>
       )}
 
-      <div className="mt-4 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <div className="mt-4 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <div>
           <label
             htmlFor="content-status"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Status
           </label>
@@ -245,7 +245,7 @@ export default function AdminContentPage({ type }) {
               setStatusFilter(event.target.value);
               setPage(1);
             }}
-            className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600"
+            className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600"
           >
             <option value="">All</option>
             <option value="published">Published</option>
@@ -255,11 +255,11 @@ export default function AdminContentPage({ type }) {
       </div>
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label={`Loading ${copy.heading.toLowerCase()}`} />
         </div>
       ) : items.length === 0 ? (
-        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
+        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-navy-900 dark:text-slate-100">
           {copy.empty}
         </p>
       ) : (
@@ -267,9 +267,9 @@ export default function AdminContentPage({ type }) {
            screen — what is here, who wrote it, when, is it live — are
            four columns, and the row actions appear under the title on
            hover rather than taking a column of their own. */
-        <div className="mt-4 overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950 dark:text-slate-400">
+        <div className="mt-4 overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-navy-700">
+            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-navy-950 dark:text-slate-100">
               <tr>
                 <th scope="col" className="px-4 py-3">
                   Title
@@ -286,7 +286,7 @@ export default function AdminContentPage({ type }) {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-100 dark:divide-navy-700">
               {items.map((item) => (
                 <tr key={item.id} className="group align-top">
                   <td className="px-4 py-3">
@@ -303,17 +303,17 @@ export default function AdminContentPage({ type }) {
                         <button
                           type="button"
                           onClick={() => openEditor(item)}
-                          className="text-left font-semibold text-slate-900 hover:underline dark:text-slate-100"
+                          className="text-left font-semibold text-slate-900 hover:underline dark:text-slate-50"
                         >
                           {item.title}
                         </button>
                         {item.status !== 'published' && (
-                          <span className="ml-2 text-slate-500 dark:text-slate-400">— Draft</span>
+                          <span className="ml-2 text-slate-500 dark:text-slate-100">— Draft</span>
                         )}
 
                         {/* Always rendered, so the row does not change
                             height on hover; only the colour changes. */}
-                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-400 opacity-80 transition group-hover:opacity-100 dark:text-slate-500">
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-400 opacity-80 transition group-hover:opacity-100 dark:text-slate-100">
                           {/* Disabled while this row has a request in
                               flight, so a double click cannot open the
                               editor twice or publish twice. */}
@@ -336,14 +336,14 @@ export default function AdminContentPage({ type }) {
                               <span aria-hidden="true">|</span>
                               <Link
                                 to={copy.path(item.slug)}
-                                className="text-slate-600 hover:underline dark:text-slate-300"
+                                className="text-slate-600 hover:underline dark:text-slate-100"
                               >
                                 View
                               </Link>
                             </>
                           )}
                           <span aria-hidden="true">|</span>
-                          <code className="text-slate-400 dark:text-slate-500">
+                          <code className="text-slate-500 dark:text-slate-100">
                             {copy.path(item.slug)}
                           </code>
                         </div>
@@ -351,17 +351,17 @@ export default function AdminContentPage({ type }) {
                     </div>
                   </td>
 
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-100">
                     {item.author ?? '—'}
                   </td>
 
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-100">
                     {[item.showInHeader && 'Header', item.showInFooter && 'Footer']
                       .filter(Boolean)
                       .join(', ') || '—'}
                   </td>
 
-                  <td className="whitespace-nowrap px-4 py-3 text-slate-500 dark:text-slate-400">
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-500 dark:text-slate-100">
                     <span className="block">
                       {item.status === 'published' ? 'Published' : 'Last modified'}
                     </span>
@@ -442,14 +442,14 @@ function KeywordInput({ id, keywords, onChange }) {
         {keywords.map((keyword) => (
           <span
             key={keyword}
-            className="inline-flex items-center gap-1 rounded-full bg-slate-100 py-1 pl-2.5 pr-1 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+            className="inline-flex items-center gap-1 rounded-full bg-slate-100 py-1 pl-2.5 pr-1 text-xs text-slate-700 dark:bg-navy-800 dark:text-slate-100"
           >
             {keyword}
             <button
               type="button"
               onClick={() => onChange(keywords.filter((word) => word !== keyword))}
               aria-label={`Remove ${keyword}`}
-              className="grid h-4 w-4 place-items-center rounded-full text-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-slate-100"
+              className="grid h-4 w-4 place-items-center rounded-full text-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white"
             >
               ×
             </button>
@@ -481,7 +481,7 @@ function KeywordInput({ id, keywords, onChange }) {
                 ? 'cv tips, ats, job applications'
                 : 'Add another'
           }
-          className="min-w-[160px] flex-1 border-0 bg-transparent p-1 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none disabled:cursor-not-allowed dark:text-slate-100"
+          className="min-w-[160px] flex-1 border-0 bg-transparent p-1 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none disabled:cursor-not-allowed dark:text-slate-50"
         />
       </div>
     </div>
@@ -538,23 +538,23 @@ function SeoFields({ draft, set, copy }) {
   })();
 
   return (
-    <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+    <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
       <div>
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Search engines</h3>
-        <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-50">Search engines</h3>
+        <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-100">
           Optional. Left blank, the title and summary above are used.
         </p>
       </div>
 
       {/* The preview, roughly as Google lays a result out. */}
-      <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
-        <p className="text-xs text-slate-500 dark:text-slate-400">Preview</p>
+      <div className="rounded-lg bg-slate-50 p-4 dark:bg-navy-800/60">
+        <p className="text-xs text-slate-500 dark:text-slate-100">Preview</p>
         <p className="mt-2 truncate text-xs text-emerald-700 dark:text-emerald-400">
           {window.location.origin}
           {copy.path(draft.slug || 'your-title')}
         </p>
         <p className="truncate text-lg text-blue-700 dark:text-blue-400">{shownTitle}</p>
-        <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
+        <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-100">
           {shownDescription || 'No description yet.'}
         </p>
       </div>
@@ -570,7 +570,7 @@ function SeoFields({ draft, set, copy }) {
       <div>
         <label
           htmlFor="seo-description"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           Search description
         </label>
@@ -580,9 +580,9 @@ function SeoFields({ draft, set, copy }) {
           onChange={(event) => setSeo('metaDescription', event.target.value)}
           rows={2}
           maxLength={160}
-          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600"
+          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600"
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           {seo.metaDescription.length} of 160 characters. This is the sentence under the link.
         </p>
       </div>
@@ -590,7 +590,7 @@ function SeoFields({ draft, set, copy }) {
       <div>
         <label
           htmlFor="seo-keywords"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           Keywords
         </label>
@@ -599,7 +599,7 @@ function SeoFields({ draft, set, copy }) {
           keywords={seo.keywords}
           onChange={(keywords) => setSeo('keywords', keywords)}
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           Type a comma or press Enter to add one. Up to 15. They appear as topics at the end of the{' '}
           {copy.one}, and are added to the search description when you have not written one.
         </p>
@@ -628,7 +628,7 @@ function RowAction({ onClick, danger, disabled, children }) {
         'disabled:cursor-not-allowed disabled:opacity-50',
         danger
           ? 'text-red-600 hover:underline dark:text-red-400'
-          : 'text-slate-600 hover:underline dark:text-slate-300',
+          : 'text-slate-600 hover:underline dark:text-slate-100',
       ].join(' ')}
     >
       {children}
@@ -740,7 +740,7 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           {draft.id ? `Edit ${copy.one}` : copy.create}
         </h2>
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
@@ -748,7 +748,7 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
         </Button>
       </header>
 
-      <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <TextField
           label="Title"
           value={draft.title}
@@ -763,7 +763,7 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
         <div>
           <label
             htmlFor="draft-excerpt"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Summary
           </label>
@@ -773,9 +773,9 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
             onChange={(event) => set('excerpt', event.target.value)}
             rows={2}
             maxLength={300}
-            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600"
+            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600"
           />
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
             One line, shown {type === 'post' ? 'in the blog list' : 'under the title'}.{' '}
             {draft.excerpt.length} of 300 characters.
           </p>
@@ -784,7 +784,7 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
         {/* The main picture. Above the body because it is above the
             body on the page it produces. */}
         <div>
-          <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          <span className="block text-sm font-medium text-slate-700 dark:text-slate-100">
             Main picture
           </span>
           <div className="mt-2 flex flex-wrap items-center gap-4">
@@ -792,12 +792,12 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
               <img
                 src={draft.coverImageUrl}
                 alt=""
-                className="h-24 w-40 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+                className="h-24 w-40 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-navy-700"
               />
             ) : (
               <span
                 aria-hidden="true"
-                className="grid h-24 w-40 place-items-center rounded-lg bg-slate-100 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                className="grid h-24 w-40 place-items-center rounded-lg bg-slate-100 text-xs text-slate-500 dark:bg-navy-800 dark:text-slate-100"
               >
                 None
               </span>
@@ -832,7 +832,7 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
               )}
             </div>
           </div>
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-100">
             JPG, PNG or WEBP. Shown at the top of the {copy.one} and beside it in lists.
           </p>
         </div>
@@ -840,21 +840,21 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
 
       <SeoFields draft={draft} set={set} copy={copy} />
 
-      <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Body</h3>
-        <p className="mb-3 mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+      <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-50">Body</h3>
+        <p className="mb-3 mt-0.5 text-sm text-slate-500 dark:text-slate-100">
           Write here. Paste or drag a picture in to place it in the text.
         </p>
 
         <RichTextEditor value={draft.bodyHtml} onChange={(html) => set('bodyHtml', html)} />
       </div>
 
-      <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label
               htmlFor="draft-status"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Status
             </label>
@@ -862,13 +862,13 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
               id="draft-status"
               value={draft.status}
               onChange={(event) => set('status', event.target.value)}
-              className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600"
+              className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
           </div>
-          <p className="pb-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="pb-2 text-sm text-slate-500 dark:text-slate-100">
             {draft.status === 'published' ? 'Anyone can read it.' : 'Only you can see it.'}
           </p>
         </div>
@@ -877,13 +877,13 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
             moment it is published, so asking a writer where to link it
             is a question with no useful answer. */}
         {type === 'page' && (
-          <div className="border-t border-slate-200 pt-4 dark:border-slate-700">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Where it is linked</h3>
-            <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          <div className="border-t border-slate-200 pt-4 dark:border-navy-700">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-50">Where it is linked</h3>
+            <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-100">
               A draft is never linked, whatever is ticked here.
             </p>
 
-            <label className="mt-3 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+            <label className="mt-3 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-100">
               <input
                 type="checkbox"
                 checked={draft.showInHeader}
@@ -893,7 +893,7 @@ function ContentEditor({ value, type, copy, onCancel, onSave }) {
               Show in the header
             </label>
 
-            <label className="mt-2 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+            <label className="mt-2 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-100">
               <input
                 type="checkbox"
                 checked={draft.showInFooter}

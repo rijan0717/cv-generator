@@ -69,10 +69,10 @@ export default function WelcomePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl dark:text-slate-100">
+      <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl dark:text-slate-50">
         Welcome, {user.name.split(' ')[0]} ! How will you use SmartCV?
       </h1>
-      <p className="mt-2 text-center text-slate-600 dark:text-slate-400">
+      <p className="mt-2 text-center text-slate-600 dark:text-slate-100">
         Choose one. This sets up your account.
       </p>
 
@@ -87,19 +87,19 @@ export default function WelcomePage() {
               aria-checked={selected}
               onClick={() => setChoice(option.value)}
               className={[
-                'rounded-xl border-2 bg-white p-6 text-left transition dark:bg-slate-900',
+                'rounded-xl border-2 bg-white p-6 text-left transition dark:bg-navy-900',
                 selected
                   ? 'border-indigo-600 ring-2 ring-indigo-200 dark:border-indigo-400 dark:ring-indigo-900'
-                  : 'border-slate-200 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500',
+                  : 'border-slate-200 hover:border-slate-400 dark:border-navy-700 dark:hover:border-slate-500',
               ].join(' ')}
             >
-              <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+              <span className="text-lg font-semibold text-slate-900 dark:text-slate-50">
                 {option.title}
               </span>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-100">
                 {option.description}
               </p>
-              <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">
+              <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-100">
                 {option.points.map((point) => (
                   <li key={point}>{point}</li>
                 ))}

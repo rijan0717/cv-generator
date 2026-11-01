@@ -141,7 +141,7 @@ export default function AdminInterviewPositionPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading position" />
       </div>
     );
@@ -159,18 +159,18 @@ export default function AdminInterviewPositionPage() {
     <div>
       <Link
         to="/admin/interview"
-        className="text-sm text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
+        className="text-sm text-slate-500 underline-offset-2 hover:underline dark:text-slate-100"
       >
         &larr; All positions
       </Link>
 
       <header className="mt-2 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">{position.title}</h2>
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">{position.title}</h2>
         <span
           className={
             position.isActive
               ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-              : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+              : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-navy-800 dark:text-slate-100'
           }
         >
           {position.isActive ? 'Offered to users' : 'Hidden'}
@@ -194,7 +194,7 @@ export default function AdminInterviewPositionPage() {
                 'rounded-full px-3 py-1 text-xs font-medium capitalize transition',
                 level === entry
                   ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700',
+                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700',
               ].join(' ')}
             >
               {entry}
@@ -219,10 +219,10 @@ export default function AdminInterviewPositionPage() {
         {levelQuestions.map((question, index) => (
           <li
             key={question.id}
-            className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+            className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
           >
             <div className="flex items-start justify-between gap-3">
-              <p className="font-medium text-slate-900 dark:text-slate-100">
+              <p className="font-medium text-slate-900 dark:text-slate-50">
                 {index + 1}. {question.text}
               </p>
               <Button size="sm" variant="ghost" onClick={() => removeQuestion(question)}>
@@ -237,7 +237,7 @@ export default function AdminInterviewPositionPage() {
                   className={
                     optionIndex === question.correctIndex
                       ? 'font-medium text-emerald-700 dark:text-emerald-400'
-                      : 'text-slate-600 dark:text-slate-400'
+                      : 'text-slate-600 dark:text-slate-100'
                   }
                 >
                   {String.fromCharCode(65 + optionIndex)}) {option.text}
@@ -246,13 +246,13 @@ export default function AdminInterviewPositionPage() {
               ))}
             </ol>
 
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-              <span className="font-medium text-slate-700 dark:text-slate-300">Why: </span>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-100">
+              <span className="font-medium text-slate-700 dark:text-slate-100">Why: </span>
               {question.explanation}
             </p>
 
             {question.topic && (
-              <code className="mt-2 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+              <code className="mt-2 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-navy-800 dark:text-slate-100">
                 {question.topic}
               </code>
             )}
@@ -261,7 +261,7 @@ export default function AdminInterviewPositionPage() {
       </ul>
 
       {levelQuestions.length === 0 && (
-        <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-navy-700 dark:text-slate-100">
           No questions at {level} level yet.
         </p>
       )}
@@ -286,10 +286,10 @@ function ExamSettings({ position, isSaving, onSave }) {
         event.preventDefault();
         onSave({ examSettings: settings });
       }}
-      className="mt-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+      className="mt-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
     >
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Exam</h3>
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Exam</h3>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
         Questions are drawn automatically from this position&rsquo;s active questions at the level
         the user picks.
       </p>
@@ -335,7 +335,7 @@ function NumberField({ label, value, min, max, onChange }) {
 
   return (
     <div>
-      <label htmlFor={id} className="block text-xs font-medium text-slate-600 dark:text-slate-400">
+      <label htmlFor={id} className="block text-xs font-medium text-slate-600 dark:text-slate-100">
         {label}
       </label>
       <input
@@ -345,7 +345,7 @@ function NumberField({ label, value, min, max, onChange }) {
         max={max}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+        className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
       />
     </div>
   );
@@ -386,13 +386,13 @@ function QuestionForm({ onAdd, onError }) {
   return (
     <form
       onSubmit={submit}
-      className="mt-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+      className="mt-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
     >
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Add a question</h3>
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Add a question</h3>
 
       <label
         htmlFor="question-text"
-        className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+        className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-100"
       >
         Question
       </label>
@@ -402,11 +402,11 @@ function QuestionForm({ onAdd, onError }) {
         onChange={(event) => setDraft({ ...draft, text: event.target.value })}
         rows={2}
         maxLength={1000}
-        className="mt-1 w-full rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+        className="mt-1 w-full rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
       />
 
       <fieldset className="mt-3">
-        <legend className="text-xs font-medium text-slate-600 dark:text-slate-400">
+        <legend className="text-xs font-medium text-slate-600 dark:text-slate-100">
           Options — select the correct one
         </legend>
 
@@ -434,7 +434,7 @@ function QuestionForm({ onAdd, onError }) {
                 }}
                 placeholder={`Option ${String.fromCharCode(65 + index)}`}
                 maxLength={400}
-                className="min-w-0 flex-1 rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+                className="min-w-0 flex-1 rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
               />
             </div>
           ))}
@@ -443,7 +443,7 @@ function QuestionForm({ onAdd, onError }) {
 
       <label
         htmlFor="explanation"
-        className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+        className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-100"
       >
         Why that answer is right
       </label>
@@ -453,12 +453,12 @@ function QuestionForm({ onAdd, onError }) {
         onChange={(event) => setDraft({ ...draft, explanation: event.target.value })}
         rows={2}
         maxLength={1500}
-        className="mt-1 w-full rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+        className="mt-1 w-full rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
       />
 
       <label
         htmlFor="topic"
-        className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+        className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-100"
       >
         Topic (groups the exam breakdown, e.g. &ldquo;hooks&rdquo;)
       </label>
@@ -467,7 +467,7 @@ function QuestionForm({ onAdd, onError }) {
         value={draft.topic}
         onChange={(event) => setDraft({ ...draft, topic: event.target.value })}
         maxLength={40}
-        className="mt-1 w-full rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+        className="mt-1 w-full rounded-lg border-0 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
       />
 
       <Button type="submit" size="sm" className="mt-3" isLoading={isSaving} disabled={!isComplete}>

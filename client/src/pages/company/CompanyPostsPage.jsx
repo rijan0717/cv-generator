@@ -61,7 +61,7 @@ export default function CompanyPostsPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[20vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[20vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading your posts" />
       </div>
     );
@@ -70,7 +70,7 @@ export default function CompanyPostsPage() {
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           Your postings <span className="text-slate-500">({jobs.length})</span>
         </h2>
         <Button size="sm" onClick={() => setIsPosting((open) => !open)}>
@@ -98,8 +98,8 @@ export default function CompanyPostsPage() {
       )}
 
       {jobs.length === 0 ? (
-        <div className="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-slate-900">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-navy-900">
+          <p className="text-sm text-slate-600 dark:text-slate-100">
             You have not posted any jobs yet.
           </p>
         </div>
@@ -108,16 +108,16 @@ export default function CompanyPostsPage() {
           {jobs.map((job) => (
             <li
               key={job._id}
-              className="flex flex-wrap items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+              className="flex flex-wrap items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
             >
               <div className="min-w-0 flex-1">
                 <Link
                   to={`/jobs/${job._id}`}
-                  className="font-medium text-slate-900 hover:underline dark:text-slate-100"
+                  className="font-medium text-slate-900 hover:underline dark:text-slate-50"
                 >
                   {job.title}
                 </Link>
-                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
                   {job.jobType}
                   {job.location && <> &middot; {job.location}</>} &middot; posted{' '}
                   {new Date(job.createdAt).toLocaleDateString('en-GB')}
@@ -128,7 +128,7 @@ export default function CompanyPostsPage() {
                 className={
                   job.status === 'open'
                     ? 'rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                    : 'rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                    : 'rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-navy-800 dark:text-slate-100'
                 }
               >
                 {job.status}

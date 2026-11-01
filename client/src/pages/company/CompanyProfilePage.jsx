@@ -71,9 +71,9 @@ export default function CompanyProfilePage() {
 
   return (
     <>
-      <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Logo</h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">Logo</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Shown beside every job you post. JPG, PNG or WEBP, up to 2 MB.
         </p>
 
@@ -111,7 +111,7 @@ export default function CompanyProfilePage() {
       </section>
 
       <section className="mt-6">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Company details</h2>
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">Company details</h2>
         {/* Approved details are locked (the server refuses edits too); only
             the logo above can still change. */}
         {company.status === 'approved' ? (
@@ -141,28 +141,28 @@ const DETAIL_FIELDS = [
  */
 function LockedDetails({ company }) {
   return (
-    <div className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+    <div className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+      <p className="text-sm text-slate-500 dark:text-slate-100">
         Your company is approved, so these details are locked. Only the logo can be changed.
       </p>
 
       <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
         {DETAIL_FIELDS.map(([label, field]) => (
           <div key={field}>
-            <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
               {label}
             </dt>
-            <dd className="text-slate-900 dark:text-slate-100">{company[field] || '—'}</dd>
+            <dd className="text-slate-900 dark:text-slate-50">{company[field] || '—'}</dd>
           </div>
         ))}
       </dl>
 
       {company.description && (
         <div className="mt-4 text-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
             About the company
           </p>
-          <p className="mt-1 whitespace-pre-line text-slate-800 dark:text-slate-200">
+          <p className="mt-1 whitespace-pre-line text-slate-800 dark:text-slate-50">
             {company.description}
           </p>
         </div>

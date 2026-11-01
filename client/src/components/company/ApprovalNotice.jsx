@@ -40,17 +40,17 @@ export default function ApprovalNotice({ message, detail }) {
         </svg>
       </span>
 
-      <h1 className="mt-4 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+      <h1 className="mt-4 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
         You cannot use this page yet
       </h1>
 
-      <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">{message}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">{message}</p>
 
       {detail && (
-        <p className="mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-500">{detail}</p>
+        <p className="mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-100">{detail}</p>
       )}
 
-      <p className="mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-500">
+      <p className="mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-100">
         You will be able to use this page as soon as an admin approves your company.
       </p>
 

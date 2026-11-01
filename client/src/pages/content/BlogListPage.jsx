@@ -58,10 +58,10 @@ export default function BlogListPage() {
     // and this is a list to scan rather than a column to read.
     <div className="mx-auto max-w-[1400px] px-4 py-10">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Blogs
         </h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-slate-600 dark:text-slate-100">
           Advice on writing a CV, reading a job advert and getting past screening software.
         </p>
       </header>
@@ -73,11 +73,11 @@ export default function BlogListPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-12 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-12 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading posts" />
         </div>
       ) : posts.length === 0 ? (
-        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
+        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center text-slate-600 dark:border-slate-600 dark:bg-navy-900 dark:text-slate-100">
           Nothing has been published yet. Check back soon.
         </p>
       ) : (
@@ -89,7 +89,7 @@ export default function BlogListPage() {
             <li key={post.id}>
               <Link
                 to={`/blog/${post.slug}`}
-                className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-slate-300 dark:bg-slate-900 dark:ring-slate-700 dark:hover:ring-slate-600"
+                className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-slate-300 dark:bg-navy-900 dark:ring-navy-700 dark:hover:ring-slate-600"
               >
                 {post.coverImageUrl ? (
                   <img
@@ -103,30 +103,30 @@ export default function BlogListPage() {
                   // the grid reads as a wall of unbroken text.
                   <span
                     aria-hidden="true"
-                    className="grid h-40 w-full place-items-center bg-slate-100 text-4xl font-bold text-slate-300 dark:bg-slate-800 dark:text-slate-600"
+                    className="grid h-40 w-full place-items-center bg-slate-100 text-4xl font-bold text-slate-300 dark:bg-navy-800 dark:text-slate-600"
                   >
                     {post.title.charAt(0).toUpperCase()}
                   </span>
                 )}
 
                 <div className="flex flex-1 flex-col p-5">
-                  <h2 className="font-semibold leading-snug text-slate-900 dark:text-slate-100">
+                  <h2 className="font-semibold leading-snug text-slate-900 dark:text-slate-50">
                     {post.title}
                   </h2>
 
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
                     {[asDate(post.publishedAt), post.author].filter(Boolean).join(' · ')}
                   </p>
 
                   {post.excerpt && (
                     // Clamped, so four cards in a row keep their tops
                     // and bottoms aligned however long the summaries are.
-                    <p className="mt-3 line-clamp-4 text-sm text-slate-600 dark:text-slate-400">
+                    <p className="mt-3 line-clamp-4 text-sm text-slate-600 dark:text-slate-100">
                       {post.excerpt}
                     </p>
                   )}
 
-                  <span className="mt-auto pt-4 text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <span className="mt-auto pt-4 text-sm font-medium text-slate-900 dark:text-slate-50">
                     Read more →
                   </span>
                 </div>

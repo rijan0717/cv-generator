@@ -84,7 +84,7 @@ export default function InterviewPositionPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading position" />
       </div>
     );
@@ -107,15 +107,15 @@ export default function InterviewPositionPage() {
     <div className="mx-auto max-w-3xl">
       <Link
         to="/interview"
-        className="text-sm text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
+        className="text-sm text-slate-500 underline-offset-2 hover:underline dark:text-slate-100"
       >
         &larr; All positions
       </Link>
 
       <header className="mt-2">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{position.title}</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{position.title}</h1>
         {position.description && (
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{position.description}</p>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-100">{position.description}</p>
         )}
       </header>
 
@@ -136,7 +136,7 @@ export default function InterviewPositionPage() {
               'rounded-full px-3 py-1 text-sm font-medium capitalize transition',
               level === entry
                 ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700',
+                : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700',
             ].join(' ')}
           >
             {entry}
@@ -144,16 +144,16 @@ export default function InterviewPositionPage() {
         ))}
       </div>
 
-      <section className="mt-5 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Test yourself</h2>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+      <section className="mt-5 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">Test yourself</h2>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-100">
           {needed} question{needed === 1 ? '' : 's'} drawn from every level — junior, mid and senior
           together, as a real interview would. Pass mark {position.examSettings.passMark}%.
           {position.examSettings.timeLimitMinutes > 0
             ? ` You have ${position.examSettings.timeLimitMinutes} minutes.`
             : ' There is no time limit.'}
         </p>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           Retake it as often as you like. Each paper is drawn afresh, the options are reshuffled,
           and anything you got wrong last time is more likely to come back.
         </p>
@@ -162,11 +162,11 @@ export default function InterviewPositionPage() {
         </Button>
       </section>
 
-      <h2 className="mt-8 font-semibold text-slate-900 dark:text-slate-100">
+      <h2 className="mt-8 font-semibold text-slate-900 dark:text-slate-50">
         Study {level} questions{' '}
         <span className="font-normal text-slate-500">({questions.length})</span>
       </h2>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-100">
         Try to answer each one before opening it. The reasoning matters more than the answer — an
         interviewer will ask why.
       </p>
@@ -178,7 +178,7 @@ export default function InterviewPositionPage() {
       </ul>
 
       {questions.length === 0 && (
-        <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-navy-700 dark:text-slate-100">
           No questions at this level yet.
         </p>
       )}
@@ -194,8 +194,8 @@ function StudyCard({ question, number }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <li className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-      <p className="font-medium text-slate-900 dark:text-slate-100">
+    <li className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+      <p className="font-medium text-slate-900 dark:text-slate-50">
         {number}. {question.text}
       </p>
 
@@ -208,7 +208,7 @@ function StudyCard({ question, number }) {
             <span className="font-medium">Answer: </span>
             {question.answer}
           </p>
-          <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+          <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 dark:bg-navy-800 dark:text-slate-100">
             <span className="font-medium">Why: </span>
             {question.explanation}
           </p>
@@ -220,7 +220,7 @@ function StudyCard({ question, number }) {
       )}
 
       {question.topic && (
-        <code className="mt-2 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+        <code className="mt-2 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 dark:bg-navy-800 dark:text-slate-100">
           {question.topic}
         </code>
       )}

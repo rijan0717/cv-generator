@@ -75,11 +75,11 @@ export default function AdminCVsPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end gap-3 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <div className="flex flex-wrap items-end gap-3 rounded-xl bg-white dark:bg-navy-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
         <div className="min-w-[220px] flex-1">
           <label
             htmlFor="cv-search"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Search by title
           </label>
@@ -90,14 +90,14 @@ export default function AdminCVsPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </div>
 
         <div>
           <label
             htmlFor="cv-template"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Template
           </label>
@@ -108,7 +108,7 @@ export default function AdminCVsPage() {
               setTemplateKey(e.target.value);
               setPage(1);
             }}
-            className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           >
             <option value="">All</option>
             {TEMPLATES.map((template) => (
@@ -127,17 +127,17 @@ export default function AdminCVsPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading CVs" />
         </div>
       ) : cvs.length === 0 ? (
-        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-10 text-center text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-navy-900 p-10 text-center text-sm text-slate-600 dark:text-slate-100">
           No CVs match those filters.
         </p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-950 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <div className="mt-4 overflow-x-auto rounded-xl bg-white dark:bg-navy-900 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+          <table className="min-w-full divide-y divide-slate-200 dark:divide-navy-700 text-sm">
+            <thead className="bg-slate-50 dark:bg-navy-950 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
               <tr>
                 <th scope="col" className="px-4 py-3">
                   Title
@@ -160,13 +160,13 @@ export default function AdminCVsPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-100 dark:divide-navy-700">
               {cvs.map((cv) => (
                 <tr key={cv._id}>
                   <td className="px-4 py-3">
                     <Link
                       to={`/admin/cvs/${cv._id}`}
-                      className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
+                      className="font-medium text-slate-900 dark:text-slate-50 hover:underline"
                     >
                       {cv.title}
                     </Link>
@@ -175,26 +175,26 @@ export default function AdminCVsPage() {
                   <td className="px-4 py-3">
                     {cv.user ? (
                       <>
-                        <div className="text-slate-900 dark:text-slate-100">{cv.user.name}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                        <div className="text-slate-900 dark:text-slate-50">{cv.user.name}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-100">
                           {cv.user.email}
                         </div>
                       </>
                     ) : (
-                      <span className="text-slate-500 dark:text-slate-400">Unknown</span>
+                      <span className="text-slate-500 dark:text-slate-100">Unknown</span>
                     )}
                   </td>
 
-                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                  <td className="px-4 py-3 text-slate-700 dark:text-slate-100">
                     {getTemplate(cv.templateKey).name}
                   </td>
 
-                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                  <td className="px-4 py-3 text-slate-700 dark:text-slate-100">
                     {/* Every CV is scored, so an empty one shows 0 rather than a dash. */}(
                     {Number.isFinite(cv.strengthScore) ? cv.strengthScore : 0})
                   </td>
 
-                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-100">
                     {new Date(cv.updatedAt).toLocaleDateString('en-GB')}
                   </td>
 

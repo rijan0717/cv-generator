@@ -109,7 +109,7 @@ export default function InterviewExamPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading exam" />
       </div>
     );
@@ -136,10 +136,10 @@ export default function InterviewExamPage() {
     <div className="mx-auto max-w-3xl">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">
             {attempt.positionTitle}
           </h1>
-          <p className="text-sm capitalize text-slate-500 dark:text-slate-400">
+          <p className="text-sm capitalize text-slate-500 dark:text-slate-100">
             {attempt.level} level &middot; pass mark {attempt.passMark}%
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function InterviewExamPage() {
               'rounded-full px-3 py-1 text-sm font-medium tabular-nums',
               secondsLeft <= 60
                 ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
             ].join(' ')}
             role="timer"
             aria-live={secondsLeft <= 60 ? 'assertive' : 'off'}
@@ -162,7 +162,7 @@ export default function InterviewExamPage() {
 
       {/* Progress */}
       <div className="mt-4">
-        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-100">
           <span>
             Question {current + 1} of {attempt.questions.length}
           </span>
@@ -176,10 +176,10 @@ export default function InterviewExamPage() {
         </div>
       </div>
 
-      <fieldset className="mt-5 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <fieldset className="mt-5 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <legend className="sr-only">Question {current + 1}</legend>
 
-        <p className="font-medium text-slate-900 dark:text-slate-100">{question.text}</p>
+        <p className="font-medium text-slate-900 dark:text-slate-50">{question.text}</p>
 
         <div className="mt-3 space-y-2">
           {question.options.map((option, index) => (
@@ -188,8 +188,8 @@ export default function InterviewExamPage() {
               className={[
                 'flex cursor-pointer items-start gap-3 rounded-lg p-3 text-sm ring-1 transition',
                 answers[current] === index
-                  ? 'bg-slate-50 ring-slate-900 dark:bg-slate-800 dark:ring-slate-100'
-                  : 'ring-slate-200 hover:bg-slate-50 dark:ring-slate-700 dark:hover:bg-slate-800',
+                  ? 'bg-slate-50 ring-slate-900 dark:bg-navy-800 dark:ring-slate-100'
+                  : 'ring-slate-200 hover:bg-slate-50 dark:ring-navy-700 dark:hover:bg-navy-800',
               ].join(' ')}
             >
               <input
@@ -203,7 +203,7 @@ export default function InterviewExamPage() {
                 }}
                 className="mt-0.5 h-4 w-4"
               />
-              <span className="text-slate-700 dark:text-slate-300">
+              <span className="text-slate-700 dark:text-slate-100">
                 {String.fromCharCode(65 + index)}) {option.text}
               </span>
             </label>
@@ -259,8 +259,8 @@ export default function InterviewExamPage() {
               index === current
                 ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
                 : answers[index] !== null
-                  ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
-                  : 'bg-white text-slate-500 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:ring-slate-700',
+                  ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-50'
+                  : 'bg-white text-slate-500 ring-1 ring-slate-200 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700',
             ].join(' ')}
           >
             {index + 1}
@@ -281,7 +281,7 @@ function ExamResult({ result }) {
     <div className="mx-auto max-w-3xl">
       <Link
         to="/interview"
-        className="text-sm text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
+        className="text-sm text-slate-500 underline-offset-2 hover:underline dark:text-slate-100"
       >
         &larr; All positions
       </Link>
@@ -294,13 +294,13 @@ function ExamResult({ result }) {
             : 'bg-amber-50 ring-amber-200 dark:bg-amber-950 dark:ring-amber-800',
         ].join(' ')}
       >
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-sm text-slate-600 dark:text-slate-100">
           {result.positionTitle} &middot; <span className="capitalize">{result.level}</span>
         </p>
-        <p className="mt-1 text-5xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
+        <p className="mt-1 text-5xl font-bold tabular-nums text-slate-900 dark:text-slate-50">
           {result.score}%
         </p>
-        <p className="mt-1 font-medium text-slate-700 dark:text-slate-200">
+        <p className="mt-1 font-medium text-slate-700 dark:text-slate-50">
           {result.passed ? 'Passed' : 'Not passed'} &middot; {result.correctCount} of {result.total}{' '}
           correct &middot; pass mark {result.passMark}%
         </p>
@@ -311,7 +311,7 @@ function ExamResult({ result }) {
           {result.suggestions.map((suggestion, index) => (
             <li
               key={index}
-              className="rounded-lg bg-white p-3 text-sm text-slate-700 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700"
+              className="rounded-lg bg-white p-3 text-sm text-slate-700 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700"
             >
               {suggestion}
             </li>
@@ -321,11 +321,11 @@ function ExamResult({ result }) {
 
       {result.breakdown?.length > 0 && (
         <section className="mt-6">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">By topic</h2>
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">By topic</h2>
           <ul className="mt-2 space-y-2">
             {result.breakdown.map((topic) => (
               <li key={topic.topic} className="flex items-center gap-3 text-sm">
-                <span className="w-32 shrink-0 truncate capitalize text-slate-700 dark:text-slate-300">
+                <span className="w-32 shrink-0 truncate capitalize text-slate-700 dark:text-slate-100">
                   {topic.topic}
                 </span>
                 <span className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
@@ -337,7 +337,7 @@ function ExamResult({ result }) {
                     style={{ width: `${topic.percentage}%` }}
                   />
                 </span>
-                <span className="w-16 shrink-0 text-right tabular-nums text-slate-500 dark:text-slate-400">
+                <span className="w-16 shrink-0 text-right tabular-nums text-slate-500 dark:text-slate-100">
                   {topic.correct}/{topic.asked}
                 </span>
               </li>
@@ -346,19 +346,19 @@ function ExamResult({ result }) {
         </section>
       )}
 
-      <h2 className="mt-8 font-semibold text-slate-900 dark:text-slate-100">Your answers</h2>
+      <h2 className="mt-8 font-semibold text-slate-900 dark:text-slate-50">Your answers</h2>
       <ul className="mt-3 space-y-3">
         {result.questions.map((question) => (
           <li
             key={question.number}
             className={[
-              'rounded-xl bg-white p-4 shadow-sm ring-1 dark:bg-slate-900',
+              'rounded-xl bg-white p-4 shadow-sm ring-1 dark:bg-navy-900',
               question.isCorrect
-                ? 'ring-slate-200 dark:ring-slate-700'
+                ? 'ring-slate-200 dark:ring-navy-700'
                 : 'ring-amber-300 dark:ring-amber-800',
             ].join(' ')}
           >
-            <p className="font-medium text-slate-900 dark:text-slate-100">
+            <p className="font-medium text-slate-900 dark:text-slate-50">
               {question.number}. {question.text}
             </p>
 
@@ -375,7 +375,7 @@ function ExamResult({ result }) {
                         ? 'font-medium text-emerald-700 dark:text-emerald-400'
                         : isChosen
                           ? 'text-red-600 line-through dark:text-red-400'
-                          : 'text-slate-600 dark:text-slate-400'
+                          : 'text-slate-600 dark:text-slate-100'
                     }
                   >
                     {String.fromCharCode(65 + index)}) {option.text}
@@ -387,12 +387,12 @@ function ExamResult({ result }) {
             </ol>
 
             {question.chosenIndex === null && (
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
                 You did not answer this one.
               </p>
             )}
 
-            <p className="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+            <p className="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700 dark:bg-navy-800 dark:text-slate-100">
               <span className="font-medium">Why: </span>
               {question.explanation}
             </p>

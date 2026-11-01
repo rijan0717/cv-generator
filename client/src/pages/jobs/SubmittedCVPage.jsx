@@ -17,16 +17,16 @@ export default function SubmittedCVPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <Link
         to="/applications"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
       >
         &larr; My applications
       </Link>
 
       <header className="mt-3">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           The CV you sent
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Exactly as the employer received it.
         </p>
       </header>

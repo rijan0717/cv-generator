@@ -23,33 +23,117 @@
  */
 
 .cvg-gradient-bg {
-  background-image: linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  /* The solid colour first, so a button is still a wine button if the
+     gradient cannot be painted. Cream text on it stays legible either
+     way, which is the only thing that actually matters here. */
+  background-color: #8e1a28;
+  background-image: linear-gradient(90deg, #7b1220 0%, #a32638 55%, #c65a6b 100%);
 }
 
 .cvg-gradient-text {
-  background-image: linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  background-image: linear-gradient(90deg, #7b1220 0%, #a32638 55%, #c65a6b 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Lightened in dark mode: violet #7c3aed is a mid-tone that reads on white
-   but sits too close to a slate-950 page to be legible. */
+/* Lightened in the dark theme: the wine end of the ramp is close to the
+   maroon page, so the gradient has to run well above it or the first
+   third of every headline sinks into the background. */
 html.dark .cvg-gradient-text {
-  background-image: linear-gradient(90deg, #a78bfa 0%, #e879f9 50%, #f9a8d4 100%);
+  background-image: linear-gradient(90deg, #fadde1 0%, #f6e3d0 55%, #faf4e8 100%);
 }
 
 /*
- * The wordmark's face: the display sans, set heavy and tight.
+ * The headline shimmer.
+ *
+ * A wide gradient slid slowly across the clipped text, so the highlight
+ * travels through the words once every eight seconds. The background has
+ * to be oversized for there to be anything to slide; 200% is the smallest
+ * that keeps the ends from showing.
+ *
+ * Applied on top of `.cvg-gradient-text`, never instead of it, so a
+ * reduced-motion reader still gets the gradient — just a still one.
+ */
+.cvg-shimmer {
+  background-size: 200% 100%;
+  animation: cvg-shimmer 8s linear infinite;
+}
+
+@keyframes cvg-shimmer {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+/*
+ * A gradient border.
+ *
+ * Two backgrounds in one box: the surface, painted only over the padding
+ * box, and the gradient, painted over the whole border box. The border is
+ * transparent, so the gradient shows through exactly where the border is.
+ * This is the only way to get a gradient into a border that also has a
+ * radius — `border-image` does not follow `border-radius`.
+ *
+ * The surface colour is a variable so a card can set its own without
+ * restating the rest of the rule.
+ */
+.cvg-gradient-border {
+  --cvg-surface: #fcf8f0;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--cvg-surface), var(--cvg-surface)) padding-box,
+    linear-gradient(135deg, #7b1220, #c65a6b) border-box;
+}
+
+html.dark .cvg-gradient-border {
+  --cvg-surface: #8d3b49;
+}
+
+/*
+ * The glow behind a primary button.
+ *
+ * A coloured shadow rather than a blurred pseudo-element: it costs no
+ * extra box, it clips to the border radius for free, and it can be
+ * transitioned. Two layers — a tight one for weight, a wide one for the
+ * aura.
+ */
+.cvg-glow {
+  box-shadow:
+    0 2px 8px -2px rgb(123 18 32 / 0.45),
+    0 8px 28px -6px rgb(198 90 107 / 0.4);
+}
+
+.cvg-glow-hover {
+  transition: box-shadow 250ms ease;
+}
+
+.cvg-glow-hover:hover {
+  box-shadow:
+    0 4px 12px -2px rgb(123 18 32 / 0.55),
+    0 14px 40px -8px rgb(198 90 107 / 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cvg-shimmer {
+    animation: none;
+  }
+}
+
+/*
+ * The wordmark's face: the display serif, set heavy.
  *
  * Here rather than as a theme key for the same reason as the gradient — a
  * missing key would silently drop the logo back to the body font, and the
  * logo is the one place that should never quietly change.
  */
 .cvg-wordmark {
-  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-family: 'Playfair Display', 'Lora', Georgia, serif;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 /*
@@ -60,11 +144,11 @@ html.dark .cvg-gradient-text {
 @supports not ((background-clip: text) or (-webkit-background-clip: text)) {
   .cvg-gradient-text {
     background-image: none;
-    color: #a855f7;
+    color: #a32638;
   }
 
   html.dark .cvg-gradient-text {
-    color: #e879f9;
+    color: #fadde1;
   }
 }
 
@@ -94,7 +178,10 @@ body {
 }
 
 html.dark body {
-  @apply bg-slate-950 text-slate-100;
+  /* Maroon page, near-white ink. `slate-50` rather than `slate-100`
+     because #A24857 is a mid-tone: the palette's own cream reaches only
+     4.3:1 on it and just misses AA, while the lightest step clears it. */
+  @apply bg-navy-950 text-slate-50;
 }
 
 /* Smooth the theme change, but never animate the CV itself, and respect a
@@ -215,7 +302,7 @@ html.dark {
  */
 .content-body,
 .prose-editor {
-  @apply text-slate-700 dark:text-slate-300;
+  @apply text-slate-700 dark:text-slate-100;
 }
 
 .content-body > * + *,
@@ -225,12 +312,12 @@ html.dark {
 
 .content-body h2,
 .prose-editor h2 {
-  @apply mt-8 text-xl font-semibold text-slate-900 dark:text-slate-100;
+  @apply mt-8 text-xl font-semibold text-slate-900 dark:text-slate-50;
 }
 
 .content-body h3,
 .prose-editor h3 {
-  @apply mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100;
+  @apply mt-6 text-lg font-semibold text-slate-900 dark:text-slate-50;
 }
 
 .content-body p,
@@ -240,7 +327,7 @@ html.dark {
 
 .content-body a,
 .prose-editor a {
-  @apply font-medium text-slate-900 underline dark:text-slate-100;
+  @apply font-medium text-slate-900 underline dark:text-slate-50;
 }
 
 .content-body ul,
@@ -255,7 +342,7 @@ html.dark {
 
 .content-body blockquote,
 .prose-editor blockquote {
-  @apply border-l-4 border-slate-300 pl-4 italic text-slate-600 dark:border-slate-600 dark:text-slate-400;
+  @apply border-l-4 border-slate-300 pl-4 italic text-slate-600 dark:border-slate-600 dark:text-slate-100;
 }
 
 /* An image obeys the alignment set on it: `margin: auto` on one side

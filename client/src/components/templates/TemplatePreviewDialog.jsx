@@ -48,12 +48,12 @@ export default function TemplatePreviewDialog({ template, onClose, onUse, isBusy
         if (event.target === dialogRef.current) onClose();
       }}
       aria-labelledby="template-preview-title"
-      className="w-[min(960px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/50 dark:bg-slate-900 dark:text-slate-100"
+      className="w-[min(960px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/50 dark:bg-navy-900 dark:text-slate-50"
     >
       {template && (
         <div className="grid max-h-[calc(100vh-4rem)] md:grid-cols-[minmax(0,1fr)_18rem]">
           {/* The page itself, scrolling on its own if the window is short. */}
-          <div className="overflow-y-auto bg-slate-100 p-4 sm:p-6 dark:bg-slate-800">
+          <div className="overflow-y-auto bg-slate-100 p-4 sm:p-6 dark:bg-navy-800">
             <div className="mx-auto max-w-[520px] shadow-lg">
               <TemplateThumbnail cv={sampleFor(template.key)} eager />
             </div>
@@ -61,24 +61,24 @@ export default function TemplatePreviewDialog({ template, onClose, onUse, isBusy
 
           <div className="flex flex-col gap-4 p-5 sm:p-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-100">
                 {category?.label ?? 'Template'}
               </p>
               <h2 id="template-preview-title" className="mt-1 text-xl font-bold">
                 {template.name}
               </h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-100">
                 {template.description}
               </p>
             </div>
 
-            <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+            <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-100">
               <li>{template.usesPhoto ? 'Shows your photo' : 'No photo'}</li>
               <li>{template.isTwoColumn ? 'Two-column layout' : 'Single-column layout'}</li>
               {category && <li>{category.hint}</li>}
             </ul>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-100">
               Shown with sample content. Colours, fonts and sections can all be changed after you
               start.
             </p>

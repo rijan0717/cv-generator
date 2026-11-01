@@ -149,7 +149,7 @@ export default function CVEditorPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[60vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[60vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading your CV" />
       </div>
     );
@@ -189,7 +189,7 @@ export default function CVEditorPage() {
         <div className="min-w-0">
           <Link
             to="/cvs"
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+            className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-white"
           >
             &larr; My CVs
           </Link>
@@ -201,14 +201,14 @@ export default function CVEditorPage() {
               value={cv.title}
               onChange={(e) => handleChange({ title: e.target.value })}
               aria-label="CV title"
-              className="block w-full min-w-0 truncate rounded-lg border-0 border-b-2 border-transparent bg-transparent px-0 text-2xl font-bold tracking-tight text-slate-900 hover:border-slate-200 focus:border-slate-400 focus:outline-none focus:ring-0 dark:text-slate-100 dark:hover:border-slate-700"
+              className="block w-full min-w-0 truncate rounded-lg border-0 border-b-2 border-transparent bg-transparent px-0 text-2xl font-bold tracking-tight text-slate-900 hover:border-slate-200 focus:border-slate-400 focus:outline-none focus:ring-0 dark:text-slate-50 dark:hover:border-navy-700"
             />
             <button
               type="button"
               onClick={() => titleRef.current?.select()}
               aria-label="Edit CV title"
               title="Edit CV title"
-              className="shrink-0 rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="shrink-0 rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:hover:bg-navy-800 dark:hover:text-slate-200"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden="true">
                 <path d="M13.6 2.6a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8l-9.3 9.3-4.1 1.1a.6.6 0 0 1-.7-.7l1.1-4.1 9.2-9.4Zm-8 10.3-.6 2.1 2.1-.6 7.6-7.6-1.5-1.5-7.6 7.6Z" />
@@ -227,7 +227,7 @@ export default function CVEditorPage() {
           </Button>
 
           <span className="hidden h-5 w-px bg-slate-300 sm:block" />
-          <span className="text-sm text-slate-500 dark:text-slate-400">Download</span>
+          <span className="text-sm text-slate-500 dark:text-slate-100">Download</span>
           <ExportMenu cvId={id} onDownloaded={askForReview} />
         </div>
       </div>
@@ -277,7 +277,7 @@ export default function CVEditorPage() {
                   'rounded-lg px-4 py-2 text-sm font-medium transition',
                   tab === item.key
                     ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800',
+                    : 'bg-white dark:bg-navy-900 text-slate-700 dark:text-slate-100 ring-1 ring-slate-200 dark:ring-navy-700 hover:bg-slate-50 dark:hover:bg-navy-800',
                 ].join(' ')}
               >
                 {item.label}
@@ -296,7 +296,7 @@ export default function CVEditorPage() {
               </>
             ) : (
               <>
-                <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+                <div className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
                   <CustomisePanel cv={cv} onChange={handleChange} />
                 </div>
                 <div className="mt-4 flex justify-end">
@@ -312,13 +312,13 @@ export default function CVEditorPage() {
             scrolls within its own grey box. */}
         <div className="min-w-0 lg:flex lg:flex-col">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preview</h2>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Preview</h2>
+            <span className="text-xs text-slate-500 dark:text-slate-100">
               A4 &middot; 210 &times; 297 mm
             </span>
           </div>
 
-          <div className="rounded-xl lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain bg-slate-200/60 dark:bg-slate-800/60 p-4">
+          <div className="rounded-xl lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain bg-slate-200/60 dark:bg-navy-800/60 p-4">
             <CVPreview cv={previewCV} />
           </div>
         </div>
@@ -340,8 +340,8 @@ function SaveStatus({ status }) {
   };
 
   const colours = {
-    idle: 'text-slate-500 dark:text-slate-400',
-    saving: 'text-slate-500 dark:text-slate-400',
+    idle: 'text-slate-500 dark:text-slate-100',
+    saving: 'text-slate-500 dark:text-slate-100',
     saved: 'text-emerald-600 dark:text-emerald-400',
     error: 'text-red-600 dark:text-red-400',
   };

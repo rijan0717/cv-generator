@@ -28,13 +28,13 @@ const VARIANTS = {
 
   secondary: [
     'bg-white text-slate-900 ring-1 ring-slate-300 hover:bg-slate-50',
-    'dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:hover:bg-slate-700',
+    'dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:hover:bg-slate-700',
     'focus-visible:outline-slate-900 dark:focus-visible:outline-slate-100',
   ].join(' '),
 
   ghost: [
     'text-slate-700 hover:bg-slate-100',
-    'dark:text-slate-300 dark:hover:bg-slate-800',
+    'dark:text-slate-100 dark:hover:bg-navy-800',
     'focus-visible:outline-slate-900 dark:focus-visible:outline-slate-100',
   ].join(' '),
 

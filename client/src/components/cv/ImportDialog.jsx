@@ -108,20 +108,18 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
   );
 
   return (
-    <div className="rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+    <div className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
-            Import an existing CV
-          </h2>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">Import an existing CV</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
             Upload a PDF, Word (.docx) or text file and we will read what we can.
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="rounded p-1 text-slate-500 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-navy-800"
         >
           <span className="sr-only">Close</span>
           <span aria-hidden="true">&times;</span>
@@ -145,12 +143,12 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
           {isUploading ? 'Reading the file' : 'Choose a file'}
         </Button>
         {filename && (
-          <span className="ml-3 text-sm text-slate-600 dark:text-slate-400">{filename}</span>
+          <span className="ml-3 text-sm text-slate-600 dark:text-slate-100">{filename}</span>
         )}
       </div>
 
       {parsed && (
-        <div className="mt-5 border-t border-slate-200 dark:border-slate-700 pt-5">
+        <div className="mt-5 border-t border-slate-200 dark:border-navy-700 pt-5">
           {available.length === 0 ? (
             <Alert variant="info">
               Nothing recognisable was found. The file may use an unusual layout &mdash; you can
@@ -158,10 +156,10 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
             </Alert>
           ) : (
             <>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
                 Choose what to import
               </h3>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
                 Ticked sections replace what is currently in your CV. Check everything afterwards
                 &mdash; automatic reading is never perfect.
               </p>
@@ -169,16 +167,16 @@ export default function ImportDialog({ cvId, onApply, onClose }) {
               <ul className="mt-3 space-y-1">
                 {available.map((key) => (
                   <li key={key}>
-                    <label className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <label className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-navy-800">
                       <input
                         type="checkbox"
                         checked={selected.has(key)}
                         onChange={() => toggle(key)}
                       />
-                      <span className="font-medium capitalize text-slate-700 dark:text-slate-300">
+                      <span className="font-medium capitalize text-slate-700 dark:text-slate-100">
                         {key}
                       </span>
-                      <span className="text-slate-500 dark:text-slate-400">
+                      <span className="text-slate-500 dark:text-slate-100">
                         {SECTION_SUMMARIES[key](parsed)}
                       </span>
                     </label>

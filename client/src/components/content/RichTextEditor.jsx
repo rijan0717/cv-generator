@@ -52,7 +52,7 @@ export default function RichTextEditor({ value, onChange }) {
     editorProps: {
       attributes: {
         class:
-          'prose-editor min-h-[320px] w-full rounded-b-lg px-4 py-3 text-sm text-slate-900 focus:outline-none dark:text-slate-100',
+          'prose-editor min-h-[320px] w-full rounded-b-lg px-4 py-3 text-sm text-slate-900 focus:outline-none dark:text-slate-50',
       },
       handlePaste: (_view, event) => handleDropped(event.clipboardData?.files),
       handleDrop: (_view, event) => handleDropped(event.dataTransfer?.files),
@@ -124,7 +124,7 @@ export default function RichTextEditor({ value, onChange }) {
 
       <EditorContent editor={editor} />
 
-      <p className="border-t border-slate-200 px-4 py-2 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
+      <p className="border-t border-slate-200 px-4 py-2 text-xs text-slate-500 dark:border-navy-700 dark:text-slate-100">
         Paste or drag a picture straight into the text to place it there.
       </p>
     </div>
@@ -162,7 +162,7 @@ function Toolbar({ editor, isUploading, onPickImage }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 px-2 py-1.5 dark:border-slate-700">
+    <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 px-2 py-1.5 dark:border-navy-700">
       <Tool
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().undo()}
@@ -312,7 +312,7 @@ function Tool({ onClick, active, disabled, label, children }) {
         'disabled:cursor-not-allowed disabled:opacity-40',
         active
           ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-          : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700',
+          : 'text-slate-600 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-700',
       ].join(' ')}
     >
       {children}

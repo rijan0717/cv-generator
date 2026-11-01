@@ -87,7 +87,7 @@ export default function GoogleSignInButton({ onCredential, text = 'continue_with
 
   return (
     <div>
-      <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+      <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-100">
         <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
         or
         <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />

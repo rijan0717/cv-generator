@@ -85,7 +85,7 @@ export default function ScrollingCV({ cv, height = 460 }) {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       style={{ height }}
-      className="mx-auto max-w-md overflow-y-auto rounded-md border border-slate-200 bg-white [scrollbar-width:none] dark:border-slate-700 [&::-webkit-scrollbar]:hidden"
+      className="mx-auto max-w-md overflow-y-auto rounded-md border border-slate-200 bg-white [scrollbar-width:none] dark:border-navy-700 [&::-webkit-scrollbar]:hidden"
     >
       <CVPreview cv={cv} />
     </div>

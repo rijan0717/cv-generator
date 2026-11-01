@@ -132,10 +132,10 @@ export default function MatchMyCVPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             Match my CV
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-100">
             Drop your CV below. It is read on the spot and scored against every open job, best match
             first. Nothing is saved unless you choose to keep the CV.
           </p>
@@ -162,8 +162,8 @@ export default function MatchMyCVPage() {
         className={[
           'mt-6 flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-10 text-center transition',
           isDragging
-            ? 'border-slate-900 bg-slate-50 dark:border-slate-200 dark:bg-slate-800'
-            : 'border-slate-300 bg-white hover:border-slate-400 dark:border-slate-600 dark:bg-slate-900 dark:hover:border-slate-500',
+            ? 'border-slate-900 bg-slate-50 dark:border-slate-200 dark:bg-navy-800'
+            : 'border-slate-300 bg-white hover:border-slate-400 dark:border-slate-600 dark:bg-navy-900 dark:hover:border-slate-500',
           isLoading ? 'cursor-wait opacity-70' : 'cursor-pointer',
         ].join(' ')}
       >
@@ -182,10 +182,10 @@ export default function MatchMyCVPage() {
           />
         </svg>
 
-        <span className="font-medium text-slate-900 dark:text-slate-100">
+        <span className="font-medium text-slate-900 dark:text-slate-50">
           {fileName || 'Drop your CV here, or click to choose a file'}
         </span>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
+        <span className="text-xs text-slate-500 dark:text-slate-100">
           PDF, Word (.docx) or plain text, up to 10 MB
         </span>
       </button>
@@ -199,7 +199,7 @@ export default function MatchMyCVPage() {
       />
 
       {isLoading && (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Reading your CV and scoring every job" />
         </div>
       )}
@@ -227,29 +227,29 @@ function Results({ result }) {
       {/* Live preview of what was read */}
       <section className="lg:sticky lg:top-6 lg:self-start">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             Your CV, as we read it
           </h2>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-xs text-slate-500 dark:text-slate-100">
             strength {strength?.totalScore ?? 0}/100
           </span>
         </div>
 
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           {stats?.linesRead ?? 0} lines read &middot; {cv.skills?.length ?? 0} skills &middot;{' '}
           {cv.experience?.length ?? 0} roles found
         </p>
 
         <KeepDroppedCV cv={cv} />
 
-        <div className="mt-3 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        <div className="mt-3 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
           <CVPreview cv={cv} />
         </div>
 
         {/* Reading a CV out of a PDF is never perfect, and the user is the
             only one who can tell. Saying so is more useful than pretending
             the parse is authoritative. */}
-        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-100">
           Anything missing here was not found in the file, and the scores below reflect only what
           was read. You can build a full CV in the editor for a more accurate result.
         </p>
@@ -257,16 +257,16 @@ function Results({ result }) {
 
       {/* The ranked board */}
       <section>
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           {results.length} open {results.length === 1 ? 'job' : 'jobs'}, best match first
         </h2>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           Scored with cosine similarity over TF-IDF weighted terms, combined with how many of the
           skills each advert names appear in your CV.
         </p>
 
         {results.length === 0 ? (
-          <p className="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
+          <p className="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-navy-900 dark:text-slate-100">
             There are no open jobs on the board at the moment.
           </p>
         ) : (
@@ -406,9 +406,9 @@ function KeepDroppedCV({ cv }) {
         )}
       </div>
 
-      <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-100">
         {saved ? 'Saved to My CVs as ' : 'Will be saved to My CVs as '}
-        <span className="font-medium text-slate-700 dark:text-slate-300">
+        <span className="font-medium text-slate-700 dark:text-slate-100">
           “{saved?.title ?? title}”
         </span>
         {isPrimary && ' and set as your primary CV'}.

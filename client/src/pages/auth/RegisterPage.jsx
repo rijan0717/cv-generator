@@ -131,7 +131,7 @@ export default function RegisterPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
-      <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <div className="overflow-hidden rounded-2xl bg-white dark:bg-navy-900 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
         {/* The brand bar, so the card belongs to the site rather than
             floating on it. */}
         <div className="h-1.5 cvg-gradient-bg" aria-hidden="true" />
@@ -139,10 +139,10 @@ export default function RegisterPage() {
         <div className="p-8">
           <BrandMark size="sm" className="mb-6" />
 
-          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             Create your account
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
             It takes a minute, and your first CV can start straight away.
           </p>
 
@@ -189,9 +189,9 @@ export default function RegisterPage() {
             <GoogleSignInButton onCredential={handleGoogle} text="signup_with" />
           </div>
 
-          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-100">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-slate-900 dark:text-slate-100 underline">
+            <Link to="/login" className="font-medium text-slate-900 dark:text-slate-50 underline">
               Log in
             </Link>
           </p>

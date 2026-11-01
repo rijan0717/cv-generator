@@ -30,18 +30,18 @@ export default function HealthPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
-      <section className="w-full max-w-md rounded-xl bg-white dark:bg-slate-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">SmartCV</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+    <main className="min-h-screen bg-slate-50 dark:bg-navy-950 flex items-center justify-center p-6">
+      <section className="w-full max-w-md rounded-xl bg-white dark:bg-navy-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">SmartCV</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Phase 0 &mdash; project setup
         </p>
 
-        <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
-          <h2 className="text-sm font-medium text-slate-700 dark:text-slate-300">Backend status</h2>
+        <div className="mt-6 border-t border-slate-200 dark:border-navy-700 pt-6">
+          <h2 className="text-sm font-medium text-slate-700 dark:text-slate-100">Backend status</h2>
 
           {loading && (
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Checking&hellip;</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-100">Checking&hellip;</p>
           )}
 
           {error && (
@@ -53,13 +53,13 @@ export default function HealthPage() {
           {health && (
             <dl className="mt-2 space-y-1 text-sm">
               <div className="flex justify-between">
-                <dt className="text-slate-500 dark:text-slate-400">Server</dt>
+                <dt className="text-slate-500 dark:text-slate-100">Server</dt>
                 <dd className="font-medium text-emerald-600 dark:text-emerald-400">
                   {health.status}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500 dark:text-slate-400">Database</dt>
+                <dt className="text-slate-500 dark:text-slate-100">Database</dt>
                 <dd
                   className={
                     health.database === 'connected'
@@ -71,8 +71,8 @@ export default function HealthPage() {
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500 dark:text-slate-400">Uptime</dt>
-                <dd className="font-medium text-slate-900 dark:text-slate-100">
+                <dt className="text-slate-500 dark:text-slate-100">Uptime</dt>
+                <dd className="font-medium text-slate-900 dark:text-slate-50">
                   {health.uptimeSeconds}s
                 </dd>
               </div>

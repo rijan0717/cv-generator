@@ -63,10 +63,10 @@ export default function InterviewSearchPage() {
   return (
     <div className="mx-auto max-w-4xl">
       <header>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
           Interview preparation
         </h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-100">
           Find the position you are interviewing for, study the questions and the reasoning behind
           them, then test yourself.
         </p>
@@ -80,7 +80,7 @@ export default function InterviewSearchPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search a position, e.g. frontend developer"
-            className="w-full rounded-lg border-0 bg-white py-2.5 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="w-full rounded-lg border-0 bg-white py-2.5 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </label>
 
@@ -96,7 +96,7 @@ export default function InterviewSearchPage() {
                   'rounded-full px-3 py-1 text-xs font-medium capitalize transition',
                   level === chip.key
                     ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700',
+                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-navy-900 dark:text-slate-100 dark:ring-navy-700',
                 ].join(' ')}
               >
                 {chip.label}
@@ -115,7 +115,7 @@ export default function InterviewSearchPage() {
       {/* Says where the list came from, so a short list does not read as
           "that is all there is". */}
       {basedOnCV && !query.trim() && (
-        <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+        <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700 dark:bg-navy-800 dark:text-slate-100">
           Suggested from your CV.{' '}
           <button
             type="button"
@@ -128,15 +128,15 @@ export default function InterviewSearchPage() {
       )}
 
       {isLoading ? (
-        <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+        <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading positions" />
         </div>
       ) : positions.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-slate-300 p-10 text-center dark:border-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <div className="mt-6 rounded-xl border border-dashed border-slate-300 p-10 text-center dark:border-navy-700">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             {query ? `Nothing matches “${query}”` : 'No positions available yet'}
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             {query
               ? 'Try a shorter search, or clear the level filter.'
               : 'Positions appear here once an administrator has added questions and switched one on.'}
@@ -148,20 +148,20 @@ export default function InterviewSearchPage() {
             <li key={position.id}>
               <Link
                 to={`/interview/${position.slug}`}
-                className="block h-full rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900 dark:ring-slate-700"
+                className="block h-full rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-navy-900 dark:ring-navy-700"
               >
-                <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h2 className="font-semibold text-slate-900 dark:text-slate-50">
                   {position.title}
                 </h2>
 
                 {position.industry && (
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
                     {position.industry}
                   </p>
                 )}
 
                 {position.description && (
-                  <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
+                  <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-100">
                     {position.description}
                   </p>
                 )}
@@ -170,7 +170,7 @@ export default function InterviewSearchPage() {
                   {position.levels.map((entry) => (
                     <span
                       key={entry}
-                      className="rounded-full bg-slate-100 px-2 py-0.5 text-xs capitalize text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      className="rounded-full bg-slate-100 px-2 py-0.5 text-xs capitalize text-slate-600 dark:bg-navy-800 dark:text-slate-100"
                     >
                       {entry} &middot; {position.questionCounts?.[entry] ?? 0} questions
                     </span>

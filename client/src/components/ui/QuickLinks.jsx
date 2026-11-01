@@ -13,17 +13,17 @@ import { Link } from 'react-router-dom';
  */
 export default function QuickLinks({ title, links, children }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-      <h2 className="border-b border-slate-100 px-5 py-3.5 font-semibold text-slate-900 dark:border-slate-800 dark:text-slate-100">
+    <section className="rounded-lg border border-slate-200 bg-white dark:border-navy-700 dark:bg-navy-900">
+      <h2 className="border-b border-slate-100 px-5 py-3.5 font-semibold text-slate-900 dark:border-navy-700 dark:text-slate-50">
         {title}
       </h2>
 
-      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+      <ul className="divide-y divide-slate-100 dark:divide-navy-700">
         {links.map((link) => (
           <li key={link.to}>
             <Link
               to={link.to}
-              className="group flex items-center justify-between gap-3 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100"
+              className="group flex items-center justify-between gap-3 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800/60 dark:hover:text-white"
             >
               {link.label}
               <span

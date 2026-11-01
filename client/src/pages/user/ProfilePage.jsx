@@ -21,10 +21,10 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Profile
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Manage your account details.
         </p>
       </header>
@@ -79,20 +79,20 @@ function AvatarSection({ user, setUser }) {
   }
 
   return (
-    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Photo</h2>
+    <section className="rounded-xl bg-white dark:bg-navy-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">Photo</h2>
 
       <div className="mt-4 flex flex-wrap items-center gap-5">
         {user.avatarUrl ? (
           <img
             src={user.avatarUrl}
             alt=""
-            className="h-20 w-20 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+            className="h-20 w-20 rounded-full object-cover ring-1 ring-slate-200 dark:ring-navy-700"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="grid h-20 w-20 place-items-center rounded-full bg-slate-100 dark:bg-slate-800 text-2xl font-semibold text-slate-500 dark:text-slate-400"
+            className="grid h-20 w-20 place-items-center rounded-full bg-slate-100 dark:bg-navy-800 text-2xl font-semibold text-slate-500 dark:text-slate-100"
           >
             {user.name.charAt(0).toUpperCase()}
           </span>
@@ -115,7 +115,7 @@ function AvatarSection({ user, setUser }) {
           >
             {isUploading ? 'Uploading' : 'Change photo'}
           </Button>
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-100">
             JPG, PNG or WEBP. Maximum 2 MB.
           </p>
         </div>
@@ -151,8 +151,8 @@ function DetailsSection({ user, setUser }) {
   }
 
   return (
-    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">Your details</h2>
+    <section className="rounded-xl bg-white dark:bg-navy-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">Your details</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
         <TextField
@@ -248,12 +248,12 @@ function JobSeekerProfileSection({ user, setUser }) {
   }
 
   return (
-    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+    <section className="rounded-xl bg-white dark:bg-navy-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Candidate profile</h2>
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">Candidate profile</h2>
         {form.openToWork && <OpenToWorkBadge />}
       </div>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
         This is what approved employers see when they browse candidates, along with your photo and
         the CV you have marked as primary.
       </p>
@@ -269,7 +269,7 @@ function JobSeekerProfileSection({ user, setUser }) {
         <div>
           <label
             htmlFor="profile-industry"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Industry
           </label>
@@ -277,7 +277,7 @@ function JobSeekerProfileSection({ user, setUser }) {
             id="profile-industry"
             value={form.industry}
             onChange={(event) => setForm((p) => ({ ...p, industry: event.target.value }))}
-            className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           >
             <option value="">Not stated</option>
             {INDUSTRIES.map((entry) => (
@@ -286,7 +286,7 @@ function JobSeekerProfileSection({ user, setUser }) {
               </option>
             ))}
           </select>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
             Employers filter the directory by industry, so choosing one makes you easier to find.
           </p>
         </div>
@@ -308,14 +308,14 @@ function JobSeekerProfileSection({ user, setUser }) {
         />
 
         <fieldset>
-          <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <legend className="text-sm font-medium text-slate-700 dark:text-slate-100">
             Kind of work you want
           </legend>
           <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
             {EMPLOYMENT_TYPES.map((entry) => (
               <label
                 key={entry.value}
-                className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
+                className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-100"
               >
                 <input
                   type="checkbox"
@@ -332,7 +332,7 @@ function JobSeekerProfileSection({ user, setUser }) {
         <div>
           <label
             htmlFor="profile-about"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             About you
           </label>
@@ -342,25 +342,23 @@ function JobSeekerProfileSection({ user, setUser }) {
             onChange={(event) => setForm((p) => ({ ...p, about: event.target.value }))}
             rows={3}
             maxLength={600}
-            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
             {form.about.length} of 600 characters
           </p>
         </div>
 
-        <label className="flex items-start gap-3 rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
+        <label className="flex items-start gap-3 rounded-lg bg-slate-50 p-3 dark:bg-navy-800">
           <input
             type="checkbox"
             checked={form.openToWork}
             onChange={(event) => setForm((p) => ({ ...p, openToWork: event.target.checked }))}
             className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-600"
           />
-          <span className="text-sm text-slate-700 dark:text-slate-300">
-            <span className="font-medium text-slate-900 dark:text-slate-100">
-              I am open to work
-            </span>
-            <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-sm text-slate-700 dark:text-slate-100">
+            <span className="font-medium text-slate-900 dark:text-slate-50">I am open to work</span>
+            <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-100">
               Shows an &ldquo;Open to work&rdquo; banner on your profile and puts you at the top of
               the employer&rsquo;s list. Turn it off at any time.
             </span>
@@ -430,12 +428,12 @@ function PasswordSection() {
   }
 
   return (
-    <section className="rounded-xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+    <section className="rounded-xl bg-white dark:bg-navy-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">
         {hasPassword ? 'Change password' : 'Set a password'}
       </h2>
       {!hasPassword && (
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           You signed up with Google. Set a password to also log in with your email address.
         </p>
       )}

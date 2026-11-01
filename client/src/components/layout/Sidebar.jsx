@@ -72,7 +72,7 @@ function Item({ to, icon, label, end, isCollapsed, onNavigate }) {
           isCollapsed ? 'justify-center px-0' : 'gap-3 px-3',
           isActive
             ? 'bg-blue-50 text-blue-800 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-600 dark:bg-blue-950/50 dark:text-blue-200 dark:before:bg-blue-400'
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-white',
         ].join(' ')
       }
     >
@@ -111,10 +111,10 @@ function Group({ title, isCollapsed, children }) {
         <div
           role="separator"
           aria-label={title}
-          className="mx-3 border-t border-slate-200 dark:border-slate-700"
+          className="mx-3 border-t border-slate-200 dark:border-navy-700"
         />
       ) : (
-        <h2 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <h2 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-100">
           {title}
         </h2>
       )}

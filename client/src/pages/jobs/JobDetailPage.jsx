@@ -192,7 +192,7 @@ export default function JobDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[50vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[50vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading job" />
       </div>
     );
@@ -224,21 +224,21 @@ export default function JobDetailPage() {
     <div className={`mx-auto px-4 py-8 ${rewrite ? 'max-w-6xl' : 'max-w-4xl'}`}>
       <Link
         to="/jobs"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
       >
         &larr; All jobs
       </Link>
 
-      <header className="mt-3 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <header className="mt-3 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 gap-4">
             <CompanyLogo company={job.company} size="md" />
 
             <div className="min-w-0">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
                 {job.title}
               </h1>
-              <p className="mt-1 text-slate-600 dark:text-slate-400">
+              <p className="mt-1 text-slate-600 dark:text-slate-100">
                 {job.company?.name}
                 {job.location && <> &middot; {job.location}</>}
               </p>
@@ -295,13 +295,13 @@ export default function JobDetailPage() {
 
       {rewrite && !isRewriting && (
         <section className="mt-4">
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h2 className="font-semibold text-slate-900 dark:text-slate-50">
                   Your CV, rewritten for this job
                 </h2>
-                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-100">
                   From “{rewrite.sourceCv.title}”. Nothing has been saved — review it below, edit
                   anything you want, then keep it as a new CV. Your original is untouched.
                 </p>
@@ -391,20 +391,20 @@ export default function JobDetailPage() {
         </div>
       )}
 
-      <section className="mt-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">About the role</h2>
-        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+      <section className="mt-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">About the role</h2>
+        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700 dark:text-slate-100">
           {job.description}
         </p>
 
         {job.skills?.length > 0 && (
           <>
-            <h3 className="mt-6 font-semibold text-slate-900 dark:text-slate-100">Skills</h3>
+            <h3 className="mt-6 font-semibold text-slate-900 dark:text-slate-50">Skills</h3>
             <ul className="mt-2 flex flex-wrap gap-1.5">
               {job.skills.map((skill) => (
                 <li
                   key={skill}
-                  className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-navy-800 dark:text-slate-100"
                 >
                   {skill}
                 </li>
@@ -415,11 +415,11 @@ export default function JobDetailPage() {
       </section>
 
       {job.company?.description && (
-        <section className="mt-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <section className="mt-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             About {job.company.name}
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+          <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-100">
             {job.company.description}
           </p>
           {job.company.website && (
@@ -432,7 +432,7 @@ export default function JobDetailPage() {
                 }
                 target="_blank"
                 rel="noreferrer noopener"
-                className="text-slate-900 underline dark:text-slate-100"
+                className="text-slate-900 underline dark:text-slate-50"
               >
                 {job.company.website}
               </a>
@@ -470,13 +470,13 @@ function TailoredSummary({ cv, canApply, onApply }) {
   const difference = hasFigures ? cv.matchScore - cv.baselineMatchScore : 0;
 
   return (
-    <section className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-emerald-200 dark:bg-slate-900 dark:ring-emerald-900">
+    <section className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-emerald-200 dark:bg-navy-900 dark:ring-emerald-900">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             Your tailored CV is saved
           </h2>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-100">
             “{cv.title}” is in{' '}
             <Link to="/cvs" className="font-medium underline">
               My CVs
@@ -491,10 +491,10 @@ function TailoredSummary({ cv, canApply, onApply }) {
               className="text-right"
               title={cv.baselineCvTitle ? `Your primary CV: “${cv.baselineCvTitle}”` : undefined}
             >
-              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
                 {cv.baselineCvTitle ? 'Primary CV' : 'Before'}
               </p>
-              <p className="text-xl font-bold text-slate-500 dark:text-slate-400">
+              <p className="text-xl font-bold text-slate-500 dark:text-slate-100">
                 {cv.baselineMatchScore}%
               </p>
             </div>
@@ -504,10 +504,10 @@ function TailoredSummary({ cv, canApply, onApply }) {
             </span>
 
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
                 After
               </p>
-              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              <p className="text-xl font-bold text-slate-900 dark:text-slate-50">
                 {cv.matchScore}%
               </p>
             </div>
@@ -523,7 +523,7 @@ function TailoredSummary({ cv, canApply, onApply }) {
                   ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
                   : difference < 0
                     ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-                    : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                    : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
               ].join(' ')}
             >
               {difference > 0 ? `+${difference}` : difference} points
@@ -623,13 +623,13 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
   }
 
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
       <div className="flex items-start justify-between gap-4">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">Apply for this job</h2>
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">Apply for this job</h2>
         <button
           type="button"
           onClick={onClose}
-          className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+          className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-navy-800"
         >
           <span className="sr-only">Close</span>
           <span aria-hidden="true">&times;</span>
@@ -637,7 +637,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
       </div>
 
       {isLoading ? (
-        <div className="mt-4 text-slate-500 dark:text-slate-400">
+        <div className="mt-4 text-slate-500 dark:text-slate-100">
           <Spinner label="Loading your CVs" />
         </div>
       ) : cvs.length === 0 ? (
@@ -654,7 +654,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
           <div>
             <label
               htmlFor="apply-cv"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Apply with
             </label>
@@ -662,7 +662,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
               id="apply-cv"
               value={cvId}
               onChange={(e) => setCvId(e.target.value)}
-              className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+              className="mt-1 block w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
             >
               {cvs.map((cv) => (
                 <option key={cv._id} value={cv._id}>
@@ -671,7 +671,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
               A copy of this CV is sent as it is now. Editing it later will not change what this
               employer sees.
             </p>
@@ -680,7 +680,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
           <div>
             <label
               htmlFor="cover-letter"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Cover letter <span className="font-normal text-slate-500">(optional)</span>
             </label>
@@ -690,9 +690,9 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
               onChange={(e) => setCoverLetter(e.target.value)}
               rows={5}
               maxLength={4000}
-              className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+              className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
             />
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
               {coverLetter.length}/4000
             </p>
           </div>
@@ -717,7 +717,7 @@ function ApplyPanel({ jobId, preselectCvId = '', onClose, onApplied }) {
  */
 function Tag({ children }) {
   return (
-    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-700 dark:bg-navy-800 dark:text-slate-100">
       {children}
     </span>
   );

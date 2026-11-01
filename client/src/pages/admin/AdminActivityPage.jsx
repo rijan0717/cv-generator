@@ -55,10 +55,10 @@ export default function AdminActivityPage() {
 
   return (
     <div>
-      <div className="rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <div className="rounded-xl bg-white dark:bg-navy-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
         <label
           htmlFor="activity-action"
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           Action
         </label>
@@ -69,7 +69,7 @@ export default function AdminActivityPage() {
             setAction(e.target.value);
             setPage(1);
           }}
-          className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         >
           <option value="">All actions</option>
           {ACTIONS.map((value) => (
@@ -87,17 +87,17 @@ export default function AdminActivityPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading activity" />
         </div>
       ) : entries.length === 0 ? (
-        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-10 text-center text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-navy-900 p-10 text-center text-sm text-slate-600 dark:text-slate-100">
           Nothing recorded for that filter.
         </p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-950 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <div className="mt-4 overflow-x-auto rounded-xl bg-white dark:bg-navy-900 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
+          <table className="min-w-full divide-y divide-slate-200 dark:divide-navy-700 text-sm">
+            <thead className="bg-slate-50 dark:bg-navy-950 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
               <tr>
                 <th scope="col" className="px-4 py-3">
                   When
@@ -114,25 +114,25 @@ export default function AdminActivityPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-100 dark:divide-navy-700">
               {entries.map((entry) => (
                 <tr key={entry._id}>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-slate-500 dark:text-slate-400">
+                  <td className="whitespace-nowrap px-4 py-2.5 text-slate-500 dark:text-slate-100">
                     {new Date(entry.createdAt).toLocaleString('en-GB')}
                   </td>
                   <td className="px-4 py-2.5">
                     {entry.user ? (
-                      <span className="text-slate-700 dark:text-slate-300">{entry.user.email}</span>
+                      <span className="text-slate-700 dark:text-slate-100">{entry.user.email}</span>
                     ) : (
-                      <span className="text-slate-500 dark:text-slate-400">Deleted user</span>
+                      <span className="text-slate-500 dark:text-slate-100">Deleted user</span>
                     )}
                   </td>
                   <td className="px-4 py-2.5">
-                    <span className="font-mono text-xs text-slate-700 dark:text-slate-300">
+                    <span className="font-mono text-xs text-slate-700 dark:text-slate-100">
                       {entry.action}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-2.5 text-xs text-slate-600 dark:text-slate-100">
                     {describeActivity(entry)}
                   </td>
                 </tr>

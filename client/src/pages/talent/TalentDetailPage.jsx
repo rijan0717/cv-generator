@@ -63,7 +63,7 @@ export default function TalentDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading the profile" />
       </div>
     );
@@ -87,7 +87,7 @@ export default function TalentDetailPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <Link
         to="/talent"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
       >
         &larr; Directory
       </Link>
@@ -103,19 +103,19 @@ export default function TalentDetailPage() {
         </div>
       )}
 
-      <header className="mt-4 flex flex-wrap items-start gap-5 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <header className="mt-4 flex flex-wrap items-start gap-5 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <Avatar name={person.name} src={person.avatarUrl} size="lg" />
 
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             {person.name}
           </h1>
-          <p className="mt-1 text-slate-600 dark:text-slate-400">
+          <p className="mt-1 text-slate-600 dark:text-slate-100">
             {isEmployer
               ? (person.company?.name ?? 'No company set up')
               : profile.position || 'No position given'}
           </p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
             <a href={`mailto:${person.email}`} className="hover:underline">
               {person.email}
             </a>
@@ -130,8 +130,8 @@ export default function TalentDetailPage() {
           the layout explaining itself. The details then take the full
           width rather than sitting in a third of it. */}
       <div className={`mt-4 grid gap-4 ${isEmployer ? '' : 'md:grid-cols-3'}`}>
-        <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700 md:col-span-1">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700 md:col-span-1">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             {isEmployer ? 'Company' : 'Details'}
           </h2>
 
@@ -170,10 +170,10 @@ export default function TalentDetailPage() {
 
           {profile.about && (
             <>
-              <h3 className="mt-5 text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="mt-5 text-sm font-semibold text-slate-900 dark:text-slate-50">
                 About
               </h3>
-              <p className="mt-1 whitespace-pre-line text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-1 whitespace-pre-line text-sm text-slate-600 dark:text-slate-100">
                 {profile.about}
               </p>
             </>
@@ -181,21 +181,21 @@ export default function TalentDetailPage() {
         </section>
 
         {!isEmployer && (
-          <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700 md:col-span-2">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100">Primary CV</h2>
+          <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700 md:col-span-2">
+            <h2 className="font-semibold text-slate-900 dark:text-slate-50">Primary CV</h2>
 
             {primaryCv ? (
               <>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
                   {primaryCv.title} &middot; updated{' '}
                   {new Date(primaryCv.updatedAt).toLocaleDateString('en-GB')}
                 </p>
-                <div className="mt-4 max-h-[70vh] overflow-y-auto rounded-xl bg-slate-200/60 p-4 dark:bg-slate-800/60">
+                <div className="mt-4 max-h-[70vh] overflow-y-auto rounded-xl bg-slate-200/60 p-4 dark:bg-navy-800/60">
                   <CVPreview cv={primaryCv} />
                 </div>
               </>
             ) : (
-              <p className="mt-3 rounded-lg border-2 border-dashed border-slate-300 p-8 text-center text-sm text-slate-600 dark:border-slate-600 dark:text-slate-400">
+              <p className="mt-3 rounded-lg border-2 border-dashed border-slate-300 p-8 text-center text-sm text-slate-600 dark:border-slate-600 dark:text-slate-100">
                 This person has not marked any CV as primary yet.
               </p>
             )}
@@ -217,10 +217,10 @@ function Detail({ label, value }) {
 
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">
+      <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-100">
         {label}
       </dt>
-      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value}</dd>
+      <dd className="mt-0.5 text-slate-800 dark:text-slate-50">{value}</dd>
     </div>
   );
 }

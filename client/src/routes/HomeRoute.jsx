@@ -20,7 +20,7 @@ export default function HomeRoute() {
   // has quietly expired would look live until the answer came back.
   if (isLoading) {
     return (
-      <div className="grid min-h-[50vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[50vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Checking your session" />
       </div>
     );

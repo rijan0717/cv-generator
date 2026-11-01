@@ -21,3 +21,39 @@ if (!window.matchMedia) {
     dispatchEvent: () => false,
   });
 }
+
+/**
+ * jsdom does not implement IntersectionObserver either, and three things
+ * now depend on it: `Reveal`, `useCountUp`, and framer-motion's
+ * `whileInView`.
+ *
+ * The stub reports every observed element as **already on screen**, which
+ * is the right default for a test: a test asserting that a card is in the
+ * document should not have to simulate a scroll first, and content that
+ * only appears once it is scrolled to would otherwise be untestable.
+ *
+ * It is a stub rather than a guard inside each component for the same
+ * reason as `matchMedia` above — a component should not carry defensive
+ * code for a gap in the test environment.
+ */
+if (!window.IntersectionObserver) {
+  window.IntersectionObserver = class {
+    constructor(callback) {
+      this.callback = callback;
+    }
+
+    observe(element) {
+      // Called synchronously: the real observer fires on the next frame,
+      // but waiting here would only make every test `await` a tick.
+      this.callback([{ isIntersecting: true, intersectionRatio: 1, target: element }], this);
+    }
+
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  };
+
+  window.IntersectionObserverEntry = class {};
+}

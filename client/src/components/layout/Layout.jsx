@@ -89,7 +89,7 @@ export default function Layout() {
   const closeDrawer = () => setIsDrawerOpen(false);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-screen flex-col overflow-hidden bg-slate-50 dark:bg-navy-950">
       {/* Lets a keyboard user jump past the navigation. */}
       <a
         href="#main"
@@ -115,7 +115,7 @@ export default function Layout() {
               className={[
                 'relative hidden shrink-0 border-r border-slate-200 bg-white',
                 'transition-[width] duration-200 ease-out lg:block',
-                'dark:border-slate-700 dark:bg-slate-900',
+                'dark:border-navy-700 dark:bg-navy-900',
                 isCollapsed ? 'w-16' : 'w-60',
               ].join(' ')}
             >
@@ -128,7 +128,7 @@ export default function Layout() {
                 aria-label={isCollapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
                 aria-expanded={!isCollapsed}
                 title={isCollapsed ? 'Expand' : 'Collapse'}
-                className="absolute -right-3 top-3 z-10 grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+                className="absolute -right-3 top-3 z-10 grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:border-slate-600 dark:bg-navy-800 dark:text-slate-100 dark:hover:text-white"
               >
                 <svg
                   className={`h-3.5 w-3.5 transition-transform duration-200 ${
@@ -165,7 +165,7 @@ export default function Layout() {
                   onClick={closeDrawer}
                   className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden"
                 />
-                <aside className="fixed inset-y-0 left-0 z-40 w-64 overflow-y-auto border-r border-slate-200 bg-white pt-14 lg:hidden dark:border-slate-700 dark:bg-slate-900">
+                <aside className="fixed inset-y-0 left-0 z-40 w-64 overflow-y-auto border-r border-slate-200 bg-white pt-14 lg:hidden dark:border-navy-700 dark:bg-navy-900">
                   {/* Never collapsed in the drawer: it is hidden by
                       default there, so there is no space to win. */}
                   <Sidebar onNavigate={closeDrawer} />

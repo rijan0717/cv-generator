@@ -68,7 +68,7 @@ export default function SeekerDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading your dashboard" />
       </div>
     );
@@ -85,11 +85,11 @@ export default function SeekerDashboardPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           {/* The first name only: the full one is already in the bar above. */}
           Welcome back, {user.name.split(' ')[0]}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Your CVs, applications and saved jobs at a glance.
         </p>
       </header>

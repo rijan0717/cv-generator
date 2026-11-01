@@ -52,7 +52,7 @@ export default function AdminUserDetailPage() {
   // summary does not flash away and back for a change further down.
   if (isLoading && !data) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading user" />
       </div>
     );
@@ -75,34 +75,32 @@ export default function AdminUserDetailPage() {
     <div>
       <Link
         to="/admin/users"
-        className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+        className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-white"
       >
         &larr; All users
       </Link>
 
       {/* Account summary */}
-      <section className="mt-3 rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+      <section className="mt-3 rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
         <div className="flex flex-wrap items-center gap-4">
           {user.avatarUrl ? (
             <img
               src={user.avatarUrl}
               alt=""
-              className="h-14 w-14 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+              className="h-14 w-14 rounded-full object-cover ring-1 ring-slate-200 dark:ring-navy-700"
             />
           ) : (
             <span
               aria-hidden="true"
-              className="grid h-14 w-14 place-items-center rounded-full bg-slate-100 dark:bg-slate-800 text-xl font-semibold text-slate-500 dark:text-slate-400"
+              className="grid h-14 w-14 place-items-center rounded-full bg-slate-100 dark:bg-navy-800 text-xl font-semibold text-slate-500 dark:text-slate-100"
             >
               {user.name.charAt(0).toUpperCase()}
             </span>
           )}
 
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              {user.name}
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">{user.name}</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-100">{user.email}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -112,12 +110,12 @@ export default function AdminUserDetailPage() {
             {user.role !== 'admin' && (
               <Link
                 to={`/talent/${user._id ?? user.id}`}
-                className="text-sm text-slate-500 underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                className="text-sm text-slate-500 underline hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
               >
                 View profile
               </Link>
             )}
-            <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300">
+            <span className="rounded-full bg-slate-100 dark:bg-navy-800 px-2.5 py-1 text-xs text-slate-700 dark:text-slate-100">
               {user.role}
             </span>
             <span
@@ -135,13 +133,13 @@ export default function AdminUserDetailPage() {
 
       {/* Their CVs */}
       <section className="mt-5">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-50">
           CVs{' '}
-          <span className="text-slate-500 dark:text-slate-400">({cvPagination?.total ?? 0})</span>
+          <span className="text-slate-500 dark:text-slate-100">({cvPagination?.total ?? 0})</span>
         </h3>
 
         {cvs.length === 0 ? (
-          <p className="mt-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-8 text-center text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-navy-900 p-8 text-center text-sm text-slate-600 dark:text-slate-100">
             This user has not created any CVs.
           </p>
         ) : (
@@ -149,16 +147,16 @@ export default function AdminUserDetailPage() {
             {cvs.map((cv) => (
               <li
                 key={cv._id}
-                className="flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
+                className="flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-navy-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700"
               >
                 <div className="min-w-0 flex-1">
                   <Link
                     to={`/admin/cvs/${cv._id}`}
-                    className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
+                    className="font-medium text-slate-900 dark:text-slate-50 hover:underline"
                   >
                     {cv.title}
                   </Link>
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
                     {cv.templateKey} &middot; updated{' '}
                     {new Date(cv.updatedAt).toLocaleDateString('en-GB')}
                   </p>
@@ -181,25 +179,25 @@ export default function AdminUserDetailPage() {
 
       {/* Recent activity */}
       <section className="mt-6">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent activity</h3>
+        <h3 className="font-semibold text-slate-900 dark:text-slate-50">Recent activity</h3>
 
         {recentActivity.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">Nothing recorded yet.</p>
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-100">Nothing recorded yet.</p>
         ) : (
-          <ul className="mt-3 divide-y divide-slate-100 dark:divide-slate-800 rounded-xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+          <ul className="mt-3 divide-y divide-slate-100 dark:divide-navy-700 rounded-xl bg-white dark:bg-navy-900 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
             {recentActivity.map((entry) => (
               <li key={entry._id} className="flex justify-between gap-4 px-4 py-2.5 text-sm">
                 <span className="min-w-0">
-                  <span className="font-mono text-xs text-slate-700 dark:text-slate-300">
+                  <span className="font-mono text-xs text-slate-700 dark:text-slate-100">
                     {entry.action}
                   </span>
                   {describeActivity(entry) !== '—' && (
-                    <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="ml-2 text-xs text-slate-500 dark:text-slate-100">
                       {describeActivity(entry)}
                     </span>
                   )}
                 </span>
-                <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
+                <span className="shrink-0 text-xs text-slate-500 dark:text-slate-100">
                   {new Date(entry.createdAt).toLocaleString('en-GB')}
                 </span>
               </li>

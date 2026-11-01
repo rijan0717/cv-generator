@@ -53,10 +53,10 @@ export default function RewriteProgress({ cvTitle }) {
     <section
       aria-live="polite"
       aria-busy="true"
-      className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+      className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
     >
       {/* The sweep along the top edge. Purely decorative. */}
-      <div className="h-1 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+      <div className="h-1 w-full overflow-hidden bg-slate-100 dark:bg-navy-800">
         <div className="h-full w-1/3 animate-[rewrite-sweep_1.4s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-sky-400 via-violet-500 to-fuchsia-500 motion-reduce:w-full motion-reduce:animate-none" />
       </div>
 
@@ -64,7 +64,7 @@ export default function RewriteProgress({ cvTitle }) {
         <SparkIcon />
 
         <div className="min-w-0 flex-1">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">
             Rewriting {cvTitle ? `“${cvTitle}”` : 'your primary CV'} for this job
           </h2>
 
@@ -78,9 +78,9 @@ export default function RewriteProgress({ cvTitle }) {
                   className={[
                     'flex items-center gap-2 text-sm transition-colors',
                     state === 'done'
-                      ? 'text-slate-500 dark:text-slate-400'
+                      ? 'text-slate-500 dark:text-slate-100'
                       : state === 'active'
-                        ? 'font-medium text-slate-900 dark:text-slate-100'
+                        ? 'font-medium text-slate-900 dark:text-slate-50'
                         : 'text-slate-400 dark:text-slate-600',
                   ].join(' ')}
                 >
@@ -144,7 +144,7 @@ function StepMark({ state }) {
 
   return (
     <span
-      className="h-4 w-4 shrink-0 rounded-full border border-slate-300 dark:border-slate-700"
+      className="h-4 w-4 shrink-0 rounded-full border border-slate-300 dark:border-navy-700"
       aria-hidden="true"
     />
   );

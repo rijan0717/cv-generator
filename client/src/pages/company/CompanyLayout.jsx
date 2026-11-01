@@ -55,7 +55,7 @@ export default function CompanyLayout() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading your company" />
       </div>
     );
@@ -67,10 +67,10 @@ export default function CompanyLayout() {
         {company && <CompanyLogo company={company} size="lg" />}
 
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             {company ? company.name : 'Set up your company'}
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
             {company
               ? [
                   company.industry,

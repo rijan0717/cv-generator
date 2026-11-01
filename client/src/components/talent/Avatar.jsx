@@ -15,7 +15,7 @@ export default function Avatar({ name, src, size = 'md' }) {
       <img
         src={src}
         alt=""
-        className={`${dimensions} shrink-0 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700`}
+        className={`${dimensions} shrink-0 rounded-full object-cover ring-1 ring-slate-200 dark:ring-navy-700`}
       />
     );
   }
@@ -23,7 +23,7 @@ export default function Avatar({ name, src, size = 'md' }) {
   return (
     <span
       aria-hidden="true"
-      className={`${dimensions} grid shrink-0 place-items-center rounded-full bg-slate-100 font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400`}
+      className={`${dimensions} grid shrink-0 place-items-center rounded-full bg-slate-100 font-semibold text-slate-500 dark:bg-navy-800 dark:text-slate-100`}
     >
       {name?.charAt(0).toUpperCase() ?? '?'}
     </span>

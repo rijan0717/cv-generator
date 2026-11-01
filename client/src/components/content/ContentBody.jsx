@@ -64,7 +64,7 @@ function LegacyBlocks({ blocks }) {
                 className={`mx-auto rounded-xl ${WIDTHS[block.width] ?? WIDTHS.full}`}
               />
               {block.caption && (
-                <figcaption className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                <figcaption className="mt-2 text-sm text-slate-500 dark:text-slate-100">
                   {block.caption}
                 </figcaption>
               )}
@@ -77,7 +77,7 @@ function LegacyBlocks({ blocks }) {
           return (
             <Tag
               key={index}
-              className={`${block.level === 3 ? 'text-lg' : 'text-xl'} font-semibold text-slate-900 dark:text-slate-100 ${align}`}
+              className={`${block.level === 3 ? 'text-lg' : 'text-xl'} font-semibold text-slate-900 dark:text-slate-50 ${align}`}
             >
               {block.text}
             </Tag>
@@ -88,7 +88,7 @@ function LegacyBlocks({ blocks }) {
           return (
             <blockquote
               key={index}
-              className={`border-l-4 border-slate-300 pl-4 italic text-slate-600 dark:border-slate-600 dark:text-slate-400 ${align}`}
+              className={`border-l-4 border-slate-300 pl-4 italic text-slate-600 dark:border-slate-600 dark:text-slate-100 ${align}`}
             >
               {block.text}
             </blockquote>
@@ -98,7 +98,7 @@ function LegacyBlocks({ blocks }) {
         return (
           <p
             key={index}
-            className={`whitespace-pre-line leading-relaxed text-slate-700 dark:text-slate-300 ${align}`}
+            className={`whitespace-pre-line leading-relaxed text-slate-700 dark:text-slate-100 ${align}`}
           >
             {block.text}
           </p>

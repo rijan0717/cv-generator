@@ -104,10 +104,10 @@ export default function TalentPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           {isEmployerList ? 'Employers' : 'Candidates'}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           {isEmployerList
             ? 'Every employer account on the system.'
             : 'Job seekers on the system, with the CV each one has made primary.'}
@@ -115,11 +115,11 @@ export default function TalentPage() {
       </header>
 
       {/* Filters */}
-      <div className="mt-6 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+      <div className="mt-6 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
         <div className="min-w-[200px] flex-1">
           <label
             htmlFor="talent-search"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Search
           </label>
@@ -128,14 +128,14 @@ export default function TalentPage() {
             value={search}
             onChange={(e) => changeFilter(setSearch)(e.target.value)}
             placeholder="Name or position"
-            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </div>
 
         <div>
           <label
             htmlFor="talent-industry"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Industry
           </label>
@@ -143,7 +143,7 @@ export default function TalentPage() {
             id="talent-industry"
             value={industry}
             onChange={(e) => changeFilter(setIndustry)(e.target.value)}
-            className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           >
             <option value="">All industries</option>
             {INDUSTRIES.map((entry) => (
@@ -159,7 +159,7 @@ export default function TalentPage() {
             <div>
               <label
                 htmlFor="talent-type"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-100"
               >
                 Kind of work
               </label>
@@ -167,7 +167,7 @@ export default function TalentPage() {
                 id="talent-type"
                 value={employmentType}
                 onChange={(e) => changeFilter(setEmploymentType)(e.target.value)}
-                className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+                className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
               >
                 <option value="">Any</option>
                 {EMPLOYMENT_TYPES.map((entry) => (
@@ -178,7 +178,7 @@ export default function TalentPage() {
               </select>
             </div>
 
-            <label className="flex items-center gap-2 pb-2 text-sm text-slate-700 dark:text-slate-300">
+            <label className="flex items-center gap-2 pb-2 text-sm text-slate-700 dark:text-slate-100">
               <input
                 type="checkbox"
                 checked={openToWorkOnly}
@@ -194,7 +194,7 @@ export default function TalentPage() {
           <div>
             <label
               htmlFor="talent-account-type"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Account type
             </label>
@@ -202,7 +202,7 @@ export default function TalentPage() {
               id="talent-account-type"
               value={accountType}
               onChange={(e) => changeFilter(setAccountType)(e.target.value)}
-              className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+              className="mt-1 rounded-lg border-0 py-2 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
             >
               <option value="jobseeker">Job seekers</option>
               <option value="employer">Employers</option>
@@ -218,11 +218,11 @@ export default function TalentPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading people" />
         </div>
       ) : users.length === 0 && !error ? (
-        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
+        <p className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600 dark:border-slate-600 dark:bg-navy-900 dark:text-slate-100">
           Nobody matches those filters.
         </p>
       ) : (
@@ -230,32 +230,32 @@ export default function TalentPage() {
           {users.map((person) => (
             <li
               key={person.id}
-              className="flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+              className="flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
             >
               <div className="flex items-start gap-4">
                 <Avatar name={person.name} src={person.avatarUrl} />
 
                 <div className="min-w-0 flex-1">
-                  <h2 className="truncate font-semibold text-slate-900 dark:text-slate-100">
+                  <h2 className="truncate font-semibold text-slate-900 dark:text-slate-50">
                     {person.name}
                   </h2>
-                  <p className="truncate text-sm text-slate-600 dark:text-slate-400">
+                  <p className="truncate text-sm text-slate-600 dark:text-slate-100">
                     {person.company?.name || person.profile.position || 'No position given'}
                   </p>
                   {person.profile.openToWork && <OpenToWorkBadge className="mt-2" />}
                 </div>
               </div>
 
-              <dl className="mt-4 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+              <dl className="mt-4 space-y-1 text-sm text-slate-600 dark:text-slate-100">
                 {person.profile.industry && (
                   <div className="flex gap-2">
-                    <dt className="text-slate-500 dark:text-slate-500">Industry:</dt>
+                    <dt className="text-slate-500 dark:text-slate-100">Industry:</dt>
                     <dd>{labelFor(INDUSTRIES, person.profile.industry)}</dd>
                   </div>
                 )}
                 {!isEmployerList && (
                   <div className="flex gap-2">
-                    <dt className="text-slate-500 dark:text-slate-500">Experience:</dt>
+                    <dt className="text-slate-500 dark:text-slate-100">Experience:</dt>
                     <dd>
                       {person.profile.yearsExperience} year
                       {person.profile.yearsExperience === 1 ? '' : 's'}
@@ -264,13 +264,13 @@ export default function TalentPage() {
                 )}
                 {person.profile.location && (
                   <div className="flex gap-2">
-                    <dt className="text-slate-500 dark:text-slate-500">Location:</dt>
+                    <dt className="text-slate-500 dark:text-slate-100">Location:</dt>
                     <dd className="truncate">{person.profile.location}</dd>
                   </div>
                 )}
                 {person.profile.employmentTypes.length > 0 && (
                   <div className="flex gap-2">
-                    <dt className="text-slate-500 dark:text-slate-500">Wants:</dt>
+                    <dt className="text-slate-500 dark:text-slate-100">Wants:</dt>
                     <dd className="truncate">
                       {person.profile.employmentTypes
                         .map((type) => labelFor(EMPLOYMENT_TYPES, type))

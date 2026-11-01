@@ -32,7 +32,7 @@ export default function CompanyLogo({ company, size = 'md', className = '' }) {
         aria-hidden="true"
         // `contain` rather than `cover`: a logo cropped to fill a square is
         // a logo with its edges cut off.
-        className={`${box} bg-white object-contain p-1 ring-1 ring-slate-200 dark:ring-slate-700`}
+        className={`${box} bg-white object-contain p-1 ring-1 ring-slate-200 dark:ring-navy-700`}
       />
     );
   }
@@ -40,7 +40,7 @@ export default function CompanyLogo({ company, size = 'md', className = '' }) {
   return (
     <span
       aria-hidden="true"
-      className={`${box} grid place-items-center bg-slate-100 font-semibold text-slate-500 ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700`}
+      className={`${box} grid place-items-center bg-slate-100 font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-navy-800 dark:text-slate-100 dark:ring-navy-700`}
     >
       {name ? name.charAt(0).toUpperCase() : '?'}
     </span>

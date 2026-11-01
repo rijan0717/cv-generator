@@ -72,12 +72,12 @@ export default function AdminTemplateDialog({
         if (event.target === dialogRef.current) onClose();
       }}
       aria-labelledby="admin-template-title"
-      className="w-[min(960px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/50 dark:bg-slate-900 dark:text-slate-100"
+      className="w-[min(960px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/50 dark:bg-navy-900 dark:text-slate-50"
     >
       {template && (
         <div className="grid max-h-[calc(100vh-4rem)] md:grid-cols-[minmax(0,1fr)_20rem]">
           {/* The page itself, scrolling on its own if the window is short. */}
-          <div className="overflow-y-auto bg-slate-100 p-4 sm:p-6 dark:bg-slate-800">
+          <div className="overflow-y-auto bg-slate-100 p-4 sm:p-6 dark:bg-navy-800">
             <div className="mx-auto max-w-[520px] shadow-lg">
               <TemplateThumbnail cv={sampleFor(template.key)} eager />
             </div>
@@ -86,17 +86,17 @@ export default function AdminTemplateDialog({
           <div className="flex flex-col gap-4 overflow-y-auto p-5 sm:p-6">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-100">
                   {category?.label ?? 'Template'}
                 </p>
-                <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-navy-800 dark:text-slate-100">
                   {template.key}
                 </code>
               </div>
               <h2 id="admin-template-title" className="mt-1 text-xl font-bold">
                 {template.name}
               </h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-100">
                 {template.usesPhoto ? 'Shows the photo' : 'No photo'} &middot;{' '}
                 {template.isTwoColumn ? 'Two columns' : 'Single column'}
               </p>
@@ -112,7 +112,7 @@ export default function AdminTemplateDialog({
               <div>
                 <label
                   htmlFor="admin-template-name"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-100"
                 >
                   Name in the picker
                 </label>
@@ -121,14 +121,14 @@ export default function AdminTemplateDialog({
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   maxLength={60}
-                  className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+                  className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="admin-template-description"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-100"
                 >
                   Description
                 </label>
@@ -138,7 +138,7 @@ export default function AdminTemplateDialog({
                   onChange={(event) => setDescription(event.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+                  className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
                 />
               </div>
 
@@ -149,14 +149,14 @@ export default function AdminTemplateDialog({
 
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-            <div className="mt-auto flex flex-col gap-2 border-t border-slate-200 pt-4 dark:border-slate-700">
-              <p className="text-sm text-slate-600 dark:text-slate-300">
+            <div className="mt-auto flex flex-col gap-2 border-t border-slate-200 pt-4 dark:border-navy-700">
+              <p className="text-sm text-slate-600 dark:text-slate-100">
                 {template.isActive
                   ? 'Offered to users in the picker.'
                   : 'Hidden from the picker. CVs already using it are unaffected.'}
               </p>
               {template.isActive && isLastActive && (
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-100">
                   This is the last active template, so it cannot be switched off.
                 </p>
               )}

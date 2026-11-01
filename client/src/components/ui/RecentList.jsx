@@ -19,9 +19,9 @@ import { Link } from 'react-router-dom';
  */
 export default function RecentList({ title, items, emptyMessage, emptyAction, viewAll }) {
   return (
-    <section className="flex h-full flex-col rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-      <div className="flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3.5 dark:border-slate-800">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+    <section className="flex h-full flex-col rounded-lg border border-slate-200 bg-white dark:border-navy-700 dark:bg-navy-900">
+      <div className="flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3.5 dark:border-navy-700">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">{title}</h2>
         {viewAll && items.length > 0 && (
           <Link
             to={viewAll.to}
@@ -34,7 +34,7 @@ export default function RecentList({ title, items, emptyMessage, emptyAction, vi
 
       {items.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center px-5 py-8 text-center">
-          <p className="text-sm text-slate-600 dark:text-slate-400">{emptyMessage}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-100">{emptyMessage}</p>
           {emptyAction && (
             <Link
               to={emptyAction.to}
@@ -45,22 +45,22 @@ export default function RecentList({ title, items, emptyMessage, emptyAction, vi
           )}
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        <ul className="divide-y divide-slate-100 dark:divide-navy-700">
           {items.map((item) => {
             const row = (
               <>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-slate-900 dark:text-slate-100">
+                  <p className="truncate font-medium text-slate-900 dark:text-slate-50">
                     {item.primary}
                   </p>
                   {item.secondary && (
-                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-100">
                       {item.secondary}
                     </p>
                   )}
                 </div>
                 {item.meta && (
-                  <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="shrink-0 text-xs text-slate-500 dark:text-slate-100">
                     {item.meta}
                   </span>
                 )}
@@ -72,7 +72,7 @@ export default function RecentList({ title, items, emptyMessage, emptyAction, vi
                 {item.to ? (
                   <Link
                     to={item.to}
-                    className="flex items-center gap-3 px-5 py-3 transition hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                    className="flex items-center gap-3 px-5 py-3 transition hover:bg-slate-50 dark:hover:bg-navy-800/60"
                   >
                     {row}
                   </Link>

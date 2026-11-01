@@ -105,7 +105,7 @@ export default function AdminInterviewPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading positions" />
       </div>
     );
@@ -116,10 +116,10 @@ export default function AdminInterviewPage() {
   return (
     <div>
       <header className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           Interview preparation <span className="text-slate-500">({activeCount} offered)</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-slate-500 dark:text-slate-100">
           A position is offered to users only once every level it covers has enough questions for an
           exam.
         </p>
@@ -141,7 +141,7 @@ export default function AdminInterviewPage() {
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Add a position, e.g. Frontend Developer"
           maxLength={120}
-          className="min-w-0 flex-1 rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="min-w-0 flex-1 rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         />
         <Button type="submit" isLoading={isCreating} disabled={!title.trim()}>
           Add position
@@ -149,9 +149,9 @@ export default function AdminInterviewPage() {
       </form>
 
       {positions.length === 0 ? (
-        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100">No positions yet</h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h3 className="font-semibold text-slate-900 dark:text-slate-50">No positions yet</h3>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             Add one above, then write its questions. Users see nothing here until a position is
             switched on.
           </p>
@@ -161,18 +161,18 @@ export default function AdminInterviewPage() {
           {positions.map((position) => (
             <li
               key={position.id}
-              className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+              className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
             >
               <div className="flex flex-wrap items-center gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
                       to={`/admin/interview/${position.id}`}
-                      className="font-medium text-slate-900 underline-offset-2 hover:underline dark:text-slate-100"
+                      className="font-medium text-slate-900 underline-offset-2 hover:underline dark:text-slate-50"
                     >
                       {position.title}
                     </Link>
-                    <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-navy-800 dark:text-slate-100">
                       {position.slug}
                     </code>
                   </div>
@@ -189,7 +189,7 @@ export default function AdminInterviewPage() {
                           className={
                             isShort
                               ? 'text-amber-700 dark:text-amber-400'
-                              : 'text-slate-500 dark:text-slate-400'
+                              : 'text-slate-500 dark:text-slate-100'
                           }
                         >
                           {level}: {have}/{need}
@@ -204,7 +204,7 @@ export default function AdminInterviewPage() {
                   className={
                     position.isActive
                       ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                      : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                      : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-navy-800 dark:text-slate-100'
                   }
                 >
                   {position.isActive ? 'Offered' : 'Hidden'}
@@ -234,7 +234,7 @@ export default function AdminInterviewPage() {
         </ul>
       )}
 
-      <p className="mt-6 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mt-6 text-xs text-slate-500 dark:text-slate-100">
         Levels: {LEVELS.join(', ')}. Withdrawing a position hides it from search; nobody loses an
         exam they have already taken.
       </p>

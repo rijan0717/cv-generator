@@ -18,7 +18,7 @@ export default function SummaryTiles({ items }) {
         const body = (
           <>
             <div className="flex items-start justify-between gap-2">
-              <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              <dt className="text-sm font-medium text-slate-500 dark:text-slate-100">
                 {item.label}
               </dt>
               {item.to && (
@@ -30,17 +30,17 @@ export default function SummaryTiles({ items }) {
                 </span>
               )}
             </div>
-            <dd className="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-slate-100">
+            <dd className="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-slate-50">
               {item.value}
             </dd>
             {item.hint && (
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{item.hint}</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">{item.hint}</p>
             )}
           </>
         );
 
         const className =
-          'group block rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900';
+          'group block rounded-lg border border-slate-200 bg-white p-5 dark:border-navy-700 dark:bg-navy-900';
 
         return item.to ? (
           <Link

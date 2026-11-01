@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getFeature, FEATURES } from '../data/features.js';
 import { MENU_ICONS } from '../components/layout/menus.js';
 import { BRAND_TEXT_GRADIENT, BrandSpark } from '../components/ui/BrandMark.jsx';
-import Reveal from '../components/ui/Reveal.jsx';
+import { Reveal, Stagger } from '../components/ui/motion.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 import useCountUp from '../utils/useCountUp.js';
 import { useDocumentMeta } from '../utils/useDocumentMeta.js';
@@ -39,7 +39,7 @@ function Stat({ value, suffix = '', label }) {
         {shown}
         {suffix}
       </p>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{label}</p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-100">{label}</p>
     </div>
   );
 }
@@ -48,10 +48,10 @@ function Stat({ value, suffix = '', label }) {
 function Point({ point, index }) {
   return (
     <Reveal delay={index * 80}>
-      <div className="h-full rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:border-brand-fuchsia/40 hover:shadow-xl hover:shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-800">
+      <div className="h-full rounded-2xl border border-slate-200 bg-white p-6 transition-[border-color,box-shadow] duration-300 hover:border-brand-violet hover:shadow-xl hover:shadow-brand-violet/20 dark:border-navy-700 dark:bg-navy-800">
         <span
           aria-hidden="true"
-          className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-violet to-brand-pink text-white"
+          className="grid h-11 w-11 place-items-center rounded-xl cvg-gradient-bg text-white"
         >
           <svg
             className="h-5 w-5"
@@ -67,10 +67,10 @@ function Point({ point, index }) {
           </svg>
         </span>
 
-        <h3 className="mt-4 font-display text-lg font-bold text-slate-900 dark:text-slate-100">
+        <h3 className="mt-4 font-display text-lg font-bold text-slate-900 dark:text-slate-50">
           {point.title}
         </h3>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-100">
           {point.detail}
         </p>
       </div>
@@ -104,7 +104,7 @@ export default function FeaturePage() {
       <section className="relative overflow-hidden">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[30rem] bg-[radial-gradient(55%_55%_at_50%_30%,rgba(168,85,247,0.15),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[30rem] bg-[radial-gradient(55%_55%_at_50%_30%,rgba(123,18,32,0.13),transparent_70%)]"
         />
 
         <div className={`${CONTAINER} py-14 text-center sm:py-20`}>
@@ -113,15 +113,15 @@ export default function FeaturePage() {
               <BrandSpark className="h-14 w-14 rounded-2xl" />
             </div>
 
-            <p className="mt-6 text-sm font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-400">
+            <p className="mt-6 text-sm font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-100">
               {feature.eyebrow}
             </p>
 
-            <h1 className="mx-auto mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-slate-100">
+            <h1 className="mx-auto mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-slate-50">
               {feature.title} <span className={BRAND_TEXT_GRADIENT}>{feature.highlight}</span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-100">
               {feature.intro}
             </p>
 
@@ -134,7 +134,7 @@ export default function FeaturePage() {
               </Link>
               <Link
                 to={feature.secondary.to}
-                className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-white"
+                className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
               >
                 {feature.secondary.label}
               </Link>
@@ -144,7 +144,7 @@ export default function FeaturePage() {
       </section>
 
       {/* --- The three figures --- */}
-      <section className="border-y border-slate-200 bg-white py-12 dark:border-slate-800 dark:bg-slate-900">
+      <section className="border-y border-slate-200 bg-white py-12 dark:border-navy-700 dark:bg-navy-900">
         <div className={`${CONTAINER} grid gap-8 text-center sm:grid-cols-3`}>
           {feature.stats.map((stat) => (
             <Stat key={stat.label} {...stat} />
@@ -155,7 +155,7 @@ export default function FeaturePage() {
       {/* --- What it does --- */}
       <section className={`${CONTAINER} py-14 sm:py-20`}>
         <Reveal>
-          <h2 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50">
             What it does
           </h2>
         </Reveal>
@@ -168,32 +168,35 @@ export default function FeaturePage() {
       </section>
 
       {/* --- How it works --- */}
-      <section className="border-t border-slate-200 bg-slate-50 py-14 sm:py-20 dark:border-slate-800 dark:bg-slate-900/50">
+      <section className="border-t border-slate-200 bg-slate-50 py-14 sm:py-20 dark:border-navy-700 dark:bg-navy-900/50">
         <div className={CONTAINER}>
           <Reveal>
-            <h2 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="font-display text-3xl font-bold text-slate-900 dark:text-slate-50">
               How it works
             </h2>
           </Reveal>
 
-          <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {/* One container releasing four children, rather than four
+              hand-counted delays: the sequence stays even if a step is
+              added or removed. */}
+          <Stagger as="ol" className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {feature.steps.map((step, index) => (
-              <Reveal as="li" key={step.title} delay={index * 90}>
+              <Stagger.Item as="li" key={step.title}>
                 <span
                   aria-hidden="true"
-                  className="grid h-10 w-10 place-items-center rounded-xl cvg-gradient-bg font-display text-base font-bold text-white"
+                  className="cvg-gradient-bg grid h-10 w-10 place-items-center rounded-xl font-display text-base font-bold text-white"
                 >
                   {index + 1}
                 </span>
-                <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-50">
                   {step.title}
                 </h3>
-                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-100">
                   {step.detail}
                 </p>
-              </Reveal>
+              </Stagger.Item>
             ))}
-          </ol>
+          </Stagger>
         </div>
       </section>
 
@@ -201,7 +204,7 @@ export default function FeaturePage() {
       {siblings.length > 0 && (
         <section className={`${CONTAINER} py-14 sm:py-20`}>
           <Reveal>
-            <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50">
               More under {feature.menu}
             </h2>
           </Reveal>
@@ -211,18 +214,18 @@ export default function FeaturePage() {
               <Reveal key={other.slug} delay={index * 80}>
                 <Link
                   to={`/features/${other.slug}`}
-                  className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:border-brand-fuchsia/40 hover:shadow-xl hover:shadow-slate-900/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia dark:border-slate-700 dark:bg-slate-800"
+                  className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-[border-color,box-shadow] duration-300 hover:border-brand-violet hover:shadow-xl hover:shadow-brand-violet/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia dark:border-navy-700 dark:bg-navy-800"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-400">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-100">
                     {other.eyebrow}
                   </p>
-                  <h3 className="mt-2 font-display text-lg font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="mt-2 font-display text-lg font-bold text-slate-900 dark:text-slate-50">
                     {other.title} {other.highlight}
                   </h3>
-                  <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-100">
                     {other.intro}
                   </p>
-                  <span className="mt-4 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <span className="mt-4 text-sm font-semibold text-slate-900 dark:text-slate-50">
                     Read more <span aria-hidden="true">→</span>
                   </span>
                 </Link>
@@ -235,7 +238,7 @@ export default function FeaturePage() {
       {/* --- Closing prompt --- */}
       <section className={`${CONTAINER} pb-16`}>
         <Reveal>
-          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-slate-900 px-8 py-10 sm:flex-row sm:items-center sm:px-12 dark:bg-slate-800">
+          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-slate-900 px-8 py-10 sm:flex-row sm:items-center sm:px-12">
             <p className="max-w-xl font-display text-2xl font-bold text-white sm:text-3xl">
               {feature.closing}
             </p>

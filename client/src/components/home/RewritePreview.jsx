@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Reveal from '../ui/Reveal.jsx';
+import { Reveal } from '../ui/motion.jsx';
 
 /**
  * The home page's pitch for the job-tailored rewrite.
@@ -28,7 +28,7 @@ const POINTS = [
 /** One row of the diagram: an old phrase struck through, the new one after. */
 function DiffRow({ before, after, width }) {
   return (
-    <div className="rounded-lg bg-white p-3 shadow-sm dark:bg-slate-800">
+    <div className="rounded-lg bg-white p-3 shadow-sm dark:bg-navy-800">
       <div className="flex items-center gap-2">
         <span
           aria-hidden="true"
@@ -37,8 +37,8 @@ function DiffRow({ before, after, width }) {
         />
       </div>
       <p className="mt-2 text-[11px] leading-snug">
-        <span className="text-slate-400 line-through dark:text-slate-500">{before}</span>{' '}
-        <span className="font-semibold text-brand-fuchsia dark:text-fuchsia-400">{after}</span>
+        <span className="text-slate-500 line-through dark:text-slate-100">{before}</span>{' '}
+        <span className="font-semibold text-brand-fuchsia dark:text-fuchsia-100">{after}</span>
       </p>
     </div>
   );
@@ -46,14 +46,14 @@ function DiffRow({ before, after, width }) {
 
 export default function RewritePreview() {
   return (
-    <section className="border-t border-slate-200 py-14 sm:py-20 dark:border-slate-800">
+    <section className="border-t border-slate-200 py-14 sm:py-20 dark:border-navy-700">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
         <Reveal>
           {/* The same spark as the logo, outlined rather than filled, so it
               reads as a section mark and not as a second brand. */}
           <span
             aria-hidden="true"
-            className="grid h-12 w-12 place-items-center rounded-2xl border-2 border-brand-fuchsia/40 text-brand-fuchsia dark:border-fuchsia-400/40 dark:text-fuchsia-400"
+            className="grid h-12 w-12 place-items-center rounded-2xl border-2 border-brand-fuchsia/40 text-brand-fuchsia dark:border-fuchsia-400/40 dark:text-fuchsia-100"
           >
             <svg
               viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ export default function RewritePreview() {
             </svg>
           </span>
 
-          <h2 className="mt-6 max-w-lg font-display text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
+          <h2 className="mt-6 max-w-lg font-display text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50">
             A simpler, smarter way to rewrite the CV you already have
           </h2>
 
@@ -81,7 +81,7 @@ export default function RewritePreview() {
                   className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-500/20"
                 >
                   <svg
-                    className="h-3 w-3 text-brand-pink dark:text-fuchsia-400"
+                    className="h-3 w-3 text-brand-pink dark:text-fuchsia-100"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -93,7 +93,7 @@ export default function RewritePreview() {
                     <path d="M5 13l4 4L19 7" />
                   </svg>
                 </span>
-                <span className="text-[0.95rem] leading-relaxed text-slate-600 dark:text-slate-300">
+                <span className="text-[0.95rem] leading-relaxed text-slate-600 dark:text-slate-100">
                   {point}
                 </span>
               </li>
@@ -109,13 +109,13 @@ export default function RewritePreview() {
             </Link>
             <Link
               to="/register"
-              className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-white"
+              className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
             >
               I&apos;ll write it myself
             </Link>
           </div>
 
-          <p className="mt-7 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-7 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-100">
             <Link
               to="/blog"
               className="underline underline-offset-2 hover:text-slate-900 dark:hover:text-white"
@@ -129,7 +129,7 @@ export default function RewritePreview() {
 
         {/* --- The diagram --- */}
         <Reveal delay={120}>
-          <div className="rounded-2xl bg-slate-100 p-3 ring-1 ring-slate-900/5 dark:bg-slate-800/60 dark:ring-white/10">
+          <div className="rounded-2xl bg-slate-100 p-3 ring-1 ring-slate-900/5 dark:bg-navy-800/60 dark:ring-white/10">
             {/* A window chrome, so the panel reads as a screen rather than
                 as a floating box. */}
             <div className="flex gap-1.5 px-2 py-2" aria-hidden="true">
@@ -138,18 +138,18 @@ export default function RewritePreview() {
               <span className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-slate-600" />
             </div>
 
-            <div className="grid gap-3 rounded-xl bg-white p-3 sm:grid-cols-[7rem_1fr] dark:bg-slate-900">
+            <div className="grid gap-3 rounded-xl bg-white p-3 sm:grid-cols-[7rem_1fr] dark:bg-navy-900">
               {/* The advert, pasted. */}
-              <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
+              <div className="rounded-lg bg-slate-50 p-3 dark:bg-navy-800">
                 <svg
                   viewBox="0 0 24 24"
-                  className="h-5 w-5 text-brand-fuchsia dark:text-fuchsia-400"
+                  className="h-5 w-5 text-brand-fuchsia dark:text-fuchsia-100"
                   fill="currentColor"
                   aria-hidden="true"
                 >
                   <path d="M12 2.5l1.9 4.6 4.6 1.9-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9L12 2.5Z" />
                 </svg>
-                <p className="mt-2 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                <p className="mt-2 text-[11px] font-semibold text-slate-700 dark:text-slate-100">
                   The advert
                 </p>
                 <div className="mt-2 space-y-1.5" aria-hidden="true">
@@ -164,8 +164,8 @@ export default function RewritePreview() {
               </div>
 
               {/* What comes back. */}
-              <div className="space-y-2.5 rounded-lg bg-slate-50 p-3 dark:bg-slate-800/60">
-                <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+              <div className="space-y-2.5 rounded-lg bg-slate-50 p-3 dark:bg-navy-800/60">
+                <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-100">
                   Your CV, rewritten
                 </p>
                 <DiffRow before="Worked on" after="Led delivery of" width="45%" />
@@ -175,7 +175,7 @@ export default function RewritePreview() {
             </div>
           </div>
 
-          <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-100">
             Every change is shown before it is kept.
           </p>
         </Reveal>

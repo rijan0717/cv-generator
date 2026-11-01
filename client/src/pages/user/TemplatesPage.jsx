@@ -49,10 +49,10 @@ export default function TemplatesPage() {
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-10">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Templates
         </h1>
-        <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-100">
           Pick a layout to start a new CV. Every template uses the same content, so you can switch
           at any time from the editor&rsquo;s Design tab without retyping anything.
         </p>
@@ -60,7 +60,7 @@ export default function TemplatesPage() {
 
       <div className="mt-6">
         {isLoading ? (
-          <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+          <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
             <Spinner label="Loading templates" />
           </div>
         ) : (

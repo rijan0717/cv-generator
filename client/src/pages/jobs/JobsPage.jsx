@@ -245,10 +245,10 @@ export default function JobsPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             Jobs
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
             Every job posted on the platform. Apply with one of your CVs.
           </p>
         </div>
@@ -267,11 +267,11 @@ export default function JobsPage() {
       </header>
 
       {/* Filters */}
-      <div className="mt-6 grid gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-6 dark:bg-slate-900 dark:ring-slate-700">
+      <div className="mt-6 grid gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-6 dark:bg-navy-900 dark:ring-navy-700">
         <div className="sm:col-span-2 lg:col-span-2">
           <label
             htmlFor="job-search"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Search
           </label>
@@ -280,14 +280,14 @@ export default function JobsPage() {
             value={filters.search}
             onChange={(e) => setFilter('search', e.target.value)}
             placeholder="Title, description or skill"
-            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </div>
 
         <div>
           <label
             htmlFor="job-location"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-100"
           >
             Location
           </label>
@@ -295,7 +295,7 @@ export default function JobsPage() {
             id="job-location"
             value={filters.location}
             onChange={(e) => setFilter('location', e.target.value)}
-            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+            className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
           />
         </div>
 
@@ -303,7 +303,7 @@ export default function JobsPage() {
           <div>
             <label
               htmlFor="job-type"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Type
             </label>
@@ -311,7 +311,7 @@ export default function JobsPage() {
               id="job-type"
               value={filters.jobType}
               onChange={(e) => setFilter('jobType', e.target.value)}
-              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
             >
               <option value="">Any</option>
               {JOB_TYPES.map((type) => (
@@ -325,7 +325,7 @@ export default function JobsPage() {
           <div>
             <label
               htmlFor="work-mode"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Mode
             </label>
@@ -333,7 +333,7 @@ export default function JobsPage() {
               id="work-mode"
               value={filters.workMode}
               onChange={(e) => setFilter('workMode', e.target.value)}
-              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
             >
               <option value="">Any</option>
               {WORK_MODES.map((mode) => (
@@ -354,7 +354,7 @@ export default function JobsPage() {
           <div>
             <label
               htmlFor="job-match"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-100"
             >
               Match
             </label>
@@ -362,7 +362,7 @@ export default function JobsPage() {
               id="job-match"
               value={matchFilter}
               onChange={(e) => setMatch(e.target.value)}
-              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+              className="mt-1 w-full rounded-lg border-0 py-2 pl-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
             >
               {MATCH_FILTERS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -381,13 +381,13 @@ export default function JobsPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading jobs" />
         </div>
       ) : jobs.length === 0 ? (
-        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">No jobs found</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">No jobs found</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             Nothing matches those filters yet. Clear them, or check back later.
           </p>
         </div>
@@ -399,14 +399,14 @@ export default function JobsPage() {
             anyone asks is "matched against what?".
           */}
           {isJobSeeker && matchFilter && !isScoring && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-100">
               {visibleJobs.length} of {jobs.length} job{jobs.length === 1 ? '' : 's'} match
               {visibleJobs.length === 1 ? 'es' : ''} {matchFilter === 'above' ? 'above' : 'below'}{' '}
               50%.{' '}
               <button
                 type="button"
                 onClick={() => setMatch('')}
-                className="font-medium underline hover:text-slate-900 dark:hover:text-slate-100"
+                className="font-medium underline hover:text-slate-900 dark:hover:text-white"
               >
                 Clear the match filter
               </button>{' '}
@@ -415,7 +415,7 @@ export default function JobsPage() {
           )}
 
           {isJobSeeker && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-100">
               {isScoring ? (
                 'Scoring these jobs against your primary CV…'
               ) : primaryCv ? (
@@ -449,11 +449,11 @@ export default function JobsPage() {
           ))}
 
           {visibleJobs.length === 0 && (
-            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-slate-900">
-              <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+            <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-600 dark:bg-navy-900">
+              <h2 className="font-semibold text-slate-900 dark:text-slate-50">
                 No jobs match that filter
               </h2>
-              <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+              <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
                 {matchFilter === 'above'
                   ? 'Nothing on the board scores above 50% against your primary CV yet. Tailoring a CV for a job is the quickest way to change that.'
                   : 'Everything on the board scores above 50% against your primary CV.'}

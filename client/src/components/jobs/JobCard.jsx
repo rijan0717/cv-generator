@@ -23,14 +23,14 @@ export default function JobCard({
     job.closingDate && new Date(job.closingDate) - Date.now() < 7 * 24 * 60 * 60 * 1000;
 
   return (
-    <article className="relative rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-300 dark:bg-slate-900 dark:ring-slate-700 dark:hover:ring-slate-600">
+    <article className="relative rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-300 dark:bg-navy-900 dark:ring-navy-700 dark:hover:ring-slate-600">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 gap-3">
           {/* Who is hiring, before the name is read. */}
           <CompanyLogo company={job.company} size="sm" />
 
           <div className="min-w-0">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-50">
               {/*
               `after:absolute after:inset-0` stretches an invisible layer
               from this link across the whole card, so a click anywhere on
@@ -51,7 +51,7 @@ export default function JobCard({
               </Link>
             </h3>
 
-            <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-100">
               {job.company?.name ?? 'A company'}
               {job.location && <> &middot; {job.location}</>}
             </p>
@@ -70,7 +70,7 @@ export default function JobCard({
               aria-pressed={Boolean(job.isSaved)}
               aria-label={job.isSaved ? 'Remove from saved jobs' : 'Save this job'}
               // Above the stretched link, or saving would open the job instead.
-              className="relative z-10 shrink-0 rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800"
+              className="relative z-10 shrink-0 rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 disabled:opacity-50 dark:text-slate-100 dark:hover:bg-navy-800"
             >
               <svg
                 className="h-5 w-5"
@@ -98,20 +98,20 @@ export default function JobCard({
           {job.skills.slice(0, 6).map((skill) => (
             <li
               key={skill}
-              className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-navy-800 dark:text-slate-100"
             >
               {skill}
             </li>
           ))}
           {job.skills.length > 6 && (
-            <li className="px-1 text-xs text-slate-500 dark:text-slate-400">
+            <li className="px-1 text-xs text-slate-500 dark:text-slate-100">
               +{job.skills.length - 6} more
             </li>
           )}
         </ul>
       )}
 
-      <footer className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+      <footer className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-100">
         <span>Posted {new Date(job.createdAt).toLocaleDateString('en-GB')}</span>
 
         {typeof job.applicationCount === 'number' && (
@@ -216,7 +216,7 @@ function toneFor(score) {
   if (score >= 30) {
     return 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900';
   }
-  return 'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700';
+  return 'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-navy-800 dark:text-slate-100 dark:ring-navy-700';
 }
 
 /**
@@ -225,7 +225,7 @@ function toneFor(score) {
  */
 function Tag({ children }) {
   return (
-    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-700 dark:bg-navy-800 dark:text-slate-100">
       {children}
     </span>
   );

@@ -19,10 +19,10 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Settings
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           Manage your account, security and appearance.
         </p>
       </header>
@@ -41,10 +41,10 @@ export default function SettingsPage() {
 /** A consistent card for each settings group. */
 function Card({ title, description, children }) {
   return (
-    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+      <h2 className="font-semibold text-slate-900 dark:text-slate-50">{title}</h2>
       {description && (
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">{description}</p>
       )}
       <div className="mt-4">{children}</div>
     </section>
@@ -78,7 +78,7 @@ function AppearanceSection() {
                 'cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ring-1 transition',
                 theme === option.value
                   ? 'bg-slate-900 text-white ring-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:ring-slate-100'
-                  : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-600 dark:hover:bg-slate-700',
+                  : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50 dark:bg-navy-800 dark:text-slate-100 dark:ring-slate-600 dark:hover:bg-slate-700',
               ].join(' ')}
             >
               <input
@@ -95,7 +95,7 @@ function AppearanceSection() {
         </div>
       </fieldset>
 
-      <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mt-3 text-xs text-slate-500 dark:text-slate-100">
         Your CV preview always stays on white paper, because that is how it will print.
       </p>
     </Card>
@@ -151,12 +151,12 @@ function PhotoSection() {
           <img
             src={user.avatarUrl}
             alt=""
-            className="h-20 w-20 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+            className="h-20 w-20 rounded-full object-cover ring-1 ring-slate-200 dark:ring-navy-700"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="grid h-20 w-20 place-items-center rounded-full bg-slate-100 text-2xl font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+            className="grid h-20 w-20 place-items-center rounded-full bg-slate-100 text-2xl font-semibold text-slate-500 dark:bg-navy-800 dark:text-slate-100"
           >
             {user.name.charAt(0).toUpperCase()}
           </span>
@@ -179,7 +179,7 @@ function PhotoSection() {
           >
             {isUploading ? 'Uploading' : 'Change photo'}
           </Button>
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-100">
             JPG, PNG or WEBP. Maximum 2 MB.
           </p>
         </div>
@@ -333,20 +333,20 @@ function AccountSection({ user }) {
     <Card title="Account">
       <dl className="grid gap-3 text-sm sm:grid-cols-2">
         <div>
-          <dt className="text-slate-500 dark:text-slate-400">Role</dt>
-          <dd className="mt-0.5 font-medium capitalize text-slate-900 dark:text-slate-100">
+          <dt className="text-slate-500 dark:text-slate-100">Role</dt>
+          <dd className="mt-0.5 font-medium capitalize text-slate-900 dark:text-slate-50">
             {user.role}
           </dd>
         </div>
         <div>
-          <dt className="text-slate-500 dark:text-slate-400">Status</dt>
-          <dd className="mt-0.5 font-medium capitalize text-slate-900 dark:text-slate-100">
+          <dt className="text-slate-500 dark:text-slate-100">Status</dt>
+          <dd className="mt-0.5 font-medium capitalize text-slate-900 dark:text-slate-50">
             {user.status}
           </dd>
         </div>
         <div>
-          <dt className="text-slate-500 dark:text-slate-400">Member since</dt>
-          <dd className="mt-0.5 font-medium text-slate-900 dark:text-slate-100">
+          <dt className="text-slate-500 dark:text-slate-100">Member since</dt>
+          <dd className="mt-0.5 font-medium text-slate-900 dark:text-slate-50">
             {new Date(user.createdAt).toLocaleDateString('en-GB')}
           </dd>
         </div>

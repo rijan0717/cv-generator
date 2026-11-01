@@ -46,7 +46,7 @@ export default function AdminOverviewPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[30vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading the dashboard" />
       </div>
     );

@@ -121,8 +121,8 @@ export default function CustomisePanel({ cv, onChange }) {
           preview beside this panel is the large view, so a second
           "are you sure?" preview would only be in the way. */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Template</h3>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Template</h3>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           Your content stays the same in every template. Choosing one applies its colours and fonts,
           which you can still change below.
         </p>
@@ -147,7 +147,7 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Theme presets */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Theme</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Theme</h3>
         <div className="mt-3 grid grid-cols-3 gap-2">
           {THEME_PRESETS.map((preset) => (
             <button
@@ -165,7 +165,7 @@ export default function CustomisePanel({ cv, onChange }) {
                 'rounded-lg border p-2 text-xs transition',
                 settings.themePreset === preset.key
                   ? 'border-slate-900'
-                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500',
+                  : 'border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-slate-500',
               ].join(' ')}
             >
               <span
@@ -181,7 +181,7 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Colours */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Colours</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Colours</h3>
         <div className="mt-3 space-y-2">
           <ColourInput
             label="Primary"
@@ -205,10 +205,10 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Typography */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Typography</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Typography</h3>
 
         <label
-          className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+          className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-100"
           htmlFor="fontFamily"
         >
           Body font
@@ -217,7 +217,7 @@ export default function CustomisePanel({ cv, onChange }) {
           id="fontFamily"
           value={settings.fontFamily ?? 'Inter'}
           onChange={(event) => updateSettings({ fontFamily: event.target.value })}
-          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         >
           {Object.keys(FONT_STACKS).map((font) => (
             <option key={font} value={font}>
@@ -230,7 +230,7 @@ export default function CustomisePanel({ cv, onChange }) {
             empty string, which is what every CV made before this setting
             existed already has. */}
         <label
-          className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-400"
+          className="mt-3 block text-xs font-medium text-slate-600 dark:text-slate-100"
           htmlFor="headingFont"
         >
           Heading font
@@ -239,7 +239,7 @@ export default function CustomisePanel({ cv, onChange }) {
           id="headingFont"
           value={settings.headingFont ?? ''}
           onChange={(event) => updateSettings({ headingFont: event.target.value })}
-          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="mt-1 w-full rounded-lg border-0 py-2 pl-3 text-sm text-slate-900 ring-1 ring-slate-300 focus:ring-2 focus:ring-slate-900 dark:bg-navy-800 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         >
           <option value="">Same as body</option>
           {Object.keys(FONT_STACKS).map((font) => (
@@ -250,7 +250,7 @@ export default function CustomisePanel({ cv, onChange }) {
         </select>
 
         <fieldset className="mt-3">
-          <legend className="text-xs font-medium text-slate-600 dark:text-slate-400">Size</legend>
+          <legend className="text-xs font-medium text-slate-600 dark:text-slate-100">Size</legend>
           <div className="mt-1 flex gap-2">
             {['small', 'medium', 'large'].map((size) => (
               <SegmentButton
@@ -265,7 +265,7 @@ export default function CustomisePanel({ cv, onChange }) {
         </fieldset>
 
         <fieldset className="mt-3">
-          <legend className="text-xs font-medium text-slate-600 dark:text-slate-400">
+          <legend className="text-xs font-medium text-slate-600 dark:text-slate-100">
             Spacing
           </legend>
           <div className="mt-1 flex gap-2">
@@ -284,8 +284,8 @@ export default function CustomisePanel({ cv, onChange }) {
 
       {/* Sections */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Sections</h3>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Sections</h3>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           Reorder or hide sections. Empty sections are left out automatically.
         </p>
 
@@ -297,7 +297,7 @@ export default function CustomisePanel({ cv, onChange }) {
             return (
               <li
                 key={key}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5"
+                className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-navy-700 px-2 py-1.5"
               >
                 <input
                   type="checkbox"
@@ -310,8 +310,8 @@ export default function CustomisePanel({ cv, onChange }) {
                   className={[
                     'flex-1 text-sm',
                     isHidden
-                      ? 'text-slate-400 line-through dark:text-slate-500'
-                      : 'text-slate-700 dark:text-slate-300',
+                      ? 'text-slate-500 line-through dark:text-slate-100'
+                      : 'text-slate-700 dark:text-slate-100',
                   ].join(' ')}
                 >
                   {label}
@@ -321,7 +321,7 @@ export default function CustomisePanel({ cv, onChange }) {
                   type="button"
                   onClick={() => moveSection(index, -1)}
                   disabled={index === 0}
-                  className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
+                  className="rounded p-1 text-slate-500 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-navy-800 disabled:opacity-30"
                 >
                   <span className="sr-only">Move {label} up</span>
                   <span aria-hidden="true">&uarr;</span>
@@ -330,7 +330,7 @@ export default function CustomisePanel({ cv, onChange }) {
                   type="button"
                   onClick={() => moveSection(index, 1)}
                   disabled={index === order.length - 1}
-                  className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30"
+                  className="rounded p-1 text-slate-500 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-navy-800 disabled:opacity-30"
                 >
                   <span className="sr-only">Move {label} down</span>
                   <span aria-hidden="true">&darr;</span>
@@ -346,7 +346,7 @@ export default function CustomisePanel({ cv, onChange }) {
                 <button
                   type="button"
                   onClick={() => toggleSection(key)}
-                  className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-white"
                 >
                   <span className="sr-only">
                     {isHidden ? `Add ${label} back to the CV` : `Remove ${label} from the CV`}
@@ -378,10 +378,10 @@ function ColourInput({ label, value, onChange }) {
         onChange={(event) => onChange(event.target.value)}
         className="h-8 w-10 cursor-pointer rounded border border-slate-300 dark:border-slate-600"
       />
-      <label htmlFor={id} className="flex-1 text-sm text-slate-700 dark:text-slate-300">
+      <label htmlFor={id} className="flex-1 text-sm text-slate-700 dark:text-slate-100">
         {label}
       </label>
-      <span className="font-mono text-xs uppercase text-slate-500 dark:text-slate-400">
+      <span className="font-mono text-xs uppercase text-slate-500 dark:text-slate-100">
         {value}
       </span>
     </div>
@@ -401,7 +401,7 @@ function SegmentButton({ isActive, onClick, children }) {
         'flex-1 rounded-lg border px-2 py-1.5 text-xs capitalize transition',
         isActive
           ? 'border-slate-900 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-          : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500',
+          : 'border-slate-200 dark:border-navy-700 text-slate-700 dark:text-slate-100 hover:border-slate-300 dark:hover:border-slate-500',
       ].join(' ')}
     >
       {children}

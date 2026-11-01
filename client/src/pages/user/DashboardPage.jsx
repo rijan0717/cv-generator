@@ -177,10 +177,10 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             My CVs
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
             Keep one CV per kind of role, and tailor each to the job.
           </p>
         </div>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 
       <form
         onSubmit={handleCreate}
-        className="mt-6 flex flex-wrap items-end gap-3 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
+        className="mt-6 flex flex-wrap items-end gap-3 rounded-xl bg-white dark:bg-navy-900 p-4 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700"
       >
         <TextField
           label="New CV title"
@@ -209,13 +209,13 @@ export default function DashboardPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-400">
+        <div className="mt-10 grid place-items-center text-slate-500 dark:text-slate-100">
           <Spinner label="Loading your CVs" />
         </div>
       ) : cvs.length === 0 ? (
-        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-12 text-center">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">No CVs yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-navy-900 p-12 text-center">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">No CVs yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             Create your first CV above. You can change the template and styling at any time.
           </p>
         </div>
@@ -224,7 +224,7 @@ export default function DashboardPage() {
           {cvs.map((cv) => (
             <li
               key={cv._id}
-              className="relative flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-300 dark:ring-slate-700 dark:hover:ring-slate-600"
+              className="relative flex flex-wrap items-center gap-4 rounded-xl bg-white dark:bg-navy-900 p-4 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-300 dark:ring-navy-700 dark:hover:ring-slate-600"
             >
               <div className="min-w-0 flex-1">
                 {/*
@@ -235,11 +235,11 @@ export default function DashboardPage() {
                 */}
                 <Link
                   to={`/cvs/${cv._id}`}
-                  className="font-medium text-slate-900 dark:text-slate-100 hover:underline after:absolute after:inset-0 after:rounded-xl"
+                  className="font-medium text-slate-900 dark:text-slate-50 hover:underline after:absolute after:inset-0 after:rounded-xl"
                 >
                   {cv.title}
                 </Link>
-                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
                   {getTemplate(cv.templateKey).name} &middot; updated{' '}
                   {new Date(cv.updatedAt).toLocaleDateString('en-GB')}
                   {/*
@@ -377,7 +377,7 @@ function MatchGrowthPill({ tailoredFor }) {
       ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
       : difference < 0
         ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-        : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+        : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100';
 
   return (
     <span
@@ -418,7 +418,7 @@ function PrimaryToggle({ cv, onToggle }) {
         'flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium transition',
         cv.isPrimary
           ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-          : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+          : 'text-slate-500 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-navy-800',
       ].join(' ')}
     >
       <svg

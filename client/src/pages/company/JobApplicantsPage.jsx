@@ -61,7 +61,7 @@ export default function JobApplicantsPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-400">
+      <div className="grid min-h-[40vh] place-items-center text-slate-500 dark:text-slate-100">
         <Spinner label="Loading applicants" />
       </div>
     );
@@ -82,16 +82,16 @@ export default function JobApplicantsPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <Link
         to="/company/posts"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
       >
         &larr; My posts
       </Link>
 
       <header className="mt-3">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Applicants
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
           {job?.title} &middot; {applications.length} application
           {applications.length === 1 ? '' : 's'}
         </p>
@@ -104,9 +104,9 @@ export default function JobApplicantsPage() {
       )}
 
       {applications.length === 0 ? (
-        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">No applications yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-8 rounded-xl border-2 border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-600 dark:bg-navy-900">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-50">No applications yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-slate-100">
             When someone applies, they will appear here with the CV they sent.
           </p>
         </div>
@@ -115,14 +115,14 @@ export default function JobApplicantsPage() {
           {applications.map((application) => (
             <li
               key={application.id}
-              className="rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+              className="rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700"
             >
               <div className="flex flex-wrap items-center gap-4 p-4">
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-medium text-slate-900 dark:text-slate-100">
+                  <h2 className="font-medium text-slate-900 dark:text-slate-50">
                     {application.applicant?.name ?? 'An applicant'}
                   </h2>
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
                     {application.applicant?.email}
                     {application.headline && <> &middot; {application.headline}</>} &middot; applied{' '}
                     {new Date(application.createdAt).toLocaleDateString('en-GB')}
@@ -245,7 +245,7 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
 
   if (isLoading) {
     return (
-      <div className="border-t border-slate-200 p-4 text-slate-500 dark:border-slate-700 dark:text-slate-400">
+      <div className="border-t border-slate-200 p-4 text-slate-500 dark:border-navy-700 dark:text-slate-100">
         <Spinner label="Loading the application" />
       </div>
     );
@@ -253,26 +253,26 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
 
   if (error && !application) {
     return (
-      <div className="border-t border-slate-200 p-4 dark:border-slate-700">
+      <div className="border-t border-slate-200 p-4 dark:border-navy-700">
         <Alert variant="error">{error}</Alert>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 border-t border-slate-200 p-4 dark:border-slate-700">
+    <div className="space-y-4 border-t border-slate-200 p-4 dark:border-navy-700">
       {application.coverLetter && (
         <section>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Cover letter</h3>
-          <p className="mt-1 whitespace-pre-line text-sm text-slate-700 dark:text-slate-300">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">Cover letter</h3>
+          <p className="mt-1 whitespace-pre-line text-sm text-slate-700 dark:text-slate-100">
             {application.coverLetter}
           </p>
         </section>
       )}
 
       {/* Status and the private note */}
-      <section className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+      <section className="rounded-lg bg-slate-50 p-4 dark:bg-navy-800">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
           Move this application
         </h3>
 
@@ -293,7 +293,7 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
 
         <label
           htmlFor={`note-${applicationId}`}
-          className="mt-4 block text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="mt-4 block text-sm font-medium text-slate-700 dark:text-slate-100"
         >
           Private note
         </label>
@@ -303,9 +303,9 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           maxLength={2000}
-          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-900 dark:text-slate-100 dark:ring-slate-600 dark:focus:ring-slate-100"
+          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:bg-navy-900 dark:text-slate-50 dark:ring-slate-600 dark:focus:ring-slate-100"
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           Only your company sees this. It is saved when you set a status.
         </p>
       </section>
@@ -313,7 +313,7 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
       {/* The submitted CV */}
       <section>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
             CV as submitted
           </h3>
 
@@ -337,7 +337,7 @@ function ApplicationDetail({ applicationId, onStatusChange }) {
           </div>
         </div>
 
-        <div className="mt-3 max-h-[70vh] overflow-y-auto rounded-xl bg-slate-200/60 p-4 dark:bg-slate-800/60">
+        <div className="mt-3 max-h-[70vh] overflow-y-auto rounded-xl bg-slate-200/60 p-4 dark:bg-navy-800/60">
           <CVPreview cv={application.cv} />
         </div>
       </section>
