@@ -12,16 +12,11 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
 
-        // The headlines on the public pages and the section headings.
-        // Kept separate from `sans` so the working screens behind a login
-        // stay in Inter, which is the better face for dense forms.
+        // The headlines on the public pages and the section headings, and
+        // the wordmark, which is the same geometric sans set heavy and
+        // tight. Kept separate from `sans` so the working screens behind a
+        // login stay in Inter, which is the better face for dense forms.
         display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
-
-        // The wordmark alone, and nothing else. A brush script is a
-        // signature, not a typeface to set text in: it is unreadable at
-        // small sizes and in long runs, so it is confined to the five
-        // letters of the logo.
-        brand: ['"Kaushan Script"', 'cursive'],
       },
 
       colors: {
@@ -41,11 +36,11 @@ export default {
         },
       },
 
-      backgroundImage: {
-        // One definition of the brand gradient, used by the wordmark, the
-        // primary buttons and the search control.
-        'brand-gradient': 'linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%)',
-      },
+      // The brand gradient is deliberately NOT here. It lives in
+      // `src/index.css` as `.cvg-gradient-bg` and `.cvg-gradient-text`,
+      // because a theme-generated background that fails to generate takes
+      // the colour with it and leaves `text-transparent` behind — an
+      // invisible logo and invisible buttons rather than ugly ones.
     },
   },
   plugins: [],

@@ -247,7 +247,7 @@ export default function HomePage() {
                       'rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition',
                       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia',
                       isActive
-                        ? 'bg-brand-gradient text-white shadow-sm'
+                        ? 'cvg-gradient-bg text-white shadow-sm'
                         : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
                     ].join(' ')}
                   >
@@ -285,7 +285,7 @@ export default function HomePage() {
                 <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
                   <Link
                     to={isAuthenticated ? homePathFor(user) : hero.primary.to}
-                    className="rounded-full bg-brand-gradient px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia"
+                    className="rounded-full cvg-gradient-bg px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia"
                   >
                     {isAuthenticated
                       ? user?.accountType === 'employer'
@@ -343,7 +343,7 @@ export default function HomePage() {
               <li key={step.title}>
                 <span
                   aria-hidden="true"
-                  className="grid h-10 w-10 place-items-center rounded-xl bg-brand-gradient font-display text-base font-bold text-white"
+                  className="grid h-10 w-10 place-items-center rounded-xl cvg-gradient-bg font-display text-base font-bold text-white"
                 >
                   {index + 1}
                 </span>
@@ -376,7 +376,7 @@ export default function HomePage() {
 
               <Link
                 to="/register"
-                className="shrink-0 rounded-full bg-brand-gradient px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90"
+                className="shrink-0 rounded-full cvg-gradient-bg px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90"
               >
                 Create a free account
               </Link>

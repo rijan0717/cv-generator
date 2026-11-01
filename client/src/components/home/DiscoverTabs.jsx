@@ -418,7 +418,7 @@ export default function DiscoverTabs() {
           />
           <span
             aria-hidden="true"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-gradient text-white"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full cvg-gradient-bg text-white"
           >
             <svg
               className="h-5 w-5"
@@ -448,7 +448,7 @@ export default function DiscoverTabs() {
                 'rounded-full border px-3.5 py-1.5 text-sm transition',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia',
                 query === chip
-                  ? 'border-transparent bg-brand-gradient text-white'
+                  ? 'border-transparent cvg-gradient-bg text-white'
                   : 'border-slate-300 text-slate-700 hover:border-slate-900 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-300',
               ].join(' ')}
             >

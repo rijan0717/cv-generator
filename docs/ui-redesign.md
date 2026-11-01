@@ -3,8 +3,8 @@
 Three separate pieces, each based on a reference supplied by the client.
 This document is the brief; a section says where it stands.
 
-| Piece                           | Reference                                 | Status                                            |
-| ------------------------------- | ----------------------------------------- | ------------------------------------------------- |
+| Piece                           | Reference                                 | Status                                             |
+| ------------------------------- | ----------------------------------------- | -------------------------------------------------- |
 | 1. CV editor and customise page | Screenshot of a commercial resume builder | Not started; the editor has since diverged (below) |
 | 2. Home page                    | resume.io style landing page              | **Superseded** by the Dribbble-style rebuild (§0)  |
 | 3. CV templates                 | Two of the client's own CV PDFs           | **Done** by the template engine and its 29 designs |
@@ -20,10 +20,12 @@ This document is the brief; a section says where it stands.
 Brief: a Dribbble-style public site. Built on `ui-redesign`:
 
 - **Brand.** The name is now **SmartCV**. The mark is a four-point "AI" spark
-  on a violet-to-pink gradient tile, with the wordmark in Kaushan Script, a
-  brush face confined to the logo. One component, `components/ui/BrandMark.jsx`;
-  the same spark, inline, is the favicon. Tokens live in
-  `tailwind.config.js` as `brand.violet/fuchsia/pink` and `bg-brand-gradient`.
+  on a violet-to-pink gradient tile, with the wordmark in Outfit, set heavy
+  and tight. One component, `components/ui/BrandMark.jsx`; the same spark,
+  inline, is the favicon. Single-colour accents read `brand.violet/fuchsia/pink`
+  from `tailwind.config.js`; the **gradient itself is authored CSS** in
+  `src/index.css` (`.cvg-gradient-bg`, `.cvg-gradient-text`, `.cvg-wordmark`)
+  and deliberately not a theme key — see the traps below.
 - **Header.** Three dropdown menus — Get hired, Hire talent, Explore — each
   row an icon, a name and a line saying what it is for
   (`components/layout/NavMenu.jsx`, content in `menus.js`). Sign up is the
@@ -38,14 +40,27 @@ Brief: a Dribbble-style public site. Built on `ui-redesign`:
   driven by `src/data/features.js` and rendered by `pages/FeaturePage.jsx`.
   They exist because most tools are behind a login and a visitor should be
   able to read what one does before being asked to sign up.
-- **Footer.** Logo, one wrapped row of destinations, social, and a thin
-  legal line.
+- **Footer.** Logo, a sentence and the social links on the left; three
+  columns — Get hired, Hire talent, Explore — on the right; then a rule and
+  a legal line carrying the copyright, which links to the author's site.
+  The admin's published pages append to the Explore column.
 - **Theme.** The default is now `light` rather than `system`.
 - **Motion.** `Reveal` for section entrances with staggered delays,
   `utils/useCountUp.js` for the figures on a feature page, hover lift on
   cards. All one-shot, all dropped under `prefers-reduced-motion`.
 
-Two things learned the hard way, both worth not repeating:
+Three things learned the hard way, all worth not repeating:
+
+- **The brand gradient must not be a Tailwind theme key.** It was, twice, and
+  twice a dev server running a stale `tailwind.config.js` served the new JSX
+  with the old CSS. `bg-brand-gradient` then generated nothing while the
+  `text-transparent` and `text-white` beside it generated fine — so the
+  logo, both header buttons and half of every headline went _invisible_
+  rather than merely wrong, on a page that otherwise looked healthy. A
+  theme change needs the Vite process restarted; an edit to `index.css`
+  hot-reloads. The gradient now lives in `index.css`, with an
+  `@supports` fallback to a solid colour for any browser that cannot clip
+  a background to text.
 
 - `backdrop-filter` on the header made it a backdrop root, and the dropdown
   panels — its descendants — composited against the blurred backdrop

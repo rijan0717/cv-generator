@@ -181,7 +181,7 @@ export default function RewriteWithJDPage() {
       <header className="max-w-2xl">
         <span
           aria-hidden="true"
-          className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-gradient text-white shadow-lg shadow-fuchsia-500/25"
+          className="grid h-12 w-12 place-items-center rounded-2xl cvg-gradient-bg text-white shadow-lg shadow-fuchsia-500/25"
         >
           <Spark />
         </span>
@@ -246,7 +246,7 @@ export default function RewriteWithJDPage() {
                 >
                   <span
                     className={`block h-full rounded-full transition-all ${
-                      canRewrite ? 'bg-brand-gradient' : 'bg-slate-400 dark:bg-slate-500'
+                      canRewrite ? 'cvg-gradient-bg' : 'bg-slate-400 dark:bg-slate-500'
                     }`}
                     style={{ width: `${Math.min(100, (typed / MIN_DESCRIPTION) * 100)}%` }}
                   />
@@ -364,7 +364,7 @@ export default function RewriteWithJDPage() {
       {/* --- Step 3: saved — set primary, download, open --- */}
       {saved && (
         <section className="mt-10 max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <div className="h-1.5 bg-brand-gradient" aria-hidden="true" />
+          <div className="h-1.5 cvg-gradient-bg" aria-hidden="true" />
 
           <div className="p-6 sm:p-8">
             <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-100">

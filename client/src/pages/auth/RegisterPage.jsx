@@ -134,7 +134,7 @@ export default function RegisterPage() {
       <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
         {/* The brand bar, so the card belongs to the site rather than
             floating on it. */}
-        <div className="h-1.5 bg-brand-gradient" aria-hidden="true" />
+        <div className="h-1.5 cvg-gradient-bg" aria-hidden="true" />
 
         <div className="p-8">
           <BrandMark size="sm" className="mb-6" />

@@ -128,7 +128,7 @@ export default function FeaturePage() {
             <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
               <Link
                 to={feature.primary.to}
-                className="rounded-full bg-brand-gradient px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia"
+                className="rounded-full cvg-gradient-bg px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia"
               >
                 {feature.primary.label}
               </Link>
@@ -181,7 +181,7 @@ export default function FeaturePage() {
               <Reveal as="li" key={step.title} delay={index * 90}>
                 <span
                   aria-hidden="true"
-                  className="grid h-10 w-10 place-items-center rounded-xl bg-brand-gradient font-display text-base font-bold text-white"
+                  className="grid h-10 w-10 place-items-center rounded-xl cvg-gradient-bg font-display text-base font-bold text-white"
                 >
                   {index + 1}
                 </span>
@@ -241,7 +241,7 @@ export default function FeaturePage() {
             </p>
             <Link
               to={feature.primary.to}
-              className="shrink-0 rounded-full bg-brand-gradient px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90"
+              className="shrink-0 rounded-full cvg-gradient-bg px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:opacity-90"
             >
               {feature.primary.label}
             </Link>

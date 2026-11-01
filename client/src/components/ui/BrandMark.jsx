@@ -22,28 +22,24 @@ const TILE = {
   lg: 'h-12 w-12 rounded-2xl',
 };
 
-/**
- * Type sizes for the wordmark, by `size`.
- *
- * A step larger than the equivalent sans size at each stop: a script face
- * has a smaller x-height than Outfit or Inter, so matching the nominal
- * size would make the logo read as the smallest thing in the header.
- */
+/** Type sizes for the wordmark, by `size`. */
 const WORD = {
-  sm: 'text-xl',
-  md: 'text-2xl',
-  lg: 'text-4xl',
+  sm: 'text-lg',
+  md: 'text-xl',
+  lg: 'text-3xl',
 };
 
 /**
- * The gradient, as a text fill. Declared once here and reused by the
- * wordmark and by any heading that wants the same accent.
+ * The gradient, as a text fill. Reused by the wordmark and by any heading
+ * that wants the same accent.
+ *
+ * It is one authored class from `index.css`, not a string of Tailwind
+ * utilities, and deliberately so: built from utilities, a theme that fails
+ * to generate them leaves `text-transparent` behind on its own and the
+ * text disappears. `.cvg-gradient-text` carries its own colour and its own
+ * fallback for a browser that cannot clip a background to text.
  */
-export const BRAND_TEXT_GRADIENT = [
-  'bg-gradient-to-r from-brand-violet via-brand-fuchsia to-brand-pink',
-  'dark:from-violet-400 dark:via-fuchsia-400 dark:to-pink-400',
-  'bg-clip-text text-transparent',
-].join(' ');
+export const BRAND_TEXT_GRADIENT = 'cvg-gradient-text';
 
 /**
  * The four-point spark on its gradient tile.
@@ -54,7 +50,7 @@ export function BrandSpark({ className = '' }) {
     <span
       aria-hidden="true"
       className={[
-        'grid shrink-0 place-items-center bg-brand-gradient shadow-sm shadow-fuchsia-500/30',
+        'grid shrink-0 place-items-center cvg-gradient-bg shadow-sm shadow-fuchsia-500/30',
         className,
       ].join(' ')}
     >
@@ -81,12 +77,7 @@ export default function BrandMark({ size = 'md', withWordmark = true, className 
       <BrandSpark className={TILE[size]} />
 
       {withWordmark && (
-        <span
-          // `leading-none` with a little bottom padding: a script face has
-          // long descenders, and the default line box clips the tail of
-          // the "t" against the row below it.
-          className={['font-brand pb-0.5 leading-none', WORD[size], BRAND_TEXT_GRADIENT].join(' ')}
-        >
+        <span className={['cvg-wordmark leading-none', WORD[size], BRAND_TEXT_GRADIENT].join(' ')}>
           SmartCV
         </span>
       )}

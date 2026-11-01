@@ -3,6 +3,72 @@
 @tailwind utilities;
 
 /*
+ * The brand gradient.
+ *
+ * Written here as ordinary CSS rather than as Tailwind theme utilities,
+ * and that is the whole point of it. A theme-generated class that goes
+ * missing — a stale `tailwind.config.js` in a dev server that has not been
+ * restarted, a typo in the theme key — takes the background with it but
+ * leaves `text-transparent` and `text-white` behind, so the wordmark, the
+ * primary buttons and half of every headline turn invisible rather than
+ * turning ugly. That is a silent failure, and it happened twice while this
+ * page was being built.
+ *
+ * Authored CSS cannot fail that way: these rules are in the file whatever
+ * the theme does, and editing them hot-reloads like any other stylesheet.
+ *
+ * The colours are the brand ramp, the same values as `brand.*` in the
+ * Tailwind config, which is still where borders and single-colour accents
+ * read them from.
+ */
+
+.cvg-gradient-bg {
+  background-image: linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+}
+
+.cvg-gradient-text {
+  background-image: linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Lightened in dark mode: violet #7c3aed is a mid-tone that reads on white
+   but sits too close to a slate-950 page to be legible. */
+html.dark .cvg-gradient-text {
+  background-image: linear-gradient(90deg, #a78bfa 0%, #e879f9 50%, #f9a8d4 100%);
+}
+
+/*
+ * The wordmark's face: the display sans, set heavy and tight.
+ *
+ * Here rather than as a theme key for the same reason as the gradient — a
+ * missing key would silently drop the logo back to the body font, and the
+ * logo is the one place that should never quietly change.
+ */
+.cvg-wordmark {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/*
+ * The fallback. Any browser that cannot clip a background to text would
+ * otherwise render `color: transparent` literally and show nothing, so it
+ * gets a solid brand colour instead of an invisible headline.
+ */
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+  .cvg-gradient-text {
+    background-image: none;
+    color: #a855f7;
+  }
+
+  html.dark .cvg-gradient-text {
+    color: #e879f9;
+  }
+}
+
+/*
  * Base colours for the application shell.
  *
  * The CV templates deliberately do not participate in this: a CV is a

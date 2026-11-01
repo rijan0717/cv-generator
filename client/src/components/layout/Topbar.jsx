@@ -183,7 +183,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
                   disappears when the theme is toggled to dark. */}
               <Link
                 to="/register"
-                className="hidden rounded-full bg-brand-gradient px-5 py-2 text-sm font-bold text-white shadow-sm shadow-fuchsia-500/30 transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia sm:inline-block"
+                className="hidden rounded-full cvg-gradient-bg px-5 py-2 text-sm font-bold text-white shadow-sm shadow-fuchsia-500/30 transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia sm:inline-block"
               >
                 Sign up
               </Link>
@@ -271,7 +271,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
 
           <Link
             to="/register"
-            className="mt-2 block rounded-full bg-brand-gradient px-5 py-2.5 text-center text-sm font-semibold text-white sm:hidden"
+            className="mt-2 block rounded-full cvg-gradient-bg px-5 py-2.5 text-center text-sm font-semibold text-white sm:hidden"
           >
             Sign up — it&apos;s free
           </Link>
