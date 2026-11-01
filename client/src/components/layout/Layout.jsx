@@ -82,7 +82,7 @@ export default function Layout() {
    * which made Privacy and Terms unreachable from anywhere a visitor
    * actually was.
    */
-  const PUBLIC_PREFIXES = ['/jobs', '/blog', '/p/', '/login', '/register'];
+  const PUBLIC_PREFIXES = ['/jobs', '/blog', '/p/', '/login', '/register', '/features'];
   const showFooter =
     pathname === '/' || PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 

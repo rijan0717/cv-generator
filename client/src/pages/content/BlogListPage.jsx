@@ -48,7 +48,7 @@ export default function BlogListPage() {
   useDocumentMeta({
     title: 'Blogs',
     description:
-      'Advice on writing a CV, reading a job advert and getting past screening software, from the team behind Smart CV Generator.',
+      'Advice on writing a CV, reading a job advert and getting past screening software, from the team behind SmartCV.',
     keywords: ['cv advice', 'cv tips', 'ats', 'job applications', 'cv writing'],
     canonicalPath: '/blog',
   });

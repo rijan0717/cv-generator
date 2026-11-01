@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -63,7 +64,7 @@ describe('App routing', () => {
       expect(
         await screen.findByRole('heading', {
           level: 1,
-          name: /build a cv that gets you shortlisted/i,
+          name: /gets you shortlisted/i,
         }),
       ).toBeInTheDocument();
     });
@@ -71,11 +72,45 @@ describe('App routing', () => {
     it('offers a way to create an account', async () => {
       renderAt('/');
 
-      // The header's "Get started" is a button, so the link is the one on
-      // the landing page itself.
-      const links = await screen.findAllByRole('link', { name: /get started/i });
+      // The hero's primary call to action, on the first of its two
+      // panels: it is a link rather than a button because it navigates.
+      const links = await screen.findAllByRole('link', { name: /create my cv/i });
       expect(links.length).toBeGreaterThan(0);
       expect(links[0]).toHaveAttribute('href', '/register');
+    });
+
+    it('switches the hero between its two panels', async () => {
+      const user = userEvent.setup();
+      renderAt('/');
+
+      // The two pills are tabs; the header menu of the same name is an
+      // ordinary button, which is what keeps these two apart.
+      await screen.findByRole('heading', { name: /gets you shortlisted/i });
+
+      await user.click(screen.getByRole('tab', { name: /get hired/i }));
+
+      expect(
+        await screen.findByRole('heading', { name: /rewrite it for the job/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: /gets you shortlisted/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('opens a header menu and shows what each entry is for', async () => {
+      const user = userEvent.setup();
+      renderAt('/');
+
+      const trigger = await screen.findByRole('button', { name: /get hired/i });
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+      await user.click(trigger);
+
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      // The description under each link is the reason the menu exists.
+      expect(
+        await screen.findByText(/paste an advert and your cv is rewritten/i),
+      ).toBeInTheDocument();
     });
 
     it('shows the login page', async () => {
@@ -88,6 +123,23 @@ describe('App routing', () => {
       renderAt('/dashboard');
 
       expect(await screen.findByRole('heading', { name: /^log in$/i })).toBeInTheDocument();
+    });
+
+    it('shows the public page behind a header-menu entry', async () => {
+      // These exist so a visitor can read what a tool does without being
+      // sent to the login form first, so they must not be guarded.
+      renderAt('/features/cv-builder');
+
+      expect(
+        await screen.findByRole('heading', { level: 1, name: /use it everywhere/i }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: /^log in$/i })).not.toBeInTheDocument();
+    });
+
+    it('shows a not-found page for an unknown feature slug', async () => {
+      renderAt('/features/no-such-feature');
+
+      expect(await screen.findByRole('heading', { name: /page not found/i })).toBeInTheDocument();
     });
 
     it('shows a not-found page for an unknown route', async () => {
@@ -153,7 +205,7 @@ describe('App routing', () => {
 
       expect(await screen.findByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
       expect(
-        screen.queryByRole('heading', { name: /build a cv that gets you shortlisted/i }),
+        screen.queryByRole('heading', { name: /gets you shortlisted/i }),
       ).not.toBeInTheDocument();
     });
 

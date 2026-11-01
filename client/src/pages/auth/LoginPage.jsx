@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth.js';
 import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
+import BrandMark from '../../components/ui/BrandMark.jsx';
 import GoogleSignInButton from '../../components/auth/GoogleSignInButton.jsx';
 import { homePathFor } from '../../utils/homePath.js';
 
@@ -79,50 +80,61 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
-      <div className="rounded-xl bg-white dark:bg-slate-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-          Log in
-        </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Welcome back. Enter your details to continue.
-        </p>
+      <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        {/* The brand bar, so the card belongs to the site rather than
+            floating on it. */}
+        <div className="h-1.5 bg-brand-gradient" aria-hidden="true" />
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
-          <TextField
-            label="Email address"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            autoComplete="email"
-            required
-          />
+        <div className="p-8">
+          <BrandMark size="sm" className="mb-6" />
 
-          <TextField
-            label="Password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            autoComplete="current-password"
-            required
-          />
+          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            Log in
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Welcome back. Enter your details to continue.
+          </p>
 
-          <Button type="submit" className="w-full" isLoading={isSubmitting}>
-            {isSubmitting ? 'Logging in' : 'Log in'}
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+            <TextField
+              label="Email address"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              autoComplete="email"
+              required
+            />
 
-        <div className="mt-6">
-          <GoogleSignInButton onCredential={handleGoogle} text="signin_with" />
+            <TextField
+              label="Password"
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+              required
+            />
+
+            <Button type="submit" className="w-full" isLoading={isSubmitting}>
+              {isSubmitting ? 'Logging in' : 'Log in'}
+            </Button>
+          </form>
+
+          <div className="mt-6">
+            <GoogleSignInButton onCredential={handleGoogle} text="signin_with" />
+          </div>
+
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+            Do not have an account?{' '}
+            <Link
+              to="/register"
+              className="font-medium text-slate-900 dark:text-slate-100 underline"
+            >
+              Create one
+            </Link>
+          </p>
         </div>
-
-        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-          Do not have an account?{' '}
-          <Link to="/register" className="font-medium text-slate-900 dark:text-slate-100 underline">
-            Create one
-          </Link>
-        </p>
       </div>
     </div>
   );

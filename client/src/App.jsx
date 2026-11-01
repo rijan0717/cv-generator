@@ -7,6 +7,7 @@ import AccountTypeRoute from './routes/AccountTypeRoute.jsx';
 import WelcomePage from './pages/user/WelcomePage.jsx';
 import AdminRoute from './routes/AdminRoute.jsx';
 import HomeRoute from './routes/HomeRoute.jsx';
+import FeaturePage from './pages/FeaturePage.jsx';
 
 import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
@@ -75,6 +76,11 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/health" element={<HealthPage />} />
+
+        {/* One public page per header-menu entry. Most of the tools are
+            behind a login, so these are what a visitor reads before
+            deciding to create an account. */}
+        <Route path="/features/:slug" element={<FeaturePage />} />
 
         {/* The job board is public: someone should be able to see what is
             on offer before deciding to create an account. */}

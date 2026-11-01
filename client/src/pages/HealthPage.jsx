@@ -32,9 +32,7 @@ export default function HealthPage() {
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
       <section className="w-full max-w-md rounded-xl bg-white dark:bg-slate-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-          Smart CV Generator
-        </h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">SmartCV</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Phase 0 &mdash; project setup
         </p>

@@ -70,7 +70,7 @@ export default function WelcomePage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl dark:text-slate-100">
-        Welcome, {user.name.split(' ')[0]} ! How will you use Smart CV Generator?
+        Welcome, {user.name.split(' ')[0]} ! How will you use SmartCV?
       </h1>
       <p className="mt-2 text-center text-slate-600 dark:text-slate-400">
         Choose one. This sets up your account.

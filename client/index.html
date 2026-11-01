@@ -3,20 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart CV Generator</title>
+    <title>SmartCV</title>
 
     <!--
       The tab icon, inline as a data URI rather than a file in /public.
       Without any icon declared, every page load asks for /favicon.ico and
       takes a 404 in the console; inline there is no second request at all.
-      It is the same dark square monogram as the mark in the navigation bar.
+
+      It is the same mark as the logo in the navigation bar: the four-point
+      "AI" spark on the violet-to-pink brand gradient, so the tab, the
+      header and the footer all show one thing.
     -->
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ECV%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='32' y2='32' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%237c3aed'/%3E%3Cstop offset='.5' stop-color='%23a855f7'/%3E%3Cstop offset='1' stop-color='%23ec4899'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M16 5.5l2.3 6.2L24.5 14l-6.2 2.3L16 22.5l-2.3-6.2L7.5 14l6.2-2.3z' fill='%23fff'/%3E%3Ccircle cx='24.6' cy='23.6' r='2.3' fill='%23fff' opacity='.85'/%3E%3C/svg%3E"
     />
 
-    <meta name="theme-color" content="#4f46e5" />
+    <meta name="theme-color" content="#a855f7" />
     <meta
       name="description"
       content="Build professional CVs and check how well they match a job description."
@@ -24,16 +27,18 @@
 
     <!--
       The twelve fonts offered in the CV customisation panel (FONT_STACKS in
-      src/templates/templateUtils.js). They are loaded
-      here rather than per template so that a font is already available the
-      moment the user selects it, and so the PDF print page can wait on
-      document.fonts.ready before rendering.
+      src/templates/templateUtils.js), plus two of the interface's own:
+      Outfit for the headlines on the public pages, and Kaushan Script for
+      the wordmark and nothing else.
+      They are loaded here rather than per template so that a font is already
+      available the moment the user selects it, and so the PDF print page can
+      wait on document.fonts.ready before rendering.
     -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;600;700&family=Roboto+Slab:wght@300;400;700&family=Source+Sans+3:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&family=Lora:wght@400;600;700&family=EB+Garamond:wght@400;600;700&family=Oswald:wght@300;400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;500;600;700;800&family=Kaushan+Script&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;600;700&family=Roboto+Slab:wght@300;400;700&family=Source+Sans+3:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&family=Lora:wght@400;600;700&family=EB+Garamond:wght@400;600;700&family=Oswald:wght@300;400;600;700&display=swap"
     />
   </head>
   <body>

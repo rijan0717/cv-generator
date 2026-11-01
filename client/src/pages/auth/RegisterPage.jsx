@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth.js';
 import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
+import BrandMark from '../../components/ui/BrandMark.jsx';
 import GoogleSignInButton from '../../components/auth/GoogleSignInButton.jsx';
 import { homePathFor } from '../../utils/homePath.js';
 
@@ -22,7 +23,12 @@ import { homePathFor } from '../../utils/homePath.js';
 
 /**
  * Checks one form against the same rules the server applies.
- * @param {{name: string, email: string, password: string, confirmPassword: string}} form
+ *
+ * There is no "confirm password" field to check. The password box can be
+ * revealed, which catches a typo in the one place it can happen, and a
+ * second box only asks the user to make the same mistake twice.
+ *
+ * @param {{name: string, email: string, password: string}} form
  * @returns {Record<string, string>} Field name to error message.
  */
 function validate(form) {
@@ -44,10 +50,6 @@ function validate(form) {
     errors.password = 'Password must contain at least one number';
   }
 
-  if (form.confirmPassword !== form.password) {
-    errors.confirmPassword = 'Passwords do not match';
-  }
-
   return errors;
 }
 
@@ -60,7 +62,6 @@ export default function RegisterPage() {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,74 +131,71 @@ export default function RegisterPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
-      <div className="rounded-xl bg-white dark:bg-slate-900 p-8 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-          Create your account
-        </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          It takes a minute, and your first CV can start straight away.
-        </p>
+      <div className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
+        {/* The brand bar, so the card belongs to the site rather than
+            floating on it. */}
+        <div className="h-1.5 bg-brand-gradient" aria-hidden="true" />
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
-          <TextField
-            label="Full name"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            error={fieldErrors.name}
-            autoComplete="name"
-            required
-          />
+        <div className="p-8">
+          <BrandMark size="sm" className="mb-6" />
 
-          <TextField
-            label="Email address"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            error={fieldErrors.email}
-            autoComplete="email"
-            required
-          />
+          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            Create your account
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            It takes a minute, and your first CV can start straight away.
+          </p>
 
-          <TextField
-            label="Password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            error={fieldErrors.password}
-            hint="At least 8 characters, with a letter and a number"
-            autoComplete="new-password"
-            required
-          />
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+            <TextField
+              label="Full name"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              error={fieldErrors.name}
+              autoComplete="name"
+              required
+            />
 
-          <TextField
-            label="Confirm password"
-            type="password"
-            name="confirmPassword"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            error={fieldErrors.confirmPassword}
-            autoComplete="new-password"
-            required
-          />
+            <TextField
+              label="Email address"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              error={fieldErrors.email}
+              autoComplete="email"
+              required
+            />
 
-          <Button type="submit" className="w-full" isLoading={isSubmitting}>
-            {isSubmitting ? 'Creating your account' : 'Create account'}
-          </Button>
-        </form>
+            <TextField
+              label="Password"
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              error={fieldErrors.password}
+              hint="At least 8 characters, with a letter and a number"
+              autoComplete="new-password"
+              required
+            />
 
-        <div className="mt-6">
-          <GoogleSignInButton onCredential={handleGoogle} text="signup_with" />
+            <Button type="submit" className="w-full" isLoading={isSubmitting}>
+              {isSubmitting ? 'Creating your account' : 'Create account'}
+            </Button>
+          </form>
+
+          <div className="mt-6">
+            <GoogleSignInButton onCredential={handleGoogle} text="signup_with" />
+          </div>
+
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-slate-900 dark:text-slate-100 underline">
+              Log in
+            </Link>
+          </p>
         </div>
-
-        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium text-slate-900 dark:text-slate-100 underline">
-            Log in
-          </Link>
-        </p>
       </div>
     </div>
   );

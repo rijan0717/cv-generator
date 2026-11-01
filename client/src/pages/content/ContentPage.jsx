@@ -70,7 +70,7 @@ export default function ContentPage({ kind = 'page' }) {
           datePublished: content.publishedAt ?? undefined,
           dateModified: content.updatedAt ?? undefined,
           author: content.author ? { '@type': 'Person', name: content.author } : undefined,
-          publisher: { '@type': 'Organization', name: 'Smart CV Generator' },
+          publisher: { '@type': 'Organization', name: 'SmartCV' },
         }
       : undefined,
   });

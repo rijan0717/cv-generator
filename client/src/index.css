@@ -50,6 +50,23 @@ html.dark body {
 }
 
 /*
+ * The small rise-and-fade used when a header dropdown opens and when the
+ * hero switches between its two panels. It is applied through Tailwind's
+ * `motion-safe:` variant at each call site, so a reduced-motion preference
+ * drops it without needing a rule here.
+ */
+@keyframes cvg-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
  * The gentle drift used by the home page testimonials and the template
  * showcase. The movement is small on purpose: enough to feel alive, not
  * enough to make text hard to read while it moves.

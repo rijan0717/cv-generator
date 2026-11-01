@@ -1,18 +1,64 @@
 # UI Redesign Specification
 
-Design work agreed but **not yet built**. Three separate pieces, each based
-on a reference the client supplied. This document is the brief; nothing here
-is implemented unless a section says otherwise.
+Three separate pieces, each based on a reference supplied by the client.
+This document is the brief; a section says where it stands.
 
-| Piece                           | Reference                                 | Status                              |
-| ------------------------------- | ----------------------------------------- | ----------------------------------- |
-| 1. CV editor and customise page | Screenshot of a commercial resume builder | Not started                         |
-| 2. Home page                    | resume.io style landing page              | Not started                         |
-| 3. CV templates                 | Two of the client's own CV PDFs           | CSS drafted, components not written |
+| Piece                           | Reference                                 | Status                                            |
+| ------------------------------- | ----------------------------------------- | ------------------------------------------------- |
+| 1. CV editor and customise page | Screenshot of a commercial resume builder | Not started; the editor has since diverged (below) |
+| 2. Home page                    | resume.io style landing page              | **Superseded** by the Dribbble-style rebuild (§0)  |
+| 3. CV templates                 | Two of the client's own CV PDFs           | **Done** by the template engine and its 29 designs |
 
 > The references are commercial products. They are a guide to **layout and
 > information hierarchy**, not something to copy. No branding, wording,
 > imagery or paid-tier mechanics are to be reproduced.
+
+---
+
+## 0. Public face rebuild (branch `ui-redesign`) — done
+
+Brief: a Dribbble-style public site. Built on `ui-redesign`:
+
+- **Brand.** The name is now **SmartCV**. The mark is a four-point "AI" spark
+  on a violet-to-pink gradient tile, with the wordmark in Kaushan Script, a
+  brush face confined to the logo. One component, `components/ui/BrandMark.jsx`;
+  the same spark, inline, is the favicon. Tokens live in
+  `tailwind.config.js` as `brand.violet/fuchsia/pink` and `bg-brand-gradient`.
+- **Header.** Three dropdown menus — Get hired, Hire talent, Explore — each
+  row an icon, a name and a line saying what it is for
+  (`components/layout/NavMenu.jsx`, content in `menus.js`). Sign up is the
+  gradient button, Log in the outlined one; the admin's published pages have
+  moved out of the header to the footer. Below `lg` the menus become one
+  stacked list.
+- **Home page.** A two-panel hero on a pill switch, then a browsing block of
+  three tabs (Templates, Jobs, Services) over one search box
+  (`components/home/DiscoverTabs.jsx`), then the rewrite explained with a
+  diagram of its output, reviews, how it works, and a closing prompt.
+- **Feature pages.** One public page per menu entry, at `/features/:slug`,
+  driven by `src/data/features.js` and rendered by `pages/FeaturePage.jsx`.
+  They exist because most tools are behind a login and a visitor should be
+  able to read what one does before being asked to sign up.
+- **Footer.** Logo, one wrapped row of destinations, social, and a thin
+  legal line.
+- **Theme.** The default is now `light` rather than `system`.
+- **Motion.** `Reveal` for section entrances with staggered delays,
+  `utils/useCountUp.js` for the figures on a feature page, hover lift on
+  cards. All one-shot, all dropped under `prefers-reduced-motion`.
+
+Two things learned the hard way, both worth not repeating:
+
+- `backdrop-filter` on the header made it a backdrop root, and the dropdown
+  panels — its descendants — composited against the blurred backdrop
+  instead of over the page, so the page showed through an open menu. The
+  header background is solid.
+- A keyframe animation on the dropdown's positioned wrapper left it on a
+  compositor layer that stayed blended after the animation ended, with the
+  same symptom. The panel now appears without an entrance animation.
+
+Still open from the original brief: §1, the editor. The editor has since
+grown its own `1. Design / 2. Content` tabs rather than the centred
+Edit/Customize switch described below, so §1 should be re-agreed before any
+of it is built.
 
 ---
 

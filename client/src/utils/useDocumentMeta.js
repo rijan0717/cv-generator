@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 /** Appended to every page title, so a browser tab says whose site it is. */
-const SITE_NAME = 'Smart CV Generator';
+const SITE_NAME = 'SmartCV';
 
 /**
  * Finds or creates one meta tag, and sets its content.

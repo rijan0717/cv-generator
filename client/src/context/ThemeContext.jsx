@@ -3,9 +3,15 @@
  *
  * Three states are supported rather than two: `light`, `dark`, and `system`,
  * which follows the operating system and keeps following it if the user
- * changes that setting while the page is open. `system` is the default,
- * because an application that ignores the preference someone has already
- * expressed is being presumptuous.
+ * chooses it and then changes that setting while the page is open.
+ *
+ * **`light` is the default**, not `system`. This is a document tool, and a
+ * CV is white paper whatever the interface around it is doing: starting
+ * everybody on the light theme means the page and the thing being edited
+ * agree on their first meeting. It also removes a flash — nothing can set
+ * the `dark` class before React mounts, so a `system` default on a dark
+ * machine painted light and then snapped dark. Anyone who wants dark has
+ * the switch in the header, and the choice is remembered.
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ThemeContext } from './themeContext.js';
@@ -25,9 +31,9 @@ const STORAGE_KEY = 'cvg-theme';
 function readStoredTheme() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'light';
   } catch {
-    return 'system';
+    return 'light';
   }
 }
 
