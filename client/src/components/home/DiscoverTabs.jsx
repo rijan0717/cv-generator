@@ -73,6 +73,9 @@ const FULL_PAGE = {
   services: { to: '/register', label: 'Start using these — free' },
 };
 
+/** The link under the People preview, for a visitor who cannot open the directory. */
+const PEOPLE_PREVIEW_LINK = { to: '/register', label: 'Create an employer account to hire' };
+
 /** What the search box says, per tab. */
 const PLACEHOLDER = {
   templates: 'What kind of CV template are you looking for?',
@@ -263,14 +266,18 @@ function JobCard({ job }) {
 /**
  * One candidate, as a card.
  *
- * Shown only to an approved employer — see `PeopleLocked` below for why.
+ * An approved employer gets the full card. Everybody else gets the public
+ * preview: the same card, but the server has shortened the name, left out
+ * the photo and the id, and only sent people who are open to work.
  */
 function PersonCard({ person }) {
   const profile = person.profile ?? {};
 
   return (
     <motion.a
-      href={`/talent/${person.id}`}
+      // A preview card has no id (see `listTalentPreview` on the server), so
+      // it leads to sign-up rather than to a profile the visitor cannot open.
+      href={person.id ? `/talent/${person.id}` : '/register'}
       variants={fadeInUp}
       {...hoverLift}
       className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-brand-violet hover:shadow-xl hover:shadow-brand-violet/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia dark:border-navy-700 dark:bg-navy-800"
@@ -494,12 +501,13 @@ export default function DiscoverTabs() {
   // Only an admin or an employer has any chance of reading the directory,
   // and only the server knows whether that employer's company has been
   // approved. So the request is attempted for those two and the refusal
-  // is shown as the server words it; for everybody else there is no
-  // request to make.
+  // is shown as the server words it. Everybody else gets the public
+  // preview (`GET /api/talent/preview`): a few open-to-work people with
+  // shortened names and no contact details.
   //
   // Worth knowing: today nobody signed in reaches this component, because
   // `HomeRoute` sends an authenticated user from `/` to their own
-  // dashboard. So in practice this tab always shows `PeopleLocked`. The
+  // dashboard. So in practice this tab always shows the preview. The
   // branch is kept rather than removed because the gate belongs with the
   // data — if the redirect changes, or this block is reused on a page a
   // signed-in employer can reach, the right thing happens without anyone
@@ -510,13 +518,24 @@ export default function DiscoverTabs() {
   useEffect(() => {
     if (tab !== 'people' || people !== null) return undefined;
 
-    if (!maySeePeople) {
-      setPeople([]);
-      setPeopleReason('');
-      return undefined;
-    }
-
     let cancelled = false;
+
+    if (!maySeePeople) {
+      // The public preview. If it fails or is empty, the locked panel
+      // explains the directory instead.
+      talentApi
+        .listTalentPreview()
+        .then((data) => {
+          if (!cancelled) setPeople(data.people);
+        })
+        .catch(() => {
+          if (!cancelled) setPeople([]);
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }
 
     talentApi
       .listTalent({ page: 1 })
@@ -730,8 +749,13 @@ export default function DiscoverTabs() {
         </div>
 
         {/* --- The grid for whichever tab is open --- */}
+        {/* The key changes whenever the set of cards does: a new tab, a new
+            search, or a list arriving from the server. The stagger plays
+            once (`whileInView`, `once`), so cards mounted into a grid that
+            has already played — the jobs after their spinner — would stay
+            at opacity 0. A new key starts a fresh grid that plays again. */}
         <Stagger
-          key={tab}
+          key={`${tab}|${needle}|${jobs === null}|${people === null}|${templates.length}`}
           className="mt-8 grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-4"
         >
           {tab === 'templates' &&
@@ -771,10 +795,12 @@ export default function DiscoverTabs() {
               <div className="col-span-full grid place-items-center py-14">
                 <Spinner label="Loading candidates" />
               </div>
-            ) : !maySeePeople || peopleReason ? (
+            ) : peopleReason || (!maySeePeople && people.length === 0) ? (
               <PeopleLocked reason={peopleReason} />
             ) : shownPeople.length > 0 ? (
-              shownPeople.map((person) => <PersonCard key={person.id} person={person} />)
+              shownPeople.map((person, index) => (
+                <PersonCard key={person.id ?? `${person.name}-${index}`} person={person} />
+              ))
             ) : (
               <Empty
                 message={
@@ -805,17 +831,24 @@ export default function DiscoverTabs() {
           </p>
         )}
 
-        {/* The link under the grid, per tab. It is left out of the People
-            tab when the directory is closed to this reader: that panel
-            carries its own two calls to action, and a third underneath
-            pointing at a page they cannot open would only be noise. */}
-        {!(tab === 'people' && (!maySeePeople || peopleReason)) && (
+        {tab === 'people' && !maySeePeople && people?.length > 0 && (
+          <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-100">
+            Names are shortened and contact details hidden. Approved employers see full profiles and
+            CVs.
+          </p>
+        )}
+
+        {/* The link under the grid, per tab. It is left out when the People
+            tab shows the locked panel, which carries its own calls to
+            action. Over the public preview it points at sign-up instead of
+            a directory the visitor cannot open. */}
+        {!(tab === 'people' && (peopleReason || (!maySeePeople && !people?.length))) && (
           <div className="mt-8 text-center">
             <Link
-              to={FULL_PAGE[tab].to}
+              to={tab === 'people' && !maySeePeople ? PEOPLE_PREVIEW_LINK.to : FULL_PAGE[tab].to}
               className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900 dark:border-slate-600 dark:text-slate-50 dark:hover:border-slate-300"
             >
-              {FULL_PAGE[tab].label}
+              {tab === 'people' && !maySeePeople ? PEOPLE_PREVIEW_LINK.label : FULL_PAGE[tab].label}
               <span aria-hidden="true">→</span>
             </Link>
           </div>

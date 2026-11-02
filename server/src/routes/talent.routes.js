@@ -4,7 +4,8 @@
  * Both guards are applied to the whole router rather than route by route,
  * for the same reason the admin router does it: a route added here later
  * is protected by default, and forgetting to add a guard would expose
- * personal data.
+ * personal data. The single exception, `/preview`, is registered above
+ * the guards on purpose and returns no personal contact data.
  */
 import { Router } from 'express';
 import { param, query } from 'express-validator';
@@ -12,6 +13,7 @@ import {
   listTalent,
   getTalentProfile,
   getTalentFilters,
+  listTalentPreview,
 } from '../controllers/talent.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireApprovedEmployer } from '../middleware/talentAccess.js';
@@ -20,6 +22,11 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { INDUSTRY_VALUES, EMPLOYMENT_TYPE_VALUES } from '../data/industries.js';
 
 const router = Router();
+
+// The one public route, deliberately registered *before* the guards below.
+// It sends a trimmed-down card per person (shortened name, no id, no
+// contact details or CV), so the home page can show who is open to work.
+router.get('/preview', asyncHandler(listTalentPreview));
 
 router.use(requireAuth, asyncHandler(requireApprovedEmployer));
 

@@ -23,7 +23,7 @@ import { logActivity } from '../services/activityLogger.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import { readPagination, buildPagination } from '../utils/pagination.js';
-import { INDUSTRIES, EMPLOYMENT_TYPES } from '../data/industries.js';
+import { INDUSTRIES, EMPLOYMENT_TYPES, labelFor } from '../data/industries.js';
 
 /**
  * Escapes a search term before it goes into a regular expression, so a
@@ -270,4 +270,80 @@ export async function getTalentProfile(req, res) {
  */
 export function getTalentFilters(_req, res) {
   sendSuccess(res, { industries: INDUSTRIES, employmentTypes: EMPLOYMENT_TYPES }, 'Filters');
+}
+
+/** How many people the public preview shows: one row of the home page grid, twice. */
+const PREVIEW_LIMIT = 8;
+
+/**
+ * Shortens a full name to the first name and the surname's initial:
+ * "Asha Kumari Shrestha" → "Asha S.". A single name is left as it is.
+ * @param {string} name - The full name.
+ * @returns {string} The shortened name.
+ */
+export function shortName(name) {
+  const parts = String(name ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (parts.length <= 1) return parts[0] ?? '';
+  return `${parts[0]} ${parts[parts.length - 1].charAt(0).toUpperCase()}.`;
+}
+
+/** Who the public may see: active job seekers who have switched "open to work" on. */
+export const PUBLIC_PEOPLE_FILTER = {
+  role: { $ne: 'admin' },
+  accountType: 'jobseeker',
+  isDeleted: false,
+  status: 'active',
+  'jobSeekerProfile.openToWork': true,
+};
+
+/**
+ * The public card for one open-to-work job seeker: shortened name, no id,
+ * no photo, no contact details. Shared by the home page preview and the
+ * site search, so both publish exactly the same fields.
+ * @param {object} user - A lean user with `name` and `jobSeekerProfile`.
+ * @returns {object} The public card.
+ */
+export function toPreviewPerson(user) {
+  const profile = profileOf(user);
+  return {
+    name: shortName(user.name),
+    profile: {
+      position: profile.position,
+      industry: labelFor(INDUSTRIES, profile.industry),
+      yearsExperience: profile.yearsExperience,
+      location: profile.location,
+      employmentTypes: profile.employmentTypes.map((type) => labelFor(EMPLOYMENT_TYPES, type)),
+      openToWork: true,
+    },
+  };
+}
+
+/**
+ * GET /api/talent/preview (public — no login)
+ *
+ * A few job seekers who are open to work, for the home page. This is the
+ * one route in the directory that skips `requireApprovedEmployer`, so it
+ * sends far less than the real list does:
+ *
+ *   - the name shortened to "First L.", and no photo;
+ *   - no id, so a visitor cannot go on to request the full profile;
+ *   - no email, phone, CV or "about" text;
+ *   - only people who have switched "open to work" on, which is their
+ *     own statement that they want to be found.
+ *
+ * @param {import('express').Request} _req
+ * @param {import('express').Response} res
+ * @returns {Promise<void>}
+ */
+export async function listTalentPreview(_req, res) {
+  const users = await User.find(PUBLIC_PEOPLE_FILTER)
+    .select('name jobSeekerProfile')
+    .sort({ updatedAt: -1 })
+    .limit(PREVIEW_LIMIT)
+    .lean();
+
+  sendSuccess(res, { people: users.map(toPreviewPerson) }, 'Open to work');
 }

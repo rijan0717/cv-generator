@@ -25,3 +25,13 @@ export async function getTalentProfile(id) {
   const { data } = await api.get(`/api/talent/${id}`);
   return data.data;
 }
+
+/**
+ * A few job seekers who are open to work, for the home page. Public: the
+ * server shortens each name and leaves out the id and every contact detail.
+ * @returns {Promise<{people: object[]}>}
+ */
+export async function listTalentPreview() {
+  const { data } = await api.get('/api/talent/preview');
+  return data.data;
+}
