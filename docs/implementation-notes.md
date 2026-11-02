@@ -353,6 +353,104 @@ from `cvStrengthScorer.js` rather than reimplementing either, so "what counts
 as a listed skill" and "what counts as quantified" have one definition each
 across all three algorithms.
 
+### The public builder
+
+Files: `client/src/pages/PublicBuilderPage.jsx`, `client/src/utils/publicDraft.js`.
+
+`/build-cv` is the CV builder before there is an account to put a CV in. A
+visitor picks a design, types into the **same `CVContentForm`** the signed-in
+builder uses and watches the **same `CVPreview`**; the account is asked for at
+the download.
+
+**No server code was added for it**, which is the point worth making. The
+draft is a CV that has not been saved yet, so `GET /api/templates` was already
+public, `sampleContent()` and `settingsForTemplate()` are already pure client
+helpers, and saving on sign-up is the same `POST /api/cvs` + `PUT` pair
+`createStarterCV` uses. A new endpoint would have been a second way to do
+something the API already does.
+
+**The draft lives in `localStorage`, not on the server.** This is the opposite
+choice from the rewrite funnel, and for the opposite reason: there, the output
+had to be hidden _from_ the visitor, so it had to be held server-side; here
+every word is theirs and they are looking at it while they type, so there is
+nothing to hide — which means a visitor who never signs up leaves no record of
+their CV on our side at all. On a page that collects a real person's name,
+phone number and address, that is the stronger promise, and it is the one the
+page makes in as many words.
+
+`localStorage` rather than `sessionStorage` so the draft survives the trip to
+registration, the welcome step, and closing the tab halfway through writing a
+work history.
+
+**Why the gate is at the export.** It is not an arbitrary paywall. The PDF is
+rendered by Puppeteer against a saved CV whose owner the server checks, so
+there is no anonymous export being withheld — the CV has to belong to somebody
+before it can be printed. Asking at that moment is the truth about how the
+feature works, and the wall says so.
+
+Two details that make the journey hold together:
+
+- Changing design re-skins the draft (`withTemplate`) and never touches the
+  content. Answering "how should this look?" by deleting what the visitor
+  wrote would throw away the part that took effort.
+- The photo field is the one thing that cannot work here — an upload needs
+  somewhere to go — so it reports that plainly instead of failing silently.
+
+`PublicBuilderPage.test.jsx` covers the design-first flow, that content
+survives a design change, and that pressing download calls neither `createCV`
+nor `updateCV` for a visitor who has not signed in.
+
+### The public rewrite funnel
+
+Files: `models/PendingRewrite.js`, `controllers/publicRewrite.controller.js`,
+`routes/publicRewrite.routes.js`, `client/src/pages/PublicRewritePage.jsx`.
+
+A visitor with no account drops the CV they already have on `/rewrite-cv`,
+sees which open jobs it fits, picks one, and is shown **what the rewrite did**
+— the match before and after, and a count of each kind of change. To read the
+rewritten CV itself they create an account.
+
+Three requests, and the split between the second and third is the feature:
+
+| Route                                     | Session  | Returns                                      |
+| ----------------------------------------- | -------- | -------------------------------------------- |
+| `POST /api/public/rewrite/upload`         | none     | token, the name the parser read, ranked jobs |
+| `POST /api/public/rewrite/:token/job/:id` | none     | scores and change **counts**, no draft       |
+| `POST /api/public/rewrite/:token/claim`   | required | the saved CV, in full                        |
+
+**Why the draft is held on the server.** The obvious implementation sends the
+rewritten CV to the browser and hides it behind a blur until the visitor signs
+up. That is not a gate — the text is in the page and the developer tools show
+it in two clicks — so the sign-up prompt would be a formality. Instead the
+draft is written to `PendingRewrite` and the response is built by a single
+`teaser()` function from the scores and the change counts. No handler in that
+file puts `draft` in a response before the claim, and
+`tests/integration/publicRewrite.test.js` asserts it directly: it reads the
+stored draft out of the database and checks that none of its text, and none of
+the `before`/`after` of any change, appears in the response body.
+
+Holding it also makes the journey work. The visitor leaves to register, picks
+an account type on `/welcome`, and comes back — which the browser's memory
+would not survive. Only the token goes in `sessionStorage`; it is a handle to a
+server record, useless on its own.
+
+**What is tighter here than elsewhere**, because these are the only
+unauthenticated routes in the project that do real work:
+
+- `publicRewriteLimiter` — 6 per hour per IP, against `jobMatchLimiter`'s 20
+  per 15 minutes. Each call reads a file, weights every open advert and runs a
+  full rewrite, behind no session at all.
+- The token is 32 random bytes, not a document id, because it is the only
+  thing standing between an unclaimed rewrite and whoever asks for it.
+- A claimed record is refused rather than returned, so a spent token cannot be
+  replayed from a second account.
+- `expiresAt` has a TTL index set to 24 hours. These documents hold a
+  stranger's name, phone number and address, uploaded without an account, so
+  the shortest workable life is the right one.
+
+Someone who is **already signed in** skips the wall: the rewrite is claimed as
+soon as it is run, because there is nothing left to ask them for.
+
 ### `server/src/controllers/cvTailor.controller.js`
 
 Two handlers, and the split between them is the point of the feature.

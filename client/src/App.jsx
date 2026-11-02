@@ -33,6 +33,8 @@ import ContentPage from './pages/content/ContentPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
+import PublicRewritePage from './pages/PublicRewritePage.jsx';
+import PublicBuilderPage from './pages/PublicBuilderPage.jsx';
 import SeekerDashboardPage from './pages/user/SeekerDashboardPage.jsx';
 import DashboardPage from './pages/user/DashboardPage.jsx';
 import ProfilePage from './pages/user/ProfilePage.jsx';
@@ -85,6 +87,20 @@ export default function App() {
         <Route path="/features/:slug" element={<FeaturePage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/search" element={<SearchPage />} />
+
+        {/* The public rewrite funnel. Dropping a CV here needs no account:
+            a visitor sees their matches and what a rewrite did to their
+            CV, and creates an account to read the result. The rewritten
+            CV is held on the server until they do, so the page itself
+            never has anything to hide. */}
+        <Route path="/rewrite-cv" element={<PublicRewritePage />} />
+
+        {/* The builder, before there is an account to put a CV in. The
+            draft lives in the visitor's own browser and is never sent
+            anywhere; the account is asked for at the export, which is
+            the first point the server is asked to produce a file it
+            would have to own. */}
+        <Route path="/build-cv" element={<PublicBuilderPage />} />
 
         {/* The job board is public: someone should be able to see what is
             on offer before deciding to create an account. */}
