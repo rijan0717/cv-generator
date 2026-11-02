@@ -218,7 +218,7 @@ export default function RewriteWithJDPage() {
               label="Job title"
               value={jobTitle}
               onChange={(event) => setJobTitle(event.target.value)}
-              placeholder="e.g. QA Automation Engineer"
+              placeholder="e.g. Full Stack Developer"
               maxLength={140}
             />
 

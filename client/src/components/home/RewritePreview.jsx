@@ -169,8 +169,12 @@ export default function RewritePreview() {
                   Your CV, rewritten
                 </p>
                 <DiffRow before="Worked on" after="Led delivery of" width="45%" />
-                <DiffRow before="Helped with testing" after="Owned the release gate" width="62%" />
-                <DiffRow before="Used some tools" after="Automated in Playwright" width="38%" />
+                <DiffRow
+                  before="Helped with sales"
+                  after="Grew regional sales by 18%"
+                  width="62%"
+                />
+                <DiffRow before="Used some tools" after="Automated reports in Excel" width="38%" />
               </div>
             </div>
           </div>

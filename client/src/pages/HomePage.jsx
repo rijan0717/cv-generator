@@ -5,7 +5,7 @@ import { useAuth } from '../context/useAuth.js';
 import { Reveal, Stagger, Floating } from '../components/ui/motion.jsx';
 import { scaleIn } from '../components/ui/motionVariants.js';
 import ReviewSlider from '../components/home/ReviewSlider.jsx';
-import ScrollingCV from '../components/home/ScrollingCV.jsx';
+import HeroDemo from '../components/home/HeroDemo.jsx';
 import DiscoverTabs from '../components/home/DiscoverTabs.jsx';
 import RewritePreview from '../components/home/RewritePreview.jsx';
 import { BRAND_TEXT_GRADIENT } from '../components/ui/BrandMark.jsx';
@@ -32,16 +32,16 @@ import { useDocumentMeta } from '../utils/useDocumentMeta.js';
  */
 const HERO_TABS = [
   {
-    key: 'hire-talent',
-    label: 'Hire talent',
-    kicker: 'Start from nothing',
+    key: 'create-cv',
+    label: 'Create CV',
+    kicker: 'No CV yet?',
     heading: 'Create a résumé that',
     // The phrase that takes the brand gradient, so the eye lands on the
     // promise rather than on the verb.
     highlight: 'gets you shortlisted',
     points: [
-      'Build a CV section by section, with an A4 preview that updates as you type',
-      'Choose from forty templates, from strictly ATS-friendly to boldly creative',
+      'Pick one of forty templates, from strictly ATS-friendly to boldly creative',
+      'It opens already filled with sample content — replace it with yours, section by section',
       'Download it as a PDF, a Word file or a spreadsheet — free, with no watermark',
     ],
     primary: { to: '/register', label: 'Create my CV' },
@@ -70,94 +70,6 @@ const STEPS = [
   { title: 'Check and improve', detail: 'Fix what the strength score points out.' },
   { title: 'Match and apply', detail: 'Rewrite it for a job, download it, or apply here.' },
 ];
-
-/**
- * The CV shown in the hero: the author's own CV, with permission, laid
- * out in the Classic template. The phone number and email address are
- * left out on purpose, because this page is public and anything on it
- * can be scraped.
- */
-const EXAMPLE_CV = {
-  templateKey: 'classic',
-  settings: { primaryColor: '#7b1220', fontFamily: 'Lora', fontSize: 'medium' },
-  personal: {
-    fullName: 'Rijan Pariyar',
-    headline: 'Quality Assurance Specialist',
-    address: 'Baneshwor, Kathmandu, Nepal',
-    linkedin: 'linkedin.com/in/rijan-pariyar',
-    github: 'github.com/rijan0717',
-  },
-  summary:
-    "Quality Assurance Specialist with over 3 years' experience across fintech SaaS and " +
-    'e-commerce platforms, covering the full test cycle from test design to release sign-off. ' +
-    'Builds and maintains automated regression suites in Playwright (TypeScript, JavaScript, ' +
-    'Python) and Cypress, and tests REST APIs end to end from Swagger/OpenAPI and Scalar ' +
-    'specifications. Strong on defect documentation and traceability.',
-  experience: [
-    {
-      position: 'Quality Assurance Specialist (Mid-level)',
-      company: 'Sterling Wells',
-      location: 'Kathmandu, Nepal',
-      startDate: '2025-11',
-      isCurrent: true,
-      achievements: [
-        'Test fintech SaaS products (RentalBux, TMS and CRM), running functional, regression, smoke and UAT cycles for every sprint release',
-        'Build and maintain automated regression and end-to-end suites in Playwright with TypeScript and Python',
-        'Test and validate REST APIs using Postman, Swagger/OpenAPI and Scalar, logging defects with reproducible request and response evidence',
-        'Act as the release gate: maintain test cases and traceability in Azure Boards and Jira, and run smoke and regression checks before each deployment',
-      ],
-    },
-    {
-      position: 'Associate QA Engineer',
-      company: 'Matat Nepal',
-      location: 'Kathmandu, Nepal',
-      startDate: '2023-08',
-      endDate: '2025-11',
-      achievements: [
-        'Led QA on WordPress and Shopify e-commerce builds, covering themes, plugins, checkout, forms and UI/UX',
-        'Built and maintained Cypress (JavaScript) automation for login, checkout and regression flows',
-        'Validated bulk product data imports, catching mapping, pricing and variant errors before go-live',
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: 'Manual QA Bug Reports',
-      description:
-        '4 projects, 59 defects: Azure Boards reports with steps, expected and actual results, severity and priority.',
-    },
-    {
-      name: 'Amazon Playwright Automation',
-      description:
-        'Automated Amazon e-commerce flows in Playwright with TypeScript, using the Page Object Model.',
-      technologies: ['Playwright', 'TypeScript'],
-    },
-  ],
-  education: [
-    {
-      institution: 'G. P. Koirala Memorial College, Tribhuvan University',
-      degree: 'Bachelor of Computer Applications (BCA)',
-    },
-  ],
-  skills: [
-    'Playwright',
-    'Cypress',
-    'Postman',
-    'REST API testing',
-    'Azure Boards',
-    'Jira',
-    'BrowserStack',
-    'TypeScript',
-    'JavaScript',
-    'Python',
-  ].map((name) => ({ name, level: 'Advanced' })),
-  certifications: [],
-  languages: [
-    { language: 'English', proficiency: 'Professional working' },
-    { language: 'Nepali', proficiency: 'Native' },
-  ],
-  references: [],
-};
 
 /** The centred column every section's content sits in. */
 const CONTAINER = 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8';
@@ -225,7 +137,7 @@ export default function HomePage() {
           className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[32rem] bg-[radial-gradient(60%_60%_at_70%_30%,rgba(123,18,32,0.14),transparent_70%)]"
         />
 
-        <div className={`${CONTAINER} grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-2`}>
+        <div className={`${CONTAINER} grid items-start gap-12 py-12 sm:py-16 lg:grid-cols-2`}>
           {/* The hero is the one block that animates on load rather than on
               scroll — it is already on screen, so waiting for a scroll that
               never comes would mean it never arrived. */}
@@ -344,13 +256,14 @@ export default function HomePage() {
             </AnimatePresence>
           </Stagger>
 
-          {/* The real template component, so the picture cannot drift from
-              what the builder produces. The box keeps its size and the CV
-              scrolls slowly inside it, so the whole page can be seen;
-              hidden on phones, where it would push everything else down.
+          {/* An animated picture of the tool behind the open tab: the editor
+              filling itself in for "Create CV", the rewrite ticking through
+              its steps for "Get hired". It changes with the pill switch, so
+              the two halves of the hero always talk about the same thing.
+              Hidden on phones, where it would push everything else down.
 
               It drifts: eight pixels over six seconds, which reads as alive
-              without making the CV inside it hard to follow. A soft aura
+              without making the text inside it hard to follow. A soft aura
               sits behind it so the card has something to float above. */}
           <figure className="relative isolate hidden sm:block">
             <div
@@ -359,11 +272,13 @@ export default function HomePage() {
             />
 
             <Floating>
-              <ScrollingCV cv={EXAMPLE_CV} height={480} />
+              <HeroDemo tab={heroTab} />
             </Floating>
 
             <figcaption className="mt-3 text-center text-xs text-slate-500 dark:text-slate-100">
-              A real CV in the Classic template.
+              {heroTab === 'get-hired'
+                ? 'Rewriting a CV for one job advert.'
+                : 'The builder: type on the left, the CV updates on the right.'}
             </figcaption>
           </figure>
         </div>

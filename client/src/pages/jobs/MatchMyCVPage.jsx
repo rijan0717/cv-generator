@@ -297,7 +297,7 @@ const CONTENT_FIELDS = [
 
 /**
  * The title a saved dropped CV gets: the account holder's name and the
- * role the CV is for, e.g. "Rijan Pariyar - Associate QA Engineer".
+ * role the CV is for, e.g. "Oliver Bennett - Full Stack Developer".
  *
  * The role is the CV's headline, or failing that its most recent job
  * title. Truncated to the 100 characters the model allows.
