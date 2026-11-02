@@ -19,6 +19,7 @@ import {
   buildSummary,
   yearsOfExperience,
   softenTitle,
+  fieldFit,
   withArticle,
 } from '../../src/algorithms/cvTailor.js';
 import { analyseMatch } from '../../src/algorithms/jobMatcher.js';
@@ -343,9 +344,97 @@ describe('buildSummary', () => {
   });
 });
 
+describe('fieldFit', () => {
+  it("tells the advert's own field from a neighbouring one and from another", () => {
+    const profile = buildJobProfile(BACKEND_ADVERT);
+
+    const same = fieldFit(sampleCV(), 'Backend Developer', profile);
+    const different = fieldFit(shopCV(), 'Backend Developer', profile);
+
+    expect(same.level).toBe('same');
+    expect(different.level).toBe('different');
+    expect(same.overlap).toBeGreaterThan(different.overlap);
+
+    // The allowance is what the target pass reads, and a different field
+    // gets none of it.
+    expect(same.allowance).toBe(1);
+    expect(different.allowance).toBe(0);
+  });
+
+  it('reads the evidence, not the summary', () => {
+    // A summary is what someone says about themselves, and the rewrite
+    // writes it. Judging the field from it lets one pass's output be the
+    // next pass's evidence.
+    const profile = buildJobProfile(BACKEND_ADVERT);
+
+    const cv = shopCV();
+    const boasting = {
+      ...cv,
+      summary:
+        'Backend developer building REST APIs with Node.js, Express, MongoDB, Docker and AWS ' +
+        'in an agile team, writing unit tests throughout.',
+    };
+
+    expect(fieldFit(boasting, 'Backend Developer', profile).overlap).toBe(
+      fieldFit(cv, 'Backend Developer', profile).overlap,
+    );
+  });
+
+  it('does not count skills a previous rewrite assumed', () => {
+    const profile = buildJobProfile(BACKEND_ADVERT);
+
+    const cv = shopCV();
+    const assumed = {
+      ...cv,
+      skills: [
+        ...cv.skills,
+        { name: 'Node.js', level: 'Intermediate', assumed: true },
+        { name: 'Docker', level: 'Intermediate', assumed: true },
+      ],
+    };
+
+    expect(fieldFit(assumed, 'Backend Developer', profile).overlap).toBe(
+      fieldFit(cv, 'Backend Developer', profile).overlap,
+    );
+  });
+
+  it('promotes a CV off the bottom rung when the job titles agree', () => {
+    // "Sales Assistant" to "Sales Executive" is plainly the same line of
+    // work, whatever vocabulary the two adverts happen to use.
+    const salesAdvert =
+      'Sales Executive. You will manage a territory, hit a quarterly quota and grow accounts.';
+
+    const fit = fieldFit(shopCV(), 'Sales Executive', buildJobProfile(salesAdvert));
+
+    expect(fit.sharesTitle).toBe(true);
+    expect(fit.level).not.toBe('different');
+  });
+});
+
 describe('tailorCV', () => {
   it('points the headline at the advertised role', () => {
     const { draft } = tailorCV(sampleCV(), BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+
+    expect(draft.personal.headline).toBe('Backend Developer');
+  });
+
+  it('leaves the headline alone when the CV does not support the title', () => {
+    // The summary is already guarded this way, so an unguarded headline
+    // produced a draft that contradicted itself on its first two lines:
+    // headlined "Backend Developer", opening "Sales Assistant with 3+
+    // years". The user's own headline stays and the note explains why.
+    const { draft, notes } = tailorCV(shopCV(), BACKEND_ADVERT, {
+      jobTitle: 'Backend Developer',
+    });
+
+    expect(draft.personal.headline).toBe('Sales Assistant');
+    expect(notes.some((note) => note.includes('headline was left'))).toBe(true);
+  });
+
+  it('takes the advertised title when the CV has no headline of its own', () => {
+    // Nothing to contradict, so nothing to protect.
+    const blank = { ...shopCV(), personal: { fullName: 'A Person' }, experience: [] };
+    const { draft } = tailorCV(blank, BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
 
     expect(draft.personal.headline).toBe('Backend Developer');
   });
@@ -442,12 +531,37 @@ describe('tailorCV', () => {
     expect(assumedSkills).toEqual([]);
   });
 
-  it('lifts a CV from another field over the target, and labels how', () => {
-    // A shop CV against a backend advert: the honest steps get nowhere
-    // near, so both levers have to act. What matters is that everything
-    // they add is reported, not hidden in the draft.
-    const { targetReached, matchScore, assumedSkills, focusTerms, draft } = tailorCV(
+  it('will not lift a CV from another field over the target', () => {
+    // A shop CV against a backend advert. Both levers *could* carry it
+    // over the line — assuming half a dozen backend skills and pasting
+    // twelve of the advert's words into the summary took it from 0% to
+    // the high sixties — and that is exactly why they are switched off
+    // here. A number that can be reached from any starting point is not
+    // a measurement, and the resulting CV is one no one could defend.
+    const { targetReached, assumedSkills, focusTerms, draft, fieldFit, notes } = tailorCV(
       shopCV(),
+      BACKEND_ADVERT,
+      { jobTitle: 'Backend Developer' },
+    );
+
+    expect(fieldFit.level).toBe('different');
+    expect(targetReached).toBe(false);
+    expect(assumedSkills).toEqual([]);
+    expect(focusTerms).toEqual([]);
+    expect(draft.summary).not.toContain('Focus for this role:');
+
+    // And it says so, rather than leaving the user to wonder why the
+    // rewrite did so little.
+    expect(notes.some((note) => note.includes('different field'))).toBe(true);
+  });
+
+  it("lifts a CV in the advert's own field over the target, and labels how", () => {
+    // The case the levers exist for: a developer's CV against a backend
+    // advert. The honest steps leave it short, both levers act, and what
+    // matters is that everything they add is reported rather than hidden
+    // in the draft.
+    const { targetReached, matchScore, honestScore, assumedSkills, focusTerms, draft } = tailorCV(
+      sampleCV(),
       BACKEND_ADVERT,
       { jobTitle: 'Backend Developer' },
     );
@@ -455,6 +569,10 @@ describe('tailorCV', () => {
     expect(targetReached).toBe(true);
     expect(matchScore).toBeGreaterThanOrEqual(TAILOR_CONFIG.targetScore);
     expect(assumedSkills.length + focusTerms.length).toBeGreaterThan(0);
+
+    // The honest steps are reported separately, and are worth less than
+    // the finished draft precisely because the levers acted.
+    expect(honestScore).toBeLessThan(matchScore);
 
     // The alignment sentence is in the summary the user edits, under a
     // heading that says exactly what it is.
@@ -480,19 +598,23 @@ describe('tailorCV', () => {
     expect(targetReached).toBe(matchScore >= TAILOR_CONFIG.targetScore);
 
     if (!targetReached) {
-      expect(notes.some((note) => note.includes('best honest match'))).toBe(true);
+      expect(
+        notes.some(
+          (note) => note.includes('best honest match') || note.includes('different field'),
+        ),
+      ).toBe(true);
     }
   });
 
   it('keeps the alignment sentence to one, however many batches it adds', () => {
-    const { draft } = tailorCV(shopCV(), BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+    const { draft } = tailorCV(sampleCV(), BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
 
     const occurrences = draft.summary.split('Focus for this role:').length - 1;
     expect(occurrences).toBeLessThanOrEqual(1);
   });
 
   it('assumes no more than the configured ceiling, and labels each one', () => {
-    const { assumedSkills, changes } = tailorCV(shopCV(), BACKEND_ADVERT, {
+    const { assumedSkills, changes, draft } = tailorCV(sampleCV(), BACKEND_ADVERT, {
       jobTitle: 'Backend Developer',
     });
 
@@ -505,6 +627,51 @@ describe('tailorCV', () => {
     for (const change of assumedChanges) {
       expect(change.reason).toContain('assumption');
     }
+
+    // And each is marked on the skill itself, so saving the draft does
+    // not turn it into something indistinguishable from the user's own.
+    const flagged = draft.skills.filter((skill) => skill.assumed).map((skill) => skill.name);
+    expect(flagged).toEqual(assumedSkills);
+  });
+
+  it('allows a neighbouring advert less than one in the same field', () => {
+    // The ceilings are not a flat allowance: how far the target pass may
+    // go is scaled by how close the CV already is to the advert.
+    const sameField = tailorCV(sampleCV(), BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+
+    // The same advert against a CV that only partly speaks to it.
+    const marketing = marketingCV();
+    const neighbouring = tailorCV(marketing, BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+
+    expect(sameField.fieldFit.level).toBe('same');
+    expect(neighbouring.fieldFit.overlap).toBeLessThan(sameField.fieldFit.overlap);
+    expect(neighbouring.assumedSkills.length).toBeLessThanOrEqual(
+      Math.floor(TAILOR_CONFIG.skills.maxAssumed * TAILOR_CONFIG.fieldFit.allowance.adjacent),
+    );
+    expect(neighbouring.focusTerms.length).toBeLessThanOrEqual(
+      Math.floor(TAILOR_CONFIG.maxFocusTerms * TAILOR_CONFIG.fieldFit.allowance.adjacent),
+    );
+  });
+
+  it('settles instead of ratcheting when a tailored draft is tailored again', () => {
+    // A saved draft can be tailored again. Without the guards, each pass
+    // read the previous pass's own writing as evidence — its summary as
+    // proof the CV was in the field, its assumed skills as skills — and
+    // awarded itself a fresh allowance on the strength of it, so the
+    // score climbed a little every run.
+    const first = tailorCV(sampleCV(), BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+    const second = tailorCV(first.draft, BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+    const third = tailorCV(second.draft, BACKEND_ADVERT, { jobTitle: 'Backend Developer' });
+
+    // Nothing new is assumed, because what the first pass assumed counts
+    // against the ceiling rather than starting it over.
+    expect(second.assumedSkills).toEqual([]);
+    expect(third.assumedSkills).toEqual([]);
+    expect(third.draft.skills).toHaveLength(first.draft.skills.length);
+
+    // And exactly one alignment sentence, however many passes have run.
+    expect(third.draft.summary.split('Focus for this role:').length - 1).toBeLessThanOrEqual(1);
+    expect(third.matchScore).toBe(second.matchScore);
   });
 
   it('assumes nothing on a CV with no content to tailor', () => {

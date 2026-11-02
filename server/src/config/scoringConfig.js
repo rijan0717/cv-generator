@@ -349,12 +349,16 @@ export const TAILOR_CONFIG = {
     maxSuggested: 10,
 
     /**
-     * How many unevidenced skills the target pass below may assume.
+     * How many unevidenced skills the target pass below may assume, on a
+     * CV in the advert's own field.
      *
      * A hard ceiling on the one part of the rewrite that states
      * something the CV does not support. Six is enough to rescue a
      * near-miss; beyond that the honest answer is that the CV does not
      * fit the advert, and no amount of re-ordering changes that.
+     *
+     * `fieldFit` below lowers it further for an advert further from the
+     * CV's field, and to zero for one in a different field altogether.
      */
     maxAssumed: 6,
   },
@@ -362,12 +366,15 @@ export const TAILOR_CONFIG = {
   /**
    * The match score the rewrite aims for.
    *
-   * On a CV in the right field this is reached without the target pass
-   * doing anything: re-ordering, re-wording and listing the skills the
-   * CV already evidences is usually worth thirty or forty points on its
-   * own. The pass exists for the case where it is not enough.
+   * The honest steps — re-ordering, re-wording, listing the skills the
+   * CV already evidences and naming the advert's own words for work the
+   * CV already describes — carry a well-matched CV most or all of the
+   * way there. Measured over a spread of CVs and adverts they are worth
+   * roughly 10 to 30 points, and on a CV squarely in the advert's field
+   * they can clear the target on their own. The target pass exists for
+   * the case where they do not.
    *
-   * When it is not, the rewrite adds the smallest number of the
+   * When they do not, the rewrite adds the smallest number of the
    * advert's remaining skills that gets over the line, **one at a time,
    * re-scoring after each**, and stops the moment it is there. Every
    * skill added this way is reported separately from the rest and
@@ -375,15 +382,25 @@ export const TAILOR_CONFIG = {
    * rewrite puts on a CV that the CV does not already support. The user
    * removes any they do not have, and the score falls again — which is
    * the honest behaviour.
+   *
+   * The target is a ceiling on effort, never a promise. How far the pass
+   * may go is limited by `fieldFit`, so a CV from another field is
+   * reported short of the target rather than carried over it.
    */
   targetScore: 80,
 
   /**
-   * The ceiling on the alignment sentence (lever two of `reachTarget`).
+   * The ceiling on the alignment sentence (lever two of `reachTarget`),
+   * on a CV in the advert's own field.
    *
    * Twelve of the advert's words is already a long sentence; past that
    * it stops reading as a line on a CV and starts reading as a list of
    * keywords, which is the thing the match analyser exists to catch.
+   *
+   * `fieldFit` below lowers it for an advert further from the CV's own
+   * field: the sentence mirrors the advert's language for work the
+   * person does, and the less of that work the CV shows, the less there
+   * is to mirror.
    */
   maxFocusTerms: 12,
 
@@ -411,4 +428,56 @@ export const TAILOR_CONFIG = {
    * on a rounding difference, which looks like the feature misbehaving.
    */
   sectionSwapMargin: 0.02,
+
+  /**
+   * How far the CV is from the advert's field, and how much the target
+   * pass is allowed to do about it.
+   *
+   * The two levers in `reachTarget` — assuming a skill, and naming the
+   * advert's words in the summary — are the only places the rewrite
+   * writes something the CV does not evidence. Letting them run at full
+   * strength whatever the advert produced the result this gate exists to
+   * stop: a React developer's CV came back headlined "Accountant", with
+   * accounting skills assumed and twelve accounting words pasted into
+   * the summary, reporting a 69% match against an accounting advert that
+   * the untailored CV matched at 0%. That number is not wrong because
+   * the arithmetic is wrong; it is wrong because the document it
+   * describes is not one the candidate could defend.
+   *
+   * The distance is measured as `fieldFit` in `cvTailor.js`: the share
+   * of the advert's highest-weighted vocabulary that the **original** CV
+   * already covers. Measured across CVs and adverts whose relationship
+   * was known in advance, the three groups separate cleanly —
+   * unrelated pairs sat at 0.00–0.03, neighbouring ones at 0.06–0.22,
+   * and same-field ones at 0.31–0.59 — which is where these two
+   * thresholds come from.
+   */
+  fieldFit: {
+    /** At or above this share, the CV is in the advert's own field. */
+    sameFieldOverlap: 0.25,
+
+    /**
+     * At or above this share, the advert is a neighbouring role: a
+     * genuine application, but one the CV only partly speaks to.
+     * Below it, and with no job title in common, the advert is from a
+     * different field.
+     */
+    adjacentFieldOverlap: 0.05,
+
+    /**
+     * What each level allows the target pass, as a share of
+     * `skills.maxAssumed` and `maxFocusTerms`.
+     *
+     * `different` is zero on both: there is no honest version of
+     * assuming a skill from a field the CV never mentions, and nothing
+     * to mirror in a vocabulary the CV never uses. The rewrite does the
+     * honest steps, reports the score they reached, and says plainly
+     * that this advert is from another field.
+     */
+    allowance: {
+      same: 1,
+      adjacent: 0.5,
+      different: 0,
+    },
+  },
 };

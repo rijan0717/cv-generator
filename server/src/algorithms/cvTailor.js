@@ -38,15 +38,26 @@
  * *suggested*, and the user decides.
  *
  * The one exception is the target pass (step 8, `reachTarget`). The
- * feature is specified to produce a CV that clears a `targetScore`
- * match, and on a CV that the honest steps leave short of it, the only
- * lever left is to list skills the CV cannot evidence. So it adds them —
- * the fewest that get over the line, re-scoring after each one, and
- * never more than `maxAssumed`. They come back under `assumedSkills`
- * rather than mixed in with the rest, and the review screen labels every
- * one as an assumption for the user to confirm or delete. On a CV in the
- * right field the pass adds nothing at all: the honest steps are
- * normally worth more than it is.
+ * feature aims to produce a CV that clears a `targetScore` match, and on
+ * a CV that the honest steps leave short of it, the only levers left are
+ * to list skills the CV cannot evidence and to name the advert's own
+ * words in the summary. It uses them — the fewest that get over the
+ * line, re-scoring as it goes. They come back under `assumedSkills` and
+ * `focusTerms` rather than mixed in with the rest, and the review screen
+ * labels every one as an assumption for the user to confirm or delete.
+ *
+ * How far that pass may go is governed by `fieldFit`: full strength on a
+ * CV in the advert's own field, half on a neighbouring one, and nothing
+ * at all on an advert from a different field, where the rewrite reports
+ * what the honest steps reached and says plainly why it stopped. The
+ * target is a ceiling on effort, not a promise — a score that can always
+ * be reached would measure nothing.
+ *
+ * Two numbers come back for that reason. `honestScore` is what the
+ * re-ordering, re-wording and evidenced skills reached on their own;
+ * `matchScore` is what the draft scores with the assumptions included.
+ * The user sees both, so what the assumptions are worth is visible
+ * rather than implied.
  *
  * Nothing here touches the database and nothing here is saved. The caller
  * returns the draft to the user, who edits it and then chooses to keep it
@@ -559,6 +570,105 @@ function sharesTitleWord(title, cv) {
 }
 
 /**
+ * The parts of a CV that are evidence of what someone actually does.
+ *
+ * `cvToText` is the whole document, which is right for scoring a match:
+ * a screening system reads all of it. It is wrong for deciding what
+ * field a CV is from, for two reasons, and both of them are the summary.
+ *
+ * The first is circularity. The rewrite writes the summary itself, in
+ * the advert's language by design, so a draft saved from one rewrite and
+ * tailored again came back reading like the advert — and was then judged
+ * to be from the advert's field on the strength of a paragraph this
+ * module had written for that advert. Each pass licensed a larger one.
+ *
+ * The second holds even for a summary the user wrote: a summary is what
+ * someone says about themselves, and a sentence of ambition costs
+ * nothing. Roles, projects, skills and qualifications are the part of a
+ * CV that has to be true.
+ *
+ * @param {object} cv - The source CV.
+ * @returns {string} Its evidence, as one string.
+ */
+function evidenceText(cv) {
+  const parts = [];
+
+  for (const entry of cv.experience ?? []) {
+    parts.push(entry?.position, entry?.company, entry?.description, ...(entry?.achievements ?? []));
+  }
+
+  for (const project of cv.projects ?? []) {
+    parts.push(
+      project?.name,
+      project?.role,
+      project?.description,
+      ...(project?.technologies ?? []),
+    );
+  }
+
+  for (const entry of cv.education ?? []) {
+    parts.push(entry?.degree, entry?.fieldOfStudy, entry?.institution, entry?.description);
+  }
+
+  for (const cert of cv.certifications ?? []) parts.push(cert?.name, cert?.issuer);
+
+  // Skills a previous rewrite assumed are left out: they are on the CV,
+  // and the draft is scored with them, but they are not evidence of
+  // anything — and letting them answer this question is how one
+  // rewrite's assumptions become the licence for the next one's.
+  for (const skill of cv.skills ?? []) {
+    if (!skill?.assumed) parts.push(skill?.name);
+  }
+
+  return parts.filter(Boolean).join(' \n ');
+}
+
+/**
+ * How close the CV already is to the advert's field.
+ *
+ * Everything the rewrite does honestly — re-ordering, re-wording,
+ * listing evidenced skills — works on material the CV already contains,
+ * so it is safe whatever the advert says: the worst case is that it
+ * finds nothing to do. The two levers in `reachTarget` are different.
+ * They write a skill the CV cannot evidence, and a sentence in the
+ * advert's words rather than the user's, and both get *more* aggressive
+ * the further the CV is from the advert — because the further it is,
+ * the more work there is to do to reach the target.
+ *
+ * That is exactly backwards, and this function is what turns it the
+ * right way round. The further the CV is from the advert, the less the
+ * target pass is allowed to do; from a different field altogether, it
+ * does nothing and the shortfall is reported instead.
+ *
+ * Distance is measured the same way everything else in this module is:
+ * the share of the advert's highest-weighted vocabulary that the
+ * original CV covers. A job title in common promotes a CV off the
+ * bottom rung, because "Sales Assistant" applying to "Sales Executive"
+ * is plainly the same field even when the two adverts word the work
+ * differently.
+ *
+ * @param {object} source - The CV the rewrite started from.
+ * @param {string} title - The (softened) advertised title.
+ * @param {{weights: Map<string, number>, totalWeight: number}} profile
+ * @returns {{level: 'same'|'adjacent'|'different', overlap: number,
+ *            sharesTitle: boolean, allowance: number}}
+ *   `allowance` is the share of each target-pass ceiling this level may use.
+ */
+export function fieldFit(source, title, profile) {
+  const { sameFieldOverlap, adjacentFieldOverlap, allowance } = TAILOR_CONFIG.fieldFit;
+
+  const overlap = relevanceOf(evidenceText(source), profile);
+  const shares = sharesTitleWord(title, source);
+
+  let level;
+  if (overlap >= sameFieldOverlap) level = 'same';
+  else if (overlap >= adjacentFieldOverlap || shares) level = 'adjacent';
+  else level = 'different';
+
+  return { level, overlap, sharesTitle: shares, allowance: allowance[level] };
+}
+
+/**
  * The achievement most worth quoting: one that contains a number.
  *
  * @param {object} cv - The source CV.
@@ -927,6 +1037,14 @@ export function tailorCV(cv, jobText, options = {}) {
   // object the tests and the upload flow pass in.
   const source = typeof cv?.toObject === 'function' ? cv.toObject() : { ...cv };
 
+  // A CV saved from an earlier rewrite still carries the alignment
+  // sentence the target pass wrote. It is this module's writing, not the
+  // user's, so it is taken off before anything is measured: left on, it
+  // would count as evidence that the CV already speaks the advert's
+  // language, and re-tailoring the same draft against the same advert
+  // would ratchet the score up a little further every time it ran.
+  source.summary = withoutFocusSentence(source.summary);
+
   const draft = {};
   for (const field of CARRIED_FIELDS) draft[field] = source[field];
   draft.settings = { ...(source.settings ?? {}) };
@@ -937,7 +1055,34 @@ export function tailorCV(cv, jobText, options = {}) {
   // ("Senior QA Engineer" -> "QA Engineer" for someone with no senior role).
   const headline = softenTitle(jobTitle, source);
 
-  if (headline.title && draft.personal.headline !== headline.title) {
+  // How far this CV is from the advert, which decides both how far the
+  // headline may go here and how far the target pass may go in step 8.
+  const fit = fieldFit(source, headline.title, profile);
+
+  // The headline is a claim about who the person is, and the first line
+  // a screening system reads. Taking the advert's title is the cheapest
+  // way to match it — but only where the CV supports the claim. On a CV
+  // from another field it produced documents headlined "Accountant"
+  // whose own summary, which is guarded, went on to say "React
+  // Developer": the rewrite contradicting itself on the first two lines.
+  // Their own headline stays, and the advert's title still appears in
+  // the closing sentence of the summary as the role applied for.
+  //
+  // A CV with no headline and no job titles on it has nothing to
+  // contradict, so the advert's title is used there.
+  const ownTitle = source.personal?.headline?.trim() || source.experience?.[0]?.position?.trim();
+  const headlineSupported = fit.sharesTitle || !ownTitle;
+
+  if (headline.title && !headlineSupported) {
+    notes.push(
+      `The headline was left as "${ownTitle}". This advert is for ${withArticle(headline.title)}, ` +
+        'which none of your job titles supports — and a headline your own summary and ' +
+        'experience go on to contradict is worse than one that does not match the advert. ' +
+        'Change it yourself if the two roles are closer than they read.',
+    );
+  }
+
+  if (headline.title && headlineSupported && draft.personal.headline !== headline.title) {
     record({
       section: 'personal',
       field: 'headline',
@@ -1126,7 +1271,7 @@ export function tailorCV(cv, jobText, options = {}) {
   // someone who was a "Junior QA Engineer"); otherwise their own title is
   // used and the advert's title appears only as the role being applied for.
   const summaryContext = {
-    targetTitle: sharesTitleWord(headline.title, source)
+    targetTitle: fit.sharesTitle
       ? headline.title
       : source.personal?.headline || source.experience?.[0]?.position || headline.title,
     appliedRole: jobTitle,
@@ -1164,6 +1309,7 @@ export function tailorCV(cv, jobText, options = {}) {
   const target = reachTarget(draft, jobText, skillResult.suggested, {
     priorJobDescriptions,
     profile,
+    fit,
     record,
     // The *source* CV decides whether there is anything to tailor. By
     // this point the draft always has a summary, because step 6 built
@@ -1172,7 +1318,20 @@ export function tailorCV(cv, jobText, options = {}) {
     source,
   });
 
-  if (!target.reached) {
+  if (!target.reached && fit.level === 'different') {
+    // Said first and said plainly. A user who has pasted an advert from
+    // another field is better served by being told so than by a draft
+    // that reports a number it could only reach by claiming things the
+    // CV cannot back up.
+    notes.push(
+      `This advert is from a different field to your CV: it shares almost none of its ` +
+        `vocabulary with anything you have written. The rewrite has re-ordered and re-worded ` +
+        `what is there and reached ${target.score}%, and it has stopped at that rather than ` +
+        "assume skills you have never mentioned or paste the advert's words into your " +
+        'summary. If you have done this kind of work, add it to a role or a project and run ' +
+        'the rewrite again — it has nothing else to work from.',
+    );
+  } else if (!target.reached) {
     notes.push(
       `The best honest match for this advert is ${target.score}%, short of the ` +
         `${TAILOR_CONFIG.targetScore}% target. The score weighs how much your CV *reads* like ` +
@@ -1193,6 +1352,14 @@ export function tailorCV(cv, jobText, options = {}) {
     assumedSkills: target.assumed,
     focusTerms: target.focus,
     matchScore: target.score,
+
+    // What the draft scored on the honest steps alone, before the target
+    // pass assumed anything. The difference between the two is exactly
+    // what the user gives up by deleting the assumptions, and the review
+    // screen shows both so that trade is visible rather than implied.
+    honestScore: target.honestScore,
+
+    fieldFit: { level: fit.level, overlap: fit.overlap, sharesTitle: fit.sharesTitle },
     targetReached: target.reached,
     pageFill,
     notes,
@@ -1264,25 +1431,57 @@ function hasContentToTailor(source) {
  *
  * @param {object} draft - The draft so far. Its skills array is replaced.
  * @param {string} jobText - The advert.
+ * **How far it may go depends on how close the CV already is.** Both
+ * levers are scaled by `fieldFit`, and on an advert from a different
+ * field they are switched off entirely. Without that, the pass behaved
+ * backwards: the less a CV had to do with an advert, the more it had to
+ * invent to reach the target, so the worst-matched CVs got the most
+ * fabrication and came back reporting the same 80% as a genuinely
+ * well-matched one. A target that can always be reached is not a
+ * measurement of anything.
+ *
  * @param {string[]} suggested - Skills the advert wants and the CV cannot
  *   evidence, from `tailorSkills`.
- * @param {{priorJobDescriptions: string[], profile: object,
- *          record: (change: object) => void}} context
- * @returns {{assumed: string[], stillSuggested: string[], score: number,
- *            reached: boolean}}
+ * @param {{priorJobDescriptions: string[], profile: object, fit: object,
+ *          source: object, record: (change: object) => void}} context
+ * @returns {{assumed: string[], focus: string[], stillSuggested: string[],
+ *            score: number, honestScore: number, reached: boolean}}
  */
 function reachTarget(draft, jobText, suggested, context) {
-  const { priorJobDescriptions, profile, record, source } = context;
+  const { priorJobDescriptions, profile, fit, record, source } = context;
 
   let score = analyseMatch(draft, jobText, { priorJobDescriptions }).matchScore;
   const target = TAILOR_CONFIG.targetScore;
 
-  if (score >= target || !hasContentToTailor(source)) {
+  // The score the honest steps reached on their own, kept before either
+  // lever touches the draft. It is reported whatever happens next.
+  const honestScore = score;
+
+  // How much of each ceiling this CV's distance from the advert allows.
+  // `Math.floor` rather than rounding, so a half allowance of a small
+  // ceiling errs downwards: these are the two things the rewrite does
+  // that the CV cannot back up, and the error worth making is doing
+  // less of them.
+  const maxFocusTerms = Math.floor(TAILOR_CONFIG.maxFocusTerms * fit.allowance);
+
+  // Skills a previous rewrite assumed count against this one's ceiling.
+  // The ceiling is a limit on how much of a finished CV is unevidenced,
+  // not on how much any single run may add: counted per run, tailoring
+  // an already-tailored CV would start again from zero and the
+  // assumptions would accumulate a few at a time with every advert.
+  const alreadyAssumed = (draft.skills ?? []).filter((skill) => skill?.assumed).length;
+  const maxAssumed = Math.max(
+    0,
+    Math.floor(TAILOR_CONFIG.skills.maxAssumed * fit.allowance) - alreadyAssumed,
+  );
+
+  if (score >= target || !hasContentToTailor(source) || fit.allowance === 0) {
     return {
       assumed: [],
       focus: [],
       stillSuggested: suggested,
       score,
+      honestScore,
       reached: score >= target,
     };
   }
@@ -1292,10 +1491,10 @@ function reachTarget(draft, jobText, suggested, context) {
 
   const assumed = [];
 
-  while (queue.length > 0 && score < target && assumed.length < TAILOR_CONFIG.skills.maxAssumed) {
+  while (queue.length > 0 && score < target && assumed.length < maxAssumed) {
     const name = queue.shift();
 
-    draft.skills = [...draft.skills, { name, level: 'Intermediate' }];
+    draft.skills = [...draft.skills, { name, level: 'Intermediate', assumed: true }];
     assumed.push(name);
 
     score = analyseMatch(draft, jobText, { priorJobDescriptions }).matchScore;
@@ -1322,8 +1521,10 @@ function reachTarget(draft, jobText, suggested, context) {
   const focus = [];
   const candidates = advertVocabulary(draft, jobText, profile);
 
-  while (candidates.length > 0 && score < target && focus.length < TAILOR_CONFIG.maxFocusTerms) {
-    focus.push(...candidates.splice(0, TAILOR_CONFIG.focusBatchSize));
+  while (candidates.length > 0 && score < target && focus.length < maxFocusTerms) {
+    focus.push(
+      ...candidates.splice(0, Math.min(TAILOR_CONFIG.focusBatchSize, maxFocusTerms - focus.length)),
+    );
     draft.summary = withFocusSentence(draft.summary, focus);
 
     score = analyseMatch(draft, jobText, { priorJobDescriptions }).matchScore;
@@ -1354,7 +1555,7 @@ function reachTarget(draft, jobText, suggested, context) {
     });
   }
 
-  return { assumed, focus, stillSuggested: queue, score, reached: score >= target };
+  return { assumed, focus, stillSuggested: queue, score, honestScore, reached: score >= target };
 }
 
 /**
@@ -1518,11 +1719,26 @@ function focusSentence(focus) {
  * @returns {string} The summary with exactly one alignment sentence.
  */
 function withFocusSentence(summary, focus) {
-  const withoutPrevious = String(summary ?? '')
+  return `${withoutFocusSentence(summary)} ${focusSentence(focus)}`.trim();
+}
+
+/**
+ * A summary with the alignment sentence taken back off it.
+ *
+ * Used in two places. Inside the target pass it is how one batch of
+ * terms replaces the last rather than piling up after it. At the start
+ * of `tailorCV` it is how a draft that was already tailored once is
+ * read: the sentence is this module's own writing, not the user's, so
+ * re-tailoring a saved draft must rebuild it from the advert rather
+ * than treat it as CV content and build a second one on top.
+ *
+ * @param {string} summary - A summary that may carry the sentence.
+ * @returns {string} The summary without it.
+ */
+function withoutFocusSentence(summary) {
+  return String(summary ?? '')
     .split(FOCUS_PREFIX)[0]
     .trim();
-
-  return `${withoutPrevious} ${focusSentence(focus)}`.trim();
 }
 
 /**

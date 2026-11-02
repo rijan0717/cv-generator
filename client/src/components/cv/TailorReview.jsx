@@ -438,11 +438,19 @@ function formatYears({ startDate, endDate }) {
  * score, that is what the user sees. A feature that only ever reported
  * good news would be worth nothing.
  *
- * @param {{comparison: {before: object, after: object}}} props
+ * @param {{comparison: {before: object, after: object, honest?: object,
+ *           fieldFit?: string}}} props
  */
 function ScoreComparison({ comparison }) {
-  const { before, after } = comparison;
+  const { before, after, honest, fieldFit } = comparison;
   const difference = after.matchScore - before.matchScore;
+
+  // How much of the "after" figure rests on skills the CV cannot
+  // evidence. The user is about to be asked to confirm or delete those,
+  // so they need to know what deleting them costs before they decide —
+  // not afterwards, when the number has already moved.
+  const assumedWorth =
+    typeof honest?.matchScore === 'number' ? after.matchScore - honest.matchScore : 0;
 
   return (
     <section className="rounded-xl bg-white dark:bg-navy-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
@@ -472,6 +480,24 @@ function ScoreComparison({ comparison }) {
       <p className="mt-3 text-sm text-slate-600 dark:text-slate-100">
         CV strength {before.strengthScore} → {after.strengthScore} out of 100.
       </p>
+
+      {assumedWorth > 0 && (
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-100">
+          <strong className="font-semibold text-slate-900 dark:text-slate-50">
+            {honest.matchScore} of those points
+          </strong>{' '}
+          come from your own experience. The other {assumedWorth} rest on the skills assumed below —
+          delete any you do not have and the score falls back to {honest.matchScore}, which is the
+          figure an employer would recognise.
+        </p>
+      )}
+
+      {fieldFit === 'different' && (
+        <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+          This advert is from a different field to your CV, so the rewrite re-ordered and reworded
+          what you have and stopped there. It did not assume skills you have never mentioned.
+        </p>
+      )}
     </section>
   );
 }

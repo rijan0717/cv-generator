@@ -318,20 +318,35 @@ The rewrite itself. Also pure — a CV and some advert text in, a draft out.
 No database, no network, which is what lets it be unit-tested without Mongo
 and explained on its own.
 
-| Function               | Does                                                           |
-| ---------------------- | -------------------------------------------------------------- |
-| `buildJobProfile()`    | Weights the advert and keeps its top 60 terms as the yardstick |
-| `relevanceOf(text)`    | The share of that vocabulary a piece of CV text covers         |
-| `buildVocabularyMap()` | The alias swaps this advert justifies (`js` to `JavaScript`)   |
-| `alignVocabulary()`    | Applies them, with boundaries that survive `Node.js` and `c++` |
-| `tailorSkills()`       | The three-way split: promoted, added, suggested                |
-| `buildSummary()`       | Five sentences, each from a named source on the CV             |
-| `yearsOfExperience()`  | The span from earliest start to latest end, never the sum      |
-| `tailorCV()`           | Orchestrates the seven steps and records every change          |
+| Function               | Does                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `buildJobProfile()`    | Weights the advert and keeps its top 60 terms as the yardstick                                                       |
+| `relevanceOf(text)`    | The share of that vocabulary a piece of CV text covers                                                               |
+| `buildVocabularyMap()` | The alias swaps this advert justifies (`js` to `JavaScript`)                                                         |
+| `alignVocabulary()`    | Applies them, with boundaries that survive `Node.js` and `c++`                                                       |
+| `tailorSkills()`       | The three-way split: promoted, added, suggested                                                                      |
+| `buildSummary()`       | Five sentences, each from a named source on the CV                                                                   |
+| `yearsOfExperience()`  | The span from earliest start to latest end, never the sum                                                            |
+| `fieldFit()`           | How close the CV's evidence is to the advert: same, adjacent or different — and how much that allows the target pass |
+| `tailorCV()`           | Orchestrates the nine steps and records every change                                                                 |
 
-`tailorCV` returns `{ draft, changes, suggestedSkills, notes }`. `changes` is
-what the review screen lists, each with a `before`, an `after` and a `reason`;
-`notes` is the advice the module could not act on itself.
+`tailorCV` returns `{ draft, changes, suggestedSkills, assumedSkills,
+focusTerms, matchScore, honestScore, fieldFit, notes }`. `changes` is what the
+review screen lists, each with a `before`, an `after` and a `reason`; `notes`
+is the advice the module could not act on itself.
+
+`honestScore` is what the draft reached before the target pass assumed
+anything, and `matchScore` what it reached with the assumptions in. Both are
+returned because the gap between them is what the user gives up by deleting
+the assumptions, and the review screen says so rather than letting them find
+out after the fact. `fieldFit.level` governs how far the target pass may go:
+full allowance in the advert's own field, half in a neighbouring one, none at
+all in a different one (section 3.8 of `docs/algorithms.md`).
+
+The headline follows the same rule as the summary: the advert's job title is
+only taken when one of the CV's own titles shares a meaningful word with it.
+Otherwise the user's headline stays and a note explains why — an unguarded
+headline produced drafts whose first two lines contradicted each other.
 
 It reads `skillsFromSection` from `jobMatcher.js` and `hasQuantifiedResult`
 from `cvStrengthScorer.js` rather than reimplementing either, so "what counts
@@ -574,12 +589,12 @@ directory filters on exactly those fields.
 
 ### API
 
-| Route | Who | Notes |
-| ----- | --- | ----- |
-| `GET /api/talent` | approved employer, admin | `page`, `search` (name or position), `industry`, `employmentType`, `openToWork`, `accountType` (admin only). Open-to-work candidates sort first. |
-| `GET /api/talent/:id` | approved employer, admin | The person, plus `primaryCv` (`isPrimary: true`) or `null`. |
-| `GET /api/talent/filters` | approved employer, admin | The industry and employment-type lists. |
-| `PUT /api/users/me` | the owner | Now also takes `jobSeekerProfile`. `name` became optional, because the profile form posts only its own fields. Writing the profile is refused for an account that is not a job seeker. |
+| Route                     | Who                      | Notes                                                                                                                                                                                  |
+| ------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/talent`         | approved employer, admin | `page`, `search` (name or position), `industry`, `employmentType`, `openToWork`, `accountType` (admin only). Open-to-work candidates sort first.                                       |
+| `GET /api/talent/:id`     | approved employer, admin | The person, plus `primaryCv` (`isPrimary: true`) or `null`.                                                                                                                            |
+| `GET /api/talent/filters` | approved employer, admin | The industry and employment-type lists.                                                                                                                                                |
+| `PUT /api/users/me`       | the owner                | Now also takes `jobSeekerProfile`. `name` became optional, because the profile form posts only its own fields. Writing the profile is refused for an account that is not a job seeker. |
 
 The primary CV is shown rather than the newest: a candidate may be part way
 through a better draft, and showing a half-finished one would misrepresent
@@ -637,7 +652,7 @@ and what each is called in the picker.
 In two places, and the split is the point:
 
 - **The markup is a React component** (`client/src/templates/`). It cannot be
-  anywhere else — a template *is* its layout — and it must not be editable
+  anywhere else — a template _is_ its layout — and it must not be editable
   from a database field, or an admin could break every CV in the system with
   a typo.
 - **The catalogue entry is a document** (`models/Template.js`): key, name,
@@ -810,12 +825,12 @@ bottom-right corner instead of a coloured box somewhere in the page.
   second copy; at most four are ever on screen.
 - **An empty message is ignored**, so a caller can pass a possibly-empty
   error string without checking it first.
-- **What is *not* a toast.** Two things stay in the page:
+- **What is _not_ a toast.** Two things stay in the page:
   1. **A page or panel that failed to load.** Its `<Alert>` is the only
      content there is; a notice that faded would leave an empty page with
      no explanation.
   2. **Field-level validation** (`TextField`'s own message, and the skills
-     box in `TailorReview`). Those say *which* control is wrong, which a
+     box in `TailorReview`). Those say _which_ control is wrong, which a
      corner of the screen cannot. The registration form does both: each
      field keeps its marker, and a toast says the form was not accepted.
 - **Autosave is the one success that says nothing.** The status beside the

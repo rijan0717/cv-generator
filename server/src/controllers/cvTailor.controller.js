@@ -191,10 +191,11 @@ async function respondWithPreview(req, res, cv) {
 
   const priorJobDescriptions = await loadCorpusHistory();
 
-  const { draft, changes, suggestedSkills, assumedSkills, notes } = tailorCV(cv, jobText, {
-    jobTitle,
-    priorJobDescriptions,
-  });
+  const { draft, changes, suggestedSkills, assumedSkills, notes, honestScore, fieldFit } = tailorCV(
+    cv,
+    jobText,
+    { jobTitle, priorJobDescriptions },
+  );
 
   const before = analyseMatch(cv, jobText, { priorJobDescriptions });
   const after = analyseMatch(draft, jobText, { priorJobDescriptions });
@@ -233,6 +234,16 @@ async function respondWithPreview(req, res, cv) {
           skillCoverage: after.skillCoverage,
           strengthScore: scoreCV(draft).totalScore,
         },
+
+        // What the draft scored before anything was assumed. The gap
+        // between this and `after` is what the user gives up by deleting
+        // the assumptions, and showing it is the difference between a
+        // score they can rely on and one they have to take on trust.
+        honest: { matchScore: honestScore },
+
+        // How close the CV already was to this advert, which is what
+        // decided how far the rewrite was willing to go.
+        fieldFit: fieldFit.level,
       },
     },
     changes.length > 0

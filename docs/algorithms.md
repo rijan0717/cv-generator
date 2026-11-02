@@ -201,8 +201,8 @@ recognised the term:
 
 | Advert             | Missing keywords, in the order shown                            |
 | ------------------ | --------------------------------------------------------------- |
-| React Developer    | jest\*, typescript\*, tests, component, integration, accessible   |
-| Accounts Assistant | bookkeeping\*, payroll\*, excel\*, accounts, assistant, finance   |
+| React Developer    | jest\*, typescript\*, tests, component, integration, accessible |
+| Accounts Assistant | bookkeeping\*, payroll\*, excel\*, accounts, assistant, finance |
 
 Analyses stored before this change keep the keywords they were saved with, so
 the admin's skill-gap report mixes old and new until the older rows age out.
@@ -268,8 +268,15 @@ disagree about what the advert is asking for.
 
 ### 3.4 The nine steps
 
-1. **Weight the advert.** Build the relevance profile above.
-2. **Headline.** Set it to the advertised job title.
+1. **Weight the advert.** Build the relevance profile above, and measure how
+   close the CV already is to the advert's field (section 3.8).
+2. **Headline.** Set it to the advertised job title — but only where the CV
+   supports it. If none of the person's own job titles shares a meaningful
+   word with the advert's, their headline is left alone and the user is told
+   why. An unguarded headline produced drafts that contradicted themselves on
+   their first two lines: headlined "Accountant", opening "React Developer
+   with 7+ years". The summary was already guarded this way; the headline was
+   not.
 3. **Skills.** Split the advert's skills three ways (section 3.5).
 4. **Experience.** Re-word each line (section 3.6), re-order each role's
    achievements by relevance, tie-broken by whether the line quantifies
@@ -282,8 +289,8 @@ disagree about what the advert is asking for.
 7. **Section order.** Sort the movable sections by relevance, within the slots
    they already occupy — `summary` stays at the top and `references` at the
    bottom. A margin of 0.02 stops near-equal sections swapping on noise.
-8. **Reach the target score** (section 3.8).
-9. **Fill the page** (section 3.9).
+8. **Reach the target score**, as far as the field fit allows (section 3.8).
+9. **Fill the page** (section 3.10).
 
 ### 3.5 The three kinds of skill
 
@@ -398,7 +405,81 @@ summary must never do.
 If the CV does not hold enough to reach the 30-word minimum, a short summary
 is returned and `notes` says so. It is never padded with filler.
 
-### 3.8 Worked example
+### 3.8 Reaching the target score, and the limits on it
+
+File: `reachTarget` and `fieldFit` in `cvTailor.js`. Numbers: `TAILOR_CONFIG`.
+
+Steps 2 to 7 only move material the CV already contains, so they are safe
+against any advert: the worst they can do is find nothing to do. The rewrite
+also aims for a **target match of 80%**, and on a CV the honest steps leave
+short of it there are only two levers left, both of which write something the
+CV does not say:
+
+1. **Assume a skill.** Add one of the advert's skills that the CV never
+   mentions. Added one at a time, re-scoring after each, stopping the instant
+   the target is reached.
+2. **Mirror the advert's language.** Append one clearly-labelled sentence to
+   the summary — `Focus for this role: …` — listing the advert's own words for
+   the work that the CV never uses. Terms are added in batches of 3,
+   re-scoring after each batch.
+
+**Why the levers need a limit.** Left ungoverned they behaved backwards: the
+_less_ a CV had to do with an advert, the _more_ they had to invent to reach
+80%, so the worst-matched CVs got the most fabrication. Measured across a
+spread of CVs and adverts, a React developer's CV against an accounting advert
+went from a true 0% to a reported 69% — headlined "Accountant", with three
+accounting skills assumed and twelve accounting words pasted into a summary
+that still opened "React Developer". A target that can be reached from any
+starting point measures nothing.
+
+**Field fit.** So how far the pass may go is scaled by how close the CV
+already is. The distance is the share of the advert's weighted vocabulary that
+the CV's **evidence** already covers:
+
+```
+overlap = rel(evidenceText(cv), profile)
+
+evidenceText = experience + projects + education + certifications
+             + skills that a previous rewrite did not assume
+```
+
+The summary is deliberately excluded, for two reasons. It is what someone
+_says_ about themselves, where roles and qualifications are what has to be
+true; and the rewrite writes it, in the advert's language by design, so
+judging the field from it let one pass's output become the next pass's
+evidence.
+
+| Level         | Overlap                                | Assumed skills | Focus terms |
+| ------------- | -------------------------------------- | -------------- | ----------- |
+| **same**      | ≥ 0.25                                 | up to 6        | up to 12    |
+| **adjacent**  | ≥ 0.05, or the job titles share a word | up to 3        | up to 6     |
+| **different** | below that                             | **none**       | **none**    |
+
+The thresholds are measured, not guessed. Over 18 CV–advert pairs whose
+relationship was labelled in advance, unrelated pairs sat at 0.00–0.03,
+neighbouring ones at 0.06–0.22 and same-field ones at 0.29–0.59, and all 18
+classify correctly at 0.05 and 0.25.
+
+On a `different` advert the pass does nothing at all, and the user is told
+plainly that the advert is from another field and what would change that
+(describing the work in a role or a project).
+
+**Two scores, not one.** `tailorCV` returns `honestScore` — what the draft
+reached on steps 2 to 7 alone, before anything was assumed — alongside
+`matchScore`. The review screen shows both, so the user can see what the
+assumptions are worth before being asked to confirm or delete them. Deleting
+them lowers the score, and it should.
+
+**Assumed skills are marked.** Each one is saved as `skills[].assumed = true`.
+Without the flag, the one part of a tailored CV that the CV does not support
+became indistinguishable from the rest the moment it was saved, and tailoring
+an already-tailored CV ratcheted: each pass read the last pass's assumptions
+as evidence and awarded itself a fresh allowance. The flag closes both — the
+ceiling counts skills already marked, and `fieldFit` ignores them. A draft
+tailored repeatedly against the same advert now settles after one pass instead
+of climbing.
+
+### 3.9 Worked example
 
 **CV (extract)**
 
@@ -429,12 +510,21 @@ MongoDB. Docker and AWS essential. Write unit tests, work in an agile team._
 | Projects             | API gateway moved above Recipe blog                                             |
 | Summary              | "A developer." to the five sentences of section 3.7                             |
 | Sections             | skills and projects promoted above education                                    |
+| Field fit            | **same** (overlap 0.33) — the full target-pass allowance                        |
+| Target pass          | MongoDB, AWS and Agile assumed; 3 focus terms added                             |
+| Scores               | 0% untailored → **45% honest** → 82% with the assumptions                       |
+
+The headline moves here because this CV supports it: "Junior Developer" and
+"Developer" share a word with "Backend Developer". The same advert against the
+shop CV of section 3.8 leaves the headline as "Sales Assistant", assumes
+nothing, and reports the shortfall.
 
 The controller runs `analyseMatch` over the original and over the draft and
-returns both scores, so the user can see whether the rewrite actually helped
-rather than taking it on trust.
+returns both scores, plus the honest score, so the user can see whether the
+rewrite actually helped — and how much of the help they would keep after
+deleting the assumptions — rather than taking it on trust.
 
-### 3.9 Filling the page
+### 3.10 Filling the page
 
 File: `server/src/algorithms/pageFill.js`. Numbers: `PAGE_FILL_CONFIG`.
 

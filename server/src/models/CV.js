@@ -101,6 +101,20 @@ const experienceSchema = new mongoose.Schema({
 const skillSchema = new mongoose.Schema({
   name: { type: String, trim: true, default: '' },
   level: { type: String, enum: SKILL_LEVELS, default: 'Intermediate' },
+
+  /**
+   * Set when the job-tailored rewrite added this skill to reach its
+   * target score, rather than finding it anywhere on the CV.
+   *
+   * It has to survive the save, or the one thing on a tailored CV that
+   * the CV itself does not support becomes indistinguishable from the
+   * rest the moment it is stored. Two things read it: the rewrite
+   * counts skills already flagged towards its own ceiling, so tailoring
+   * a tailored CV cannot keep adding more, and it leaves them out when
+   * judging which field the CV is from — a previous rewrite's
+   * assumptions must not be the evidence for the next one's.
+   */
+  assumed: { type: Boolean, default: false },
 });
 
 const projectSchema = new mongoose.Schema({

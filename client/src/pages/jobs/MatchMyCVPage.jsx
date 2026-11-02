@@ -136,8 +136,8 @@ export default function MatchMyCVPage() {
             Match my CV
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-100">
-            Drop your CV below. It is read on the spot and scored against every open job, best match
-            first. Nothing is saved unless you choose to keep the CV.
+            Drop your existing CV below. It is read on the spot and scored against every open job,
+            best match first. Nothing is saved unless you choose to keep the CV.
           </p>
         </div>
 
