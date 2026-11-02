@@ -5,6 +5,8 @@ import * as authApi from '../../api/auth.js';
 import { useToast } from '../../context/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import { homePathFor, needsAccountType } from '../../utils/homePath.js';
+import { pendingRewritePath } from '../../api/publicRewrite.js';
+import { pendingDraftPath } from '../../utils/publicDraft.js';
 
 /** The two kinds of account, as the cards describe them. */
 const OPTIONS = [
@@ -60,7 +62,13 @@ export default function WelcomePage() {
           ? 'Your account is set up for hiring. Register your company next.'
           : 'Your account is set up. Your first CV can start now.',
       );
-      navigate(homePathFor(updated), { replace: true });
+      // Someone who arrived through one of the public funnels has work
+      // waiting — a rewrite held on the server, or a CV they wrote in
+      // their browser. Sending them to an empty dashboard instead would
+      // strand it and make them start again.
+      navigate(pendingRewritePath() ?? pendingDraftPath() ?? homePathFor(updated), {
+        replace: true,
+      });
     } catch (err) {
       toast.error(err.message);
       setIsSaving(false);

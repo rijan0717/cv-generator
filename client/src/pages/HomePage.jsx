@@ -44,7 +44,10 @@ const HERO_TABS = [
       'It opens already filled with sample content — replace it with yours, section by section',
       'Download it as a PDF, a Word file or a spreadsheet — free, with no watermark',
     ],
-    primary: { to: '/register', label: 'Create my CV' },
+    // Goes to the public builder rather than straight to registration.
+    // Asking someone to create an account before they have seen the tool
+    // do anything is the thing this hero is trying to talk them out of.
+    primary: { to: '/build-cv', label: 'Create my CV' },
     secondary: { to: '/templates', label: 'or browse the templates' },
   },
   {
@@ -54,12 +57,16 @@ const HERO_TABS = [
     heading: 'Rewrite it for the job',
     highlight: 'you actually want',
     points: [
-      'Paste the advert and your CV is rewritten to use the words it uses',
+      'Drop the CV you already have and see which open jobs it fits, no account needed',
+      'Pick a job and it is rewritten to use the words that advert uses',
       'Every fact stays yours — only the phrasing changes, and you approve each line',
-      'See the keywords you match, the ones you are missing, and a score out of 100',
     ],
-    primary: { to: '/rewrite', label: 'Rewrite my CV' },
-    secondary: { to: '/match-cv', label: 'or score the CV I have' },
+    // Goes to the public funnel rather than `/rewrite`, which needs a
+    // session and a primary CV. A visitor reading this hero has neither,
+    // and being asked to register before seeing anything work is the
+    // thing this page exists to avoid.
+    primary: { to: '/rewrite-cv', label: 'Rewrite your CV' },
+    secondary: { to: '/jobs', label: 'or just browse the jobs' },
   },
 ];
 

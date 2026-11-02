@@ -69,12 +69,25 @@ describe('App routing', () => {
       ).toBeInTheDocument();
     });
 
-    it('offers a way to create an account', async () => {
+    it('sends a visitor to the builder rather than straight to registration', async () => {
       renderAt('/');
 
       // The hero's primary call to action, on the first of its two
       // panels: it is a link rather than a button because it navigates.
+      //
+      // It goes to the public builder, not to `/register`. Asking
+      // someone to create an account before they have seen the tool do
+      // anything is what the public funnels exist to avoid; the account
+      // is asked for at the export instead.
       const links = await screen.findAllByRole('link', { name: /create my cv/i });
+      expect(links.length).toBeGreaterThan(0);
+      expect(links[0]).toHaveAttribute('href', '/build-cv');
+    });
+
+    it('still offers a way to create an account', async () => {
+      renderAt('/');
+
+      const links = await screen.findAllByRole('link', { name: /create a free account/i });
       expect(links.length).toBeGreaterThan(0);
       expect(links[0]).toHaveAttribute('href', '/register');
     });
