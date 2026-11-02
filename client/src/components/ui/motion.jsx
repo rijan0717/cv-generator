@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from './motionVariants.js';
 
 /**
@@ -57,13 +58,22 @@ export function Reveal({ children, delay = 0, className = '', as = 'div', varian
  * A group whose children arrive one after another.
  *
  * Wrap the container in this and each child in `<Stagger.Item>`; the
- * container's `whileInView` drives the lot, so the children need no
- * viewport logic of their own and no hand-counted delays.
+ * container drives the lot, so the children need no viewport logic of
+ * their own and no hand-counted delays.
+ *
+ * Why `useInView` + `animate` rather than `whileInView`: a child that
+ * mounts *after* a `whileInView` container has played (cards arriving
+ * from the server, or new content when the same page is reused for the
+ * next `/features/:slug`) never receives the "shown" state and stays at
+ * opacity 0. With `animate`, the container stays in "shown", and every
+ * child that joins later animates in to match it.
  *
  * @param {{children: React.ReactNode, className?: string, as?: string}} props
  */
 export function Stagger({ children, className = '', as = 'div' }) {
   const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.15 });
   const Tag = motion[as] ?? motion.div;
 
   if (reduced) {
@@ -73,10 +83,10 @@ export function Stagger({ children, className = '', as = 'div' }) {
 
   return (
     <Tag
+      ref={ref}
       className={className}
       initial="hidden"
-      whileInView="shown"
-      viewport={{ once: true, amount: 0.15 }}
+      animate={inView ? 'shown' : 'hidden'}
       variants={staggerContainer}
     >
       {children}
