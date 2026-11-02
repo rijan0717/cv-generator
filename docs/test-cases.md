@@ -277,6 +277,41 @@ involve the browser, the real database or an installed service.
 | S-AC-18 | Document     | Private to owner and admin                 | Owner, admin, another employer read the document | 200, 200, 404                                  | As expected   | Pass   |
 | S-AC-19 | Document     | Only PDF / JPG / PNG                       | Upload a `.txt` file                             | 400                                            | As expected   | Pass   |
 
+### 2.9 Public "open to work" preview
+
+`server/tests/integration/talentPreview.test.js` (6 cases). The one directory
+route that needs no login, so the tests check what it leaves out.
+
+| Test ID | Module      | Description                            | Input / Steps                                                                    | Expected Result                                                  | Actual Result | Status |
+| ------- | ----------- | -------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------- | ------ |
+| S-TP-01 | shortName   | Shortens a full name                   | `"Asha Kumari Shrestha"`                                                         | `"Asha S."`                                                      | As expected   | Pass   |
+| S-TP-02 | shortName   | Leaves a single name alone             | `"Madonna"`, `""`                                                                | `"Madonna"`, `""`                                                | As expected   | Pass   |
+| S-TP-03 | Preview API | Public, and returns only safe fields   | Visitor `GET /api/talent/preview`                                                | 200; short name and profile labels; no id, email, photo or about | As expected   | Pass   |
+| S-TP-04 | Preview API | Only active, open-to-work job seekers  | Add closed, blocked, deleted, employer and admin accounts beside one open seeker | Exactly one person returned                                      | As expected   | Pass   |
+| S-TP-05 | Preview API | Capped at eight                        | Ten open-to-work seekers                                                         | Eight returned                                                   | As expected   | Pass   |
+| S-TP-06 | Directory   | The rest of the directory stays closed | Visitor `GET /api/talent`                                                        | 401                                                              | As expected   | Pass   |
+
+### 2.10 Site search
+
+`server/tests/integration/search.test.js` (6 cases) and
+`client/src/utils/siteSearch.test.js` (11 cases, for the part that runs in the browser).
+
+| Test ID | Module     | Description                                   | Input / Steps                                      | Expected Result                                   | Actual Result | Status |
+| ------- | ---------- | --------------------------------------------- | -------------------------------------------------- | ------------------------------------------------- | ------------- | ------ |
+| S-SR-01 | Search API | Refuses a one-letter query                    | `GET /api/search?q=a`                              | 400                                               | As expected   | Pass   |
+| S-SR-02 | Search API | Refuses an unknown type                       | `type=secrets`                                     | 400                                               | As expected   | Pass   |
+| S-SR-03 | Search API | Jobs of approved companies only               | One approved, one pending company, each with a job | Only the approved company's job                   | As expected   | Pass   |
+| S-SR-04 | Search API | Published posts only                          | One published and one draft post, `type=blog`      | Only the published post; other groups empty       | As expected   | Pass   |
+| S-SR-05 | Search API | People as public cards                        | Open and closed job seekers, `type=people`         | One result, "Oliver B.", no email in the response | As expected   | Pass   |
+| S-SR-06 | Search API | Regular-expression characters taken literally | `q=.*`                                             | 200, no jobs                                      | As expected   | Pass   |
+| U-SR-01 | siteSearch | Title starting with the query ranks highest   | "react" against "React Developer"                  | Score 3, then 2 for a contained word, 1 elsewhere | As expected   | Pass   |
+| U-SR-02 | siteSearch | Every typed word must match                   | "react python" against "React Developer"           | No match                                          | As expected   | Pass   |
+| U-SR-03 | siteSearch | FAQ answers link to their anchor              | "photo"                                            | A result linking to `/faq#photo`                  | As expected   | Pass   |
+| U-SR-04 | siteSearch | Template link depends on login                | "classic", visitor and signed in                   | `/features/templates`, then `/templates`          | As expected   | Pass   |
+| U-SR-05 | siteSearch | Signed-in pages hidden from visitors          | "my cvs"                                           | `/cvs` offered only when signed in                | As expected   | Pass   |
+| U-SR-06 | siteSearch | Person links to sign-up or the directory      | A person result, visitor and employer              | `/register`, then `/talent`                       | As expected   | Pass   |
+| U-SR-07 | siteSearch | Scope and cap                                 | Three jobs, scope `jobs`, cap 2                    | One group of two rows                             | As expected   | Pass   |
+
 ### 1.4 Toast messages
 
 `client/src/components/ui/Toast.test.jsx` (6 cases). The toasts are driven

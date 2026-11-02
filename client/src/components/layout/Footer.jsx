@@ -53,7 +53,10 @@ const COLUMNS = [
   },
   {
     heading: 'Explore',
-    links: [{ label: 'Blog', to: '/blog' }],
+    links: [
+      { label: 'Blog', to: '/blog' },
+      { label: 'FAQ', to: '/faq' },
+    ],
   },
 ];
 

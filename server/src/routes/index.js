@@ -17,6 +17,7 @@ import talentRoutes from './talent.routes.js';
 import templateRoutes from './template.routes.js';
 import contentRoutes from './content.routes.js';
 import interviewRoutes from './interview.routes.js';
+import searchRoutes from './search.routes.js';
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.use('/talent', talentRoutes);
 router.use('/templates', templateRoutes);
 router.use('/content', contentRoutes);
 router.use('/interview', interviewRoutes);
+router.use('/search', searchRoutes);
 router.use('/admin', adminRoutes);
 
 export default router;

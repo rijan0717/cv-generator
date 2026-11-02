@@ -8,6 +8,8 @@ import WelcomePage from './pages/user/WelcomePage.jsx';
 import AdminRoute from './routes/AdminRoute.jsx';
 import HomeRoute from './routes/HomeRoute.jsx';
 import FeaturePage from './pages/FeaturePage.jsx';
+import FaqPage from './pages/FaqPage.jsx';
+import SearchPage from './pages/SearchPage.jsx';
 
 import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
@@ -81,6 +83,8 @@ export default function App() {
             behind a login, so these are what a visitor reads before
             deciding to create an account. */}
         <Route path="/features/:slug" element={<FeaturePage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/search" element={<SearchPage />} />
 
         {/* The job board is public: someone should be able to see what is
             on offer before deciding to create an account. */}

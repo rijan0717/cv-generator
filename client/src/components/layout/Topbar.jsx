@@ -6,6 +6,7 @@ import Button from '../ui/Button.jsx';
 import BrandMark from '../ui/BrandMark.jsx';
 import ThemeToggle from '../ui/ThemeToggle.jsx';
 import NavMenu from './NavMenu.jsx';
+import HeaderSearch from './HeaderSearch.jsx';
 import { HEADER_MENUS, MENU_ICONS } from './menus.js';
 import { homePathFor } from '../../utils/homePath.js';
 
@@ -64,6 +65,14 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
   const [isPublicMenuOpen, setIsPublicMenuOpen] = useState(false);
   useEffect(() => setIsPublicMenuOpen(false), [pathname]);
 
+  // The search row under the bar, where there is no room for the box in it.
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  useEffect(() => setIsSearchOpen(false), [pathname]);
+
+  // The box sits in the bar once there is room beside everything else: a
+  // visitor's bar also carries the three menus, so it needs a wider screen.
+  const inlineSearchFrom = isAuthenticated ? 'md' : 'xl';
+
   /**
    * Logs out and returns to the home page.
    *
@@ -97,7 +106,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
       />
 
       <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
-        <div className="flex items-center gap-2 lg:gap-6">
+        <div className="flex min-w-0 flex-1 items-center gap-2 lg:gap-6">
           {/* Only shown when there is a sidebar to open. */}
           {showMenuButton && (
             <button
@@ -131,6 +140,15 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
             <BrandMark size="md" />
           </Link>
 
+          {/* The site search, like the one in Dribbble's bar: between the
+              brand and the menus. Narrower screens get the button on the
+              right instead, which opens it as a row under the bar. */}
+          <HeaderSearch
+            className={`hidden w-full max-w-md ${
+              inlineSearchFrom === 'md' ? 'md:block' : 'xl:block'
+            }`}
+          />
+
           {/* The public menus, on a wide screen. */}
           {!isAuthenticated && (
             <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
@@ -141,7 +159,37 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            aria-expanded={isSearchOpen}
+            aria-controls="mobile-search"
+            aria-label={isSearchOpen ? 'Close search' : 'Search'}
+            onClick={() => setIsSearchOpen((open) => !open)}
+            className={`rounded-lg p-2 text-slate-700 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-navy-800 ${
+              inlineSearchFrom === 'md' ? 'md:hidden' : 'xl:hidden'
+            }`}
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              {isSearchOpen ? (
+                <path d="M6 6l12 12M6 18L18 6" />
+              ) : (
+                <>
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" />
+                </>
+              )}
+            </svg>
+          </button>
+
           {/* The admin's published pages used to sit here — About, How it
               works and anything else marked for the header. They are in
               the footer instead, and in the Explore menu where they fit.
@@ -232,6 +280,17 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
           )}
         </div>
       </div>
+
+      {isSearchOpen && (
+        <div
+          id="mobile-search"
+          className={`border-t border-slate-200 bg-white px-4 py-3 dark:border-navy-700 dark:bg-navy-900 ${
+            inlineSearchFrom === 'md' ? 'md:hidden' : 'xl:hidden'
+          }`}
+        >
+          <HeaderSearch autoFocus onDone={() => setIsSearchOpen(false)} />
+        </div>
+      )}
 
       {/* The stacked public menu. It replaces the dropdowns rather than
           repeating them, so a phone gets one list it can scroll instead of
