@@ -169,7 +169,7 @@ export default function AdminInterviewPositionPage() {
         <span
           className={
             position.isActive
-              ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+              ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700'
               : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-navy-800 dark:text-slate-100'
           }
         >
@@ -236,7 +236,7 @@ export default function AdminInterviewPositionPage() {
                   key={optionIndex}
                   className={
                     optionIndex === question.correctIndex
-                      ? 'font-medium text-emerald-700 dark:text-emerald-400'
+                      ? 'font-medium text-emerald-700 dark:text-emerald-600'
                       : 'text-slate-600 dark:text-slate-100'
                   }
                 >

@@ -83,7 +83,7 @@ export default function TemplatePreviewDialog({ template, onClose, onUse, isBusy
               start.
             </p>
 
-            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="text-sm text-red-600 dark:text-red-600">{error}</p>}
 
             <div className="mt-auto flex flex-col gap-2">
               <Button onClick={() => onUse(template)} isLoading={isBusy}>

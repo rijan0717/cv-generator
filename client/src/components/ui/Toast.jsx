@@ -25,20 +25,20 @@ import { useEffect, useRef, useState } from 'react';
  */
 const VARIANTS = {
   success: {
-    box: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-800',
-    icon: 'text-emerald-600 dark:text-emerald-400',
+    box: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-50 dark:text-emerald-700 dark:ring-emerald-200',
+    icon: 'text-emerald-600 dark:text-emerald-600',
     // A tick.
     path: 'M4.5 12.5l5 5 10-11',
   },
   error: {
-    box: 'bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800',
-    icon: 'text-red-600 dark:text-red-400',
+    box: 'bg-red-50 text-red-700 ring-red-200 dark:bg-red-50 dark:text-red-700 dark:ring-red-200',
+    icon: 'text-red-600 dark:text-red-600',
     // An exclamation mark in a circle.
     path: 'M12 7v6m0 4h.01M12 3a9 9 0 100 18 9 9 0 000-18z',
   },
   info: {
-    box: 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-800',
-    icon: 'text-sky-600 dark:text-sky-400',
+    box: 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-50 dark:text-sky-700 dark:ring-sky-200',
+    icon: 'text-sky-600 dark:text-sky-600',
     // An "i" in a circle.
     path: 'M12 11v6m0-10h.01M12 3a9 9 0 100 18 9 9 0 000-18z',
   },

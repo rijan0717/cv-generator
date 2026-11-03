@@ -224,7 +224,7 @@ export default function JobDetailPage() {
     <div className={`mx-auto px-4 py-8 ${rewrite ? 'max-w-6xl' : 'max-w-4xl'}`}>
       <Link
         to="/jobs"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
       >
         &larr; All jobs
       </Link>
@@ -248,7 +248,7 @@ export default function JobDetailPage() {
                 <Tag>{job.workMode}</Tag>
                 {job.salaryRange && <Tag>{job.salaryRange}</Tag>}
                 {isClosed && (
-                  <span className="rounded-full bg-red-50 px-2.5 py-1 font-medium text-red-700 dark:bg-red-950 dark:text-red-300">
+                  <span className="rounded-full bg-red-50 px-2.5 py-1 font-medium text-red-700 dark:bg-red-50 dark:text-red-700">
                     Closed
                   </span>
                 )}
@@ -282,7 +282,7 @@ export default function JobDetailPage() {
               // No Apply button here: applying happens from the rewritten
               // CV ("Save and apply with it" / "Apply with it" below).
               hasApplied && (
-                <span className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700">
                   You have applied
                 </span>
               )
@@ -470,7 +470,7 @@ function TailoredSummary({ cv, canApply, onApply }) {
   const difference = hasFigures ? cv.matchScore - cv.baselineMatchScore : 0;
 
   return (
-    <section className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-emerald-200 dark:bg-navy-900 dark:ring-emerald-900">
+    <section className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-emerald-200 dark:bg-navy-900 dark:ring-emerald-100">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
           <h2 className="font-semibold text-slate-900 dark:text-slate-50">
@@ -520,9 +520,9 @@ function TailoredSummary({ cv, canApply, onApply }) {
               className={[
                 'rounded-full px-3 py-1 text-sm font-medium',
                 difference > 0
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700'
                   : difference < 0
-                    ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+                    ? 'bg-red-50 text-red-700 dark:bg-red-50 dark:text-red-700'
                     : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
               ].join(' ')}
             >

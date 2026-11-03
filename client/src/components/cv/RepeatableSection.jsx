@@ -109,7 +109,7 @@ export default function RepeatableSection({
                   <button
                     type="button"
                     onClick={() => removeEntry(index)}
-                    className="rounded p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
+                    className="rounded p-1 text-red-600 dark:text-red-600 hover:bg-red-50 dark:hover:bg-red-50"
                   >
                     <span className="sr-only">Remove</span>
                     <span aria-hidden="true">&times;</span>

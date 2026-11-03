@@ -199,7 +199,7 @@ function TemplateCard({ template, cv, isSelected, badge, onChoose }) {
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900',
         'dark:bg-navy-900 dark:focus-visible:outline-slate-100',
         isSelected
-          ? 'ring-2 ring-blue-600 dark:ring-blue-400'
+          ? 'ring-2 ring-blue-600 dark:ring-fuchsia-400'
           : 'ring-1 ring-slate-200 hover:-translate-y-0.5 hover:shadow-md hover:ring-slate-300 dark:ring-navy-700 dark:hover:ring-slate-500',
       ].join(' ')}
     >

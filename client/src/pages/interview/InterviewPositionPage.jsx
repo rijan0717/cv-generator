@@ -204,7 +204,7 @@ function StudyCard({ question, number }) {
           exam's job, not revision's. */}
       {isOpen ? (
         <div className="mt-3 space-y-2">
-          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-50 dark:text-emerald-800">
             <span className="font-medium">Answer: </span>
             {question.answer}
           </p>

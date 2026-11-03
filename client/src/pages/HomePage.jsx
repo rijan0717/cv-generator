@@ -89,7 +89,7 @@ function Tick() {
       className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-500/20"
     >
       <svg
-        className="h-3 w-3 text-brand-pink dark:text-fuchsia-100"
+        className="h-3 w-3 text-brand-pink dark:text-fuchsia-400"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -141,7 +141,7 @@ export default function HomePage() {
             hidden from assistive technology and sits behind everything. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[32rem] bg-[radial-gradient(60%_60%_at_70%_30%,rgba(123,18,32,0.14),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[32rem] bg-[radial-gradient(60%_60%_at_70%_30%,rgb(var(--c-glow)/0.14),transparent_70%)]"
         />
 
         <div className={`${CONTAINER} grid items-start gap-12 py-12 sm:py-16 lg:grid-cols-2`}>
@@ -172,7 +172,7 @@ export default function HomePage() {
                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia',
                         isActive
                           ? 'text-white'
-                          : 'text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white',
+                          : 'text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50',
                       ].join(' ')}
                     >
                       {/* `layoutId` is what slides the pill from one tab to
@@ -212,7 +212,7 @@ export default function HomePage() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.22, ease: 'easeOut' }}
               >
-                <p className="mt-7 text-sm font-semibold text-brand-fuchsia dark:text-fuchsia-100">
+                <p className="mt-7 text-sm font-semibold text-brand-fuchsia dark:text-fuchsia-400">
                   {hero.kicker}
                 </p>
 
@@ -249,7 +249,7 @@ export default function HomePage() {
 
                     <Link
                       to={hero.secondary.to}
-                      className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
+                      className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-slate-50"
                     >
                       {hero.secondary.label}
                     </Link>
@@ -275,7 +275,7 @@ export default function HomePage() {
           <figure className="relative isolate hidden sm:block">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -inset-8 -z-10 rounded-[3rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(123,18,32,0.22),transparent_70%)] blur-2xl"
+              className="pointer-events-none absolute -inset-8 -z-10 rounded-[3rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(var(--c-glow)/0.22),transparent_70%)] blur-2xl"
             />
 
             <Floating>
@@ -343,7 +343,7 @@ export default function HomePage() {
                     corner above it. */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(198,90,107,0.45),transparent_70%)] blur-2xl"
+                  className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgb(var(--c-glow)/0.4),transparent_70%)] blur-2xl"
                 />
 
                 <div className="relative">

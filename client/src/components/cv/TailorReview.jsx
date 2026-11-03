@@ -240,7 +240,7 @@ function PageFillPanel({ fill }) {
   const gained = started !== null ? percent - started : 0;
 
   return (
-    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-amber-200 dark:bg-navy-900 dark:ring-amber-900">
+    <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-amber-200 dark:bg-navy-900 dark:ring-amber-100">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-semibold text-slate-900 dark:text-slate-50">
           This fills about {percent}% of a page
@@ -467,9 +467,9 @@ function ScoreComparison({ comparison }) {
           className={[
             'rounded-full px-3 py-1 text-sm font-medium',
             difference > 0
-              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700'
               : difference < 0
-                ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+                ? 'bg-red-50 text-red-700 dark:bg-red-50 dark:text-red-700'
                 : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
           ].join(' ')}
         >
@@ -493,7 +493,7 @@ function ScoreComparison({ comparison }) {
       )}
 
       {fieldFit === 'different' && (
-        <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+        <p className="mt-2 text-sm text-amber-700 dark:text-amber-700">
           This advert is from a different field to your CV, so the rewrite re-ordered and reworded
           what you have and stopped there. It did not assume skills you have never mentioned.
         </p>
@@ -561,14 +561,14 @@ function ChangeText({ before, after }) {
           ) : run.type === 'removed' ? (
             <del
               key={index}
-              className="rounded bg-red-100 px-0.5 text-red-700 dark:bg-red-950 dark:text-red-300"
+              className="rounded bg-red-100 px-0.5 text-red-700 dark:bg-red-50 dark:text-red-700"
             >
               {run.text}
             </del>
           ) : (
             <ins
               key={index}
-              className="rounded bg-emerald-100 px-0.5 font-medium text-emerald-800 no-underline dark:bg-emerald-950 dark:text-emerald-300"
+              className="rounded bg-emerald-100 px-0.5 font-medium text-emerald-800 no-underline dark:bg-emerald-50 dark:text-emerald-700"
             >
               {run.text}
             </ins>
@@ -613,7 +613,7 @@ function RewriteOverview({ changes }) {
   ].filter(Boolean);
 
   return (
-    <section className="rounded-xl bg-gradient-to-r from-sky-50 to-fuchsia-50 p-5 ring-1 ring-fuchsia-200 dark:from-sky-950/40 dark:to-fuchsia-950/40 dark:ring-fuchsia-900">
+    <section className="rounded-xl bg-gradient-to-r from-sky-50 to-fuchsia-50 p-5 ring-1 ring-fuchsia-200 dark:from-sky-50/40 dark:to-fuchsia-950/40 dark:ring-fuchsia-900">
       <h2 className="font-semibold text-slate-900 dark:text-slate-50">What the rewrite did</h2>
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) => (
@@ -699,7 +699,7 @@ function SkillsEditor({ skills, suggested, assumed, onChange }) {
             <button
               type="button"
               onClick={() => onChange(skills.filter((_, position) => position !== index))}
-              className="rounded-full px-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:hover:bg-slate-700 dark:hover:text-white"
+              className="rounded-full px-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:hover:bg-slate-700 dark:hover:text-slate-50"
             >
               <span aria-hidden="true">×</span>
               <span className="sr-only">Remove {skill.name}</span>
@@ -710,11 +710,11 @@ function SkillsEditor({ skills, suggested, assumed, onChange }) {
 
       <AddSkill skills={skills} onChange={onChange} />
       {stillMissing.length > 0 && (
-        <div className="mt-5 rounded-lg bg-amber-50 p-4 dark:bg-amber-950/40">
-          <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+        <div className="mt-5 rounded-lg bg-amber-50 p-4 dark:bg-amber-50/40">
+          <p className="text-sm font-medium text-amber-900 dark:text-amber-800">
             This advert also asks for these, and they appear nowhere on your CV
           </p>
-          <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
+          <p className="mt-1 text-sm text-amber-800 dark:text-amber-700">
             They have not been added. Add only the ones you genuinely have.
           </p>
 
@@ -827,7 +827,7 @@ function AddSkill({ skills, onChange }) {
       </div>
 
       {error ? (
-        <p className="mt-1.5 text-sm text-amber-700 dark:text-amber-400">{error}</p>
+        <p className="mt-1.5 text-sm text-amber-700 dark:text-amber-600">{error}</p>
       ) : (
         <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-100">
           Only add skills you actually have. The match score counts them, and so will the interview.

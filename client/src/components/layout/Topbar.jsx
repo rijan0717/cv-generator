@@ -313,7 +313,7 @@ export default function Topbar({ showMenuButton, isDrawerOpen, onToggleDrawer })
                       className="flex gap-3 rounded-xl p-2.5 hover:bg-slate-50 dark:hover:bg-navy-800"
                     >
                       <svg
-                        className="mt-0.5 h-5 w-5 shrink-0 text-brand-fuchsia dark:text-fuchsia-100"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-brand-fuchsia dark:text-fuchsia-400"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"

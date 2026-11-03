@@ -281,7 +281,7 @@ export default function RewriteWithJDPage() {
                     className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-500/20"
                   >
                     <svg
-                      className="h-3 w-3 text-brand-pink dark:text-fuchsia-100"
+                      className="h-3 w-3 text-brand-pink dark:text-fuchsia-400"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -310,7 +310,7 @@ export default function RewriteWithJDPage() {
               No primary CV yet?{' '}
               <Link
                 to="/cvs"
-                className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-100"
+                className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-400"
               >
                 Choose one in My CVs
               </Link>

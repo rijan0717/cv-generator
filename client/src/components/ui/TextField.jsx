@@ -77,7 +77,7 @@ export default function TextField({
             // between every password field and the next control would be
             // more annoying than helpful.
             tabIndex={-1}
-            className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
           >
             {isRevealed ? (
               // Crossed-out eye: clicking hides the password again.
@@ -122,7 +122,7 @@ export default function TextField({
       )}
 
       {error && (
-        <p id={errorId} className="mt-1 text-xs text-red-600 dark:text-red-400">
+        <p id={errorId} className="mt-1 text-xs text-red-600 dark:text-red-600">
           {error}
         </p>
       )}

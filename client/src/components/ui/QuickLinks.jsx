@@ -23,12 +23,12 @@ export default function QuickLinks({ title, links, children }) {
           <li key={link.to}>
             <Link
               to={link.to}
-              className="group flex items-center justify-between gap-3 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800/60 dark:hover:text-white"
+              className="group flex items-center justify-between gap-3 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800/60 dark:hover:text-slate-50"
             >
               {link.label}
               <span
                 aria-hidden="true"
-                className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-slate-600 dark:group-hover:text-blue-400"
+                className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-slate-600 dark:group-hover:text-fuchsia-400"
               >
                 &rarr;
               </span>

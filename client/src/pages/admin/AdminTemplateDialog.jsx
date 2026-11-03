@@ -147,7 +147,7 @@ export default function AdminTemplateDialog({
               </Button>
             </form>
 
-            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="text-sm text-red-600 dark:text-red-600">{error}</p>}
 
             <div className="mt-auto flex flex-col gap-2 border-t border-slate-200 pt-4 dark:border-navy-700">
               <p className="text-sm text-slate-600 dark:text-slate-100">

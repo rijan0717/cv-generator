@@ -22,7 +22,7 @@ import Spinner from './Spinner.jsx';
 const VARIANTS = {
   primary: [
     'bg-slate-900 text-white hover:bg-slate-700',
-    'dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white',
+    'dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-50',
     'focus-visible:outline-slate-900 dark:focus-visible:outline-slate-100',
   ].join(' '),
 

@@ -97,7 +97,7 @@ export default function WelcomePage() {
               className={[
                 'rounded-xl border-2 bg-white p-6 text-left transition dark:bg-navy-900',
                 selected
-                  ? 'border-indigo-600 ring-2 ring-indigo-200 dark:border-indigo-400 dark:ring-indigo-900'
+                  ? 'border-indigo-600 ring-2 ring-indigo-200 dark:border-fuchsia-400 dark:ring-fuchsia-900'
                   : 'border-slate-200 hover:border-slate-400 dark:border-navy-700 dark:hover:border-slate-500',
               ].join(' ')}
             >

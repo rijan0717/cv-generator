@@ -89,7 +89,7 @@ const SOCIAL = [
 ];
 
 const linkClass =
-  'text-sm text-slate-600 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white';
+  'text-sm text-slate-600 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50';
 
 export default function Footer() {
   const { footer: pages } = useNavigation();
@@ -119,7 +119,7 @@ export default function Footer() {
                     href={account.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="block text-slate-500 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+                    className="block text-slate-500 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
                   >
                     <svg
                       className="h-5 w-5"
@@ -179,7 +179,7 @@ export default function Footer() {
               href="https://rijan-pariyar.com.np/"
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-slate-700 underline underline-offset-2 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+              className="font-medium text-slate-700 underline underline-offset-2 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
             >
               Rijan Pariyar
             </a>
@@ -190,7 +190,7 @@ export default function Footer() {
               <li key={link.label}>
                 <Link
                   to={link.to}
-                  className="text-sm text-slate-500 underline-offset-2 transition hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
+                  className="text-sm text-slate-500 underline-offset-2 transition hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-slate-50"
                 >
                   {link.label}
                 </Link>

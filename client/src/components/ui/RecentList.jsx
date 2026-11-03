@@ -25,7 +25,7 @@ export default function RecentList({ title, items, emptyMessage, emptyAction, vi
         {viewAll && items.length > 0 && (
           <Link
             to={viewAll.to}
-            className="text-sm font-medium text-blue-700 hover:underline dark:text-blue-400"
+            className="text-sm font-medium text-blue-700 hover:underline dark:text-fuchsia-400"
           >
             {viewAll.label}
           </Link>
@@ -38,7 +38,7 @@ export default function RecentList({ title, items, emptyMessage, emptyAction, vi
           {emptyAction && (
             <Link
               to={emptyAction.to}
-              className="mt-2 text-sm font-medium text-blue-700 hover:underline dark:text-blue-400"
+              className="mt-2 text-sm font-medium text-blue-700 hover:underline dark:text-fuchsia-400"
             >
               {emptyAction.label}
             </Link>

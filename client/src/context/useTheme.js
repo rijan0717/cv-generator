@@ -3,7 +3,7 @@ import { ThemeContext } from './themeContext.js';
 
 /**
  * Reads the theme context.
- * @returns {{theme: 'light'|'dark'|'system', isDark: boolean,
+ * @returns {{theme: 'light'|'orange', isOrange: boolean,
  *            setTheme: Function, toggle: Function}}
  */
 export function useTheme() {

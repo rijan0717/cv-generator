@@ -143,7 +143,7 @@ function BuilderDemo() {
             transition={{ duration: 0.2 }}
             className={`text-xs font-semibold ${
               phase === 'saved'
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-emerald-600 dark:text-emerald-600'
                 : 'text-slate-500 dark:text-slate-100'
             }`}
           >
@@ -181,10 +181,10 @@ function BuilderDemo() {
             <p className="min-h-[1rem] text-center text-[11px] font-bold uppercase tracking-wide text-[#7b1220]">
               {values.name}
             </p>
-            <p className="min-h-[0.75rem] text-center text-[8px] text-slate-600">
+            <p className="min-h-[0.75rem] text-center text-[8px] text-[#4b4b4b]">
               {values.headline}
             </p>
-            <p className="min-h-[0.75rem] text-center text-[7px] text-slate-500">{values.city}</p>
+            <p className="min-h-[0.75rem] text-center text-[7px] text-[#6b6b6b]">{values.city}</p>
 
             <div className="mt-2 h-px bg-[#7b1220]/60" />
 
@@ -258,7 +258,7 @@ function Check() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+      className="h-4 w-4 text-emerald-600 dark:text-emerald-600"
       fill="none"
       stroke="currentColor"
       strokeWidth="2.5"
@@ -369,7 +369,7 @@ function RewriteDemo() {
                     </span>
                     <span className="text-slate-500 dark:text-slate-100">
                       <span className="line-through">{SCORE_BEFORE}%</span>{' '}
-                      <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="text-base font-bold text-emerald-600 dark:text-emerald-600">
                         {SCORE_AFTER}%
                       </span>
                     </span>
@@ -386,7 +386,7 @@ function RewriteDemo() {
                     <span className="text-slate-500 line-through dark:text-slate-100">
                       Worked on the website
                     </span>{' '}
-                    <span className="font-semibold text-brand-fuchsia dark:text-fuchsia-100">
+                    <span className="font-semibold text-brand-fuchsia dark:text-fuchsia-400">
                       Built REST APIs in Node.js serving 50,000 users
                     </span>
                   </p>

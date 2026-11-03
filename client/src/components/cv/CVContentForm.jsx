@@ -93,7 +93,7 @@ export default function CVContentForm({ cv, onChange, onPhotoChange }) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => e.target.files?.[0] && onPhotoChange(e.target.files[0])}
-              className="min-w-0 flex-1 text-sm text-slate-600 dark:text-slate-100 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200"
+              className="min-w-0 flex-1 text-sm text-slate-600 dark:text-slate-100 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200 dark:file:bg-navy-800 dark:file:text-slate-50 dark:hover:file:bg-navy-700"
             />
           </div>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">

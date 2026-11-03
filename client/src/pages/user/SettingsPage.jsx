@@ -52,18 +52,14 @@ function Card({ title, description, children }) {
 }
 
 /**
- * Theme choice.
- *
- * All three states are offered here, unlike the one-click switch in the top
- * bar: this is where someone comes to say "follow my system" explicitly.
+ * Theme choice: the same two themes as the switch in the top bar, named.
  */
 function AppearanceSection() {
   const { theme, setTheme } = useTheme();
 
   const options = [
     { value: 'light', label: 'Light' },
-    { value: 'dark', label: 'Dark' },
-    { value: 'system', label: 'Match my device' },
+    { value: 'orange', label: 'Orange' },
   ];
 
   return (

@@ -12,7 +12,7 @@ export default function OpenToWorkBadge({ className = '', size = 'sm' }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full bg-emerald-50 font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900 ${sizing} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full bg-emerald-50 font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-50 dark:text-emerald-700 dark:ring-emerald-100 ${sizing} ${className}`}
     >
       <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
       Open to work

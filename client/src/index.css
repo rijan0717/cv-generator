@@ -3,6 +3,135 @@
 @tailwind utilities;
 
 /*
+ * The palette, as CSS variables, one set per theme.
+ *
+ * `tailwind.config.js` points every colour ramp at these, so a class such
+ * as `bg-navy-900` or `text-fuchsia-400` takes its value from whichever
+ * theme is on. Each value is space-separated RGB channels, which is what
+ * lets Tailwind's opacity modifiers (`bg-navy-800/60`) keep working.
+ *
+ *   - Light: wine and cream.
+ *   - Orange (`html.theme-orange`): light-grey page, white cards, black
+ *     ink and orange buttons — the reference design's palette.
+ *
+ * `--c-glow` is the colour of the soft wash behind the hero cards.
+ */
+:root {
+  --c-slate-50: 250 244 232;
+  --c-slate-100: 242 229 206;
+  --c-slate-200: 220 198 162;
+  --c-slate-300: 216 187 148;
+  --c-slate-400: 126 95 62;
+  --c-slate-500: 138 102 70;
+  --c-slate-600: 110 68 51;
+  --c-slate-700: 90 42 38;
+  --c-slate-800: 74 19 23;
+  --c-slate-900: 74 5 9;
+  --c-slate-950: 53 5 10;
+
+  --c-navy-950: 162 72 87;
+  --c-navy-900: 141 59 73;
+  --c-navy-800: 122 49 64;
+  --c-navy-700: 192 110 123;
+
+  --c-brand-violet: 123 18 32;
+  --c-brand-fuchsia: 163 38 56;
+  --c-brand-pink: 198 90 107;
+
+  --c-violet-50: 251 240 241;
+  --c-violet-100: 246 220 223;
+  --c-violet-200: 236 188 194;
+  --c-violet-300: 221 148 160;
+  --c-violet-400: 199 108 126;
+  --c-violet-500: 163 38 56;
+  --c-violet-600: 142 26 40;
+  --c-violet-700: 123 18 32;
+  --c-violet-800: 100 13 26;
+  --c-violet-900: 74 5 9;
+  --c-violet-950: 53 5 10;
+
+  --c-fuchsia-50: 253 240 242;
+  --c-fuchsia-100: 250 221 225;
+  --c-fuchsia-200: 242 190 198;
+  --c-fuchsia-300: 229 155 167;
+  --c-fuchsia-400: 228 154 166;
+  --c-fuchsia-500: 198 90 107;
+  --c-fuchsia-600: 173 61 80;
+  --c-fuchsia-700: 142 38 57;
+  --c-fuchsia-800: 115 28 43;
+  --c-fuchsia-900: 74 5 9;
+  --c-fuchsia-950: 53 5 10;
+
+  --c-glow: 123 18 32;
+}
+
+html.theme-orange {
+  /*
+   * The Orange theme: light-grey page, white cards, black ink, orange
+   * accent. The `dark:` classes were written for a theme whose surfaces
+   * are at the far end of each ramp from the light theme's, so the ramps
+   * here run the other way round: `slate-50` is the darkest ink and
+   * `slate-950` is white.
+   */
+
+  /* Ink: 50 for headings and primary text (black), 100 for secondary
+     text (about 11:1 on white), the middle steps for borders and chips,
+     the bottom for text on the black buttons. */
+  --c-slate-50: 14 14 14;
+  --c-slate-100: 58 58 60;
+  --c-slate-200: 82 82 88;
+  --c-slate-300: 113 113 118;
+  --c-slate-400: 150 150 155;
+  --c-slate-500: 181 181 185;
+  --c-slate-600: 212 212 216;
+  --c-slate-700: 228 228 231;
+  --c-slate-800: 237 237 239;
+  --c-slate-900: 247 247 248;
+  --c-slate-950: 255 255 255;
+
+  /* Surfaces: the page (the reference's light grey), a card or the
+     header (white), a raised panel, a border. */
+  --c-navy-950: 236 236 238;
+  --c-navy-900: 255 255 255;
+  --c-navy-800: 245 245 246;
+  --c-navy-700: 214 214 218;
+
+  /* The accent: the orange of the buttons. */
+  --c-brand-violet: 240 74 12;
+  --c-brand-fuchsia: 255 90 31;
+  --c-brand-pink: 255 122 61;
+
+  /* Orange, dark end first, for the same reason as the ink above:
+     `fuchsia-400` is accent text (deep orange, 5:1 on white) and
+     `fuchsia-950` is the pale tint behind a highlighted item. */
+  --c-violet-50: 67 20 7;
+  --c-violet-100: 124 45 18;
+  --c-violet-200: 154 52 18;
+  --c-violet-300: 185 58 14;
+  --c-violet-400: 194 65 12;
+  --c-violet-500: 255 90 31;
+  --c-violet-600: 255 122 61;
+  --c-violet-700: 255 163 112;
+  --c-violet-800: 255 201 168;
+  --c-violet-900: 255 226 207;
+  --c-violet-950: 255 243 236;
+
+  --c-fuchsia-50: 67 20 7;
+  --c-fuchsia-100: 124 45 18;
+  --c-fuchsia-200: 154 52 18;
+  --c-fuchsia-300: 185 58 14;
+  --c-fuchsia-400: 194 65 12;
+  --c-fuchsia-500: 255 90 31;
+  --c-fuchsia-600: 255 122 61;
+  --c-fuchsia-700: 255 163 112;
+  --c-fuchsia-800: 255 201 168;
+  --c-fuchsia-900: 255 226 207;
+  --c-fuchsia-950: 255 243 236;
+
+  --c-glow: 255 90 31;
+}
+
+/*
  * The brand gradient.
  *
  * Written here as ordinary CSS rather than as Tailwind theme utilities,
@@ -37,11 +166,20 @@
   color: transparent;
 }
 
-/* Lightened in the dark theme: the wine end of the ramp is close to the
-   maroon page, so the gradient has to run well above it or the first
-   third of every headline sinks into the background. */
-html.dark .cvg-gradient-text {
-  background-image: linear-gradient(90deg, #fadde1 0%, #f6e3d0 55%, #faf4e8 100%);
+/* The Orange theme's buttons. Dark ink on them rather than white: white on
+   this orange is about 3:1, too faint for button text, while near-black
+   clears 6:1 — and black on orange is the reference design's own pairing.
+   (Beats `text-white` because this selector is more specific.) */
+html.theme-orange .cvg-gradient-bg {
+  background-color: #ff5a1f;
+  background-image: linear-gradient(90deg, #f04a0c 0%, #ff5a1f 55%, #ff7a3d 100%);
+  color: #0e0e0e;
+}
+
+html.theme-orange .cvg-gradient-text {
+  /* Deeper than the buttons: a light orange on a light page would be too
+     faint for a headline. */
+  background-image: linear-gradient(90deg, #c2410c 0%, #ea580c 55%, #f97316 100%);
 }
 
 /*
@@ -89,8 +227,11 @@ html.dark .cvg-gradient-text {
     linear-gradient(135deg, #7b1220, #c65a6b) border-box;
 }
 
-html.dark .cvg-gradient-border {
-  --cvg-surface: #8d3b49;
+html.theme-orange .cvg-gradient-border {
+  --cvg-surface: #ffffff;
+  background:
+    linear-gradient(var(--cvg-surface), var(--cvg-surface)) padding-box,
+    linear-gradient(135deg, #f04a0c, #ff9c66) border-box;
 }
 
 /*
@@ -115,6 +256,18 @@ html.dark .cvg-gradient-border {
   box-shadow:
     0 4px 12px -2px rgb(123 18 32 / 0.55),
     0 14px 40px -8px rgb(198 90 107 / 0.5);
+}
+
+html.theme-orange .cvg-glow {
+  box-shadow:
+    0 2px 8px -2px rgb(240 74 12 / 0.5),
+    0 8px 28px -6px rgb(255 122 61 / 0.35);
+}
+
+html.theme-orange .cvg-glow-hover:hover {
+  box-shadow:
+    0 4px 12px -2px rgb(240 74 12 / 0.6),
+    0 14px 40px -8px rgb(255 122 61 / 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -147,8 +300,8 @@ html.dark .cvg-gradient-border {
     color: #a32638;
   }
 
-  html.dark .cvg-gradient-text {
-    color: #fadde1;
+  html.theme-orange .cvg-gradient-text {
+    color: #c2410c;
   }
 }
 
@@ -167,8 +320,9 @@ html {
   color-scheme: light;
 }
 
-html.dark {
-  color-scheme: dark;
+html.theme-orange {
+  /* A light theme, so built-in controls stay light too. */
+  color-scheme: light;
 }
 
 body {
@@ -177,10 +331,8 @@ body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
 
-html.dark body {
-  /* Maroon page, near-white ink. `slate-50` rather than `slate-100`
-     because #A24857 is a mid-tone: the palette's own cream reaches only
-     4.3:1 on it and just misses AA, while the lightest step clears it. */
+html.theme-orange body {
+  /* Light-grey page, black ink. */
   @apply bg-navy-950 text-slate-50;
 }
 
@@ -287,8 +439,8 @@ html.dark body {
   }
 }
 
-/* Firefox renders a dark scrollbar only when told. */
-html.dark {
+/* Grey scrollbar to match the Orange theme. */
+html.theme-orange {
   scrollbar-color: theme('colors.slate.600') theme('colors.slate.900');
 }
 

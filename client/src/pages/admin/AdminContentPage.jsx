@@ -449,7 +449,7 @@ function KeywordInput({ id, keywords, onChange }) {
               type="button"
               onClick={() => onChange(keywords.filter((word) => word !== keyword))}
               aria-label={`Remove ${keyword}`}
-              className="grid h-4 w-4 place-items-center rounded-full text-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white"
+              className="grid h-4 w-4 place-items-center rounded-full text-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-slate-50"
             >
               ×
             </button>
@@ -549,11 +549,11 @@ function SeoFields({ draft, set, copy }) {
       {/* The preview, roughly as Google lays a result out. */}
       <div className="rounded-lg bg-slate-50 p-4 dark:bg-navy-800/60">
         <p className="text-xs text-slate-500 dark:text-slate-100">Preview</p>
-        <p className="mt-2 truncate text-xs text-emerald-700 dark:text-emerald-400">
+        <p className="mt-2 truncate text-xs text-emerald-700 dark:text-emerald-600">
           {window.location.origin}
           {copy.path(draft.slug || 'your-title')}
         </p>
-        <p className="truncate text-lg text-blue-700 dark:text-blue-400">{shownTitle}</p>
+        <p className="truncate text-lg text-blue-700 dark:text-fuchsia-400">{shownTitle}</p>
         <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-100">
           {shownDescription || 'No description yet.'}
         </p>
@@ -627,7 +627,7 @@ function RowAction({ onClick, danger, disabled, children }) {
       className={[
         'disabled:cursor-not-allowed disabled:opacity-50',
         danger
-          ? 'text-red-600 hover:underline dark:text-red-400'
+          ? 'text-red-600 hover:underline dark:text-red-600'
           : 'text-slate-600 hover:underline dark:text-slate-100',
       ].join(' ')}
     >

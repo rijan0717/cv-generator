@@ -106,7 +106,7 @@ export default function ContentPage({ kind = 'page' }) {
       {isPost && (
         <Link
           to="/blog"
-          className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+          className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
         >
           &larr; All posts
         </Link>

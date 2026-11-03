@@ -25,7 +25,7 @@ export default function ApprovalNotice({ message, detail }) {
     <div className="mx-auto max-w-xl px-4 py-16 text-center">
       <span
         aria-hidden="true"
-        className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-amber-50 text-amber-600 ring-1 ring-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:ring-amber-900"
+        className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-amber-50 text-amber-600 ring-1 ring-amber-200 dark:bg-amber-50 dark:text-amber-600 dark:ring-amber-100"
       >
         <svg
           className="h-6 w-6"

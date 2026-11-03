@@ -54,7 +54,7 @@ export default function HealthPage() {
             <dl className="mt-2 space-y-1 text-sm">
               <div className="flex justify-between">
                 <dt className="text-slate-500 dark:text-slate-100">Server</dt>
-                <dd className="font-medium text-emerald-600 dark:text-emerald-400">
+                <dd className="font-medium text-emerald-600 dark:text-emerald-600">
                   {health.status}
                 </dd>
               </div>
@@ -63,7 +63,7 @@ export default function HealthPage() {
                 <dd
                   className={
                     health.database === 'connected'
-                      ? 'font-medium text-emerald-600 dark:text-emerald-400'
+                      ? 'font-medium text-emerald-600 dark:text-emerald-600'
                       : 'font-medium text-amber-600'
                   }
                 >

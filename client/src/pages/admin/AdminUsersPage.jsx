@@ -236,7 +236,7 @@ export default function AdminUsersPage() {
                       </div>
                     )}
                     {user.openToWork && (
-                      <div className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                      <div className="text-xs font-medium text-emerald-700 dark:text-emerald-600">
                         Open to work
                       </div>
                     )}

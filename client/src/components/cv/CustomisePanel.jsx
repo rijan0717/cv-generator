@@ -346,7 +346,7 @@ export default function CustomisePanel({ cv, onChange }) {
                 <button
                   type="button"
                   onClick={() => toggleSection(key)}
-                  className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-white"
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-slate-50"
                 >
                   <span className="sr-only">
                     {isHidden ? `Add ${label} back to the CV` : `Remove ${label} from the CV`}

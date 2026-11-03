@@ -336,7 +336,7 @@ function SourceTab({ id, current, label, onSelect }) {
         'flex-1 rounded-md px-3 py-2 text-sm font-medium transition',
         isActive
           ? 'bg-white text-slate-900 shadow-sm dark:bg-navy-900 dark:text-slate-50'
-          : 'text-slate-600 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white',
+          : 'text-slate-600 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50',
       ].join(' ')}
     >
       {label}

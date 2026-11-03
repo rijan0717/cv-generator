@@ -38,7 +38,7 @@ function DiffRow({ before, after, width }) {
       </div>
       <p className="mt-2 text-[11px] leading-snug">
         <span className="text-slate-500 line-through dark:text-slate-100">{before}</span>{' '}
-        <span className="font-semibold text-brand-fuchsia dark:text-fuchsia-100">{after}</span>
+        <span className="font-semibold text-brand-fuchsia dark:text-fuchsia-400">{after}</span>
       </p>
     </div>
   );
@@ -53,7 +53,7 @@ export default function RewritePreview() {
               reads as a section mark and not as a second brand. */}
           <span
             aria-hidden="true"
-            className="grid h-12 w-12 place-items-center rounded-2xl border-2 border-brand-fuchsia/40 text-brand-fuchsia dark:border-fuchsia-400/40 dark:text-fuchsia-100"
+            className="grid h-12 w-12 place-items-center rounded-2xl border-2 border-brand-fuchsia/40 text-brand-fuchsia dark:border-fuchsia-400/40 dark:text-fuchsia-400"
           >
             <svg
               viewBox="0 0 24 24"
@@ -81,7 +81,7 @@ export default function RewritePreview() {
                   className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-500/20"
                 >
                   <svg
-                    className="h-3 w-3 text-brand-pink dark:text-fuchsia-100"
+                    className="h-3 w-3 text-brand-pink dark:text-fuchsia-400"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -109,7 +109,7 @@ export default function RewritePreview() {
             </Link>
             <Link
               to="/register"
-              className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
+              className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-slate-50"
             >
               I&apos;ll write it myself
             </Link>
@@ -118,7 +118,7 @@ export default function RewritePreview() {
           <p className="mt-7 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-100">
             <Link
               to="/blog"
-              className="underline underline-offset-2 hover:text-slate-900 dark:hover:text-white"
+              className="underline underline-offset-2 hover:text-slate-900 dark:hover:text-slate-50"
             >
               How the rewrite works
             </Link>
@@ -129,7 +129,7 @@ export default function RewritePreview() {
 
         {/* --- The diagram --- */}
         <Reveal delay={120}>
-          <div className="rounded-2xl bg-slate-100 p-3 ring-1 ring-slate-900/5 dark:bg-navy-800/60 dark:ring-white/10">
+          <div className="rounded-2xl bg-slate-100 p-3 ring-1 ring-slate-900/5 dark:bg-navy-800/60 dark:ring-black/5">
             {/* A window chrome, so the panel reads as a screen rather than
                 as a floating box. */}
             <div className="flex gap-1.5 px-2 py-2" aria-hidden="true">
@@ -143,7 +143,7 @@ export default function RewritePreview() {
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-navy-800">
                 <svg
                   viewBox="0 0 24 24"
-                  className="h-5 w-5 text-brand-fuchsia dark:text-fuchsia-100"
+                  className="h-5 w-5 text-brand-fuchsia dark:text-fuchsia-400"
                   fill="currentColor"
                   aria-hidden="true"
                 >

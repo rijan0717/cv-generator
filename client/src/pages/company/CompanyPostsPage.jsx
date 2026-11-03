@@ -127,7 +127,7 @@ export default function CompanyPostsPage() {
               <span
                 className={
                   job.status === 'open'
-                    ? 'rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                    ? 'rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700'
                     : 'rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-navy-800 dark:text-slate-100'
                 }
               >

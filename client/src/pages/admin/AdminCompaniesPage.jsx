@@ -203,12 +203,12 @@ function CompanyReviewCard({ company, onDecide }) {
             href={documentUrl(company._id)}
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg px-3 py-1.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-50 dark:text-indigo-300 dark:ring-indigo-900 dark:hover:bg-indigo-950"
+            className="rounded-lg px-3 py-1.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-50 dark:text-fuchsia-300 dark:ring-fuchsia-900 dark:hover:bg-fuchsia-950"
           >
             View registration document
           </a>
         ) : (
-          <span className="rounded-lg bg-amber-50 px-3 py-1.5 text-sm text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+          <span className="rounded-lg bg-amber-50 px-3 py-1.5 text-sm text-amber-700 dark:bg-amber-50 dark:text-amber-700">
             No document uploaded
           </span>
         )}
@@ -230,7 +230,7 @@ function CompanyReviewCard({ company, onDecide }) {
       )}
 
       {company.status === 'rejected' && company.rejectionReason && (
-        <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+        <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-50/40 dark:text-red-700">
           Rejected: “{company.rejectionReason}”
         </p>
       )}

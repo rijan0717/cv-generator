@@ -121,13 +121,13 @@ export default function JobCard({
         )}
 
         {closingSoon && (
-          <span className="rounded bg-amber-50 px-2 py-0.5 font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+          <span className="rounded bg-amber-50 px-2 py-0.5 font-medium text-amber-700 dark:bg-amber-50 dark:text-amber-700">
             Closes {new Date(job.closingDate).toLocaleDateString('en-GB')}
           </span>
         )}
 
         {job.hasApplied && (
-          <span className="rounded bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          <span className="rounded bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700">
             Applied
           </span>
         )}
@@ -208,13 +208,13 @@ function MatchBadge({ match }) {
  */
 function toneFor(score) {
   if (score >= 65) {
-    return 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900';
+    return 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-50 dark:text-emerald-700 dark:ring-emerald-100';
   }
   if (score >= 50) {
-    return 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-900';
+    return 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-50 dark:text-sky-700 dark:ring-sky-100';
   }
   if (score >= 30) {
-    return 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900';
+    return 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-50 dark:text-amber-700 dark:ring-amber-100';
   }
   return 'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-navy-800 dark:text-slate-100 dark:ring-navy-700';
 }

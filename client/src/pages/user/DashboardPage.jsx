@@ -330,10 +330,10 @@ function ScorePill({ score }) {
 
   const tone =
     value >= 75
-      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700'
       : value >= 50
-        ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-        : 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300';
+        ? 'bg-amber-50 text-amber-700 dark:bg-amber-50 dark:text-amber-700'
+        : 'bg-red-50 text-red-700 dark:bg-red-50 dark:text-red-700';
 
   return (
     <span
@@ -374,9 +374,9 @@ function MatchGrowthPill({ tailoredFor }) {
 
   const tone =
     difference > 0
-      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700'
       : difference < 0
-        ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+        ? 'bg-red-50 text-red-700 dark:bg-red-50 dark:text-red-700'
         : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100';
 
   return (
@@ -417,7 +417,7 @@ function PrimaryToggle({ cv, onToggle }) {
       className={[
         'flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium transition',
         cv.isPrimary
-          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+          ? 'bg-amber-50 text-amber-700 dark:bg-amber-50 dark:text-amber-700'
           : 'text-slate-500 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-navy-800',
       ].join(' ')}
     >

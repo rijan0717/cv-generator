@@ -118,14 +118,14 @@ export default function SearchPage() {
                   <button
                     type="button"
                     onClick={() => update({ type: 'all' })}
-                    className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-100"
+                    className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-400"
                   >
                     search everything
                   </button>
                 ) : (
                   <Link
                     to="/faq"
-                    className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-100"
+                    className="font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-400"
                   >
                     read the FAQ
                   </Link>

@@ -104,7 +104,7 @@ export default function FeaturePage() {
       <section className="relative overflow-hidden">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[30rem] bg-[radial-gradient(55%_55%_at_50%_30%,rgba(123,18,32,0.13),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[30rem] bg-[radial-gradient(55%_55%_at_50%_30%,rgb(var(--c-glow)/0.13),transparent_70%)]"
         />
 
         <div className={`${CONTAINER} py-14 text-center sm:py-20`}>
@@ -113,7 +113,7 @@ export default function FeaturePage() {
               <BrandSpark className="h-14 w-14 rounded-2xl" />
             </div>
 
-            <p className="mt-6 text-sm font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-100">
+            <p className="mt-6 text-sm font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-400">
               {feature.eyebrow}
             </p>
 
@@ -134,7 +134,7 @@ export default function FeaturePage() {
               </Link>
               <Link
                 to={feature.secondary.to}
-                className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
+                className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-slate-50"
               >
                 {feature.secondary.label}
               </Link>
@@ -216,7 +216,7 @@ export default function FeaturePage() {
                   to={`/features/${other.slug}`}
                   className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-[border-color,box-shadow] duration-300 hover:border-brand-violet hover:shadow-xl hover:shadow-brand-violet/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia dark:border-navy-700 dark:bg-navy-800"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-100">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-400">
                     {other.eyebrow}
                   </p>
                   <h3 className="mt-2 font-display text-lg font-bold text-slate-900 dark:text-slate-50">

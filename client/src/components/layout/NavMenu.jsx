@@ -71,8 +71,8 @@ export default function NavMenu({ label, items, footer }) {
           'flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold transition',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia',
           isOpen
-            ? 'text-brand-fuchsia dark:text-fuchsia-100'
-            : 'text-slate-700 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white',
+            ? 'text-brand-fuchsia dark:text-fuchsia-400'
+            : 'text-slate-700 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50',
         ].join(' ')}
       >
         {label}
@@ -103,7 +103,7 @@ export default function NavMenu({ label, items, footer }) {
           // The panel appearing at once is no worse, and it is correct.
           className="absolute left-0 top-full z-50 w-[22rem] pt-2"
         >
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-900/10 dark:border-navy-700 dark:bg-navy-900 dark:shadow-black/40">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-900/10 dark:border-navy-700 dark:bg-navy-900 dark:shadow-black/10">
             <ul>
               {items.map((item) => (
                 <li key={item.to}>
@@ -112,7 +112,7 @@ export default function NavMenu({ label, items, footer }) {
                     className="flex gap-3 rounded-xl p-3 transition hover:bg-slate-50 dark:hover:bg-navy-800"
                   >
                     <svg
-                      className="mt-0.5 h-5 w-5 shrink-0 text-brand-fuchsia dark:text-fuchsia-100"
+                      className="mt-0.5 h-5 w-5 shrink-0 text-brand-fuchsia dark:text-fuchsia-400"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"

@@ -386,7 +386,7 @@ function KeepDroppedCV({ cv }) {
         )}
 
         {isPrimary ? (
-          <span className="rounded-lg bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          <span className="rounded-lg bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700">
             Primary ✓
           </span>
         ) : (

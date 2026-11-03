@@ -54,7 +54,7 @@ export default function FaqPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
       <header className="text-center">
-        <p className="text-sm font-semibold text-brand-fuchsia dark:text-fuchsia-100">Help</p>
+        <p className="text-sm font-semibold text-brand-fuchsia dark:text-fuchsia-400">Help</p>
         <h1 className="mt-2 font-display text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">
           Frequently asked questions
         </h1>
@@ -96,7 +96,7 @@ export default function FaqPage() {
                     {/* A plus that turns into a cross when open. */}
                     <svg
                       viewBox="0 0 24 24"
-                      className="mt-0.5 h-5 w-5 shrink-0 text-brand-fuchsia transition-transform duration-200 group-open:rotate-45 dark:text-fuchsia-100"
+                      className="mt-0.5 h-5 w-5 shrink-0 text-brand-fuchsia transition-transform duration-200 group-open:rotate-45 dark:text-fuchsia-400"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"

@@ -305,7 +305,7 @@ function PersonCard({ person }) {
       </div>
 
       {profile.openToWork && (
-        <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-fuchsia-100 px-2.5 py-1 text-xs font-semibold text-brand-violet dark:bg-fuchsia-200 dark:text-fuchsia-100">
+        <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-fuchsia-100 px-2.5 py-1 text-xs font-semibold text-brand-violet dark:bg-fuchsia-500/15 dark:text-fuchsia-400">
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-brand-violet" />
           Open to work
         </span>
@@ -390,7 +390,7 @@ function PeopleLocked({ reason }) {
         </Link>
         <Link
           to="/features/find-candidates"
-          className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-white"
+          className="text-sm font-medium text-slate-600 underline-offset-4 hover:text-slate-900 hover:underline dark:text-slate-100 dark:hover:text-slate-50"
         >
           How the directory works
         </Link>
@@ -417,7 +417,7 @@ function ServiceCard({ service }) {
         </svg>
       </span>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-100">
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-brand-fuchsia dark:text-fuchsia-400">
         {service.tagline}
       </p>
       <h3 className="mt-1 font-display text-xl font-bold text-slate-900 dark:text-slate-50">
@@ -450,7 +450,7 @@ function Empty({ message, onClear }) {
         <button
           type="button"
           onClick={onClear}
-          className="mt-3 text-sm font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-100"
+          className="mt-3 text-sm font-semibold text-brand-fuchsia hover:underline dark:text-fuchsia-400"
         >
           Clear the search
         </button>
@@ -638,7 +638,7 @@ export default function DiscoverTabs() {
                   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fuchsia',
                   isActive
                     ? 'text-slate-900 dark:text-slate-50'
-                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white',
+                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50',
                 ].join(' ')}
               >
                 {/* The selected background is one element that moves

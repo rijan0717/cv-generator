@@ -149,7 +149,7 @@ export default function InterviewExamPage() {
             className={[
               'rounded-full px-3 py-1 text-sm font-medium tabular-nums',
               secondsLeft <= 60
-                ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+                ? 'bg-red-50 text-red-700 dark:bg-red-50 dark:text-red-700'
                 : 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
             ].join(' ')}
             role="timer"
@@ -290,8 +290,8 @@ function ExamResult({ result }) {
         className={[
           'mt-2 rounded-xl p-6 text-center ring-1',
           result.passed
-            ? 'bg-emerald-50 ring-emerald-200 dark:bg-emerald-950 dark:ring-emerald-800'
-            : 'bg-amber-50 ring-amber-200 dark:bg-amber-950 dark:ring-amber-800',
+            ? 'bg-emerald-50 ring-emerald-200 dark:bg-emerald-50 dark:ring-emerald-200'
+            : 'bg-amber-50 ring-amber-200 dark:bg-amber-50 dark:ring-amber-200',
         ].join(' ')}
       >
         <p className="text-sm text-slate-600 dark:text-slate-100">
@@ -355,7 +355,7 @@ function ExamResult({ result }) {
               'rounded-xl bg-white p-4 shadow-sm ring-1 dark:bg-navy-900',
               question.isCorrect
                 ? 'ring-slate-200 dark:ring-navy-700'
-                : 'ring-amber-300 dark:ring-amber-800',
+                : 'ring-amber-300 dark:ring-amber-200',
             ].join(' ')}
           >
             <p className="font-medium text-slate-900 dark:text-slate-50">
@@ -372,9 +372,9 @@ function ExamResult({ result }) {
                     key={index}
                     className={
                       isCorrect
-                        ? 'font-medium text-emerald-700 dark:text-emerald-400'
+                        ? 'font-medium text-emerald-700 dark:text-emerald-600'
                         : isChosen
-                          ? 'text-red-600 line-through dark:text-red-400'
+                          ? 'text-red-600 line-through dark:text-red-600'
                           : 'text-slate-600 dark:text-slate-100'
                     }
                   >

@@ -87,7 +87,7 @@ export default function TalentDetailPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <Link
         to="/talent"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
       >
         &larr; Directory
       </Link>
@@ -95,9 +95,9 @@ export default function TalentDetailPage() {
       {/* The availability banner sits above everything: whether somebody
           can be approached decides whether the rest is worth reading. */}
       {profile.openToWork && (
-        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 ring-1 ring-emerald-200 dark:bg-emerald-950 dark:ring-emerald-900">
+        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 ring-1 ring-emerald-200 dark:bg-emerald-50 dark:ring-emerald-100">
           <OpenToWorkBadge size="lg" />
-          <p className="text-sm text-emerald-800 dark:text-emerald-200">
+          <p className="text-sm text-emerald-800 dark:text-emerald-800">
             {person.name.split(' ')[0]} is open to new opportunities.
           </p>
         </div>

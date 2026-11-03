@@ -1,11 +1,23 @@
+/**
+ * A colour read from a CSS variable, so the same class can take a different
+ * value in each theme. The variables hold space-separated RGB channels and
+ * live in `src/index.css` (`:root` for light, `html.dark` for dark);
+ * `<alpha-value>` keeps opacity modifiers such as `bg-navy-800/60` working.
+ * @param {string} name - The variable, without the `--c-` prefix.
+ * @returns {string}
+ */
+const v = (name) => `rgb(var(--c-${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
 
-  // Dark mode is driven by a `dark` class on <html>, not by the media query
-  // alone. That is what lets the user override their operating system
-  // setting with the toggle in the navigation bar.
-  darkMode: 'class',
+  // The second theme. Tailwind calls its variant `dark:`, and the name is
+  // kept so the existing classes keep working, but the theme it switches
+  // on is now **Orange** — light grey, white, black and orange — set by a
+  // `theme-orange` class on <html> from ThemeContext. The colour values
+  // for it are in `src/index.css`.
+  darkMode: ['selector', '.theme-orange'],
 
   theme: {
     extend: {
@@ -50,20 +62,20 @@ export default {
          * and nothing uses 400 against maroon.
          */
         slate: {
-          50: '#faf4e8', // the page in light mode; primary ink in dark
+          50: v('slate-50'), // the page in light mode; primary ink in dark
           // The off-white of the palette. Nudged up from #eddcbe so it
           // clears 4.5:1 as secondary ink on the maroon page, where the
           // original landed on 4.3:1 and just missed.
-          100: '#f2e5ce',
-          200: '#dcc6a2',
-          300: '#d8bb94',
-          400: '#7e5f3e', // light-mode muted text: dark enough to clear 4.5:1 on cream
-          500: '#8a6646',
-          600: '#6e4433',
-          700: '#5a2a26',
-          800: '#4a1317',
-          900: '#4a0509', // the wine of the palette
-          950: '#35050a',
+          100: v('slate-100'),
+          200: v('slate-200'),
+          300: v('slate-300'),
+          400: v('slate-400'), // light-mode muted text: dark enough to clear 4.5:1 on cream
+          500: v('slate-500'),
+          600: v('slate-600'),
+          700: v('slate-700'),
+          800: v('slate-800'),
+          900: v('slate-900'), // the wine of the palette
+          950: v('slate-950'),
         },
 
         /**
@@ -80,31 +92,20 @@ export default {
         white: '#fcf8f0',
 
         /**
-         * The dark theme's surfaces: light maroon.
+         * The dark theme's surfaces: near-black, from the page up to a
+         * raised panel, with a mid-grey for borders. Still called `navy`
+         * from an earlier palette; renaming it would touch every
+         * `dark:bg-navy-900` for no change in behaviour.
          *
-         * Still called `navy` from the palette this replaced. The name is
-         * wrong and the values are right; renaming it would mean touching
-         * every `dark:bg-navy-900` in the codebase for no behaviour
-         * change.
-         *
-         * **The page is a mid-tone, and that constrains the text.**
-         * #A24857 has a relative luminance of 0.13 — too light for a
-         * comfortable dark theme, too dark for a light one. Only near-
-         * white ink clears 4.5:1 on it (the palette's own cream reaches
-         * 4.3:1 and just misses), so the dark theme's text hierarchy is
-         * compressed into the top of the ramp: `slate-50` for primary,
-         * `slate-100` for secondary, and little room between them.
-         *
-         * Cards therefore go *darker* than the page rather than lighter,
-         * which is the opposite of the usual dark-theme direction. On a
-         * mid-tone background that is where the contrast headroom is: a
-         * darker card gives the light text on it more room, not less.
+         * Every ramp below reads its values from CSS variables (see `v`
+         * above and `src/index.css`). The light theme keeps the wine and
+         * cream values; the dark theme swaps in black, grey and orange.
          */
         navy: {
-          950: '#a24857', // the page
-          900: '#8d3b49', // a card or the header
-          800: '#7a3140', // a raised panel
-          700: '#c06e7b', // borders and dividers, lighter so they read
+          950: v('navy-950'), // the page
+          900: v('navy-900'), // a card or the header
+          800: v('navy-800'), // a raised panel
+          700: v('navy-700'), // borders and dividers, lighter so they read
         },
 
         /**
@@ -116,9 +117,9 @@ export default {
          * the values moved with the palette.
          */
         brand: {
-          violet: '#7b1220',
-          fuchsia: '#a32638',
-          pink: '#c65a6b',
+          violet: v('brand-violet'),
+          fuchsia: v('brand-fuchsia'),
+          pink: v('brand-pink'),
         },
 
         /**
@@ -137,35 +138,35 @@ export default {
          * is nearly all of what `fuchsia` is used for.
          */
         violet: {
-          50: '#fbf0f1',
-          100: '#f6dcdf',
-          200: '#ecbcc2',
-          300: '#dd94a0',
-          400: '#c76c7e',
-          500: '#a32638',
-          600: '#8e1a28',
-          700: '#7b1220',
-          800: '#640d1a',
-          900: '#4a0509',
-          950: '#35050a',
+          50: v('violet-50'),
+          100: v('violet-100'),
+          200: v('violet-200'),
+          300: v('violet-300'),
+          400: v('violet-400'),
+          500: v('violet-500'),
+          600: v('violet-600'),
+          700: v('violet-700'),
+          800: v('violet-800'),
+          900: v('violet-900'),
+          950: v('violet-950'),
         },
 
         fuchsia: {
-          50: '#fdf0f2',
-          100: '#fadde1',
-          200: '#f2bec6',
-          300: '#e59ba7',
+          50: v('fuchsia-50'),
+          100: v('fuchsia-100'),
+          200: v('fuchsia-200'),
+          300: v('fuchsia-300'),
           // Used only as `dark:text-fuchsia-400`, never in light mode, so
           // it is tuned purely for legibility on the wine surfaces. It was
           // one step darker and landed on exactly 4.5:1 once the dark page
           // was lightened; this clears it with room to spare.
-          400: '#e49aa6',
-          500: '#c65a6b',
-          600: '#ad3d50',
-          700: '#8e2639',
-          800: '#731c2b',
-          900: '#4a0509',
-          950: '#35050a',
+          400: v('fuchsia-400'),
+          500: v('fuchsia-500'),
+          600: v('fuchsia-600'),
+          700: v('fuchsia-700'),
+          800: v('fuchsia-800'),
+          900: v('fuchsia-900'),
+          950: v('fuchsia-950'),
         },
       },
 

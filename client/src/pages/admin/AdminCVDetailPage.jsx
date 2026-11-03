@@ -93,7 +93,7 @@ export default function AdminCVDetailPage() {
     <div>
       <Link
         to="/admin/cvs"
-        className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-white"
+        className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-slate-50"
       >
         &larr; All CVs
       </Link>

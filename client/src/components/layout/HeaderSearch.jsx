@@ -243,7 +243,7 @@ export default function HeaderSearch({ autoFocus = false, onDone, className = ''
                 event.preventDefault();
                 openResultsPage();
               }}
-              className="mt-1 w-full rounded-xl border-t border-slate-100 px-3 py-2.5 text-left text-sm font-semibold text-brand-fuchsia hover:bg-slate-50 dark:border-navy-700 dark:text-fuchsia-100 dark:hover:bg-navy-900"
+              className="mt-1 w-full rounded-xl border-t border-slate-100 px-3 py-2.5 text-left text-sm font-semibold text-brand-fuchsia hover:bg-slate-50 dark:border-navy-700 dark:text-fuchsia-400 dark:hover:bg-navy-900"
             >
               See all results for “{query.trim()}” →
             </button>

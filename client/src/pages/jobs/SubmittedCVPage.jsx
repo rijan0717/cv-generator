@@ -17,7 +17,7 @@ export default function SubmittedCVPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <Link
         to="/applications"
-        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+        className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
       >
         &larr; My applications
       </Link>

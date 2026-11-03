@@ -128,7 +128,7 @@ export default function Layout() {
                 aria-label={isCollapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
                 aria-expanded={!isCollapsed}
                 title={isCollapsed ? 'Expand' : 'Collapse'}
-                className="absolute -right-3 top-3 z-10 grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:border-slate-600 dark:bg-navy-800 dark:text-slate-100 dark:hover:text-white"
+                className="absolute -right-3 top-3 z-10 grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:border-slate-600 dark:bg-navy-800 dark:text-slate-100 dark:hover:text-slate-50"
               >
                 <svg
                   className={`h-3.5 w-3.5 transition-transform duration-200 ${

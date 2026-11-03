@@ -189,7 +189,7 @@ export default function CVEditorPage() {
         <div className="min-w-0">
           <Link
             to="/cvs"
-            className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-white"
+            className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-slate-50"
           >
             &larr; My CVs
           </Link>
@@ -342,8 +342,8 @@ function SaveStatus({ status }) {
   const colours = {
     idle: 'text-slate-500 dark:text-slate-100',
     saving: 'text-slate-500 dark:text-slate-100',
-    saved: 'text-emerald-600 dark:text-emerald-400',
-    error: 'text-red-600 dark:text-red-400',
+    saved: 'text-emerald-600 dark:text-emerald-600',
+    error: 'text-red-600 dark:text-red-600',
   };
 
   return (
@@ -364,7 +364,7 @@ function SampleNotice({ leftovers, onClear }) {
   if (leftovers.length === 0) return null;
 
   return (
-    <div className="mb-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-900">
+    <div className="mb-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200 dark:bg-amber-50/40 dark:text-amber-800 dark:ring-amber-100">
       <p className="font-medium">This CV still has example text in it.</p>
       <p className="mt-1">
         Replace it with your own, section by section:{' '}

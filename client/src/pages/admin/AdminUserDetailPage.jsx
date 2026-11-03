@@ -75,7 +75,7 @@ export default function AdminUserDetailPage() {
     <div>
       <Link
         to="/admin/users"
-        className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-white"
+        className="text-sm text-slate-500 dark:text-slate-100 hover:text-slate-900 dark:hover:text-slate-50"
       >
         &larr; All users
       </Link>
@@ -110,7 +110,7 @@ export default function AdminUserDetailPage() {
             {user.role !== 'admin' && (
               <Link
                 to={`/talent/${user._id ?? user.id}`}
-                className="text-sm text-slate-500 underline hover:text-slate-900 dark:text-slate-100 dark:hover:text-white"
+                className="text-sm text-slate-500 underline hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
               >
                 View profile
               </Link>

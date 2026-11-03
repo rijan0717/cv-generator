@@ -189,7 +189,7 @@ export default function SeekerDashboardPage() {
               employer browsing the directory only ever sees the primary
               CV, and a candidate with none shows up with nothing. */}
           {!primary && data.cvTotal > 0 && (
-            <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+            <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-50/40 dark:text-amber-800">
               No CV is marked as primary, so employers browsing candidates see none of your work.
               Set one on the{' '}
               <Link to="/cvs" className="underline">

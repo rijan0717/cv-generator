@@ -71,8 +71,8 @@ function Item({ to, icon, label, end, isCollapsed, onNavigate }) {
           'relative flex items-center rounded-md py-2 text-sm font-medium transition',
           isCollapsed ? 'justify-center px-0' : 'gap-3 px-3',
           isActive
-            ? 'bg-blue-50 text-blue-800 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-600 dark:bg-blue-950/50 dark:text-blue-200 dark:before:bg-blue-400'
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-white',
+            ? 'bg-blue-50 text-blue-800 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-blue-600 dark:bg-fuchsia-950/50 dark:text-fuchsia-200 dark:before:bg-fuchsia-400'
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-slate-50',
         ].join(' ')
       }
     >

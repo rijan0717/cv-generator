@@ -179,7 +179,7 @@ export default function CompanyForm({ company, onSaved }) {
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           onChange={(e) => setDocumentFile(e.target.files?.[0] ?? null)}
-          className="mt-1 block w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200 dark:text-slate-100 dark:file:bg-navy-800 dark:file:text-slate-200"
+          className="mt-1 block w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-slate-200 dark:text-slate-100 dark:file:bg-navy-800 dark:file:text-slate-50"
         />
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-100">
           {company?.hasDocument ? (

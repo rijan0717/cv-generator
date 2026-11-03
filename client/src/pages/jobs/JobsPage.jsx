@@ -406,7 +406,7 @@ export default function JobsPage() {
               <button
                 type="button"
                 onClick={() => setMatch('')}
-                className="font-medium underline hover:text-slate-900 dark:hover:text-white"
+                className="font-medium underline hover:text-slate-900 dark:hover:text-slate-50"
               >
                 Clear the match filter
               </button>{' '}

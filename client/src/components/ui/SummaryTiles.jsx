@@ -24,7 +24,7 @@ export default function SummaryTiles({ items }) {
               {item.to && (
                 <span
                   aria-hidden="true"
-                  className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-slate-600 dark:group-hover:text-blue-400"
+                  className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-slate-600 dark:group-hover:text-fuchsia-400"
                 >
                   &rarr;
                 </span>
