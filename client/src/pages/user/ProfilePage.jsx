@@ -8,11 +8,12 @@ import OpenToWorkBadge from '../../components/talent/OpenToWorkBadge.jsx';
 import { INDUSTRIES, EMPLOYMENT_TYPES } from '../../constants/industries.js';
 
 /**
- * Profile page: change the display name, the avatar, the password, and —
- * for a job seeker — the profile employers see in the candidate directory.
+ * Profile page: change the display name, the avatar, and — for a job
+ * seeker — the profile employers see in the candidate directory.
  *
  * Each concern is a separate form with its own message, so a failure in
- * one does not clear the others.
+ * one does not clear the others. The password lives on the settings
+ * page instead, so there is only ever one place to change it.
  */
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -33,7 +34,6 @@ export default function ProfilePage() {
         <AvatarSection user={user} setUser={setUser} />
         <DetailsSection user={user} setUser={setUser} />
         {isJobSeeker && <JobSeekerProfileSection user={user} setUser={setUser} />}
-        <PasswordSection />
       </div>
     </div>
   );
@@ -367,113 +367,6 @@ function JobSeekerProfileSection({ user, setUser }) {
 
         <Button type="submit" isLoading={isSaving}>
           {isSaving ? 'Saving' : 'Save candidate profile'}
-        </Button>
-      </form>
-    </section>
-  );
-}
-
-/**
- * Password change. The current password is required, except for an account
- * made with Google sign-in that has none yet: it sets its first password
- * here, after which it can log in either way.
- */
-function PasswordSection() {
-  const { user, setUser } = useAuth();
-  const hasPassword = user?.hasPassword !== false;
-  const [form, setForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
-  const toast = useToast();
-  const [isSaving, setIsSaving] = useState(false);
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setForm((previous) => ({ ...previous, [name]: value }));
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    if (
-      form.newPassword.length < 8 ||
-      !/[A-Za-z]/.test(form.newPassword) ||
-      !/[0-9]/.test(form.newPassword)
-    ) {
-      toast.error('New password must be at least 8 characters and contain a letter and a number');
-      return;
-    }
-
-    if (form.newPassword !== form.confirmPassword) {
-      toast.error('The new passwords do not match');
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      await authApi.changePassword({
-        currentPassword: form.currentPassword,
-        newPassword: form.newPassword,
-      });
-      setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      toast.success(hasPassword ? 'Your password has been changed' : 'Your password has been set');
-      if (!hasPassword) setUser({ ...user, hasPassword: true });
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  return (
-    <section className="rounded-xl bg-white dark:bg-navy-900 p-6 shadow-sm ring-1 ring-slate-200 dark:ring-navy-700">
-      <h2 className="font-semibold text-slate-900 dark:text-slate-50">
-        {hasPassword ? 'Change password' : 'Set a password'}
-      </h2>
-      {!hasPassword && (
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
-          You signed up with Google. Set a password to also log in with your email address.
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
-        {hasPassword && (
-          <TextField
-            label="Current password"
-            type="password"
-            name="currentPassword"
-            value={form.currentPassword}
-            onChange={handleChange}
-            autoComplete="current-password"
-            required
-          />
-        )}
-
-        <TextField
-          label="New password"
-          type="password"
-          name="newPassword"
-          value={form.newPassword}
-          onChange={handleChange}
-          hint="At least 8 characters, with a letter and a number"
-          autoComplete="new-password"
-          required
-        />
-
-        <TextField
-          label="Confirm new password"
-          type="password"
-          name="confirmPassword"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          autoComplete="new-password"
-          required
-        />
-
-        <Button type="submit" isLoading={isSaving}>
-          {isSaving ? 'Saving' : hasPassword ? 'Change password' : 'Set password'}
         </Button>
       </form>
     </section>
