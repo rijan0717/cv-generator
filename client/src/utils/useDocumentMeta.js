@@ -4,6 +4,14 @@ import { useEffect } from 'react';
 const SITE_NAME = 'SmartCV';
 
 /**
+ * What the tab says when a page passes no title of its own (the home
+ * page). The name on its own does not tell a first-time visitor what
+ * the site is for, so the descriptive form is used there, and in
+ * `index.html` for the first paint before React runs.
+ */
+const SITE_TITLE = 'Smart CV Generator';
+
+/**
  * Finds or creates one meta tag, and sets its content.
  *
  * Tags this hook created are marked, so the cleanup can remove exactly
@@ -80,7 +88,7 @@ export function useDocumentMeta(meta) {
   useEffect(() => {
     const previousTitle = document.title;
 
-    const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+    const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_TITLE;
     document.title = fullTitle;
 
     const url = canonicalPath
@@ -102,7 +110,7 @@ export function useDocumentMeta(meta) {
 
     // Open Graph, which LinkedIn, Facebook and WhatsApp read, and
     // Twitter's own set, which it prefers over Open Graph.
-    setTag('meta[property="og:title"]', { property: 'og:title' }, title ?? SITE_NAME);
+    setTag('meta[property="og:title"]', { property: 'og:title' }, title ?? SITE_TITLE);
     setTag('meta[property="og:description"]', { property: 'og:description' }, description ?? '');
     setTag('meta[property="og:type"]', { property: 'og:type' }, type);
     setTag('meta[property="og:url"]', { property: 'og:url' }, url);
