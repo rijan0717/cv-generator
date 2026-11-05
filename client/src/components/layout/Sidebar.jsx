@@ -31,6 +31,10 @@ const ICONS = {
   questions: 'M3 6l2 2 3-3 M3 13l2 2 3-3 M11 7h10 M11 14h10 M11 20h10 M4 20h2',
   blog: 'M4 4h13v16H6a2 2 0 0 1-2-2z M17 8h3v10a2 2 0 0 1-2 2 M8 8h5 M8 12h5 M8 16h5',
   applications: 'M4 4h16v16H4z M8 9h8M8 13h8M8 17h4',
+  // An envelope for the mailbox, and a written page for the letter, so
+  // the two Gmail entries do not read as the same thing twice.
+  mail: 'M3 6h18v12H3z M3 7l9 6 9-6',
+  letter: 'M6 2h9l4 4v16H6z M14 2v5h5 M9 12h7M9 16h5',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
   settings:
     'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.4-1-2 3.4L6 11a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6a7 7 0 0 0 .1-1z',
@@ -206,6 +210,22 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             to="/applications"
             icon="applications"
             label="Applications"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          {/* Writing the letter, then the mailbox it lands in — in that
+              order, because one leads to the other. */}
+          <Item
+            to="/cover-letter"
+            icon="letter"
+            label="Cover letter"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/mail"
+            icon="mail"
+            label="Mail"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />

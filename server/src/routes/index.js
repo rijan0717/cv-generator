@@ -18,6 +18,8 @@ import templateRoutes from './template.routes.js';
 import contentRoutes from './content.routes.js';
 import interviewRoutes from './interview.routes.js';
 import searchRoutes from './search.routes.js';
+import gmailRoutes from './gmail.routes.js';
+import coverLetterRoutes from './coverLetter.routes.js';
 import publicRewriteRoutes from './publicRewrite.routes.js';
 
 const router = Router();
@@ -36,6 +38,8 @@ router.use('/templates', templateRoutes);
 router.use('/content', contentRoutes);
 router.use('/interview', interviewRoutes);
 router.use('/search', searchRoutes);
+router.use('/gmail', gmailRoutes);
+router.use('/cover-letters', coverLetterRoutes);
 
 // The public rewrite funnel. Mounted under /public so the one part of
 // the API that takes no session is obvious from the path.

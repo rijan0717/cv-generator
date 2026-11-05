@@ -580,3 +580,169 @@ chosen from what is actually missing rather than as generic advice.
 
 In practice a one-role CV in the Modern template goes from about 48% of a page
 to about 61%. The remaining gap is content, and only the user has it.
+
+## 4. Cover Letter Composer
+
+Files: `server/src/algorithms/coverLetterComposer.js`.
+Wording and thresholds: `server/src/config/coverLetterConfig.js`.
+
+### 4.1 Purpose
+
+Given one CV, a company name and optionally a job advert, produce a **cover
+letter** that could be read by that employer, together with the facts it drew
+on and a list of what it could not evidence.
+
+**Input:** a CV document, `{ companyName, jobTitle?, jobDescription?,
+recipientName? }`, and the adverts already analysed in the system (which join
+the TF-IDF corpus).
+**Output:** `{ subject, body, usedFacts, notes[] }`.
+
+### 4.2 The constraint, again
+
+The same rule as the rewrite, and for the same reason: there is no language
+model, so the module must not appear to write English of its own. Every
+sentence in the finished letter is one of exactly two things:
+
+1. a fact copied out of the CV, or
+2. a fixed connective from `coverLetterConfig.js`.
+
+There is no third category. A reader asking "which words did the program
+choose?" in the viva can be shown the config file in full — it is the complete
+vocabulary of the module.
+
+Where a fact is missing, the sentence that needed it is **dropped** and a note
+is returned saying so. The composer never fills a gap. That is why several
+skeletons come in pairs:
+
+| Skeleton            | Used when                             | Falls back to                            |
+| ------------------- | ------------------------------------- | ---------------------------------------- |
+| `opening.withTitle` | A job title was given                 | `withoutTitle` — interest in the company |
+| `opening.standing`  | The CV has a headline and dated roles | `standingNoYears`, then nothing          |
+| `evidence.lead`     | There is a most-recent employer       | `leadNoEmployer`, then `projectLead`     |
+| `fit.withAdvert`    | CV skills and advert skills overlap   | `withoutAdvert` — the strongest skills   |
+
+The rule is "first variant whose placeholders can all be filled", implemented
+by `fill()` returning `null` the moment any placeholder is empty.
+
+### 4.3 The five steps
+
+```
+composeCoverLetter(cv, { companyName, jobTitle, jobDescription, recipientName }):
+  1. facts   <- gatherFacts(cv)
+  2. profile <- jobDescription ? buildJobProfile(jobDescription, corpus) : null
+  3. paragraphs:
+       opening  <- fill(opening skeleton, { jobTitle, company, headline, years })
+       evidence <- rank candidate lines, take top 2, phrase as "I <clause>"
+       fit      <- matched skills, or strongest skills when no advert
+       close    <- standard, or brief when the letter already runs long
+  4. subject  <- first subject skeleton that fits
+     body     <- greeting + paragraphs + sign-off + name
+  5. notes    <- everything that could not be evidenced
+  return { subject, body, usedFacts, notes }
+```
+
+Steps 1 and 2 reuse modules that already exist rather than reimplementing
+them: `yearsOfExperience`, `buildJobProfile` and `relevanceOf` from
+`cvTailor.js`, `hasQuantifiedResult` from `cvStrengthScorer.js`,
+`polishSentence` from `phraseRewriter.js`, and `findSkills` from the skills
+dictionary. The composer adds the letter structure and nothing else.
+
+### 4.4 Which evidence leads
+
+Candidate lines are the achievements of the most recent role, followed by the
+sentences of its description, filtered to those between 25 and 320 characters.
+They are then ordered:
+
+```
+sort by:  quantified (a number present)   descending
+then:     relevance to the advert          descending
+then:     the user's own order             ascending
+```
+
+**Quantified wins outright, before relevance.** This was changed during
+development: ranking by relevance first produced letters that led with a
+restated job description — a line stuffed with the advert's vocabulary but
+saying nothing — while the "cut fulfilment time by 35%" bullet fell to third
+and was cut. A number is the one claim in a cover letter a reader cannot
+argue with, and no amount of vocabulary overlap outweighs it.
+
+### 4.5 What it will not claim
+
+`matchedSkills` returns only skills that appear in **both** the CV and the
+advert, reported in the CV's spelling because that is the user's own word for
+it. `skillGaps` returns the opposite — skills the advert asks for that the CV
+does not list — and that list **never enters the letter**. It is returned in
+`notes` as advice:
+
+> The advert also asks for Python, which your CV does not list. If you have
+> that experience, add it to your Skills section — the letter will not claim
+> it for you.
+
+This is the single most important line in the module. The temptation in a
+cover letter generator is to write the skill the employer asked for; doing so
+would make the application a lie that the candidate has to defend at
+interview.
+
+### 4.6 Worked example
+
+A CV with one current role at Himalaya Logistics, a headline of "Operations
+Manager", four years of dated experience, the skills Excel (Expert), SQL
+(Advanced), Logistics and Power BI, and the achievement "Cut average
+fulfilment time by 35% across three regional sites". The advert asks for
+Excel, SQL and Python.
+
+| Step | Result                                                                                                                                                          |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | `years = 4`, skills ordered Excel, SQL, Logistics, Power BI                                                                                                     |
+| 2    | Advert profile built; Python detected as asked for                                                                                                              |
+| 3a   | Opening: title and company fit → "apply for the Operations Manager position at Sagarmatha Supply", plus "I am an Operations Manager with 4 years of experience" |
+| 3b   | Evidence: the 35% line is quantified so it leads; the description sentence follows                                                                              |
+| 3c   | Fit: Excel and SQL overlap → `withAdvert`; Power BI is dropped as it is not asked for                                                                           |
+| 3d   | Close: standard, the letter is not yet long                                                                                                                     |
+| 4    | Subject: "Application for Operations Manager — Rijan Pariyar"                                                                                                   |
+| 5    | Notes: the Python gap; the letter is shorter than typical                                                                                                       |
+
+Produced letter:
+
+```
+Dear Hiring Manager,
+
+I am writing to apply for the Operations Manager position at Sagarmatha
+Supply. I am an Operations Manager with 4 years of experience.
+
+In my most recent role as Operations Manager at Himalaya Logistics, I cut
+average fulfilment time by 35% across three regional sites. I also ran the
+fulfilment desk across three sites.
+
+The advert calls for Excel and SQL, and these are areas I work in directly.
+
+I would welcome the chance to discuss how my experience could support your
+team. My CV is attached, and I am happy to supply any further detail you need.
+
+Kind regards,
+Rijan Pariyar
+```
+
+Every noun in it — the employer, the role, the figure, the skills, the name —
+is on the CV. Every other word is in the config file.
+
+### 4.7 Flowchart
+
+```mermaid
+flowchart TD
+    A[CV + company name] --> B[gatherFacts]
+    C{Advert pasted?} -->|yes| D[buildJobProfile: TF-IDF over seeds + history]
+    C -->|no| E[No profile: note the letter will be generic]
+    B --> C
+    D --> F[Rank evidence: quantified, then relevance]
+    E --> F
+    F --> G[Fill four skeletons, first variant that fits]
+    D --> H[matchedSkills: CV ∩ advert]
+    H --> G
+    D --> I[skillGaps: advert − CV]
+    I --> J[notes, never the letter]
+    G --> K[Subject + greeting + sign-off]
+    K --> L[Check length, add notes]
+    J --> L
+    L --> M[subject, body, usedFacts, notes]
+```

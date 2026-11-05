@@ -30,6 +30,14 @@ export const ACTIVITY_ACTIONS = [
   'TALENT_VIEW',
   // A candidate submitted an interview exam.
   'EXAM_SUBMIT',
+  // A user granted, or withdrew, permission for the app to compose mail as
+  // them. Access to someone's mailbox is worth an audit trail of its own.
+  'GMAIL_CONNECT',
+  'GMAIL_DISCONNECT',
+  // A letter was written into the user's mailbox, or actually sent. The
+  // recipient and the CV are recorded; the letter itself never is.
+  'GMAIL_DRAFT',
+  'GMAIL_SEND',
   'ADMIN_ACTION',
 ];
 
