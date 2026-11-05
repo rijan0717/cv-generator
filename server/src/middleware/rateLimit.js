@@ -93,3 +93,32 @@ export const publicRewriteLimiter = isTest
           'Create a free account to carry on without the limit.',
       },
     });
+
+/**
+ * Limits mail operations to 20 per hour per account.
+ *
+ * Unlike the others this one guards something that leaves the building.
+ * A draft is harmless, but `/gmail/send` puts a real email in a real
+ * stranger's inbox under the user's own name, and a loop that got loose
+ * would spend their reputation rather than our CPU. Twenty is far above
+ * what a person applying for jobs needs in an hour and far below what
+ * would embarrass them.
+ *
+ * Keyed by user rather than IP: these routes require a session, and two
+ * flatmates applying for jobs over one connection should not throttle
+ * each other.
+ */
+export const gmailMailLimiter = isTest
+  ? passThrough
+  : rateLimit({
+      windowMs: 60 * 60 * 1000,
+      limit: 20,
+      standardHeaders: 'draft-7',
+      legacyHeaders: false,
+      keyGenerator: (req) => String(req.user?._id ?? req.ip),
+      message: {
+        success: false,
+        data: null,
+        message: 'That is as many emails as we can handle in an hour. Please try again later.',
+      },
+    });

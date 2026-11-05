@@ -5,6 +5,7 @@ import * as authApi from '../../api/auth.js';
 import Button from '../../components/ui/Button.jsx';
 import TextField from '../../components/ui/TextField.jsx';
 import OpenToWorkBadge from '../../components/talent/OpenToWorkBadge.jsx';
+import ConnectedAccountsSection from '../../components/profile/ConnectedAccountsSection.jsx';
 import { INDUSTRIES, EMPLOYMENT_TYPES } from '../../constants/industries.js';
 
 /**
@@ -34,6 +35,7 @@ export default function ProfilePage() {
         <AvatarSection user={user} setUser={setUser} />
         <DetailsSection user={user} setUser={setUser} />
         {isJobSeeker && <JobSeekerProfileSection user={user} setUser={setUser} />}
+        <ConnectedAccountsSection user={user} />
       </div>
     </div>
   );

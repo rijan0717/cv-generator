@@ -936,3 +936,103 @@ bottom-right corner instead of a coloured box somewhere in the page.
   pauses would be unbearable; a failed autosave still raises one.
 - `print:hidden` on the viewport, so a toast can never appear in a printed
   page or in a PDF rendered through the print route.
+
+## Feature 13 — Gmail: connecting, composing, drafting and sending
+
+The user connects their own Gmail once, and the application can then write a
+cover letter into their drafts, with their CV attached, and send it on their
+say-so. Nothing is sent from a server mailbox: every message comes from the
+user's own address, which is why an employer sees a real person writing to
+them rather than a system notification.
+
+### Pieces
+
+| Layer      | File                                                                 | Does                                              |
+| ---------- | -------------------------------------------------------------------- | ------------------------------------------------- |
+| Setup      | `scripts/setup-gmail.mjs`, `server/scripts/checkGmailSetup.js`       | Writes and verifies the four settings             |
+| Config     | `server/src/config/env.js`                                           | `gmail: { clientSecret, redirectUri, tokenKey }`  |
+| Storage    | `server/src/models/GmailAccount.js`                                  | One grant per user, refresh token encrypted       |
+| Crypto     | `server/src/services/gmailTokenCrypto.js`                            | AES-256-GCM, key from `.env` only                 |
+| OAuth      | `server/src/services/gmailOAuthService.js`                           | Consent URL, code exchange, token refresh, revoke |
+| Connection | `server/src/controllers/gmail.controller.js`                         | `/connect`, `/callback`, `/status`, `/disconnect` |
+| Mail       | `server/src/controllers/gmailMail.controller.js`                     | Drafts, send, draft-send, delete, sent list       |
+| MIME       | `server/src/services/mimeBuilder.js`                                 | RFC 2822 message, base64url                       |
+| Letter     | `server/src/algorithms/coverLetterComposer.js`                       | The letter itself (see `algorithms.md` §4)        |
+| Client     | `components/mail/`, `pages/user/CoverLetterPage.jsx`, `MailPage.jsx` | Compose modal, drafts and sent                    |
+
+### The scope, and everything that follows from it
+
+The application asks for exactly one working permission:
+`https://www.googleapis.com/auth/gmail.compose`. That allows creating,
+reading, updating and deleting **drafts**, and sending. It does not allow
+reading the mailbox.
+
+Almost every design decision in this feature follows from that one line:
+
+- **There is no Inbox and no Sent list from Gmail.** Both were asked for and
+  both were declined. Reading mail needs `gmail.readonly`, a second
+  restricted scope: every connected user would have to consent again, and the
+  profile card's promise that "this app cannot read your inbox" would stop
+  being true. A Drafts list is what the feature needs to show its own work.
+- **The Sent list is read from `ActivityLog`.** `GMAIL_SEND` entries hold the
+  recipient, the subject and the time, which is all the list shows. It is
+  therefore what was sent _from here_, and the page says so rather than
+  implying it is the whole mailbox.
+- **The drafts list is every draft in the mailbox**, not only ours. Gmail
+  offers no way to tell them apart, and filtering on the subject line would
+  hide a user's own drafts from them — worse than showing one extra.
+
+### Two stated limitations
+
+1. **`gmail.compose` is a Google restricted scope.** While the consent screen
+   is in _Testing_ mode it works for up to 100 named test users with no
+   verification, which covers the project and the viva. A public launch would
+   need Google's verification review plus a CASA security assessment.
+2. **Refresh tokens expire after seven days in Testing mode.** A connection
+   made today stops working next week, and the user must press Connect again.
+   This is Google's behaviour for an unverified app, not a defect here. The
+   symptom is handled rather than hidden: `getAccessToken` turns the refusal
+   into a 401, and every mail route turns that into "Your Gmail connection is
+   no longer valid. Please connect again." — a sentence the user can act on,
+   rather than a 403 from Google.
+
+### What is never stored
+
+- **The refresh token in plain text.** It is encrypted with AES-256-GCM under
+  `GMAIL_TOKEN_KEY`, which lives only in `.env`. `GmailAccount.js` notes that
+  the stored fields are useless without it.
+- **Access tokens.** Minted per operation and held in memory. One secret at
+  rest instead of two.
+- **The letter.** The activity log records who was written to, the subject and
+  the CV — never the body. An administrator reading the log has no business
+  reading somebody's covering letter to a named employer.
+
+### Sending is guarded twice
+
+A draft is harmless; a send cannot be recalled. So `POST /gmail/send` and
+`POST /gmail/drafts/:id/send` both require `confirm: true` in the body, as a
+strict `=== true` rather than a truthy check — the string `"false"` and the
+number `0` are both truthy mistakes waiting to send somebody's mail. The UI
+adds its own confirmation naming the recipient, because the mistake being
+guarded against is the wrong address rather than the wrong button.
+`gmailMailLimiter` caps both at 20 per hour per account.
+
+### Why `fetch` and not `googleapis`
+
+Three endpoints are used, each a POST or GET with a bearer token. Installing
+the full client library for that would add a large dependency to avoid writing
+twenty lines, against CLAUDE.md section 2. `mimeBuilder.js` is the twenty
+lines: CRLF line endings, RFC 2047 encoded-words for a non-ASCII subject,
+base64 wrapped at 76 characters, and base64url for the API.
+
+### Tests
+
+`tests/unit/gmailTokenCrypto.test.js` (encrypt/decrypt round trip),
+`tests/unit/mimeBuilder.test.js` (15 — header encoding, multipart, wrapping),
+`tests/unit/coverLetterComposer.test.js` (35 — the wording rules),
+`tests/integration/gmail.test.js` (the OAuth round trip, Google stubbed),
+`tests/integration/gmailMail.test.js` (24 — drafting, sending, listing and
+every refusal, with both `gmailOAuthService` and `fetch` replaced),
+`tests/integration/coverLetter.test.js` (10 — the preview route).
+
+No test reaches Google or starts Chromium.

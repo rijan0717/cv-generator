@@ -80,6 +80,25 @@ export const env = {
   // the client hides the button.
   googleClientId: optional('GOOGLE_CLIENT_ID', ''),
 
+  // --- Connect Gmail -------------------------------------------------------
+  // Sign-in above only proves who someone is, and needs no secret. Composing
+  // mail acts *as* that person, which is the authorisation-code flow: the
+  // server trades a one-time code for a refresh token, and that trade must be
+  // authenticated. Hence the secret and the redirect URI here.
+  //
+  // `tokenKey` is ours, not Google's: 32 bytes of hex that encrypt the refresh
+  // token before it is stored, so a database dump never hands over mailbox
+  // access. Run `npm run setup:gmail` to fill all three in.
+  //
+  // Any of them empty turns the whole feature off — the routes refuse with a
+  // clear message and the client hides the button — so the project still runs
+  // for anyone who clones it without Google credentials.
+  gmail: {
+    clientSecret: optional('GOOGLE_CLIENT_SECRET', ''),
+    redirectUri: optional('GOOGLE_REDIRECT_URI', 'http://localhost:5000/api/gmail/callback'),
+    tokenKey: optional('GMAIL_TOKEN_KEY', ''),
+  },
+
   // --- Optional HTTPS ------------------------------------------------------
   // The developer decides whether the Express server speaks HTTP or HTTPS.
   // When HTTPS_ENABLED is off (the default) nothing changes, so a normal
@@ -104,3 +123,18 @@ export const isTest = env.nodeEnv === 'test';
  * start-up logs and whether the auth cookie may be marked `secure`.
  */
 export const isHttps = env.https.enabled;
+
+/**
+ * True when "Connect Gmail" has everything it needs to work.
+ *
+ * Checked by the routes and reported to the client, so a missing setting
+ * produces one honest "this feature is not configured on this server"
+ * instead of a confusing failure part-way through the Google consent screen.
+ *
+ * @returns {boolean} Whether the Gmail feature is usable.
+ */
+export function isGmailConfigured() {
+  return Boolean(
+    env.googleClientId && env.gmail.clientSecret && env.gmail.redirectUri && env.gmail.tokenKey,
+  );
+}

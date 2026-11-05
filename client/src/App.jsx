@@ -43,6 +43,8 @@ import CVEditorPage from './pages/user/CVEditorPage.jsx';
 import TemplatesPage from './pages/user/TemplatesPage.jsx';
 import TailorCVPage from './pages/user/TailorCVPage.jsx';
 import RewriteWithJDPage from './pages/user/RewriteWithJDPage.jsx';
+import CoverLetterPage from './pages/user/CoverLetterPage.jsx';
+import MailPage from './pages/user/MailPage.jsx';
 import PrintPage from './pages/print/PrintPage.jsx';
 import JobsPage from './pages/jobs/JobsPage.jsx';
 import JobDetailPage from './pages/jobs/JobDetailPage.jsx';
@@ -148,6 +150,11 @@ export default function App() {
                 is behind the session and the job-match rate limit rather
                 than open to anyone passing. */}
             <Route path="/match-cv" element={<MatchMyCVPage />} />
+            {/* The cover letter composer, and the drafts it has written.
+                Mail lists drafts only: the Gmail permission this app holds
+                can write and send them but cannot read the mailbox. */}
+            <Route path="/cover-letter" element={<CoverLetterPage />} />
+            <Route path="/mail" element={<MailPage />} />
             <Route path="/saved-jobs" element={<SavedJobsPage />} />
             <Route path="/applications" element={<ApplicationsPage />} />
             {/* "View CV" opens this in a new tab, so the list keeps its

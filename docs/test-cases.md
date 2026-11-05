@@ -326,3 +326,74 @@ the component with made-up props.
 | U-TO-04 | Toast  | It hides itself                             | Raise a success, advance the clock 4.1 s                  | No status remains                        | As expected   | Pass   |
 | U-TO-05 | Toast  | The same message is not stacked twice       | Raise the identical error twice                           | Exactly one alert                        | As expected   | Pass   |
 | U-TO-06 | Toast  | An empty message is ignored                 | `toast.error('')`                                         | Nothing is shown                         | As expected   | Pass   |
+
+### 1.5 Cover letter composer
+
+Automated: `server/tests/unit/coverLetterComposer.test.js` (35 cases).
+
+| Test ID | Module   | Description                                   | Input / Steps                                | Expected Result                                    | Actual Result | Status |
+| ------- | -------- | --------------------------------------------- | -------------------------------------------- | -------------------------------------------------- | ------------- | ------ |
+| U-CL-01 | Composer | A missing fact drops its sentence             | `fill` with one placeholder empty            | Returns `null`, so the caller falls back           | As expected   | Pass   |
+| U-CL-02 | Composer | A CV line becomes a clause                    | "Cut average fulfilment time by 35%"         | "cut average fulfilment time by 35%"               | As expected   | Pass   |
+| U-CL-03 | Composer | An opening acronym keeps its capitals         | "SQL reporting rebuilt…"                     | Still starts "SQL"                                 | As expected   | Pass   |
+| U-CL-04 | Composer | The current role is the one spoken from       | Two roles, one `isCurrent`                   | The current employer                               | As expected   | Pass   |
+| U-CL-05 | Composer | Skills are ordered by level                   | Expert, Advanced, Intermediate               | Expert first                                       | As expected   | Pass   |
+| U-CL-06 | Composer | Quantified evidence leads                     | One quantified and one plain line            | The quantified line is first                       | As expected   | Pass   |
+| U-CL-07 | Composer | Only shared skills are named                  | CV: Excel, SQL, Power BI; advert: Excel, SQL | Power BI not named                                 | As expected   | Pass   |
+| U-CL-08 | Composer | A gap is advice, never a claim                | Advert asks for Python, CV has none          | "Python" in `notes`, absent from the letter        | As expected   | Pass   |
+| U-CL-09 | Composer | A sparse CV still produces a letter           | Name and one skill only                      | A letter, plus notes saying what was missing       | As expected   | Pass   |
+| U-CL-10 | Composer | Nothing quantified is asked for, not invented | Experience with no numbers                   | `noQuantifiedAchievement` note, no `%` in the body | As expected   | Pass   |
+| U-CL-11 | Composer | A project stands in for employment            | No experience, one project                   | The project is cited, with a note                  | As expected   | Pass   |
+| U-CL-12 | Composer | The subject stays within Gmail's width        | A 300-character job title                    | Subject ≤ 140 characters                           | As expected   | Pass   |
+
+### 1.6 MIME builder
+
+Automated: `server/tests/unit/mimeBuilder.test.js` (15 cases).
+
+| Test ID | Module | Description                                | Input / Steps                        | Expected Result                             | Actual Result | Status |
+| ------- | ------ | ------------------------------------------ | ------------------------------------ | ------------------------------------------- | ------------- | ------ |
+| U-MB-01 | MIME   | ASCII headers are left alone               | "Application for Operations Manager" | Unchanged                                   | As expected   | Pass   |
+| U-MB-02 | MIME   | A non-ASCII subject is encoded             | "Application — Pokhará"              | RFC 2047 encoded-word, decodes back         | As expected   | Pass   |
+| U-MB-03 | MIME   | A comma in a name cannot split the address | "Pariyar, Rijan"                     | Quoted display name                         | As expected   | Pass   |
+| U-MB-04 | MIME   | Headers end CRLF                           | Any message                          | First line ends `\r\n`                      | As expected   | Pass   |
+| U-MB-05 | MIME   | No attachment means no multipart           | `attachment: null`                   | `text/plain`, no boundary                   | As expected   | Pass   |
+| U-MB-06 | MIME   | An attachment makes it multipart           | A PDF buffer                         | `multipart/mixed`, closing boundary present | As expected   | Pass   |
+| U-MB-07 | MIME   | base64 is wrapped to the standard          | A 5000-byte attachment               | No line longer than 76 characters           | As expected   | Pass   |
+| U-MB-08 | MIME   | The body survives encoding                 | A letter with blank lines            | Decodes back identically                    | As expected   | Pass   |
+| U-MB-09 | MIME   | base64url has no `+`, `/` or padding       | Any message                          | URL-safe alphabet only                      | As expected   | Pass   |
+
+### 2.11 Cover letters and Gmail
+
+Automated: `server/tests/integration/coverLetter.test.js` (10) and
+`server/tests/integration/gmailMail.test.js` (24). Google and Chromium are
+both replaced; no test reaches either.
+
+| Test ID | Module      | Description                                   | Input / Steps            | Expected Result                                 | Actual Result | Status |
+| ------- | ----------- | --------------------------------------------- | ------------------------ | ----------------------------------------------- | ------------- | ------ |
+| S-CL-01 | Preview     | A session is required                         | No cookie                | 401                                             | As expected   | Pass   |
+| S-CL-02 | Preview     | A letter is composed from the CV              | Own CV, company name     | 200, subject and body name the role and company | As expected   | Pass   |
+| S-CL-03 | Preview     | Another user's CV is refused                  | A stranger's CV id       | 404, not 403                                    | As expected   | Pass   |
+| S-CL-04 | Preview     | A company name is required                    | Blank company            | 400                                             | As expected   | Pass   |
+| S-CL-05 | Preview     | A too-short advert is refused                 | 9-character description  | 400                                             | As expected   | Pass   |
+| S-CL-06 | Preview     | No advert is not the same as a short one      | Empty description        | 200                                             | As expected   | Pass   |
+| S-CL-07 | Preview     | A preview stores nothing                      | One preview call         | No record written                               | As expected   | Pass   |
+| S-GM-01 | Drafts      | A session is required                         | No cookie                | 401                                             | As expected   | Pass   |
+| S-GM-02 | Drafts      | No connection is explained                    | Signed in, no grant      | 409, "connect your Gmail"                       | As expected   | Pass   |
+| S-GM-03 | Drafts      | A grant without compose is caught             | Scope `openid email`     | 409, "permission to compose"                    | As expected   | Pass   |
+| S-GM-04 | Drafts      | The draft is created                          | Valid message            | 201, draft id and Gmail link                    | As expected   | Pass   |
+| S-GM-05 | Drafts      | The log records the recipient, not the letter | Valid message            | `meta.to` present, body absent                  | As expected   | Pass   |
+| S-GM-06 | Drafts      | The CV is attached when asked                 | `attachCv: true`         | PDF rendered, message multipart                 | As expected   | Pass   |
+| S-GM-07 | Drafts      | The letter can go alone                       | `attachCv: false`        | No PDF rendered, not multipart                  | As expected   | Pass   |
+| S-GM-08 | Drafts      | A failed render is explained                  | Chromium throws          | 503, "untick the attachment"                    | As expected   | Pass   |
+| S-GM-09 | Drafts      | Another user's CV is refused                  | A stranger's CV id       | 404                                             | As expected   | Pass   |
+| S-GM-10 | Drafts      | A bad recipient is rejected                   | `to: not-an-email`       | 400                                             | As expected   | Pass   |
+| S-GM-11 | Drafts      | A stale grant asks for reconnection           | Gmail answers 403        | 409, "connect again"                            | As expected   | Pass   |
+| S-GM-12 | Send        | Sending needs confirmation                    | No `confirm`             | 400, Gmail never called                         | As expected   | Pass   |
+| S-GM-13 | Send        | A truthy confirmation is not enough           | `confirm: 'yes'`         | 400                                             | As expected   | Pass   |
+| S-GM-14 | Send        | A confirmed send goes, and is logged          | `confirm: true`          | 200, `GMAIL_SEND` written                       | As expected   | Pass   |
+| S-GM-15 | Drafts list | To and Subject are read back                  | One stubbed draft        | Recipient and subject returned                  | As expected   | Pass   |
+| S-GM-16 | Drafts list | An empty mailbox is not an error              | No drafts                | 200, empty array                                | As expected   | Pass   |
+| S-GM-17 | Draft send  | The logged recipient comes from the draft     | Draft addressed to A     | `meta.to` is A, not the request's               | As expected   | Pass   |
+| S-GM-18 | Delete      | A draft is deleted                            | Valid id                 | 200, DELETE issued to Gmail                     | As expected   | Pass   |
+| S-GM-19 | Delete      | An already-deleted draft is not an error      | Gmail answers 404        | 200                                             | As expected   | Pass   |
+| S-GM-20 | Sent        | Only the caller's letters are listed          | Another user's log entry | Empty list                                      | As expected   | Pass   |

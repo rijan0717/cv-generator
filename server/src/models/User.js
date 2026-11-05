@@ -229,6 +229,7 @@ userSchema.methods.comparePassword = async function comparePassword(plainPasswor
  * can never leak through a response.
  * @returns {{id: string, name: string, email: string, role: string,
  *            accountType: string|null, avatarUrl: string, status: string,
+ *            hasPassword: boolean, hasGoogle: boolean,
  *            jobSeekerProfile: object, createdAt: Date}}
  */
 userSchema.methods.toPublicJSON = function toPublicJSON() {
@@ -241,6 +242,10 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     avatarUrl: this.avatarUrl,
     status: this.status,
     hasPassword: this.hasPassword !== false,
+    // Whether this account can sign in with Google — the fact, never the
+    // id itself, which is Google's identifier for the person and has no
+    // business in a browser.
+    hasGoogle: Boolean(this.googleId),
     // Sent to its owner so the profile form can show what is saved. The
     // directory builds its own shape rather than reusing this one.
     jobSeekerProfile: {

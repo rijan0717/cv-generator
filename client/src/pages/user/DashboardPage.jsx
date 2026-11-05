@@ -10,6 +10,8 @@ import TextField from '../../components/ui/TextField.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import Pagination from '../../components/ui/Pagination.jsx';
+import ComposeMailModal from '../../components/mail/ComposeMailModal.jsx';
+import { getGmailStatus } from '../../api/gmail.js';
 
 /**
  * "My CVs": the list of the user's CVs, with the actions from the
@@ -35,6 +37,11 @@ export default function DashboardPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [busyId, setBusyId] = useState(null);
+  // The CV the compose modal was opened for, or '' when it is closed.
+  // Holding the id rather than a boolean is what lets the modal open
+  // already pointed at the row the user pressed.
+  const [composeForCvId, setComposeForCvId] = useState('');
+  const [gmail, setGmail] = useState(null);
 
   /**
    * Loads one page of CVs.
@@ -274,6 +281,31 @@ export default function DashboardPage() {
                     Edit
                   </Button>
                 </Link>
+                {/* Opens the composer already pointed at this CV, which
+                    is the whole reason for having it here rather than
+                    only in the sidebar: the user has just decided which
+                    CV they mean. */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={async () => {
+                    // Fetched on the first press rather than on page
+                    // load: most visits to My CVs never open this.
+                    if (!gmail) {
+                      try {
+                        setGmail(await getGmailStatus());
+                      } catch {
+                        // The modal copes with an unknown status by
+                        // offering the profile link, so a failure here
+                        // should not stop the letter being written.
+                        setGmail({ connected: false, email: '', canCompose: false });
+                      }
+                    }
+                    setComposeForCvId(cv._id);
+                  }}
+                >
+                  Cover letter
+                </Button>
                 <Button
                   size="sm"
                   variant="ghost"
@@ -289,6 +321,19 @@ export default function DashboardPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Mounted only once a row has asked for it, so the dashboard does
+          not pay for the composer on every visit. The status is fetched
+          at the same moment for the same reason. */}
+      {composeForCvId && (
+        <ComposeMailModal
+          isOpen
+          onClose={() => setComposeForCvId('')}
+          cvs={cvs}
+          initialCvId={composeForCvId}
+          gmail={gmail ?? { connected: false, email: '', canCompose: false }}
+        />
       )}
 
       {!isLoading && cvs.length > 0 && (
