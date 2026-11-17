@@ -181,7 +181,7 @@ export default function Footer() {
               rel="noreferrer"
               className="font-medium text-slate-700 underline underline-offset-2 transition hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-50"
             >
-              Rijan Pariyar
+              Rijan Pariyar & Shisir Thapa
             </a>
           </p>
 

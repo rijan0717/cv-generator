@@ -2,13 +2,13 @@
 
 Status: **in progress**. Stages 1 to 5 are built; stage 6 is not.
 
-| Stage                             | State                                       |
-| --------------------------------- | ------------------------------------------- |
-| 1 — Credentials and token storage | Built                                       |
-| 2 — Connect and disconnect        | Built, and connecting works end to end      |
-| 3 — The cover letter composer     | Built                                       |
-| 4 — The compose modal             | Built, plus the Cover letter and Mail pages |
-| 5 — Draft and send                | Built                                       |
+| Stage                             | State                                            |
+| --------------------------------- | ------------------------------------------------ |
+| 1 — Credentials and token storage | Built                                            |
+| 2 — Connect and disconnect        | Built, and connecting works end to end           |
+| 3 — The cover letter composer     | Built                                            |
+| 4 — The compose modal             | Built, plus the Cover letter and Mail pages      |
+| 5 — Draft and send                | Built                                            |
 | 6 — Admin, tests, documentation   | Tests and docs done; admin and employer side not |
 
 ## 1. What the feature does

@@ -22,8 +22,7 @@ import { Job } from '../src/models/Job.js';
 /** The company the sample jobs are posted under. */
 const COMPANY = {
   name: 'Demo Recruitment',
-  description:
-    'A sample employer used to demonstrate the job board and the CV–Job Match Analyser.',
+  description: 'A sample employer used to demonstrate the job board and the CV–Job Match Analyser.',
   location: 'Kathmandu',
   industry: 'Recruitment',
 };

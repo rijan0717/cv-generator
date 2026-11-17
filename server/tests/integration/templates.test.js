@@ -157,9 +157,9 @@ describe('admin template management', () => {
     await seedCatalogue();
     const admin = await signInAdmin();
 
-    expect((await admin.patch('/api/admin/templates/not-an-id').send({ isActive: false })).status).toBe(
-      400,
-    );
+    expect(
+      (await admin.patch('/api/admin/templates/not-an-id').send({ isActive: false })).status,
+    ).toBe(400);
     expect(
       (await admin.patch('/api/admin/templates/000000000000000000000000').send({ isActive: false }))
         .status,

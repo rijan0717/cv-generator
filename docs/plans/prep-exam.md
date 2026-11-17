@@ -20,13 +20,13 @@ Why it is worth doing (for the report and viva):
 
 ## 2. Decisions already made (do not re-ask)
 
-| Question                   | Decision                                                                                                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Question format            | **Multiple choice.** Four options, exactly one correct, plus a written explanation. The exam marks itself and the admin editor stays one simple form.         |
-| Exam setup                 | **Per position.** The admin sets questions per exam, pass mark and an optional time limit. Defaults: 10 questions, 60%, untimed.                              |
-| Scope                      | **Stands alone now, linked later.** Phase A is search → level → study → exam. A later phase suggests a position from the user's CV headline or last job match. |
-| Who writes the questions   | The admin, through the admin panel. No import, no AI generation (CLAUDE.md rule 2).                                                                           |
-| Levels                     | `junior`, `mid`, `senior`. A question belongs to exactly one level; a position may offer any combination.                                                     |
+| Question                 | Decision                                                                                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Question format          | **Multiple choice.** Four options, exactly one correct, plus a written explanation. The exam marks itself and the admin editor stays one simple form.          |
+| Exam setup               | **Per position.** The admin sets questions per exam, pass mark and an optional time limit. Defaults: 10 questions, 60%, untimed.                               |
+| Scope                    | **Stands alone now, linked later.** Phase A is search → level → study → exam. A later phase suggests a position from the user's CV headline or last job match. |
+| Who writes the questions | The admin, through the admin panel. No import, no AI generation (CLAUDE.md rule 2).                                                                            |
+| Levels                   | `junior`, `mid`, `senior`. A question belongs to exactly one level; a position may offer any combination.                                                      |
 
 ## 3. The algorithmic core
 
@@ -44,7 +44,7 @@ ask six questions about the same topic has not tested the candidate on the posit
    - `base` — every question starts equal.
    - `recencyPenalty` — a question the user saw in their last attempt is damped, so a
      retake is not the same paper.
-   - `wrongBonus` — a question they previously got **wrong** is weighted *up*. This is
+   - `wrongBonus` — a question they previously got **wrong** is weighted _up_. This is
      Leitner-style spaced repetition: the exam should return to what they failed.
    - `freshBonus` — a question they have never seen is weighted up slightly, so the bank
      is used evenly rather than the same favourites appearing forever.
@@ -85,44 +85,44 @@ matching library (rule 1), and nothing more complicated than it needs to be.
 
 ### `InterviewPosition`
 
-| Field                     | Notes                                                              |
-| ------------------------- | ------------------------------------------------------------------ |
-| `title`                   | e.g. "Frontend Developer"                                          |
-| `slug`                    | unique, from the title; the URL the user sees                      |
-| `description`             | one paragraph shown on the position page                           |
-| `industry`                | from `server/src/data/industries.js`, so filters match the rest    |
-| `tags[]`                  | searchable keywords ("react", "css")                               |
-| `levels[]`                | which of junior/mid/senior are offered                             |
-| `examSettings`            | `{ questionCount, passMark, timeLimitMinutes }`                     |
-| `isActive`                | whether it appears in the user's search                            |
-| `isDeleted`, `timestamps` |                                                                    |
+| Field                     | Notes                                                           |
+| ------------------------- | --------------------------------------------------------------- |
+| `title`                   | e.g. "Frontend Developer"                                       |
+| `slug`                    | unique, from the title; the URL the user sees                   |
+| `description`             | one paragraph shown on the position page                        |
+| `industry`                | from `server/src/data/industries.js`, so filters match the rest |
+| `tags[]`                  | searchable keywords ("react", "css")                            |
+| `levels[]`                | which of junior/mid/senior are offered                          |
+| `examSettings`            | `{ questionCount, passMark, timeLimitMinutes }`                 |
+| `isActive`                | whether it appears in the user's search                         |
+| `isDeleted`, `timestamps` |                                                                 |
 
 ### `InterviewQuestion`
 
-| Field                      | Notes                                                          |
-| -------------------------- | -------------------------------------------------------------- |
-| `position`                 | ref                                                            |
-| `level`                    | `junior` \| `mid` \| `senior`                                  |
-| `text`                     | the question                                                   |
-| `options[]`                | exactly 4, each `{ text }`                                     |
-| `correctIndex`             | 0–3                                                            |
-| `explanation`              | the "why" — shown in study mode and in the exam review         |
-| `topic`                    | one tag, used by the diversity pick and the breakdown          |
-| `isActive`, `isDeleted`    |                                                                |
+| Field                   | Notes                                                  |
+| ----------------------- | ------------------------------------------------------ |
+| `position`              | ref                                                    |
+| `level`                 | `junior` \| `mid` \| `senior`                          |
+| `text`                  | the question                                           |
+| `options[]`             | exactly 4, each `{ text }`                             |
+| `correctIndex`          | 0–3                                                    |
+| `explanation`           | the "why" — shown in study mode and in the exam review |
+| `topic`                 | one tag, used by the diversity pick and the breakdown  |
+| `isActive`, `isDeleted` |                                                        |
 
 ### `ExamAttempt`
 
-| Field                   | Notes                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------ |
-| `user`, `position`      | refs                                                                            |
-| `level`                 |                                                                                 |
-| `paper[]`               | **a frozen snapshot**, not refs: question text, the four options in the order   |
-|                         | they were shown, and `correctIndex` within that order                           |
-| `answers[]`             | the index the user chose, or null                                               |
-| `score`, `passed`       |                                                                                 |
-| `breakdown`             | from `examScorer`                                                               |
-| `startedAt`             | the clock the time limit runs against — the server's, never the browser's      |
-| `submittedAt`           | null while in progress                                                          |
+| Field              | Notes                                                                         |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `user`, `position` | refs                                                                          |
+| `level`            |                                                                               |
+| `paper[]`          | **a frozen snapshot**, not refs: question text, the four options in the order |
+|                    | they were shown, and `correctIndex` within that order                         |
+| `answers[]`        | the index the user chose, or null                                             |
+| `score`, `passed`  |                                                                               |
+| `breakdown`        | from `examScorer`                                                             |
+| `startedAt`        | the clock the time limit runs against — the server's, never the browser's     |
+| `submittedAt`      | null while in progress                                                        |
 
 **Why the paper is frozen.** The same reasoning as `Application.cv` in CLAUDE.md §6: an
 admin editing or deleting a question afterwards must not change what somebody already
@@ -133,29 +133,29 @@ same reason — the review screen has to show the paper as it was taken.
 
 ### User
 
-| Route                                            | Notes                                                                   |
-| ------------------------------------------------ | ----------------------------------------------------------------------- |
-| `GET /api/interview/positions?search=&level=`    | Active only. Ranked by `positionSearch`.                                 |
-| `GET /api/interview/positions/:slug`             | Detail, levels offered, question counts, exam settings.                 |
-| `GET /api/interview/positions/:slug/study?level=`| **Study mode:** questions with the correct answer and the explanation.  |
-| `POST /api/interview/exams`                      | Body `{ positionId, level }`. Builds the paper and starts the clock.    |
-| `GET /api/interview/exams/:id`                   | Resume an attempt. **Correct answers stripped.**                        |
-| `POST /api/interview/exams/:id/submit`           | Body `{ answers }`. Marks it, returns score, breakdown and full review. |
-| `GET /api/interview/exams`                       | Own history, paginated.                                                 |
+| Route                                             | Notes                                                                   |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `GET /api/interview/positions?search=&level=`     | Active only. Ranked by `positionSearch`.                                |
+| `GET /api/interview/positions/:slug`              | Detail, levels offered, question counts, exam settings.                 |
+| `GET /api/interview/positions/:slug/study?level=` | **Study mode:** questions with the correct answer and the explanation.  |
+| `POST /api/interview/exams`                       | Body `{ positionId, level }`. Builds the paper and starts the clock.    |
+| `GET /api/interview/exams/:id`                    | Resume an attempt. **Correct answers stripped.**                        |
+| `POST /api/interview/exams/:id/submit`            | Body `{ answers }`. Marks it, returns score, breakdown and full review. |
+| `GET /api/interview/exams`                        | Own history, paginated.                                                 |
 
 ### Admin
 
-| Route                                                  | Notes                                               |
-| ------------------------------------------------------ | --------------------------------------------------- |
-| `GET /api/admin/interview/positions`                   | Including inactive.                                 |
-| `POST /api/admin/interview/positions`                  |                                                     |
-| `PATCH /api/admin/interview/positions/:id`             | Title, description, levels, exam settings, isActive |
-| `DELETE /api/admin/interview/positions/:id`            | Soft.                                               |
-| `GET /api/admin/interview/positions/:id/questions`     | Grouped by level.                                   |
-| `POST /api/admin/interview/questions`                  |                                                     |
-| `PATCH /api/admin/interview/questions/:id`             |                                                     |
-| `DELETE /api/admin/interview/questions/:id`            | Soft.                                               |
-| `GET /api/admin/interview/stats`                       | Attempts, pass rate, most-missed questions.         |
+| Route                                              | Notes                                               |
+| -------------------------------------------------- | --------------------------------------------------- |
+| `GET /api/admin/interview/positions`               | Including inactive.                                 |
+| `POST /api/admin/interview/positions`              |                                                     |
+| `PATCH /api/admin/interview/positions/:id`         | Title, description, levels, exam settings, isActive |
+| `DELETE /api/admin/interview/positions/:id`        | Soft.                                               |
+| `GET /api/admin/interview/positions/:id/questions` | Grouped by level.                                   |
+| `POST /api/admin/interview/questions`              |                                                     |
+| `PATCH /api/admin/interview/questions/:id`         |                                                     |
+| `DELETE /api/admin/interview/questions/:id`        | Soft.                                               |
+| `GET /api/admin/interview/stats`                   | Attempts, pass rate, most-missed questions.         |
 
 ## 6. The two rules the server must not break
 
@@ -197,13 +197,13 @@ same reason — the review screen has to show the paper as it was taken.
 
 Each stops for review, as CLAUDE.md §3 requires.
 
-| Phase | Scope                                                                        |
-| ----- | ---------------------------------------------------------------------------- |
-| 8.1   | Models, admin CRUD API and admin screens, the activation guard               |
-| 8.2   | User search, position page, study mode                                       |
-| 8.3   | `examPaper`, `examScorer`, sitting an exam, marking, the review screen       |
-| 8.4   | History, admin stats, report export, activity logging                        |
-| 8.5   | The link back: suggest a position from the CV headline or last job match     |
+| Phase | Scope                                                                    |
+| ----- | ------------------------------------------------------------------------ |
+| 8.1   | Models, admin CRUD API and admin screens, the activation guard           |
+| 8.2   | User search, position page, study mode                                   |
+| 8.3   | `examPaper`, `examScorer`, sitting an exam, marking, the review screen   |
+| 8.4   | History, admin stats, report export, activity logging                    |
+| 8.5   | The link back: suggest a position from the CV headline or last job match |
 
 A seed script, `npm run seed:interview`, fills three positions with about 30 questions
 each so the feature can be demonstrated without an hour of typing first.

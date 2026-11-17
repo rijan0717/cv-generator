@@ -490,7 +490,7 @@ async function upsertEmployer(entry, admin) {
         // An approved company carries who approved it and when, exactly as
         // the admin screen would have written them.
         reviewedAt: isApproved ? new Date() : null,
-        reviewedBy: isApproved ? admin?._id ?? null : null,
+        reviewedBy: isApproved ? (admin?._id ?? null) : null,
         rejectionReason: '',
         submittedAt: new Date(),
         isDeleted: false,

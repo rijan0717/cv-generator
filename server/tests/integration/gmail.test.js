@@ -158,9 +158,7 @@ describe('GET /api/gmail/connect', () => {
     const res = await agent.get('/api/gmail/connect');
 
     expect(res.status).toBe(302);
-    expect(res.headers.location).toBe(
-      `${env.clientUrl}/profile?gmail=error&reason=not-configured`,
-    );
+    expect(res.headers.location).toBe(`${env.clientUrl}/profile?gmail=error&reason=not-configured`);
   });
 });
 
