@@ -94,7 +94,9 @@ async function seed() {
   console.log(`[seed:interview] Questions created: ${questionsCreated}`);
   console.log(`[seed:interview] Questions already present: ${questionsSkipped}`);
   console.log(`[seed:interview] Totals: ${totalPositions} positions, ${totalQuestions} questions`);
-  console.log('[seed:interview] Positions are left switched off — review and activate them in the admin panel.');
+  console.log(
+    '[seed:interview] Positions are left switched off — review and activate them in the admin panel.',
+  );
 
   await disconnectDB();
 }

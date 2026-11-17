@@ -203,34 +203,112 @@ function token(rng) {
 // ---------------------------------------------------------------------------
 
 const FIRST_NAMES = [
-  'Aarav', 'Anisha', 'Bibek', 'Binita', 'Chirag', 'Deepa', 'Dipesh', 'Elina',
-  'Gaurav', 'Ishwor', 'Kritika', 'Manish', 'Nabin', 'Nisha', 'Prabin', 'Pooja',
-  'Rajesh', 'Rashmi', 'Sabin', 'Samikshya', 'Sujan', 'Sunita', 'Tenzing',
-  'Ujjwal', 'Yamuna', 'Daniel', 'Emily', 'Hannah', 'Jacob', 'Laura', 'Marcus',
-  'Olivia', 'Priya', 'Rachel', 'Thomas',
+  'Aarav',
+  'Anisha',
+  'Bibek',
+  'Binita',
+  'Chirag',
+  'Deepa',
+  'Dipesh',
+  'Elina',
+  'Gaurav',
+  'Ishwor',
+  'Kritika',
+  'Manish',
+  'Nabin',
+  'Nisha',
+  'Prabin',
+  'Pooja',
+  'Rajesh',
+  'Rashmi',
+  'Sabin',
+  'Samikshya',
+  'Sujan',
+  'Sunita',
+  'Tenzing',
+  'Ujjwal',
+  'Yamuna',
+  'Daniel',
+  'Emily',
+  'Hannah',
+  'Jacob',
+  'Laura',
+  'Marcus',
+  'Olivia',
+  'Priya',
+  'Rachel',
+  'Thomas',
 ];
 
 const LAST_NAMES = [
-  'Acharya', 'Adhikari', 'Basnet', 'Bhattarai', 'Chaudhary', 'Dahal', 'Dangol',
-  'Ghimire', 'Gurung', 'Joshi', 'Karki', 'Khadka', 'Lama', 'Maharjan', 'Nepal',
-  'Oli', 'Pandey', 'Pariyar', 'Poudel', 'Rai', 'Regmi', 'Sharma', 'Shrestha',
-  'Tamang', 'Thapa', 'Bennett', 'Clarke', 'Foster', 'Hughes', 'Patel',
+  'Acharya',
+  'Adhikari',
+  'Basnet',
+  'Bhattarai',
+  'Chaudhary',
+  'Dahal',
+  'Dangol',
+  'Ghimire',
+  'Gurung',
+  'Joshi',
+  'Karki',
+  'Khadka',
+  'Lama',
+  'Maharjan',
+  'Nepal',
+  'Oli',
+  'Pandey',
+  'Pariyar',
+  'Poudel',
+  'Rai',
+  'Regmi',
+  'Sharma',
+  'Shrestha',
+  'Tamang',
+  'Thapa',
+  'Bennett',
+  'Clarke',
+  'Foster',
+  'Hughes',
+  'Patel',
 ];
 
 const CITIES = [
-  'Kathmandu', 'Lalitpur', 'Bhaktapur', 'Pokhara', 'Biratnagar', 'Butwal',
-  'Chitwan', 'Dharan', 'Nepalgunj', 'Hetauda',
+  'Kathmandu',
+  'Lalitpur',
+  'Bhaktapur',
+  'Pokhara',
+  'Biratnagar',
+  'Butwal',
+  'Chitwan',
+  'Dharan',
+  'Nepalgunj',
+  'Hetauda',
 ];
 
 const INSTITUTIONS = [
-  'Tribhuvan University', 'Kathmandu University', 'Pokhara University',
-  'Purbanchal University', 'Islington College', 'Herald College Kathmandu',
-  'St. Xavier’s College', 'Nepal College of Information Technology',
+  'Tribhuvan University',
+  'Kathmandu University',
+  'Pokhara University',
+  'Purbanchal University',
+  'Islington College',
+  'Herald College Kathmandu',
+  'St. Xavier’s College',
+  'Nepal College of Information Technology',
 ];
 
 const TEMPLATE_KEYS = [
-  'classic', 'modern', 'minimal', 'creative', 'ats',
-  'executive', 'banner', 'monogram', 'formal', 'editorial', 'compact',
+  'classic',
+  'modern',
+  'minimal',
+  'creative',
+  'ats',
+  'executive',
+  'banner',
+  'monogram',
+  'formal',
+  'editorial',
+  'compact',
 ];
 
 const FONT_FAMILIES = ['Inter', 'Roboto', 'Lato', 'Merriweather', 'Source Sans 3', 'Poppins'];
@@ -424,7 +502,12 @@ const PROFILES = [
     companies: ['Daraz Nepal', 'Sastodeal', 'Thulo.com', 'Clock b Business Technology'],
     positions: ['Digital Marketing Executive', 'Marketing Associate', 'SEO Executive'],
     skills: [
-      'SEO', 'Google Analytics', 'Content Marketing', 'Social Media', 'Email Marketing', 'Excel',
+      'SEO',
+      'Google Analytics',
+      'Content Marketing',
+      'Social Media',
+      'Email Marketing',
+      'Excel',
     ],
     summary:
       'Digital marketing executive who tests rather than guesses. Grew organic traffic 180% in ' +
@@ -753,7 +836,10 @@ function buildCV(rng, user, profile, quality, index) {
             `Built ${project.name.toLowerCase()} using ${project.technologies.join(', ')}. ` +
             'Designed the data model, implemented the core features and documented the setup.',
           technologies: project.technologies,
-          link: rng() < 0.5 ? `https://github.com/${handle}/${project.name.toLowerCase().replace(/\s+/g, '-')}` : '',
+          link:
+            rng() < 0.5
+              ? `https://github.com/${handle}/${project.name.toLowerCase().replace(/\s+/g, '-')}`
+              : '',
         }));
 
   const certifications =
@@ -924,9 +1010,11 @@ function buildActivity(rng, user, cvs, now) {
 
     // Not every CV is downloaded, and some are downloaded several times.
     for (let i = 0; i < intBetween(rng, 0, 3); i += 1) {
-      add(pick(rng, ['DOWNLOAD_PDF', 'DOWNLOAD_PDF', 'DOWNLOAD_DOCX', 'DOWNLOAD_EXCEL']),
+      add(
+        pick(rng, ['DOWNLOAD_PDF', 'DOWNLOAD_PDF', 'DOWNLOAD_DOCX', 'DOWNLOAD_EXCEL']),
         dateBetween(rng, cv.createdAt, now),
-        { cv: cv._id, meta: { template: cv.templateKey } });
+        { cv: cv._id, meta: { template: cv.templateKey } },
+      );
     }
   }
 
@@ -1091,7 +1179,8 @@ async function seedJobBoard(rng, users, jobCount, now) {
       // Roughly one advert in eight is closed, so the board's open filter
       // has something to filter out.
       status: rng() < 0.12 ? 'closed' : 'open',
-      closingDate: rng() < 0.6 ? dateBetween(rng, now, new Date(now.getFullYear() + 1, 0, 1)) : null,
+      closingDate:
+        rng() < 0.6 ? dateBetween(rng, now, new Date(now.getFullYear() + 1, 0, 1)) : null,
       applicationCount: 0,
       isDeleted: false,
       createdAt: postedAt,
@@ -1192,7 +1281,9 @@ async function seedLoadTestData() {
   );
 
   if (env.nodeEnv === 'production' && !options.force) {
-    console.error('[seed:loadtest] refusing to run with NODE_ENV=production. Use --force if you mean it.');
+    console.error(
+      '[seed:loadtest] refusing to run with NODE_ENV=production. Use --force if you mean it.',
+    );
     process.exitCode = 1;
     return;
   }

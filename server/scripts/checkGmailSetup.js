@@ -47,7 +47,7 @@ const checks = [
     value: env.gmail.tokenKey,
     expected: '64 hexadecimal characters (32 bytes)',
     ok: (v) => /^[0-9a-fA-F]{64}$/.test(v),
-    hint: 'Generate once with:  node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"',
+    hint: "Generate once with:  node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
   },
 ];
 
@@ -89,10 +89,16 @@ if (failed === 0 && isGmailConfigured()) {
   // cipher key. A value that is the right length but, say, has a stray space
   // would pass the shape test and fail at the moment a token is stored.
   try {
-    crypto.createCipheriv('aes-256-gcm', Buffer.from(env.gmail.tokenKey, 'hex'), crypto.randomBytes(12));
+    crypto.createCipheriv(
+      'aes-256-gcm',
+      Buffer.from(env.gmail.tokenKey, 'hex'),
+      crypto.randomBytes(12),
+    );
     console.log('GMAIL_TOKEN_KEY is usable as an encryption key.\n');
   } catch {
-    console.log('Warning: GMAIL_TOKEN_KEY is 64 characters but is not usable as a key. Generate a new one.\n');
+    console.log(
+      'Warning: GMAIL_TOKEN_KEY is 64 characters but is not usable as a key. Generate a new one.\n',
+    );
   }
   process.exit(0);
 }

@@ -339,6 +339,7 @@ function cleanSeo(seo) {
   };
 }
 
+/** Sanitises post body HTML, and rejects it if empty or oversized. */
 function cleanBody(html) {
   const clean = sanitiseHtml(html);
 

@@ -25,10 +25,10 @@ const POSTS = [
     daysAgo: 2,
     title: 'What a CV screener actually reads',
     seo: {
-      metaTitle: "What a CV screener actually reads (and ignores)",
+      metaTitle: 'What a CV screener actually reads (and ignores)',
       metaDescription:
-        "How applicant tracking systems parse a CV, which parts they discard, and how to write for them without writing badly for people.",
-      keywords: ["ats", "cv screening", "applicant tracking system", "ats friendly cv", "cv tips"],
+        'How applicant tracking systems parse a CV, which parts they discard, and how to write for them without writing badly for people.',
+      keywords: ['ats', 'cv screening', 'applicant tracking system', 'ats friendly cv', 'cv tips'],
     },
     excerpt:
       'Most large employers run your CV through software before a person sees it. Here is what that software looks at, and what it quietly ignores.',
@@ -59,10 +59,10 @@ const POSTS = [
     daysAgo: 6,
     title: 'Why your CV scores low, and what to fix first',
     seo: {
-      metaTitle: "Why your CV scores low, and what to fix first",
+      metaTitle: 'Why your CV scores low, and what to fix first',
       metaDescription:
-        "The four places most CVs lose marks: no numbers, duties instead of achievements, a generic summary and missing basics.",
-      keywords: ["cv score", "cv mistakes", "cv checker", "improve my cv", "cv achievements"],
+        'The four places most CVs lose marks: no numbers, duties instead of achievements, a generic summary and missing basics.',
+      keywords: ['cv score', 'cv mistakes', 'cv checker', 'improve my cv', 'cv achievements'],
     },
     excerpt:
       'The strength score is not a grade. It is a checklist of the things employers look for, and most CVs lose points in the same four places.',
@@ -90,10 +90,10 @@ const POSTS = [
     daysAgo: 11,
     title: 'Tailoring a CV without rewriting your life',
     seo: {
-      metaTitle: "How to tailor a CV to a job advert",
+      metaTitle: 'How to tailor a CV to a job advert',
       metaDescription:
-        "Tailoring is three or four changes, not a rewrite. What is worth changing for each advert, and what should never move.",
-      keywords: ["tailor cv", "cv for job application", "job advert", "cv summary", "cv keywords"],
+        'Tailoring is three or four changes, not a rewrite. What is worth changing for each advert, and what should never move.',
+      keywords: ['tailor cv', 'cv for job application', 'job advert', 'cv summary', 'cv keywords'],
     },
     excerpt:
       'One CV for every job is the most common mistake, and sending fifty identical applications is slower than sending ten tailored ones.',
@@ -119,10 +119,10 @@ const POSTS = [
     daysAgo: 17,
     title: 'How long should a CV be?',
     seo: {
-      metaTitle: "How long should a CV be? Two pages, and what to cut",
+      metaTitle: 'How long should a CV be? Two pages, and what to cut',
       metaDescription:
-        "Two pages for almost everyone. The useful question is what to cut to get there, in order.",
-      keywords: ["cv length", "two page cv", "one page cv", "cv format", "what to cut from a cv"],
+        'Two pages for almost everyone. The useful question is what to cut to get there, in order.',
+      keywords: ['cv length', 'two page cv', 'one page cv', 'cv format', 'what to cut from a cv'],
     },
     excerpt:
       'Two pages, almost always. The interesting question is not the length — it is what you cut to get there.',
@@ -151,10 +151,10 @@ const POSTS = [
     daysAgo: 23,
     title: 'The skills section, done properly',
     seo: {
-      metaTitle: "The CV skills section, done properly",
+      metaTitle: 'The CV skills section, done properly',
       metaDescription:
-        "Why a list of thirty skills says nothing, how to order them against an advert, and how to back each one up.",
-      keywords: ["cv skills", "skills section", "technical skills cv", "cv keywords", "ats skills"],
+        'Why a list of thirty skills says nothing, how to order them against an advert, and how to back each one up.',
+      keywords: ['cv skills', 'skills section', 'technical skills cv', 'cv keywords', 'ats skills'],
     },
     excerpt:
       'A list of thirty skills says nothing. A short list of the right ones, backed up by the rest of your CV, says a great deal.',
@@ -178,10 +178,10 @@ const POSTS = [
     daysAgo: 31,
     title: 'Writing a summary that is worth the space',
     seo: {
-      metaTitle: "How to write a CV personal summary (with an example)",
+      metaTitle: 'How to write a CV personal summary (with an example)',
       metaDescription:
-        "The three jobs a professional summary has to do, in about forty words, with a before and after.",
-      keywords: ["cv summary", "personal statement", "cv profile", "cv introduction", "cv example"],
+        'The three jobs a professional summary has to do, in about forty words, with a before and after.',
+      keywords: ['cv summary', 'personal statement', 'cv profile', 'cv introduction', 'cv example'],
     },
     excerpt:
       'The professional summary is the most-read and worst-written part of most CVs. Forty words, three jobs to do.',
@@ -208,10 +208,16 @@ const POSTS = [
     daysAgo: 40,
     title: 'Applying for jobs you are not quite qualified for',
     seo: {
-      metaTitle: "Applying for jobs you are not quite qualified for",
+      metaTitle: 'Applying for jobs you are not quite qualified for',
       metaDescription:
-        "Job adverts are wish lists. How to tell a gap that matters from one that does not, before you spend an evening applying.",
-      keywords: ["job requirements", "underqualified", "job application tips", "career change", "job search"],
+        'Job adverts are wish lists. How to tell a gap that matters from one that does not, before you spend an evening applying.',
+      keywords: [
+        'job requirements',
+        'underqualified',
+        'job application tips',
+        'career change',
+        'job search',
+      ],
     },
     excerpt:
       'Job adverts are wish lists, not entry requirements. Here is how to tell the difference between a gap that matters and one that does not.',
@@ -240,10 +246,10 @@ const POSTS = [
     daysAgo: 52,
     title: 'After you apply: what employers see',
     seo: {
-      metaTitle: "What employers see after you apply",
+      metaTitle: 'What employers see after you apply',
       metaDescription:
-        "Your application stores a frozen copy of your CV. What that means for editing it afterwards, and what stays live.",
-      keywords: ["job application", "what employers see", "cv privacy", "applying online"],
+        'Your application stores a frozen copy of your CV. What that means for editing it afterwards, and what stays live.',
+      keywords: ['job application', 'what employers see', 'cv privacy', 'applying online'],
     },
     excerpt:
       'Your application is a frozen snapshot, not a live link. Knowing that changes when you should edit your CV and when you should not.',
@@ -280,10 +286,16 @@ const PAGES = [
   {
     title: 'About us',
     seo: {
-      metaTitle: "About Smart CV Generator",
+      metaTitle: 'About Smart CV Generator',
       metaDescription:
-        "A final-year BCA project that builds CVs, scores them and matches them against job adverts, with matching logic written from scratch.",
-      keywords: ["about", "smart cv generator", "cv builder", "student project", "tribhuvan university"],
+        'A final-year BCA project that builds CVs, scores them and matches them against job adverts, with matching logic written from scratch.',
+      keywords: [
+        'about',
+        'smart cv generator',
+        'cv builder',
+        'student project',
+        'tribhuvan university',
+      ],
     },
     navLabel: 'About',
     showInHeader: true,
@@ -315,10 +327,10 @@ const PAGES = [
   {
     title: 'How it works',
     seo: {
-      metaTitle: "How Smart CV Generator works",
+      metaTitle: 'How Smart CV Generator works',
       metaDescription:
-        "From a blank page to an application in five steps: build, score, match against an advert, tailor, and apply.",
-      keywords: ["how it works", "cv builder guide", "cv score", "job matching", "getting started"],
+        'From a blank page to an application in five steps: build, score, match against an advert, tailor, and apply.',
+      keywords: ['how it works', 'cv builder guide', 'cv score', 'job matching', 'getting started'],
     },
     navLabel: 'How it works',
     showInHeader: true,
@@ -350,10 +362,10 @@ const PAGES = [
   {
     title: 'Privacy policy',
     seo: {
-      metaTitle: "Privacy policy",
+      metaTitle: 'Privacy policy',
       metaDescription:
-        "What Smart CV Generator stores about you, who can see it, and how to have it removed. Written plainly.",
-      keywords: ["privacy policy", "data protection", "cv privacy", "cookies"],
+        'What Smart CV Generator stores about you, who can see it, and how to have it removed. Written plainly.',
+      keywords: ['privacy policy', 'data protection', 'cv privacy', 'cookies'],
     },
     navLabel: 'Privacy',
     showInHeader: false,
@@ -392,10 +404,10 @@ const PAGES = [
   {
     title: 'Terms of use',
     seo: {
-      metaTitle: "Terms of use",
+      metaTitle: 'Terms of use',
       metaDescription:
-        "The short set of rules for using Smart CV Generator, for both job seekers and employers.",
-      keywords: ["terms of use", "terms and conditions", "rules"],
+        'The short set of rules for using Smart CV Generator, for both job seekers and employers.',
+      keywords: ['terms of use', 'terms and conditions', 'rules'],
     },
     navLabel: 'Terms',
     showInHeader: false,
@@ -424,10 +436,10 @@ const PAGES = [
   {
     title: 'Contact',
     seo: {
-      metaTitle: "Contact Smart CV Generator",
+      metaTitle: 'Contact Smart CV Generator',
       metaDescription:
-        "How to reach us about a bug, a question, or a company waiting for approval.",
-      keywords: ["contact", "support", "help", "company approval"],
+        'How to reach us about a bug, a question, or a company waiting for approval.',
+      keywords: ['contact', 'support', 'help', 'company approval'],
     },
     navLabel: 'Contact',
     showInHeader: false,

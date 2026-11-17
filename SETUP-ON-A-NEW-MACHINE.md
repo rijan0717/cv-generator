@@ -7,17 +7,17 @@ whatever machine you are on. Copying it across would not work anyway.
 
 ## What is in here
 
-| Folder / file     | What it is                                                     |
-| ----------------- | -------------------------------------------------------------- |
-| `client/`         | React + Vite front end                                          |
-| `server/`         | Express API, algorithms, scripts and tests                      |
-| `docs/`           | Report support material — algorithms, test cases, diagrams      |
+| Folder / file     | What it is                                                        |
+| ----------------- | ----------------------------------------------------------------- |
+| `client/`         | React + Vite front end                                            |
+| `server/`         | Express API, algorithms, scripts and tests                        |
+| `docs/`           | Report support material — algorithms, test cases, diagrams        |
 | `.git/`           | Full history, including the `feat/job-tailored-cv-rewrite` branch |
-| `server/.env`     | **Real secrets.** See the warning at the bottom                 |
-| `client/.env`     | Front-end config (empty API base URL, so Vite proxies)          |
-| `server/uploads/` | Photos and avatars already uploaded                             |
-| `database-dump/`  | A `mongodump` of the `cv_generator` database                    |
-| `certs/`          | Local development certificates                                  |
+| `server/.env`     | **Real secrets.** See the warning at the bottom                   |
+| `client/.env`     | Front-end config (empty API base URL, so Vite proxies)            |
+| `server/uploads/` | Photos and avatars already uploaded                               |
+| `database-dump/`  | A `mongodump` of the `cv_generator` database                      |
+| `certs/`          | Local development certificates                                    |
 
 ## 1. Install the prerequisites
 

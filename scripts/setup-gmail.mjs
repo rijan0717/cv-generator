@@ -73,9 +73,7 @@ function resolveInputPath(input) {
 // 1. Read the client.
 const given = process.argv[2];
 if (!given) {
-  fail(
-    'Pass the downloaded JSON file: npm run setup:gmail -- "<path to the OAuth client JSON>"',
-  );
+  fail('Pass the downloaded JSON file: npm run setup:gmail -- "<path to the OAuth client JSON>"');
 }
 
 const file = resolveInputPath(given);

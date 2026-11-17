@@ -145,7 +145,9 @@ describe('admin content CRUD', () => {
   it('rejects an empty title or body', async () => {
     const admin = await signInAdmin();
 
-    expect((await admin.post('/api/admin/content').send({ bodyHtml: POST.bodyHtml })).status).toBe(400);
+    expect((await admin.post('/api/admin/content').send({ bodyHtml: POST.bodyHtml })).status).toBe(
+      400,
+    );
     expect((await admin.post('/api/admin/content').send({ title: 'Hello' })).status).toBe(400);
     expect((await admin.post('/api/admin/content').send({ ...POST, type: 'video' })).status).toBe(
       400,

@@ -143,7 +143,9 @@ async function signedInWithGmail(overrides = {}) {
 
 describe('POST /api/gmail/drafts', () => {
   it('refuses an anonymous caller', async () => {
-    const res = await request(app).post('/api/gmail/drafts').send({ ...MESSAGE, cvId: 'x' });
+    const res = await request(app)
+      .post('/api/gmail/drafts')
+      .send({ ...MESSAGE, cvId: 'x' });
     expect(res.status).toBe(401);
   });
 
@@ -171,7 +173,10 @@ describe('POST /api/gmail/drafts', () => {
   it('creates the draft and reports where it went', async () => {
     const { agent, cvId } = await signedInWithGmail();
     stubGmail([
-      [{ method: 'POST', path: '/drafts' }, () => ({ body: { id: 'draft-1', message: { id: 'msg-1' } } })],
+      [
+        { method: 'POST', path: '/drafts' },
+        () => ({ body: { id: 'draft-1', message: { id: 'msg-1' } } }),
+      ],
     ]);
 
     const res = await agent.post('/api/gmail/drafts').send({ ...MESSAGE, cvId });
@@ -241,7 +246,9 @@ describe('POST /api/gmail/drafts', () => {
   it('rejects a recipient that is not an email address', async () => {
     const { agent, cvId } = await signedInWithGmail();
 
-    const res = await agent.post('/api/gmail/drafts').send({ ...MESSAGE, cvId, to: 'not-an-email' });
+    const res = await agent
+      .post('/api/gmail/drafts')
+      .send({ ...MESSAGE, cvId, to: 'not-an-email' });
 
     expect(res.status).toBe(400);
   });
@@ -290,9 +297,7 @@ describe('POST /api/gmail/send', () => {
 
   it('sends when confirmed, and logs it', async () => {
     const { agent, cvId, userId } = await signedInWithGmail();
-    stubGmail([
-      [{ method: 'POST', path: '/messages/send' }, () => ({ body: { id: 'sent-1' } })],
-    ]);
+    stubGmail([[{ method: 'POST', path: '/messages/send' }, () => ({ body: { id: 'sent-1' } })]]);
 
     const res = await agent.post('/api/gmail/send').send({ ...MESSAGE, cvId, confirm: true });
 
@@ -309,10 +314,7 @@ describe('GET /api/gmail/drafts', () => {
     const { agent } = await signedInWithGmail();
 
     stubGmail([
-      [
-        { method: 'GET', path: '/drafts?' },
-        () => ({ body: { drafts: [{ id: 'draft-1' }] } }),
-      ],
+      [{ method: 'GET', path: '/drafts?' }, () => ({ body: { drafts: [{ id: 'draft-1' }] } })],
       [
         { method: 'GET', path: '/drafts/draft-1' },
         () => ({

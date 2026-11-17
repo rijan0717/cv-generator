@@ -34,7 +34,10 @@ function toBool(value, fallback) {
 function httpsOptions(envVars, rootDir) {
   if (!toBool(envVars.VITE_HTTPS_ENABLED, false)) return undefined;
 
-  const keyPath = path.resolve(rootDir, envVars.VITE_HTTPS_KEY_PATH || '../certs/localhost-key.pem');
+  const keyPath = path.resolve(
+    rootDir,
+    envVars.VITE_HTTPS_KEY_PATH || '../certs/localhost-key.pem',
+  );
   const certPath = path.resolve(
     rootDir,
     envVars.VITE_HTTPS_CERT_PATH || '../certs/localhost-cert.pem',
