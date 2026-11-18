@@ -72,7 +72,7 @@ export function ConfirmProvider({ children }) {
         }}
         // A click on the dimmed backdrop lands on the dialog element itself.
         onClick={(event) => event.target === dialogRef.current && answer(false)}
-        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl bg-white p-0 shadow-xl ring-1 ring-slate-200 backdrop:bg-slate-900/50 dark:bg-navy-900 dark:ring-navy-700"
+        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl bg-white p-0 shadow-xl ring-1 ring-slate-200 backdrop:bg-black/50 dark:bg-navy-900 dark:ring-navy-700"
       >
         {request && (
           <div className="p-6">

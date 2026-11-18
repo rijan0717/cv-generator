@@ -163,7 +163,7 @@ export default function Layout() {
                   type="button"
                   aria-label="Close navigation"
                   onClick={closeDrawer}
-                  className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden"
+                  className="fixed inset-0 z-30 bg-black/40 lg:hidden"
                 />
                 <aside className="fixed inset-y-0 left-0 z-40 w-64 overflow-y-auto border-r border-slate-200 bg-white pt-14 lg:hidden dark:border-navy-700 dark:bg-navy-900">
                   {/* Never collapsed in the drawer: it is hidden by

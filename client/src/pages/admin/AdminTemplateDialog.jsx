@@ -72,7 +72,7 @@ export default function AdminTemplateDialog({
         if (event.target === dialogRef.current) onClose();
       }}
       aria-labelledby="admin-template-title"
-      className="w-[min(960px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/50 dark:bg-navy-900 dark:text-slate-50"
+      className="w-[min(960px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-black/50 dark:bg-navy-900 dark:text-slate-50"
     >
       {template && (
         <div className="grid max-h-[calc(100vh-4rem)] md:grid-cols-[minmax(0,1fr)_20rem]">

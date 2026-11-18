@@ -260,7 +260,7 @@ export default function ComposeMailModal({
         if (event.target === dialogRef.current) onClose();
       }}
       aria-labelledby="compose-mail-title"
-      className="w-[min(1100px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-900/50 dark:bg-navy-900 dark:text-slate-50"
+      className="w-[min(1100px,calc(100vw-2rem))] max-w-none rounded-2xl bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-black/50 dark:bg-navy-900 dark:text-slate-50"
     >
       <div className="relative flex max-h-[calc(100vh-4rem)] flex-col">
         {/* Over the dialog rather than inside it.
