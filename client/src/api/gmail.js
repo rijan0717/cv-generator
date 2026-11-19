@@ -68,8 +68,15 @@ export async function createGmailDraft(input) {
  * The dialog in the UI stops a misclick; the flag stops anything that
  * reaches the API without one.
  *
- * @param {object} input - As `createGmailDraft`.
- * @returns {Promise<{messageId: string, attached: boolean}>}
+ * Sending is also where an application starts being tracked: with
+ * `companyName` and a CV, the server records the letter on the
+ * Applications screen, unless `trackApplication` says not to. A draft
+ * never does — nothing has been applied for until it is sent.
+ *
+ * @param {object} input - As `createGmailDraft`, plus `companyName`,
+ *   `jobTitle` and `trackApplication` for the application record.
+ * @returns {Promise<{messageId: string, attached: boolean, sentId: string,
+ *   applicationId: string|null, isFollowUp: boolean}>}
  */
 export async function sendGmailMessage(input) {
   const { data } = await api.post('/api/gmail/send', { ...input, confirm: true });
@@ -115,6 +122,55 @@ export async function sendGmailDraft(draftId) {
 export async function deleteGmailDraft(draftId) {
   const { data } = await api.delete(`/api/gmail/drafts/${draftId}`);
   return data.data;
+}
+
+/**
+ * Reads one draft back in full, so it can be opened and edited here.
+ *
+ * The list carries headers and a snippet only; this is the letter
+ * itself, in the fields the compose form holds.
+ *
+ * @param {string} draftId - The Gmail draft id.
+ * @returns {Promise<{id: string, to: string, subject: string, body: string,
+ *   date: string, attachments: Array<{filename: string}>}>}
+ */
+export async function getGmailDraft(draftId) {
+  const { data } = await api.get(`/api/gmail/drafts/${draftId}`);
+  return data.data.draft;
+}
+
+/**
+ * Saves an edited draft over the one in the mailbox.
+ *
+ * Gmail replaces the whole message and keeps the id, so the body is the
+ * same shape as creating one — including the attachment, which is
+ * rebuilt rather than carried over.
+ *
+ * @param {string} draftId - The Gmail draft id.
+ * @param {object} input - As `createGmailDraft`.
+ * @returns {Promise<{draftId: string, messageId: string|null, attached: boolean}>}
+ */
+export async function updateGmailDraft(draftId, input) {
+  const { data } = await api.put(`/api/gmail/drafts/${draftId}`, input);
+  return data.data;
+}
+
+/**
+ * Reads one sent letter back.
+ *
+ * From this application's own copy, not from Gmail: the permission held
+ * here cannot open the Sent folder, so a letter is readable afterwards
+ * only because a copy was kept when it was sent. Letters sent before
+ * that copy existed come back from the list with `hasBody: false` and
+ * cannot be opened.
+ *
+ * @param {string} id - The sent letter's id.
+ * @returns {Promise<{id: string, to: string, subject: string, body: string,
+ *   attached: boolean, cvTitle: string, sentAt: string}>}
+ */
+export async function getGmailSent(id) {
+  const { data } = await api.get(`/api/gmail/sent/${id}`);
+  return data.data.sent;
 }
 
 /**

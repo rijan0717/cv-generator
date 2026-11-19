@@ -10,6 +10,13 @@ const STYLES = {
   submitted: 'bg-sky-50 text-sky-700 dark:bg-sky-50 dark:text-sky-700',
   reviewed: 'bg-slate-100 text-slate-700 dark:bg-navy-800 dark:text-slate-100',
   shortlisted: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-50 dark:text-emerald-700',
+  // Being called in, and getting the job: the two stages someone
+  // tracking their own applications by email needs and an employer's
+  // three-step process does not have. Interview borrows the violet used
+  // for the generative actions; selected is the strongest green on the
+  // scale, because it is the end of the process.
+  interview: 'bg-violet-50 text-violet-700 dark:bg-violet-50 dark:text-violet-700',
+  selected: 'bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white',
   rejected: 'bg-red-50 text-red-700 dark:bg-red-50 dark:text-red-700',
   withdrawn: 'bg-amber-50 text-amber-700 dark:bg-amber-50 dark:text-amber-700',
 };

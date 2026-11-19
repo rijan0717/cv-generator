@@ -178,10 +178,31 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
+          {/* The order a job application is actually made in: build the
+              CV, tailor it to the advert, check how well it matches,
+              write the letter, send it. These were scattered down the
+              list with the job board and interview practice between
+              them, so the one sequence every user follows read as five
+              unrelated tools. Tailoring and matching sit together
+              because they are the same question asked two ways. */}
           <Item
             to="/match-cv"
             icon="match"
             label="Job match"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/cover-letter"
+            icon="letter"
+            label="Cover letter"
+            onNavigate={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+          <Item
+            to="/mail"
+            icon="mail"
+            label="Mail"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />
@@ -210,22 +231,6 @@ export default function Sidebar({ onNavigate, isCollapsed = false }) {
             to="/applications"
             icon="applications"
             label="Applications"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          {/* Writing the letter, then the mailbox it lands in — in that
-              order, because one leads to the other. */}
-          <Item
-            to="/cover-letter"
-            icon="letter"
-            label="Cover letter"
-            onNavigate={onNavigate}
-            isCollapsed={isCollapsed}
-          />
-          <Item
-            to="/mail"
-            icon="mail"
-            label="Mail"
             onNavigate={onNavigate}
             isCollapsed={isCollapsed}
           />

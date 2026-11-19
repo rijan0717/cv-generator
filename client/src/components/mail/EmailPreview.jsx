@@ -7,8 +7,10 @@
  * does not answer it.
  *
  * @param {{from: string, to: string, subject: string, body: string,
- *          attachmentName?: string, isBusy?: boolean}} props -
+ *          attachmentName?: string, isBusy?: boolean, emptyHint?: string}} props -
  *   `attachmentName` is omitted when the CV is not being attached.
+ *   `emptyHint` is what the empty panel says to do next, which differs
+ *   between a letter the composer writes and a message the user types.
  */
 export default function EmailPreview({
   from,
@@ -17,6 +19,7 @@ export default function EmailPreview({
   body,
   attachmentName = '',
   isBusy = false,
+  emptyHint = 'Choose a CV and enter a company name, and the letter will be written here.',
 }) {
   return (
     <div className="flex h-full flex-col rounded-lg border border-slate-200 bg-white dark:border-navy-700 dark:bg-navy-900">
@@ -49,9 +52,7 @@ export default function EmailPreview({
             {body}
           </p>
         ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Choose a CV and enter a company name, and the letter will be written here.
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{emptyHint}</p>
         )}
       </div>
 

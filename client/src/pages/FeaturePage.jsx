@@ -3,6 +3,7 @@ import { getFeature, FEATURES } from '../data/features.js';
 import { MENU_ICONS } from '../components/layout/menus.js';
 import { BRAND_TEXT_GRADIENT, BrandSpark } from '../components/ui/BrandMark.jsx';
 import { Reveal, Stagger } from '../components/ui/motion.jsx';
+import FeatureDemo from '../components/features/FeatureDemo.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 import useCountUp from '../utils/useCountUp.js';
 import { useDocumentMeta } from '../utils/useDocumentMeta.js';
@@ -142,6 +143,15 @@ export default function FeaturePage() {
           </Reveal>
         </div>
       </section>
+
+      {/* --- The tool, working ---
+          Directly under the hero, because a visitor who has just read
+          one sentence about a tool wants to see it before they are
+          given three figures and four cards about it. It is a drawing
+          rather than the real screen: these pages are public, there is
+          no session behind them, and a fault in a marketing page must
+          not be able to reach the builder itself. */}
+      <FeatureDemo slug={feature.slug} className={CONTAINER} />
 
       {/* --- The three figures --- */}
       <section className="border-y border-slate-200 bg-white py-12 dark:border-navy-700 dark:bg-navy-900">

@@ -72,6 +72,10 @@ export default function ComposeMailModal({
   const [jobTitle, setJobTitle] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [attachCv, setAttachCv] = useState(true);
+  // Sending a CV to a named company is applying for a job, so the
+  // application is recorded by default and the user is told, rather than
+  // being asked to opt in to something they have already done.
+  const [trackApplication, setTrackApplication] = useState(true);
 
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
@@ -207,8 +211,23 @@ export default function ComposeMailModal({
           result.attached ? 'Draft saved to Gmail with your CV attached' : 'Draft saved to Gmail',
         );
       } else {
-        await sendGmailMessage(message);
-        toast.success(`Sent to ${to}`);
+        // The company and the role go with the send, not with the draft:
+        // they are what the Applications screen records, and nothing has
+        // been applied for until the letter has actually gone.
+        const result = await sendGmailMessage({
+          ...message,
+          companyName,
+          jobTitle,
+          trackApplication,
+        });
+
+        toast.success(
+          result.applicationId
+            ? result.isFollowUp
+              ? `Sent to ${to}. Your application to ${companyName} is marked as followed up.`
+              : `Sent to ${to}, and added to your applications.`
+            : `Sent to ${to}`,
+        );
       }
 
       onSent?.();
@@ -554,6 +573,30 @@ export default function ComposeMailModal({
                       Your CV will not be attached. The employer will receive the letter on its own.
                     </p>
                   )}
+
+                  {/* Applying by email used to leave no trace outside the
+                      mailbox, so the half of a job hunt that happens this
+                      way was missing from the one screen built to track
+                      it. Ticked by default, because sending a CV to a
+                      named company is applying for a job — but it is
+                      shown rather than done silently, since some letters
+                      are enquiries rather than applications. */}
+                  <label className="flex items-start gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={trackApplication}
+                      onChange={(event) => setTrackApplication(event.target.checked)}
+                      className="mt-0.5 h-4 w-4"
+                    />
+                    <span>
+                      Track this as an application
+                      <span className="block text-xs text-slate-500 dark:text-slate-400">
+                        It appears under Applications{companyName ? ` for ${companyName}` : ''}, and
+                        you record what you hear back. Only applies when you send, not when you save
+                        a draft.
+                      </span>
+                    </span>
+                  </label>
                 </div>
               )}
 

@@ -21,7 +21,7 @@ export default function ProfilePage() {
   const isJobSeeker = user.accountType === 'jobseeker';
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-10">
       <header>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
           Profile
@@ -31,11 +31,42 @@ export default function ProfilePage() {
         </p>
       </header>
 
-      <div className="mt-8 space-y-6">
-        <AvatarSection user={user} setUser={setUser} />
-        <DetailsSection user={user} setUser={setUser} />
-        {isJobSeeker && <JobSeekerProfileSection user={user} setUser={setUser} />}
-        <ConnectedAccountsSection user={user} />
+      {/*
+        Two columns on a wide screen, stacked on a narrow one.
+
+        In one column the page was a single 3xl strip with the whole
+        right-hand half of the screen empty, and the candidate profile —
+        the longest form here, and the only one employers ever see —
+        started below the fold.
+
+        The split is by audience rather than by length: the left column
+        is the account itself, which is this user's own business (who
+        they are, and what is connected to it); the right is what other
+        people see. The left column sticks on a tall screen, so the
+        photo and name stay visible while the long form is scrolled.
+      */}
+      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
+        <div className="space-y-6 lg:sticky lg:top-6">
+          <AvatarSection user={user} setUser={setUser} />
+          <DetailsSection user={user} setUser={setUser} />
+          <ConnectedAccountsSection user={user} />
+        </div>
+
+        <div className="space-y-6">
+          {isJobSeeker ? (
+            <JobSeekerProfileSection user={user} setUser={setUser} />
+          ) : (
+            // An employer has no candidate profile, and an empty right
+            // column would read as something that failed to load.
+            <section className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-navy-700">
+              <h2 className="font-semibold text-slate-900 dark:text-slate-50">Your company</h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                Employer accounts present a company rather than a candidate profile. It is managed
+                under My company.
+              </p>
+            </section>
+          )}
+        </div>
       </div>
     </div>
   );
