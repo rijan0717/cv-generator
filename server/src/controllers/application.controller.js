@@ -130,7 +130,7 @@ export async function listMyApplications(req, res) {
 
   const [applications, total] = await Promise.all([
     Application.find(filter)
-      .select('status coverLetter createdAt job')
+      .select('status coverLetter createdAt job source external lastContactedAt')
       .populate({
         path: 'job',
         select: 'title location jobType isDeleted',
@@ -145,9 +145,43 @@ export async function listMyApplications(req, res) {
 
   sendSuccess(
     res,
-    { applications, pagination: buildPagination({ page, limit }, total) },
+    {
+      applications: applications.map(describeApplication),
+      pagination: buildPagination({ page, limit }, total),
+    },
     'Your applications',
   );
+}
+
+/**
+ * Describes one application the same way whichever route it came from.
+ *
+ * An application made through the board knows its role and employer from
+ * the `Job` it points at; an emailed one has only what the user typed.
+ * The screen should not have to care which, so both are answered with a
+ * `position` and a `companyName` and the rest is detail — otherwise
+ * every list and card in the client needs the same two-branch fallback
+ * written out again, and they will not all be written the same way.
+ *
+ * @param {object} application - A lean application document.
+ * @returns {object} The row, with the fields a list needs resolved.
+ */
+function describeApplication(application) {
+  const isEmail = application.source === 'email';
+
+  return {
+    ...application,
+    position: isEmail
+      ? application.external?.jobTitle || 'Role not stated'
+      : (application.job?.title ?? 'A job'),
+    companyName: isEmail
+      ? application.external?.companyName || 'Company not stated'
+      : (application.job?.company?.name ?? ''),
+    // An emailed application has no posting to open, and the employer
+    // has no account here to move it along: the applicant records what
+    // they are told. The client reads this rather than re-deriving it.
+    isTrackedByMe: isEmail,
+  };
 }
 
 /**
@@ -203,11 +237,24 @@ export async function listJobApplications(req, res) {
 export async function getApplication(req, res) {
   const { application, role } = await findViewableApplication(req.params.id, req.user);
 
+  // Resolved by the same function the list uses, so one application
+  // never reads as two different things depending on the screen.
+  const described = describeApplication({
+    source: application.source,
+    external: application.external,
+    job: application.job,
+  });
+
   const payload = {
     id: application._id,
     status: application.status,
     coverLetter: application.coverLetter,
     createdAt: application.createdAt,
+    lastContactedAt: application.lastContactedAt,
+    source: application.source,
+    position: described.position,
+    companyName: described.companyName,
+    isTrackedByMe: described.isTrackedByMe,
     job: application.job,
     cv: application.cvSnapshot,
   };
@@ -230,8 +277,16 @@ export async function updateApplicationStatus(req, res) {
   const { application, role } = await findViewableApplication(req.params.id, req.user);
 
   if (role === 'applicant') {
-    // An applicant may withdraw, and nothing else.
-    if (status !== 'withdrawn') {
+    // On a posting from the board, the employer owns the process: an
+    // applicant may withdraw and nothing else, or anyone could mark
+    // themselves shortlisted in the employer's own list.
+    //
+    // An emailed application is the opposite case. It was sent to a
+    // company that has no account here, so nobody else can ever move it
+    // — and a status only its owner can see is only useful if its owner
+    // can set it. They are recording what they were told, not deciding
+    // it.
+    if (application.source !== 'email' && status !== 'withdrawn') {
       throw ApiError.forbidden('You can only withdraw your own application');
     }
   }

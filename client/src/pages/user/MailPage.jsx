@@ -5,13 +5,14 @@ import {
   startGmailConnect,
   listGmailDrafts,
   listGmailSent,
+  getGmailSent,
   sendGmailDraft,
   deleteGmailDraft,
 } from '../../api/gmail.js';
 import * as cvApi from '../../api/cvs.js';
 import { useToast } from '../../context/useToast.js';
 import { useConfirm } from '../../context/useConfirm.js';
-import ComposeMailModal from '../../components/mail/ComposeMailModal.jsx';
+import ComposeMessageModal from '../../components/mail/ComposeMessageModal.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -67,6 +68,47 @@ function decodeSnippet(snippet) {
 }
 
 /**
+ * The top line of a sent letter: subject, recipient, when, and what went with it.
+ *
+ * Its own component because it is rendered twice — inside a button when
+ * the letter can be opened, and as plain markup when it cannot — and the
+ * two must not drift apart.
+ *
+ * @param {{letter: object, isOpen: boolean}} props
+ */
+function SentHeader({ letter, isOpen }) {
+  return (
+    <>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-medium">{letter.subject || '(no subject)'}</p>
+          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
+            Sent
+          </span>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {formatMailDate(letter.sentAt)}
+        </p>
+      </div>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        To {letter.to || '—'}
+        {letter.attached && ` · ${letter.cvTitle || 'CV'} attached`}
+        {letter.hasBody ? (
+          <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+            {isOpen ? 'Hide letter' : 'Read letter'}
+          </span>
+        ) : (
+          // Honest about the gap rather than silently showing nothing:
+          // these went out before a copy was kept, and Gmail will not
+          // give them back under the permission held here.
+          <span className="ml-2 text-xs text-slate-400">no copy kept</span>
+        )}
+      </p>
+    </>
+  );
+}
+
+/**
  * "Mail": what this application has put in, and sent from, the user's Gmail.
  *
  * Two lists, and neither is an inbox. The permission held here,
@@ -92,6 +134,14 @@ export default function MailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  // Which draft the compose dialog is editing. Empty means it is open on
+  // a new message; the dialog loads the draft itself from the id.
+  const [editingDraftId, setEditingDraftId] = useState('');
+  // The sent letter currently expanded, and its text once fetched. The
+  // list carries headers only, so the body is asked for when a row is
+  // opened rather than for all twenty-five up front.
+  const [openSentId, setOpenSentId] = useState('');
+  const [sentBodies, setSentBodies] = useState({});
   // The draft id currently being sent or deleted, so only its own row
   // shows a busy state rather than the whole list freezing.
   const [busyId, setBusyId] = useState('');
@@ -160,6 +210,50 @@ export default function MailPage() {
   }
 
   /**
+   * Opens the compose dialog on a draft, to edit before it goes.
+   *
+   * Only the id is passed; the dialog fetches the letter itself, so the
+   * list is never asked for twenty-five bodies it would not show.
+   *
+   * @param {object} draft - The draft row.
+   * @returns {void}
+   */
+  function handleEdit(draft) {
+    setEditingDraftId(draft.id);
+    setIsComposeOpen(true);
+  }
+
+  /**
+   * Expands a sent letter, fetching its text the first time.
+   *
+   * Pressing the same row again closes it. Letters sent before this
+   * application kept its own copy have no text to show — Gmail cannot be
+   * asked for it with the permission held here — and those rows say so
+   * instead of opening.
+   *
+   * @param {object} letter - The sent row.
+   * @returns {Promise<void>}
+   */
+  async function toggleSent(letter) {
+    if (openSentId === letter.id) {
+      setOpenSentId('');
+      return;
+    }
+
+    setOpenSentId(letter.id);
+
+    if (!letter.hasBody || sentBodies[letter.id]) return;
+
+    try {
+      const full = await getGmailSent(letter.id);
+      setSentBodies((current) => ({ ...current, [letter.id]: full.body }));
+    } catch (err) {
+      toast.error(err.message);
+      setOpenSentId('');
+    }
+  }
+
+  /**
    * Deletes one draft, permanently.
    * @param {object} draft - The draft row.
    * @returns {Promise<void>}
@@ -216,13 +310,31 @@ export default function MailPage() {
           <p className="mt-1 text-slate-600 dark:text-slate-300">
             {isConnected
               ? `Drafts in ${gmail.email}. This app can write drafts and send them; it cannot read your inbox.`
-              : 'Connect your Gmail to write cover letters straight into your drafts.'}
+              : 'Connect your Gmail to write and send mail without leaving this app.'}
           </p>
+          {isConnected && (
+            // The two are different jobs and now live in different
+            // places: anything can be typed here, but a letter written
+            // from a CV belongs on the page built for it.
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Writing to an employer?{' '}
+              <Link to="/cover-letter" className="font-medium underline">
+                Write a cover letter from your CV
+              </Link>
+              .
+            </p>
+          )}
         </div>
 
-        {isConnected && cvs.length > 0 && (
-          <Button variant="primary" onClick={() => setIsComposeOpen(true)}>
-            Write a cover letter
+        {isConnected && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setEditingDraftId('');
+              setIsComposeOpen(true);
+            }}
+          >
+            Compose
           </Button>
         )}
       </div>
@@ -289,8 +401,21 @@ export default function MailPage() {
                         deleting a CV does rather than inventing a second
                         way of asking. */}
                     <div className="mt-3 flex flex-wrap items-center gap-3">
+                      {/* First, and the only one of the three that is
+                          not final: reading a draft back before it goes
+                          is the thing a person does most often, and
+                          until now it could only be done by leaving for
+                          Gmail. */}
                       <Button
                         variant="primary"
+                        size="sm"
+                        onClick={() => handleEdit(draft)}
+                        disabled={Boolean(busyId)}
+                      >
+                        Open
+                      </Button>
+                      <Button
+                        variant="secondary"
                         size="sm"
                         onClick={() => handleSend(draft)}
                         isLoading={busyId === draft.id}
@@ -333,21 +458,38 @@ export default function MailPage() {
               <ul className="mt-3 divide-y divide-slate-200 rounded-lg border border-slate-200 dark:divide-navy-700 dark:border-navy-700">
                 {sent.map((letter) => (
                   <li key={letter.id} className="p-4">
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium">{letter.subject || '(no subject)'}</p>
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
-                          Sent
-                        </span>
+                    {/* The whole row opens the letter, because the row
+                        is what a person aims at. A letter with no stored
+                        copy stays a plain row rather than a button that
+                        does nothing when pressed. */}
+                    {letter.hasBody ? (
+                      <button
+                        type="button"
+                        onClick={() => toggleSent(letter)}
+                        aria-expanded={openSentId === letter.id}
+                        className="w-full text-left"
+                      >
+                        <SentHeader letter={letter} isOpen={openSentId === letter.id} />
+                      </button>
+                    ) : (
+                      <SentHeader letter={letter} isOpen={false} />
+                    )}
+
+                    {openSentId === letter.id && (
+                      <div className="mt-3 rounded-lg bg-slate-50 p-4 dark:bg-navy-800">
+                        {sentBodies[letter.id] ? (
+                          // Plain text with its line breaks kept: that
+                          // spacing is the only formatting the letter
+                          // has, and collapsing it would run every
+                          // paragraph together.
+                          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800 dark:text-slate-100">
+                            {sentBodies[letter.id]}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
+                        )}
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {formatMailDate(letter.sentAt)}
-                      </p>
-                    </div>
-                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                      To {letter.to || '—'}
-                      {letter.attached && ' · CV attached'}
-                    </p>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -356,13 +498,18 @@ export default function MailPage() {
         </>
       )}
 
-      <ComposeMailModal
+      <ComposeMessageModal
         isOpen={isComposeOpen}
-        onClose={() => setIsComposeOpen(false)}
+        onClose={() => {
+          setIsComposeOpen(false);
+          setEditingDraftId('');
+        }}
         cvs={cvs}
         gmail={gmail ?? { connected: false, email: '', canCompose: false }}
-        // A new draft should show up without the user reloading the page.
-        onSent={load}
+        draftId={editingDraftId}
+        // A new or edited draft should show up without the user
+        // reloading the page.
+        onDone={load}
       />
     </div>
   );

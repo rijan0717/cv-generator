@@ -35,6 +35,8 @@ const { createApp } = await import('../../src/app.js');
 const { env } = await import('../../src/config/env.js');
 const { GmailAccount } = await import('../../src/models/GmailAccount.js');
 const { ActivityLog } = await import('../../src/models/ActivityLog.js');
+const { Application } = await import('../../src/models/Application.js');
+const { SentMail } = await import('../../src/models/SentMail.js');
 const oauth = await import('../../src/services/gmailOAuthService.js');
 const pdf = await import('../../src/services/pdfService.js');
 const { connectMemoryDb, clearMemoryDb, closeMemoryDb } = await import('../helpers/memoryDb.js');
@@ -88,7 +90,11 @@ function stubGmail(handlers) {
 
 /** The raw message the controller sent, decoded back to text. */
 function sentRawMessage() {
-  const call = global.fetch.mock.calls.find(([, init]) => init?.method === 'POST');
+  // POST creates or sends; PUT replaces a draft being edited. Both carry
+  // the whole message, which is what this reads back.
+  const call = global.fetch.mock.calls.find(([, init]) =>
+    ['POST', 'PUT'].includes(init?.method ?? ''),
+  );
   const payload = JSON.parse(call[1].body);
   const raw = payload.message?.raw ?? payload.raw;
   return Buffer.from(raw.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
@@ -465,5 +471,202 @@ describe('GET /api/gmail/sent', () => {
     const res = await agent.get('/api/gmail/sent');
 
     expect(res.body.data.sent).toEqual([]);
+  });
+});
+
+describe('reading and editing a draft', () => {
+  /** A draft as `drafts.get?format=full` returns one: letter plus CV. */
+  const FULL_DRAFT = {
+    message: {
+      id: 'msg-1',
+      payload: {
+        mimeType: 'multipart/mixed',
+        headers: [
+          { name: 'To', value: 'hiring@example.com' },
+          { name: 'Subject', value: 'Application for Operations Manager' },
+        ],
+        parts: [
+          {
+            mimeType: 'text/plain',
+            body: {
+              data: Buffer.from('Dear Hiring Manager,\n\nI am writing.').toString('base64url'),
+            },
+          },
+          { mimeType: 'application/pdf', filename: 'Rijan_CV.pdf', body: { size: 1024 } },
+        ],
+      },
+    },
+  };
+
+  it('reads the draft back into the fields the form holds', async () => {
+    const { agent } = await signedInWithGmail();
+    stubGmail([[{ method: 'GET', path: '/drafts/draft-1' }, () => ({ body: FULL_DRAFT })]]);
+
+    const res = await agent.get('/api/gmail/drafts/draft-1');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.draft.to).toBe('hiring@example.com');
+    expect(res.body.data.draft.body).toContain('I am writing');
+    // The attachment is named, never transferred.
+    expect(res.body.data.draft.attachments).toEqual([
+      expect.objectContaining({ filename: 'Rijan_CV.pdf' }),
+    ]);
+  });
+
+  it('saves an edit over the same draft id', async () => {
+    const { agent, cvId } = await signedInWithGmail();
+    stubGmail([
+      [
+        { method: 'PUT', path: '/drafts/draft-1' },
+        () => ({ body: { id: 'draft-1', message: { id: 'msg-2' } } }),
+      ],
+    ]);
+
+    const res = await agent
+      .put('/api/gmail/drafts/draft-1')
+      .send({ ...MESSAGE, cvId, subject: 'Edited subject' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.draftId).toBe('draft-1');
+    expect(sentRawMessage()).toContain('Edited subject');
+  });
+
+  it('refuses an anonymous caller', async () => {
+    const res = await request(app).get('/api/gmail/drafts/draft-1');
+    expect(res.status).toBe(401);
+  });
+});
+
+describe('a message with no CV behind it', () => {
+  it('sends a plain email without one', async () => {
+    const { agent } = await signedInWithGmail();
+    stubGmail([[{ method: 'POST', path: '/messages/send' }, () => ({ body: { id: 'sent-1' } })]]);
+
+    const res = await agent.post('/api/gmail/send').send({ ...MESSAGE, confirm: true });
+
+    expect(res.status).toBe(200);
+    expect(pdf.generatePdf).not.toHaveBeenCalled();
+    expect(sentRawMessage()).not.toContain('multipart/mixed');
+  });
+
+  it('is never recorded as an application', async () => {
+    const { agent, userId } = await signedInWithGmail();
+    stubGmail([[{ method: 'POST', path: '/messages/send' }, () => ({ body: { id: 'sent-1' } })]]);
+
+    await agent.post('/api/gmail/send').send({ ...MESSAGE, confirm: true });
+
+    expect(await Application.countDocuments({ applicant: userId })).toBe(0);
+  });
+});
+
+describe('a sent letter becomes an application', () => {
+  /** Sends one letter to a named company, as the cover-letter form does. */
+  async function sendTo(agent, cvId, overrides = {}) {
+    stubGmail([[{ method: 'POST', path: '/messages/send' }, () => ({ body: { id: 'sent-1' } })]]);
+
+    return agent.post('/api/gmail/send').send({
+      ...MESSAGE,
+      cvId,
+      confirm: true,
+      companyName: 'Sagarmatha Supply',
+      jobTitle: 'Operations Manager',
+      ...overrides,
+    });
+  }
+
+  it('records the company, the role and a frozen CV', async () => {
+    const { agent, cvId, userId } = await signedInWithGmail();
+
+    const res = await sendTo(agent, cvId);
+
+    expect(res.body.data.applicationId).toBeTruthy();
+
+    const application = await Application.findOne({ applicant: userId }).lean();
+    expect(application.source).toBe('email');
+    expect(application.external.companyName).toBe('Sagarmatha Supply');
+    expect(application.external.jobTitle).toBe('Operations Manager');
+    expect(application.job).toBeNull();
+    expect(application.cvSnapshot.title).toBe('My CV');
+  });
+
+  it('keeps its own copy of the letter, which Gmail cannot give back', async () => {
+    const { agent, cvId, userId } = await signedInWithGmail();
+
+    await sendTo(agent, cvId);
+
+    const copy = await SentMail.findOne({ user: userId }).lean();
+    expect(copy.body).toBe(MESSAGE.body);
+    expect(copy.messageId).toBe('sent-1');
+
+    // ...while the activity log still does not hold the letter itself.
+    const entry = await ActivityLog.findOne({ user: userId, action: 'GMAIL_SEND' }).lean();
+    expect(JSON.stringify(entry.meta)).not.toContain('I am writing to apply');
+  });
+
+  it('treats writing again about the same role as a follow-up, not a second application', async () => {
+    const { agent, cvId, userId } = await signedInWithGmail();
+
+    await sendTo(agent, cvId);
+    const second = await sendTo(agent, cvId, { subject: 'Following up' });
+
+    expect(second.body.data.isFollowUp).toBe(true);
+    expect(await Application.countDocuments({ applicant: userId })).toBe(1);
+  });
+
+  it('counts a different role at the same company as its own application', async () => {
+    const { agent, cvId, userId } = await signedInWithGmail();
+
+    await sendTo(agent, cvId);
+    await sendTo(agent, cvId, { jobTitle: 'Warehouse Supervisor' });
+
+    expect(await Application.countDocuments({ applicant: userId })).toBe(2);
+  });
+
+  it('does not record one when the user unticked it', async () => {
+    const { agent, cvId, userId } = await signedInWithGmail();
+
+    const res = await sendTo(agent, cvId, { trackApplication: false });
+
+    expect(res.body.data.applicationId).toBeNull();
+    expect(await Application.countDocuments({ applicant: userId })).toBe(0);
+  });
+
+  it('lets the applicant set the status, which a board application forbids', async () => {
+    const { agent, cvId } = await signedInWithGmail();
+    const sent = await sendTo(agent, cvId);
+
+    const res = await agent
+      .patch(`/api/applications/${sent.body.data.applicationId}/status`)
+      .send({ status: 'interview' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.status).toBe('interview');
+  });
+
+  it('shows the role and the company on the applications list', async () => {
+    const { agent, cvId } = await signedInWithGmail();
+    await sendTo(agent, cvId);
+
+    const res = await agent.get('/api/applications/mine');
+
+    expect(res.body.data.applications[0]).toMatchObject({
+      position: 'Operations Manager',
+      companyName: 'Sagarmatha Supply',
+      isTrackedByMe: true,
+    });
+  });
+
+  it('still reports the letter as sent when the application cannot be recorded', async () => {
+    const { agent, cvId } = await signedInWithGmail();
+
+    // Whatever fails here, the mail has already gone: the response must
+    // not tell the user it did not send.
+    const spy = vi.spyOn(Application, 'create').mockRejectedValue(new Error('database is down'));
+
+    const res = await sendTo(agent, cvId);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.applicationId).toBeNull();
+    spy.mockRestore();
   });
 });

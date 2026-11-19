@@ -17,6 +17,9 @@
 import { CV } from '../models/CV.js';
 import { ActivityLog } from '../models/ActivityLog.js';
 import { GmailAccount } from '../models/GmailAccount.js';
+import { SentMail } from '../models/SentMail.js';
+import { trackEmailedApplication } from '../services/applicationTracker.js';
+import { parseMessage } from '../services/mimeParser.js';
 import { getAccessToken, REQUIRED_SCOPE } from '../services/gmailOAuthService.js';
 import { buildMimeMessage, toBase64Url } from '../services/mimeBuilder.js';
 import { generatePdf } from '../services/pdfService.js';
@@ -145,12 +148,17 @@ async function renderAttachment(cv, userId) {
 /**
  * Assembles the raw message both `createDraft` and `sendMail` need.
  *
+ * `cvId` is optional. A plain email — a question to a recruiter, a reply
+ * to an interview invitation — has no CV behind it and needs none; it is
+ * only the cover letter that always starts from one. With no CV there is
+ * nothing to attach, so `attachCv` has nothing to act on.
+ *
  * @param {object} options - Request body fields plus the caller.
- * @returns {Promise<{raw: string, attached: boolean, cv: object}>}
+ * @returns {Promise<{raw: string, attached: boolean, cv: object|null}>}
  */
 async function assembleMessage({ cvId, to, subject, body, attachCv, user }) {
-  const cv = await findOwnedCV(cvId, user._id);
-  const attachment = attachCv ? await renderAttachment(cv, user._id) : null;
+  const cv = cvId ? await findOwnedCV(cvId, user._id) : null;
+  const attachment = cv && attachCv ? await renderAttachment(cv, user._id) : null;
 
   const raw = buildMimeMessage({
     to,
@@ -190,7 +198,7 @@ export async function createDraft(req, res) {
   await logActivity({
     userId: req.user._id,
     action: 'GMAIL_DRAFT',
-    cvId: cv._id,
+    cvId: cv?._id ?? null,
     // The company and the CV, never the letter itself: an activity log
     // read by an administrator is not the place for someone's covering
     // letter to a named employer.
@@ -241,22 +249,81 @@ export async function sendMail(req, res) {
 
   await GmailAccount.updateOne({ _id: account._id }, { lastUsedAt: new Date() });
 
+  // Our own copy of what went out. Gmail will not give it back — the
+  // scope held here cannot read the Sent folder — so without this the
+  // user could never read a letter they had sent from this application.
+  const record = await SentMail.create({
+    user: req.user._id,
+    to: req.body.to,
+    subject: req.body.subject,
+    body: req.body.body,
+    cv: cv?._id ?? null,
+    attached,
+    messageId: sent.id,
+  });
+
   await logActivity({
     userId: req.user._id,
     action: 'GMAIL_SEND',
-    cvId: cv._id,
-    // The subject is kept so the Sent list has something to show. The
-    // letter body never is: Gmail holds the only copy, which is where it
-    // belongs.
+    cvId: cv?._id ?? null,
+    // The subject is kept so an administrator's activity view has
+    // something to show. The letter body never is: the user's own copy
+    // in `SentMail` is private to them, and a covering letter to a named
+    // employer has no place on an admin screen.
     meta: { to: req.body.to, subject: req.body.subject, attached, messageId: sent.id },
     ip: req.ip,
   });
 
+  const tracked = await trackApplicationForSend(req, cv);
+
   sendSuccess(
     res,
-    { messageId: sent.id, attached },
+    {
+      messageId: sent.id,
+      attached,
+      sentId: record._id,
+      applicationId: tracked?.application?._id ?? null,
+      isFollowUp: tracked?.isFollowUp ?? false,
+    },
     attached ? 'Sent, with your CV attached' : 'Sent',
   );
+}
+
+/**
+ * Records the letter as an application, where it is one.
+ *
+ * Kept apart from `sendMail` because of the one rule that governs it:
+ * **the mail has already gone**. Whatever happens here, the send
+ * succeeded, so a failure must not turn into an error response telling
+ * the user their letter did not send. It is logged and swallowed, and
+ * the worst case is a row the user can add to by writing again.
+ *
+ * Tracking happens only when the user asked for it, there is a CV behind
+ * the letter and a company was named — the three things that distinguish
+ * applying for a job from sending an email.
+ *
+ * @param {import('express').Request} req - The send request.
+ * @param {object|null} cv - The CV the letter was written from.
+ * @returns {Promise<{application: object, isFollowUp: boolean}|null>}
+ */
+async function trackApplicationForSend(req, cv) {
+  const { trackApplication, companyName, jobTitle, to, body } = req.body;
+
+  if (trackApplication === false || !cv || !companyName) return null;
+
+  try {
+    return await trackEmailedApplication({
+      user: req.user,
+      cvId: cv._id,
+      companyName,
+      jobTitle,
+      to,
+      body,
+    });
+  } catch (error) {
+    console.error('[gmail] could not track the application:', error.message);
+    return null;
+  }
 }
 
 /**
@@ -306,6 +373,85 @@ export async function listDrafts(req, res) {
   );
 
   sendSuccess(res, { drafts, email: account.email }, 'Drafts loaded');
+}
+
+/**
+ * GET /api/gmail/drafts/:id
+ * One draft in full, so it can be opened and edited here.
+ *
+ * The list route asks for headers only, because twenty-five bodies is a
+ * large response for a page that shows two lines of each. This one asks
+ * for `format: 'full'` and hands back the fields the compose form holds:
+ * the recipient, the subject, the letter as text, and the names of
+ * whatever is attached.
+ *
+ * Reading a draft is within `gmail.compose` — the scope covers managing
+ * drafts, which is reading and writing them. The inbox stays unreadable.
+ *
+ * @param {import('express').Request} req - The draft id.
+ * @param {import('express').Response} res - The response.
+ * @returns {Promise<void>}
+ */
+export async function getDraft(req, res) {
+  const account = await requireConnectedAccount(req.user._id);
+  const accessToken = await getAccessToken(account);
+
+  const detail = await callGmail(`/drafts/${req.params.id}?format=full`, accessToken);
+  const message = parseMessage(detail.message ?? {});
+
+  sendSuccess(res, { draft: { id: req.params.id, ...message } }, 'Draft loaded');
+}
+
+/**
+ * PUT /api/gmail/drafts/:id
+ * Replaces a draft with an edited version of it.
+ *
+ * Gmail has no partial update for a draft: `drafts.update` takes a whole
+ * new message and swaps it in, keeping the same draft id. So the message
+ * is rebuilt from the submitted fields exactly as a new one would be,
+ * attachment included — which also means a draft saved without a CV can
+ * gain one by editing, and vice versa.
+ *
+ * @param {import('express').Request} req - The draft id and the new message.
+ * @param {import('express').Response} res - The response.
+ * @returns {Promise<void>}
+ */
+export async function updateDraft(req, res) {
+  const account = await requireConnectedAccount(req.user._id);
+  const { raw, attached, cv } = await assembleMessage({ ...req.body, user: req.user });
+
+  const accessToken = await getAccessToken(account);
+
+  const draft = await callGmail(`/drafts/${req.params.id}`, accessToken, {
+    method: 'PUT',
+    body: JSON.stringify({ id: req.params.id, message: { raw: toBase64Url(raw) } }),
+  });
+
+  await GmailAccount.updateOne({ _id: account._id }, { lastUsedAt: new Date() });
+
+  await logActivity({
+    userId: req.user._id,
+    action: 'GMAIL_DRAFT',
+    cvId: cv?._id ?? null,
+    meta: {
+      to: req.body.to,
+      subject: req.body.subject,
+      attached,
+      draftId: req.params.id,
+      edited: true,
+    },
+    ip: req.ip,
+  });
+
+  sendSuccess(
+    res,
+    {
+      draftId: draft.id ?? req.params.id,
+      messageId: draft.message?.id ?? null,
+      attached,
+    },
+    'Draft updated',
+  );
 }
 
 /**
@@ -411,19 +557,92 @@ export async function deleteDraft(req, res) {
  * @returns {Promise<void>}
  */
 export async function listSent(req, res) {
-  const entries = await ActivityLog.find({ user: req.user._id, action: 'GMAIL_SEND' })
-    .sort({ createdAt: -1 })
-    .limit(DRAFT_PAGE_SIZE)
-    .lean();
+  const [copies, entries] = await Promise.all([
+    SentMail.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .limit(DRAFT_PAGE_SIZE)
+      .populate('cv', 'title')
+      .lean(),
+    ActivityLog.find({ user: req.user._id, action: 'GMAIL_SEND' })
+      .sort({ createdAt: -1 })
+      .limit(DRAFT_PAGE_SIZE)
+      .lean(),
+  ]);
 
-  const sent = entries.map((entry) => ({
-    id: entry._id.toString(),
-    to: entry.meta?.to ?? '',
-    subject: entry.meta?.subject ?? '',
-    messageId: entry.meta?.messageId ?? null,
-    attached: Boolean(entry.meta?.attached),
-    sentAt: entry.createdAt,
+  const sent = copies.map((copy) => ({
+    id: copy._id.toString(),
+    to: copy.to,
+    subject: copy.subject,
+    messageId: copy.messageId,
+    attached: copy.attached,
+    cvTitle: copy.cv?.title ?? '',
+    sentAt: copy.createdAt,
+    // The row can be opened and read. The older log-only rows below
+    // cannot, and say so rather than opening on an empty letter.
+    hasBody: true,
   }));
 
-  sendSuccess(res, { sent }, 'Sent letters loaded');
+  // Letters sent before this application kept its own copy. The log
+  // recorded who they went to and when, which is less than the rows
+  // above but is still the user's history, and dropping it to make the
+  // list uniform would be deleting something they can see today.
+  const copied = new Set(copies.map((copy) => copy.messageId).filter(Boolean));
+
+  for (const entry of entries) {
+    const messageId = entry.meta?.messageId ?? null;
+    if (messageId && copied.has(messageId)) continue;
+
+    sent.push({
+      id: entry._id.toString(),
+      to: entry.meta?.to ?? '',
+      subject: entry.meta?.subject ?? '',
+      messageId,
+      attached: Boolean(entry.meta?.attached),
+      cvTitle: '',
+      sentAt: entry.createdAt,
+      hasBody: false,
+    });
+  }
+
+  sent.sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt));
+
+  sendSuccess(res, { sent: sent.slice(0, DRAFT_PAGE_SIZE) }, 'Sent letters loaded');
+}
+
+/**
+ * GET /api/gmail/sent/:id
+ * One sent letter, in full, for the person who sent it.
+ *
+ * Scoped to the caller in the query itself rather than checked after
+ * loading: a mistake then reads as "not found", which is both the safe
+ * failure and the honest one — another user's letter does not exist as
+ * far as this account is concerned.
+ *
+ * @param {import('express').Request} req - The `SentMail` id.
+ * @param {import('express').Response} res - The response.
+ * @returns {Promise<void>}
+ */
+export async function getSent(req, res) {
+  const copy = await SentMail.findOne({ _id: req.params.id, user: req.user._id })
+    .populate('cv', 'title')
+    .lean();
+
+  if (!copy) throw ApiError.notFound('That letter was not found');
+
+  sendSuccess(
+    res,
+    {
+      sent: {
+        id: copy._id.toString(),
+        to: copy.to,
+        subject: copy.subject,
+        body: copy.body,
+        attached: copy.attached,
+        cvTitle: copy.cv?.title ?? '',
+        messageId: copy.messageId,
+        sentAt: copy.createdAt,
+      },
+    },
+    'Sent letter',
+  );
 }

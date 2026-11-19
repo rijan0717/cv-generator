@@ -42,6 +42,7 @@
     "seed:content": "npm run seed:content --prefix server",
     "seed:loadtest": "npm run seed:loadtest --prefix server --",
     "migrate:accounts": "npm run migrate:accounts --prefix server",
+    "migrate:applications": "npm run migrate:applications --prefix server",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

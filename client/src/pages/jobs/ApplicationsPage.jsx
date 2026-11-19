@@ -10,10 +10,36 @@ import Pagination from '../../components/ui/Pagination.jsx';
 import StatusBadge from '../../components/jobs/StatusBadge.jsx';
 
 /**
+ * The stages a user may set on an application they are tracking themselves.
+ *
+ * Only for the ones sent by email: those went to a company with no
+ * account here, so nobody else can ever move them, and the user is
+ * recording what they were told. `withdrawn` is left out because it has
+ * its own button, and the wording is what someone would actually say
+ * about their own application rather than the employer's internal word
+ * for it.
+ */
+const SELF_TRACKED_STATUSES = [
+  { value: 'submitted', label: 'Sent — no reply yet' },
+  { value: 'reviewed', label: 'They replied' },
+  { value: 'shortlisted', label: 'Shortlisted' },
+  { value: 'interview', label: 'Interview' },
+  { value: 'selected', label: 'Got the job' },
+  { value: 'rejected', label: 'Rejected' },
+];
+
+/**
  * The applications this user has submitted.
  *
- * Withdrawing is the only status change an applicant may make; every
- * other transition belongs to the employer, and the server enforces it.
+ * Two kinds sit in the same list, because to the person job hunting they
+ * are the same thing:
+ *
+ *   - **From the board** — applied for with the Apply button. The
+ *     employer owns the status, and the applicant may only withdraw.
+ *   - **By email** — a letter sent from the Mail screen with a CV
+ *     attached. The company may not use this system at all, so no one
+ *     else can ever move it along and the applicant sets the status
+ *     themselves. The server enforces both rules.
  */
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
@@ -47,6 +73,35 @@ export default function ApplicationsPage() {
       cancelled = true;
     };
   }, [page]);
+
+  /**
+   * Records what the user has heard back about an emailed application.
+   *
+   * No confirmation: it is their own note to themselves, nobody else
+   * sees it, and it can be changed again from the same control.
+   *
+   * @param {object} application - The row being updated.
+   * @param {string} status - The stage chosen.
+   * @returns {Promise<void>}
+   */
+  async function setStatus(application, status) {
+    const previous = application.status;
+
+    // Moved first, so the list responds to the choice immediately, and
+    // put back if the server refuses.
+    setApplications((current) =>
+      current.map((row) => (row._id === application._id ? { ...row, status } : row)),
+    );
+
+    try {
+      await applicationApi.updateApplicationStatus(application._id, { status });
+    } catch (err) {
+      setApplications((current) =>
+        current.map((row) => (row._id === application._id ? { ...row, status: previous } : row)),
+      );
+      toast.error(err.message);
+    }
+  }
 
   /**
    * Withdraws an application after confirming, since it cannot be undone.
@@ -86,7 +141,8 @@ export default function ApplicationsPage() {
           My applications
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-100">
-          Jobs you have applied for, and where each one stands.
+          Jobs you have applied for, and where each one stands — both the posts you applied to here
+          and the letters you emailed to companies yourself.
         </p>
       </header>
 
@@ -118,23 +174,49 @@ export default function ApplicationsPage() {
             >
               <div className="min-w-0 flex-1">
                 <h2 className="font-medium text-slate-900 dark:text-slate-50">
-                  {application.job?.isDeleted ? (
-                    application.job.title
+                  {/* An emailed application has no posting to open — the
+                      company may not use this system at all — so the
+                      role is plain text there and a link only where
+                      there is somewhere for it to go. */}
+                  {application.isTrackedByMe || application.job?.isDeleted ? (
+                    application.position
                   ) : (
                     <Link to={`/jobs/${application.job?._id}`} className="hover:underline">
-                      {application.job?.title ?? 'A job'}
+                      {application.position}
                     </Link>
                   )}
                 </h2>
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-100">
-                  {application.job?.company?.name}
+                  {application.companyName}
                   {' · applied '}
                   {new Date(application.createdAt).toLocaleDateString('en-GB')}
                   {application.job?.isDeleted && ' · this posting has been removed'}
+                  {application.isTrackedByMe && ' · by email'}
                 </p>
               </div>
 
-              <StatusBadge status={application.status} />
+              {/* The badge is the state for a board application, which
+                  the applicant cannot change. For an emailed one the
+                  same state is a control, because there is nobody else
+                  to set it. */}
+              {application.isTrackedByMe && application.status !== 'withdrawn' ? (
+                <label className="flex items-center gap-2">
+                  <span className="sr-only">Status of this application</span>
+                  <select
+                    value={application.status}
+                    onChange={(event) => setStatus(application, event.target.value)}
+                    className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs dark:border-navy-600 dark:bg-navy-800"
+                  >
+                    {SELF_TRACKED_STATUSES.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : (
+                <StatusBadge status={application.status} />
+              )}
 
               {/*
                 The CV is what the employer is actually judging, and until

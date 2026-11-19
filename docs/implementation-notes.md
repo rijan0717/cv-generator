@@ -1031,8 +1031,110 @@ base64 wrapped at 76 characters, and base64url for the API.
 `tests/unit/mimeBuilder.test.js` (15 — header encoding, multipart, wrapping),
 `tests/unit/coverLetterComposer.test.js` (35 — the wording rules),
 `tests/integration/gmail.test.js` (the OAuth round trip, Google stubbed),
-`tests/integration/gmailMail.test.js` (24 — drafting, sending, listing and
-every refusal, with both `gmailOAuthService` and `fetch` replaced),
+`tests/integration/gmailMail.test.js` (37 — drafting, editing, sending,
+listing and every refusal, with both `gmailOAuthService` and `fetch`
+replaced),
 `tests/integration/coverLetter.test.js` (10 — the preview route).
 
 No test reaches Google or starts Chromium.
+
+## Feature 14 — A mailbox, and the applications sent from it
+
+The Gmail feature could write one thing — a cover letter — and show it
+in one place. Three gaps followed from that, and this feature closes
+them.
+
+### Pieces
+
+| File                                                 | What it does                                                           |
+| ---------------------------------------------------- | ---------------------------------------------------------------------- |
+| `server/src/services/mimeParser.js`                  | Reads a Gmail message back into To / Subject / body / attachment names |
+| `server/src/models/SentMail.js`                      | This application's own copy of what it sent                            |
+| `server/src/services/applicationTracker.js`          | Turns a sent letter into a tracked application                         |
+| `client/src/components/mail/ComposeMessageModal.jsx` | A plain email, and the draft editor                                    |
+| `server/scripts/migrateApplicationIndex.js`          | Replaces the unique index an emailed application breaks                |
+
+### A draft can now be read and edited here
+
+`gmail.compose` covers _managing_ drafts, which is reading and writing
+them — only the mailbox is out of reach. So `GET /gmail/drafts/:id`
+fetches one with `format: 'full'` and `mimeParser` walks the part tree
+for it. The tree is walked rather than assumed because a mailbox holds
+three real shapes: a plain letter, a letter with the CV attached
+(`multipart/mixed`), and a message written in Gmail's own composer
+(`multipart/alternative`, the same words as text and as HTML). A part
+with a filename is an attachment and never the letter, or an attached
+`.txt` would replace what the user wrote.
+
+Editing is `PUT`, because Gmail's `drafts.update` has no partial form: it
+swaps the whole message and keeps the id. The same `assembleMessage` that
+creates a draft rebuilds it, so a draft can gain or lose its attachment
+by being edited.
+
+### Why `SentMail` exists
+
+The scope cannot read the Sent folder, so a sent letter was gone the
+moment it left — the Sent list could show only what `ActivityLog` had
+recorded, which is the recipient, the subject and the time. Asking for a
+scope that could read it back, purely to re-read letters we wrote
+ourselves, would mean a second restricted-scope review for something a
+small collection answers.
+
+It is a collection of its own and not a field on the log, because the
+activity log is an **admin** screen. The log keeps what an administrator
+needs; the words stay in `SentMail`, readable by the one account that
+wrote them. Letters sent before this existed still list, flagged
+`hasBody: false`, and say "no copy kept" rather than opening on nothing.
+
+### Applying by email is applying
+
+Sending a CV to a named company is applying for a job, but it used to
+leave no trace outside the mailbox — so the half of a job hunt that
+happens by email was missing from the one screen built to track it.
+`Application` now carries `source`, and an emailed one has no `job` and
+no `company`, only what the user typed.
+
+Three rules, all in `applicationTracker.js`:
+
+- **Only a send.** A draft may never be sent, and a row that appeared on
+  save would have to be removed again.
+- **Only with a CV.** A note to a recruiter is not an application.
+- **A follow-up is not a second application.** Matched on company _and_
+  role, normalised for case and spacing, so writing again updates
+  `lastContactedAt` — while a different role at the same company is
+  rightly its own application.
+
+Tracking runs _after_ the send has succeeded and its failure is
+swallowed and logged. The letter has already gone by then; reporting a
+failed database write as a failed send would be a lie about the one
+thing the user cares about.
+
+### Who owns the status
+
+A board application's status belongs to the employer — otherwise anyone
+could mark themselves shortlisted in the employer's own list — and the
+applicant may only withdraw. An emailed one is the opposite: it went to
+a company with no account here, nobody else can ever move it, and the
+user is recording what they were told. The server enforces the
+distinction; the client reads `isTrackedByMe` rather than deriving it
+twice. Two stages were added for this, `interview` and `selected`, which
+an employer's three-step process does not have.
+
+### The index that had to change
+
+`{ job, applicant }` was unique, and MongoDB treats every missing value
+as the same value — so the second letter a user ever sent would be
+refused as a duplicate of the first. It is now partial, covering only
+documents whose `job` is really an objectId. An existing database needs
+`npm run migrate:applications`, because MongoDB will not change an
+index's options in place.
+
+### Tests
+
+`tests/unit/mimeParser.test.js` (17 — every message shape, including the
+attached text file and the nested multipart) and 13 more in
+`tests/integration/gmailMail.test.js`: reading and editing a draft, a
+plain email with no CV, the application that a send records, the
+follow-up that does not duplicate it, the opt-out, the applicant setting
+their own status, and a send that still reports success when the
+tracking fails.
